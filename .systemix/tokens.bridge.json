@@ -1,0 +1,837 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "_meta": {
+    "source": "src/app/globals.css",
+    "generatedAt": "2026-03-28T12:40:36.549Z",
+    "converter": "scripts/token-converter.ts",
+    "note": "DTCG-compatible bridge file. figma.hex/rgba are pre-converted for Figma Plugin API (RGB 0-1 floats)."
+  },
+  "radius": {
+    "base": {
+      "$type": "dimension",
+      "$value": "0.5rem",
+      "figma": {
+        "variableName": "radius/base",
+        "collection": "Spacing & Radius",
+        "cssVar": "--radius",
+        "syncStatus": "pending"
+      }
+    }
+  },
+  "color": {
+    "background": {
+      "$type": "color",
+      "$value": "oklch(1 0 0)",
+      "figma": {
+        "hex": "#ffffff",
+        "rgba": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        },
+        "variableName": "color/background",
+        "collection": "Semantic",
+        "cssVar": "--background",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.145 0 0)",
+          "hex": "#0a0a0a",
+          "rgba": {
+            "r": 0.0394,
+            "g": 0.0394,
+            "b": 0.0394,
+            "a": 1
+          }
+        }
+      }
+    },
+    "foreground": {
+      "$type": "color",
+      "$value": "oklch(0.145 0 0)",
+      "figma": {
+        "hex": "#0a0a0a",
+        "rgba": {
+          "r": 0.0394,
+          "g": 0.0394,
+          "b": 0.0394,
+          "a": 1
+        },
+        "variableName": "color/foreground",
+        "collection": "Semantic",
+        "cssVar": "--foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "card": {
+      "$type": "color",
+      "$value": "oklch(1 0 0)",
+      "figma": {
+        "hex": "#ffffff",
+        "rgba": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        },
+        "variableName": "color/card",
+        "collection": "Semantic",
+        "cssVar": "--card",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.205 0 0)",
+          "hex": "#171717",
+          "rgba": {
+            "r": 0.0905,
+            "g": 0.0905,
+            "b": 0.0905,
+            "a": 1
+          }
+        }
+      }
+    },
+    "card-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.145 0 0)",
+      "figma": {
+        "hex": "#0a0a0a",
+        "rgba": {
+          "r": 0.0394,
+          "g": 0.0394,
+          "b": 0.0394,
+          "a": 1
+        },
+        "variableName": "color/card-foreground",
+        "collection": "Semantic",
+        "cssVar": "--card-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "popover": {
+      "$type": "color",
+      "$value": "oklch(1 0 0)",
+      "figma": {
+        "hex": "#ffffff",
+        "rgba": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        },
+        "variableName": "color/popover",
+        "collection": "Semantic",
+        "cssVar": "--popover",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.205 0 0)",
+          "hex": "#171717",
+          "rgba": {
+            "r": 0.0905,
+            "g": 0.0905,
+            "b": 0.0905,
+            "a": 1
+          }
+        }
+      }
+    },
+    "popover-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.145 0 0)",
+      "figma": {
+        "hex": "#0a0a0a",
+        "rgba": {
+          "r": 0.0394,
+          "g": 0.0394,
+          "b": 0.0394,
+          "a": 1
+        },
+        "variableName": "color/popover-foreground",
+        "collection": "Semantic",
+        "cssVar": "--popover-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "figma": {
+        "hex": "#171717",
+        "rgba": {
+          "r": 0.0905,
+          "g": 0.0905,
+          "b": 0.0905,
+          "a": 1
+        },
+        "variableName": "color/primary",
+        "collection": "Semantic",
+        "cssVar": "--primary",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.922 0 0)",
+          "hex": "#e5e5e5",
+          "rgba": {
+            "r": 0.8982,
+            "g": 0.8982,
+            "b": 0.8982,
+            "a": 1
+          }
+        }
+      }
+    },
+    "primary-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "figma": {
+        "hex": "#fafafa",
+        "rgba": {
+          "r": 0.9803,
+          "g": 0.9803,
+          "b": 0.9803,
+          "a": 1
+        },
+        "variableName": "color/primary-foreground",
+        "collection": "Semantic",
+        "cssVar": "--primary-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.205 0 0)",
+          "hex": "#171717",
+          "rgba": {
+            "r": 0.0905,
+            "g": 0.0905,
+            "b": 0.0905,
+            "a": 1
+          }
+        }
+      }
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "oklch(0.97 0 0)",
+      "figma": {
+        "hex": "#f5f5f5",
+        "rgba": {
+          "r": 0.9606,
+          "g": 0.9606,
+          "b": 0.9606,
+          "a": 1
+        },
+        "variableName": "color/secondary",
+        "collection": "Semantic",
+        "cssVar": "--secondary",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.269 0 0)",
+          "hex": "#262626",
+          "rgba": {
+            "r": 0.1494,
+            "g": 0.1494,
+            "b": 0.1494,
+            "a": 1
+          }
+        }
+      }
+    },
+    "secondary-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "figma": {
+        "hex": "#171717",
+        "rgba": {
+          "r": 0.0905,
+          "g": 0.0905,
+          "b": 0.0905,
+          "a": 1
+        },
+        "variableName": "color/secondary-foreground",
+        "collection": "Semantic",
+        "cssVar": "--secondary-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "oklch(0.97 0 0)",
+      "figma": {
+        "hex": "#f5f5f5",
+        "rgba": {
+          "r": 0.9606,
+          "g": 0.9606,
+          "b": 0.9606,
+          "a": 1
+        },
+        "variableName": "color/muted",
+        "collection": "Semantic",
+        "cssVar": "--muted",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.269 0 0)",
+          "hex": "#262626",
+          "rgba": {
+            "r": 0.1494,
+            "g": 0.1494,
+            "b": 0.1494,
+            "a": 1
+          }
+        }
+      }
+    },
+    "muted-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.5 0 0)",
+      "figma": {
+        "hex": "#636363",
+        "rgba": {
+          "r": 0.3886,
+          "g": 0.3886,
+          "b": 0.3886,
+          "a": 1
+        },
+        "variableName": "color/muted-foreground",
+        "collection": "Semantic",
+        "cssVar": "--muted-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.65 0 0)",
+          "hex": "#8f8f8f",
+          "rgba": {
+            "r": 0.5607,
+            "g": 0.5607,
+            "b": 0.5607,
+            "a": 1
+          }
+        }
+      }
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "oklch(0.97 0 0)",
+      "figma": {
+        "hex": "#f5f5f5",
+        "rgba": {
+          "r": 0.9606,
+          "g": 0.9606,
+          "b": 0.9606,
+          "a": 1
+        },
+        "variableName": "color/accent",
+        "collection": "Semantic",
+        "cssVar": "--accent",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.269 0 0)",
+          "hex": "#262626",
+          "rgba": {
+            "r": 0.1494,
+            "g": 0.1494,
+            "b": 0.1494,
+            "a": 1
+          }
+        }
+      }
+    },
+    "accent-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "figma": {
+        "hex": "#171717",
+        "rgba": {
+          "r": 0.0905,
+          "g": 0.0905,
+          "b": 0.0905,
+          "a": 1
+        },
+        "variableName": "color/accent-foreground",
+        "collection": "Semantic",
+        "cssVar": "--accent-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "destructive": {
+      "$type": "color",
+      "$value": "oklch(0.577 0.245 27.325)",
+      "figma": {
+        "hex": "#e7000b",
+        "rgba": {
+          "r": 0.9065,
+          "g": 0,
+          "b": 0.0422,
+          "a": 1
+        },
+        "variableName": "color/destructive",
+        "collection": "Semantic",
+        "cssVar": "--destructive",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.704 0.191 22.216)",
+          "hex": "#ff6467",
+          "rgba": {
+            "r": 1,
+            "g": 0.3912,
+            "b": 0.4039,
+            "a": 1
+          }
+        }
+      }
+    },
+    "border": {
+      "$type": "color",
+      "$value": "oklch(0.922 0 0)",
+      "figma": {
+        "hex": "#e5e5e5",
+        "rgba": {
+          "r": 0.8982,
+          "g": 0.8982,
+          "b": 0.8982,
+          "a": 1
+        },
+        "variableName": "color/border",
+        "collection": "Semantic",
+        "cssVar": "--border",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(1 0 0 / 10%)",
+          "hex": "#ffffff1a",
+          "rgba": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.1
+          }
+        }
+      }
+    },
+    "input": {
+      "$type": "color",
+      "$value": "oklch(0.922 0 0)",
+      "figma": {
+        "hex": "#e5e5e5",
+        "rgba": {
+          "r": 0.8982,
+          "g": 0.8982,
+          "b": 0.8982,
+          "a": 1
+        },
+        "variableName": "color/input",
+        "collection": "Semantic",
+        "cssVar": "--input",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(1 0 0 / 15%)",
+          "hex": "#ffffff26",
+          "rgba": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.15
+          }
+        }
+      }
+    },
+    "ring": {
+      "$type": "color",
+      "$value": "oklch(0.708 0 0)",
+      "figma": {
+        "hex": "#a1a1a1",
+        "rgba": {
+          "r": 0.6302,
+          "g": 0.6302,
+          "b": 0.6302,
+          "a": 1
+        },
+        "variableName": "color/ring",
+        "collection": "Semantic",
+        "cssVar": "--ring",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.556 0 0)",
+          "hex": "#737373",
+          "rgba": {
+            "r": 0.4515,
+            "g": 0.4515,
+            "b": 0.4515,
+            "a": 1
+          }
+        }
+      }
+    },
+    "sidebar": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "figma": {
+        "hex": "#fafafa",
+        "rgba": {
+          "r": 0.9803,
+          "g": 0.9803,
+          "b": 0.9803,
+          "a": 1
+        },
+        "variableName": "color/sidebar",
+        "collection": "Semantic",
+        "cssVar": "--sidebar",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.18 0 0)",
+          "hex": "#121212",
+          "rgba": {
+            "r": 0.0687,
+            "g": 0.0687,
+            "b": 0.0687,
+            "a": 1
+          }
+        }
+      }
+    }
+  },
+  "sidebar": {
+    "foreground": {
+      "$type": "color",
+      "$value": "oklch(0.145 0 0)",
+      "figma": {
+        "hex": "#0a0a0a",
+        "rgba": {
+          "r": 0.0394,
+          "g": 0.0394,
+          "b": 0.0394,
+          "a": 1
+        },
+        "variableName": "sidebar/foreground",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "figma": {
+        "hex": "#171717",
+        "rgba": {
+          "r": 0.0905,
+          "g": 0.0905,
+          "b": 0.0905,
+          "a": 1
+        },
+        "variableName": "sidebar/primary",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-primary",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.922 0 0)",
+          "hex": "#e5e5e5",
+          "rgba": {
+            "r": 0.8982,
+            "g": 0.8982,
+            "b": 0.8982,
+            "a": 1
+          }
+        }
+      }
+    },
+    "primary-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "figma": {
+        "hex": "#fafafa",
+        "rgba": {
+          "r": 0.9803,
+          "g": 0.9803,
+          "b": 0.9803,
+          "a": 1
+        },
+        "variableName": "sidebar/primary-foreground",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-primary-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.205 0 0)",
+          "hex": "#171717",
+          "rgba": {
+            "r": 0.0905,
+            "g": 0.0905,
+            "b": 0.0905,
+            "a": 1
+          }
+        }
+      }
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "oklch(0.97 0 0)",
+      "figma": {
+        "hex": "#f5f5f5",
+        "rgba": {
+          "r": 0.9606,
+          "g": 0.9606,
+          "b": 0.9606,
+          "a": 1
+        },
+        "variableName": "sidebar/accent",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-accent",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.269 0 0)",
+          "hex": "#262626",
+          "rgba": {
+            "r": 0.1494,
+            "g": 0.1494,
+            "b": 0.1494,
+            "a": 1
+          }
+        }
+      }
+    },
+    "accent-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "figma": {
+        "hex": "#171717",
+        "rgba": {
+          "r": 0.0905,
+          "g": 0.0905,
+          "b": 0.0905,
+          "a": 1
+        },
+        "variableName": "sidebar/accent-foreground",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-accent-foreground",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.985 0 0)",
+          "hex": "#fafafa",
+          "rgba": {
+            "r": 0.9803,
+            "g": 0.9803,
+            "b": 0.9803,
+            "a": 1
+          }
+        }
+      }
+    },
+    "border": {
+      "$type": "color",
+      "$value": "oklch(0.922 0 0)",
+      "figma": {
+        "hex": "#e5e5e5",
+        "rgba": {
+          "r": 0.8982,
+          "g": 0.8982,
+          "b": 0.8982,
+          "a": 1
+        },
+        "variableName": "sidebar/border",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-border",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(1 0 0 / 10%)",
+          "hex": "#ffffff1a",
+          "rgba": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.1
+          }
+        }
+      }
+    },
+    "ring": {
+      "$type": "color",
+      "$value": "oklch(0.708 0 0)",
+      "figma": {
+        "hex": "#a1a1a1",
+        "rgba": {
+          "r": 0.6302,
+          "g": 0.6302,
+          "b": 0.6302,
+          "a": 1
+        },
+        "variableName": "sidebar/ring",
+        "collection": "Semantic",
+        "cssVar": "--sidebar-ring",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.556 0 0)",
+          "hex": "#737373",
+          "rgba": {
+            "r": 0.4515,
+            "g": 0.4515,
+            "b": 0.4515,
+            "a": 1
+          }
+        }
+      }
+    }
+  },
+  "status": {
+    "synced": {
+      "$type": "color",
+      "$value": "oklch(0.52 0.15 162)",
+      "figma": {
+        "hex": "#00824d",
+        "rgba": {
+          "r": 0,
+          "g": 0.509,
+          "b": 0.3019,
+          "a": 1
+        },
+        "variableName": "status/synced",
+        "collection": "Status",
+        "cssVar": "--status-synced",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.72 0.17 162)",
+          "hex": "#00c483",
+          "rgba": {
+            "r": 0,
+            "g": 0.7692,
+            "b": 0.5135,
+            "a": 1
+          }
+        }
+      }
+    },
+    "drifted": {
+      "$type": "color",
+      "$value": "oklch(0.55 0.22 27)",
+      "figma": {
+        "hex": "#d40c1a",
+        "rgba": {
+          "r": 0.8311,
+          "g": 0.0467,
+          "b": 0.1025,
+          "a": 1
+        },
+        "variableName": "status/drifted",
+        "collection": "Status",
+        "cssVar": "--status-drifted",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.7 0.22 27)",
+          "hex": "#ff554c",
+          "rgba": {
+            "r": 1,
+            "g": 0.3315,
+            "b": 0.2996,
+            "a": 1
+          }
+        }
+      }
+    },
+    "stale": {
+      "$type": "color",
+      "$value": "oklch(0.65 0.18 75)",
+      "figma": {
+        "hex": "#cd7a00",
+        "rgba": {
+          "r": 0.803,
+          "g": 0.4768,
+          "b": 0,
+          "a": 1
+        },
+        "variableName": "status/stale",
+        "collection": "Status",
+        "cssVar": "--status-stale",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.78 0.17 75)",
+          "hex": "#f5a400",
+          "rgba": {
+            "r": 0.9624,
+            "g": 0.6451,
+            "b": 0,
+            "a": 1
+          }
+        }
+      }
+    },
+    "new": {
+      "$type": "color",
+      "$value": "oklch(0.55 0.2 290)",
+      "figma": {
+        "hex": "#7552db",
+        "rgba": {
+          "r": 0.4582,
+          "g": 0.3201,
+          "b": 0.8599,
+          "a": 1
+        },
+        "variableName": "status/new",
+        "collection": "Status",
+        "cssVar": "--status-new",
+        "syncStatus": "pending",
+        "dark": {
+          "$value": "oklch(0.72 0.2 290)",
+          "hex": "#a688ff",
+          "rgba": {
+            "r": 0.6506,
+            "g": 0.5346,
+            "b": 1,
+            "a": 1
+          }
+        }
+      }
+    }
+  }
+}

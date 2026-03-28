@@ -1,0 +1,35 @@
+{
+  "version": "0.1.0",
+  "lastUpdated": "2026-03-28T12:39:53.082Z",
+  "activeRuns": [],
+  "hitlQueue": [],
+  "tokenChangeLog": [],
+  "componentRegistry": {},
+  "auditLog": [],
+  "figma": {
+    "fileKey": null,
+    "lastSync": null,
+    "collections": {
+      "Semantic": {
+        "modeIds": {
+          "light": null,
+          "dark": null
+        },
+        "variableIds": {}
+      },
+      "Status": {
+        "modeIds": {
+          "light": null,
+          "dark": null
+        },
+        "variableIds": {}
+      },
+      "Spacing & Radius": {
+        "modeIds": {
+          "default": null
+        },
+        "variableIds": {}
+      }
+    }
+  }
+}
