@@ -162,9 +162,10 @@ export function PipelineBeam() {
             curvature={i % 2 === 0 ? -20 : 20}
             gradientStartColor="#a855f7"
             gradientStopColor="#818cf8"
-            pathColor="hsl(var(--border))"
-            duration={3 + i * 0.3}
-            delay={i * 0.4}
+            pathColor="#a855f7"
+            pathOpacity={0.12}
+            duration={6 + i * 0.5}
+            delay={i * 0.7}
           />
           <AnimatedBeam
             key={`dtc-out-${i}`}
@@ -174,9 +175,10 @@ export function PipelineBeam() {
             curvature={i % 2 === 0 ? -20 : 20}
             gradientStartColor="#818cf8"
             gradientStopColor="#a855f7"
-            pathColor="hsl(var(--border))"
-            duration={3 + i * 0.3}
-            delay={i * 0.4 + 0.15}
+            pathColor="#a855f7"
+            pathOpacity={0.12}
+            duration={6 + i * 0.5}
+            delay={i * 0.7 + 0.25}
           />
         </>
       ))}
@@ -193,9 +195,10 @@ export function PipelineBeam() {
             reverse
             gradientStartColor="#14b8a6"
             gradientStopColor="#0ea5e9"
-            pathColor="hsl(var(--border))"
-            duration={3.5 + i * 0.3}
-            delay={1.5 + i * 0.4}
+            pathColor="#14b8a6"
+            pathOpacity={0.12}
+            duration={7 + i * 0.5}
+            delay={2 + i * 0.7}
           />
           <AnimatedBeam
             key={`ctd-out-${i}`}
@@ -206,9 +209,10 @@ export function PipelineBeam() {
             reverse
             gradientStartColor="#0ea5e9"
             gradientStopColor="#14b8a6"
-            pathColor="hsl(var(--border))"
-            duration={3.5 + i * 0.3}
-            delay={1.5 + i * 0.4 + 0.15}
+            pathColor="#14b8a6"
+            pathOpacity={0.12}
+            duration={7 + i * 0.5}
+            delay={2 + i * 0.7 + 0.25}
           />
         </>
       ))}
