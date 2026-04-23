@@ -134,10 +134,12 @@ export default function HomePage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Top bar */}
       <header className="h-11 border-b border-border flex items-center px-5 gap-3 shrink-0 bg-card">
-        <SLogo size={15} className="text-foreground" />
-        <span className="text-[13px] font-black tracking-tight">systemix</span>
+        <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+          <SLogo size={15} className="text-foreground" />
+          <span className="text-[13px] font-black tracking-tight">systemix</span>
+        </Link>
         <span className="text-muted-foreground/30 text-xs">·</span>
-        <span className="text-[11px] text-muted-foreground">Design operations</span>
+        <span className="text-[11px] text-muted-foreground">Dashboard</span>
         <div className="ml-auto flex items-center gap-3 text-[10px] font-mono text-muted-foreground/50">
           {totalPending > 0 && (
             <span className="text-amber-500">{totalPending} pending HITL</span>
@@ -146,10 +148,10 @@ export default function HomePage() {
             <span className="text-amber-500/70">{totalDrift} drift total</span>
           )}
           <Link
-            href="/workspace/variables"
+            href="/docs"
             className="text-muted-foreground/40 hover:text-muted-foreground transition-colors px-2 py-1 rounded hover:bg-muted/40"
           >
-            Variables ↗
+            Docs ↗
           </Link>
           <ThemeToggle />
         </div>

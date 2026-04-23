@@ -12,8 +12,8 @@ export const nav: NavSection[] = [
   {
     section: "",
     items: [
-      { label: "← Home", href: "/" },
-      { label: "Workflow", href: "/pipeline" },
+      { label: "← Dashboard", href: "/dashboard" },
+      { label: "Pipeline",    href: "/pipeline"  },
     ],
   },
   {
