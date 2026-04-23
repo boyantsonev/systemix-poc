@@ -1544,13 +1544,14 @@ Sync all documentation entries in lib/data/docs.ts.
 If \`$ARGUMENTS\` contains a file path, scope the sync to that single component only.`,
   },
   {
-    command: "/token-source-audit [collection]",
+    command: "/token-source-audit",
     name: "Token Source Audit",
     description: "Detect hardcoded hex values in Figma variable collections and migrate them to oklch() values referencing semantic Tailwind or design system variables.",
     file: "~/.claude/skills/token-source-audit/SKILL.md",
     category: "pipeline",
-    triggersAgent: "token-sync",
-    workflowId: "token-source-audit",
+    group: "quality",
+    triggersAgent: "Flux",
+    mcp: { required: ["figma-console-mcp", "figma-mcp"] },
     promptContent: `You are executing the **Token Source Audit** workflow.
 
 ## Goal

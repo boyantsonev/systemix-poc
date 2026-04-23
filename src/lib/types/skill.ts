@@ -16,7 +16,8 @@ export type SkillCommand =
   | '/connect'
   | '/check-parity'
   | '/deploy-annotate'
-  | '/sync-docs';
+  | '/sync-docs'
+  | '/token-source-audit';
 
 export type SkillCategory = 'pipeline' | 'tools';
 

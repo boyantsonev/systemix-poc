@@ -92,6 +92,7 @@ export const SKILL_DEPENDENCIES: Record<SkillCommand, SkillDependency[]> = {
   '/check-parity': [{ command: '/figma', type: 'suggests', reason: 'Needs Figma context for comparison' }],
   '/deploy-annotate': [{ command: '/deploy', type: 'requires', reason: 'Needs a deploy URL to annotate' }],
   '/sync-docs': [],
+  '/token-source-audit': [],
 };
 
 // Get chain by ID
