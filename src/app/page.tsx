@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
+import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { mockProjects, mockActivity, type Project, type ActivityEvent, type ActivityEventType } from "@/lib/data/mock-projects";
 
 function gigoColor(score: number): string {
@@ -150,6 +151,7 @@ export default function HomePage() {
           >
             Variables ↗
           </Link>
+          <ThemeToggle />
         </div>
       </header>
 

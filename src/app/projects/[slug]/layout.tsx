@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { SLogo } from "@/components/systemix/SLogo";
+import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { getProject } from "@/lib/data/mock-projects";
 import { cn } from "@/lib/utils";
 
@@ -93,6 +94,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             <span>{p.componentCount} components · {p.tokenCount} tokens</span>
           </div>
         )}
+        <ThemeToggle className="ml-2 shrink-0" />
       </header>
 
       {/* Page content */}
