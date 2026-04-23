@@ -137,11 +137,11 @@ const BASE_NODES: Node<GraphNodeData>[] = [
   mkNode("s-sync-figma",    160, 185, "/sync-to-figma",   "skill",    "sm"),
 
   // ── Agents ──
-  mkNode("ada",             445, 110, "Ada",              "agent",    "md", "Figma → Code"),
-  mkNode("flux",            445, 270, "Flux",             "agent",    "md", "Token Sync"),
-  mkNode("sage",            445, 450, "Sage",             "agent",    "sm", "Storybook"),
-  mkNode("ship",            445, 590, "Ship",             "agent",    "sm", "Deploy"),
-  mkNode("scout",           355, 490, "Scout",            "agent",    "sm", "Drift Detector"),
+  mkNode("ada",             445, 110, "Figma → Code",     "agent",    "md"),
+  mkNode("flux",            445, 270, "Token Sync",       "agent",    "md"),
+  mkNode("sage",            445, 450, "Storybook",        "agent",    "sm"),
+  mkNode("ship",            445, 590, "Deploy",           "agent",    "sm"),
+  mkNode("scout",           355, 490, "Drift Detector",   "agent",    "sm"),
 
   // ── Artifacts ──
   mkNode("contract",        630, 270, "contract.json",    "artifact", "lg"),
@@ -149,7 +149,7 @@ const BASE_NODES: Node<GraphNodeData>[] = [
   mkNode("components",      590, 110, "Components",       "artifact", "sm"),
 
   // ── Infrastructure ──
-  mkNode("hermes",          830, 255, "Hermes",           "infra",    "md", "MCP Server"),
+  mkNode("hermes",          830, 255, "Hermes",           "agent",    "md", "Skill Runner"),
   mkNode("quality",         790, 430, "Quality Score",    "concept",  "sm"),
   mkNode("hitl",            890, 490, "Drift Room",       "concept",  "sm", "HITL"),
 
@@ -294,9 +294,8 @@ export function GraphLegend() {
   const entries: [NType, string][] = [
     ["source",   "Data source"],
     ["skill",    "Skill (slash command)"],
-    ["agent",    "Agent"],
+    ["agent",    "Agent / runtime"],
     ["artifact", "Artifact"],
-    ["infra",    "MCP runtime"],
     ["concept",  "Concept"],
     ["tool",     "AI tool"],
   ];
