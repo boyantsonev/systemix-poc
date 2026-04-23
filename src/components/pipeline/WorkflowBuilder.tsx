@@ -143,7 +143,7 @@ export function WorkflowBuilder() {
         if (decision === "reject") {
           setNodeStatus(node.id, "rejected");
           updateStep(runId, node.id, { status: "rejected", completedAt: Date.now() });
-          appendLog(runId, node.id, ["Rejected by user — pipeline stopped"]);
+          appendLog(runId, node.id, ["Rejected by user — workflow stopped"]);
           setRun((prev) => prev ? { ...prev, overallStatus: "error", completedAt: Date.now() } : prev);
           setIsRunning(false);
           return;
@@ -151,7 +151,7 @@ export function WorkflowBuilder() {
 
         setNodeStatus(node.id, "approved");
         updateStep(runId, node.id, { status: "approved", completedAt: Date.now() });
-        appendLog(runId, node.id, ["Approved — continuing pipeline"]);
+        appendLog(runId, node.id, ["Approved — continuing workflow"]);
         setRun((prev) => prev ? { ...prev, overallStatus: "running" } : prev);
         continue;
       }
@@ -202,6 +202,17 @@ export function WorkflowBuilder() {
     ? workflow.nodes.find((n) => n.id === selectedNodeId)
     : null;
 
+  // Build stepTimings from current run for the canvas tooltip
+  const stepTimings: Record<string, { startedAt?: number; completedAt?: number }> = {};
+  if (run) {
+    for (const step of run.steps) {
+      stepTimings[step.nodeId] = {
+        startedAt: step.startedAt,
+        completedAt: step.completedAt,
+      };
+    }
+  }
+
   return (
     <div
       className="flex min-h-screen bg-background text-foreground"
@@ -214,20 +225,20 @@ export function WorkflowBuilder() {
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
 
         {/* Top bar */}
-        <div className="flex items-center gap-4 px-4 py-3 border-b border-border flex-shrink-0">
+        <div className="flex items-center gap-4 px-4 py-2.5 border-b border-border/60 flex-shrink-0">
           {/* Back link */}
           <Link
             href="/pipeline"
-            className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-xs transition-colors flex-shrink-0"
+            className="flex items-center gap-1 text-muted-foreground/60 hover:text-foreground text-[11px] font-mono transition-colors flex-shrink-0"
           >
-            <ArrowLeft size={12} />
-            Pipeline
+            <ArrowLeft size={11} />
+            Workflow
           </Link>
 
-          <div className="w-px h-4 bg-border" />
+          <div className="w-px h-3.5 bg-border/60" />
 
           {/* Workflow tabs */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             {workflows.map((wf, i) => (
               <button
                 key={wf.id}
@@ -239,10 +250,10 @@ export function WorkflowBuilder() {
                   setSelectedNodeId(null);
                 }}
                 className={[
-                  "px-3 py-1 rounded-md text-xs font-medium transition-colors",
+                  "h-7 px-3 rounded-md text-[11px] font-mono font-medium transition-colors",
                   i === activeWorkflowIdx
-                    ? "bg-sidebar-accent text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/60",
+                    ? "bg-muted/80 text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                   isRunning ? "opacity-50 cursor-not-allowed" : "",
                 ].join(" ")}
               >
@@ -252,7 +263,7 @@ export function WorkflowBuilder() {
           </div>
 
           {/* Description */}
-          <p className="text-xs text-muted-foreground hidden lg:block truncate max-w-xs">
+          <p className="text-[11px] font-mono text-muted-foreground/50 hidden lg:block truncate max-w-xs">
             {workflow.description}
           </p>
 
@@ -261,14 +272,14 @@ export function WorkflowBuilder() {
             {run && !isRunning && (
               <button
                 onClick={handleReset}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded"
+                className="h-7 px-3 text-[11px] font-medium rounded-md border border-border/60 hover:bg-muted/60 inline-flex items-center transition-colors text-muted-foreground hover:text-foreground"
               >
                 Reset
               </button>
             )}
             <div className={`w-1.5 h-1.5 rounded-full ${isRunning ? "bg-blue-400 animate-pulse" : "bg-muted-foreground/30"}`} />
-            <span className="text-[10px] text-muted-foreground">
-              {isRunning ? "Running" : run?.overallStatus === "done" ? "Complete" : "Idle"}
+            <span className="text-[10px] font-mono text-muted-foreground/60">
+              {isRunning ? "running" : run?.overallStatus === "done" ? "complete" : "idle"}
             </span>
           </div>
         </div>
@@ -288,39 +299,40 @@ export function WorkflowBuilder() {
                 onNodeClick={setSelectedNodeId}
                 onRun={runWorkflow}
                 isRunning={isRunning}
+                stepTimings={stepTimings}
               />
             </div>
 
             {/* Node detail panel — shown when a node is selected */}
             {selectedNode && (
-              <div className="mx-6 mb-4 rounded-xl border border-border bg-card p-4 flex-shrink-0">
-                <div className="flex items-start justify-between mb-2">
+              <div className="mx-6 mb-4 rounded-md border border-border/60 bg-card px-4 py-3 flex-shrink-0">
+                <div className="flex items-start justify-between mb-1.5">
                   <div>
-                    <p className="text-xs font-semibold text-foreground">{selectedNode.label}</p>
+                    <p className="text-[11px] font-mono font-semibold text-foreground">{selectedNode.label}</p>
                     {selectedNode.sublabel && (
-                      <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                      <p className="text-[10px] font-mono text-muted-foreground/60 mt-0.5">
                         {selectedNode.sublabel}
                       </p>
                     )}
                   </div>
                   <button
                     onClick={() => setSelectedNodeId(null)}
-                    className="text-muted-foreground hover:text-foreground text-xs"
+                    className="size-5 flex items-center justify-center text-muted-foreground/40 hover:text-destructive transition-colors text-[11px]"
                   >
                     ✕
                   </button>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
                   {selectedNode.description}
                 </p>
                 {selectedNode.agentName && (
-                  <p className="mt-2 text-[10px] text-muted-foreground">
-                    Agent: <span className="font-mono text-teal-400">{selectedNode.agentName}</span>
+                  <p className="mt-2 text-[10px] text-muted-foreground/60">
+                    agent: <span className="font-mono text-teal-400">{selectedNode.agentName}</span>
                   </p>
                 )}
                 {selectedNode.skillCommand && (
-                  <p className="mt-0.5 text-[10px] text-muted-foreground">
-                    Skill: <span className="font-mono text-violet-400">{selectedNode.skillCommand}</span>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground/60">
+                    skill: <span className="font-mono text-violet-400">{selectedNode.skillCommand}</span>
                   </p>
                 )}
               </div>

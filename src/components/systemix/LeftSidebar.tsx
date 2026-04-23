@@ -4,46 +4,47 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { nav } from "@/lib/nav";
 import { SLogo } from "./SLogo";
 
 export function LeftSidebar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
-    <aside className="hidden md:flex bg-sidebar border-r border-sidebar-border flex-shrink-0 flex-col"
-      style={{ width: "240px", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}
+    <aside
+      className="hidden md:flex w-[200px] shrink-0 bg-[oklch(13%_0.006_250)] dark:bg-[oklch(13%_0.006_250)] border-r border-border/50 flex-col overflow-y-auto"
     >
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-2.5">
-          <SLogo size={24} className="flex-shrink-0 text-foreground" />
-          <div>
-            <span className="font-black text-foreground text-sm tracking-tight">Systemix</span>
-            <p className="text-muted-foreground text-xs -mt-0.5">Design System Hub</p>
-          </div>
+      <div className="h-10 px-3 flex items-center border-b border-border/40">
+        <div className="flex items-center gap-2">
+          <SLogo size={16} className="shrink-0 text-foreground" />
+          <span className="text-xs font-black tracking-tight text-foreground">Systemix</span>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-3 space-y-5 overflow-y-auto">
+      <nav className="flex-1 overflow-y-auto">
         {nav.map(({ section, items }) => (
           <div key={section}>
-            <p className="text-muted-foreground text-[10px] font-semibold tracking-widest uppercase mb-1 px-2">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 px-3 pt-4 pb-1">
               {section}
             </p>
-            <div className="space-y-0.5">
+            <div className="px-1.5 space-y-0.5">
               {items.map(({ label, href }) => {
                 const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex items-center h-8 px-3 rounded-md text-xs font-medium transition-colors duration-100 ${
                       isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                     }`}
                   >
                     {label}
@@ -56,16 +57,16 @@ export function LeftSidebar() {
       </nav>
 
       {/* Footer: theme toggle */}
-      <div className="p-3 border-t border-sidebar-border">
-        <div className="flex items-center justify-end px-2 py-1.5">
+      <div className="h-10 border-t border-border/40 flex items-center justify-end px-3">
+        {mounted && (
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
+            {resolvedTheme === "dark" ? <Sun size={12} /> : <Moon size={12} />}
           </button>
-        </div>
+        )}
       </div>
     </aside>
   );

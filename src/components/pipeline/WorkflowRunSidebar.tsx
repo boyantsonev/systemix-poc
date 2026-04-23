@@ -41,15 +41,15 @@ export function WorkflowRunSidebar({ run, workflow, onApprove }: Props) {
       style={{ width: 300, flexShrink: 0, height: "100%", overflowY: "auto" }}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-border flex-shrink-0">
-        <Activity size={14} className="text-muted-foreground" />
-        <span className="text-xs font-semibold text-foreground">Run Status</span>
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/60 flex-shrink-0">
+        <Activity size={12} className="text-muted-foreground/50" />
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">Run Status</span>
 
         {overallCfg && (
           <div className="ml-auto flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${overallCfg.dot}`} />
-            <span className={`text-[10px] font-medium ${overallCfg.labelClass}`}>
-              {overallCfg.label}
+            <span className={`size-1.5 rounded-full ${overallCfg.dot}`} />
+            <span className={`text-[10px] font-mono ${overallCfg.labelClass}`}>
+              {overallCfg.label.toLowerCase()}
             </span>
           </div>
         )}
@@ -79,31 +79,31 @@ export function WorkflowRunSidebar({ run, workflow, onApprove }: Props) {
         {/* Empty state */}
         {!run && (
           <div className="flex flex-col items-center justify-center h-40 text-center px-4">
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center mb-3">
-              <Activity size={16} className="text-muted-foreground" />
+            <div className="w-7 h-7 rounded-md border border-border/60 bg-muted/30 flex items-center justify-center mb-2.5">
+              <Activity size={13} className="text-muted-foreground/40" />
             </div>
-            <p className="text-xs font-medium text-foreground mb-1">No active run</p>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Click <span className="font-mono text-violet-700 dark:text-violet-400">Run</span> on a trigger node to start a workflow
+            <p className="text-[11px] font-mono font-medium text-foreground/60 mb-1">no active run</p>
+            <p className="text-[10px] font-mono text-muted-foreground/40 leading-relaxed">
+              click <span className="text-violet-400">run</span> on a trigger node
             </p>
           </div>
         )}
 
         {/* Completion message */}
         {run?.overallStatus === "done" && (
-          <div className="rounded-lg border border-emerald-500 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-950/20 px-3 py-2.5 text-center">
-            <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">Pipeline complete</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
+          <div className="rounded-md border border-emerald-500/30 bg-emerald-950/20 px-3 py-2 text-center">
+            <p className="text-[11px] font-mono font-medium text-emerald-400">workflow complete</p>
+            <p className="text-[10px] font-mono text-muted-foreground/50 mt-0.5">
               {((Date.now() - run.startedAt) / 1000).toFixed(1)}s total
             </p>
           </div>
         )}
 
         {run?.overallStatus === "error" && (
-          <div className="rounded-lg border border-red-500 bg-red-50 dark:border-red-500/30 dark:bg-red-950/20 px-3 py-2.5 text-center">
-            <p className="text-xs font-medium text-red-700 dark:text-red-400">Pipeline stopped</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              Rejected or failed — check the step log above
+          <div className="rounded-md border border-red-500/30 bg-red-950/20 px-3 py-2 text-center">
+            <p className="text-[11px] font-mono font-medium text-red-400">workflow stopped</p>
+            <p className="text-[10px] font-mono text-muted-foreground/40 mt-0.5">
+              rejected or failed — check step log
             </p>
           </div>
         )}

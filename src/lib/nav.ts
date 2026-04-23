@@ -10,30 +10,24 @@ export type NavSection = {
 
 export const nav: NavSection[] = [
   {
-    section: "Get Started",
+    section: "",
     items: [
-      { label: "Introduction", href: "/"         },
-      { label: "How It Works", href: "/pipeline" },
-      { label: "Skills",       href: "/skills"   },
-      { label: "Setup Guide",  href: "/setup"    },
+      { label: "← Home", href: "/" },
+      { label: "Workflow", href: "/pipeline" },
     ],
   },
   {
-    section: "Dashboard",
+    section: "Operate",
     items: [
-      { label: "Overview",     href: "/dashboard"            },
-      { label: "Run Queue",    href: "/queue"                },
-      { label: "Drift Report", href: "/drift"                },
-      { label: "Tokens",       href: "/design-system/tokens" },
+      { label: "Run Queue", href: "/queue"                },
+      { label: "Drift",     href: "/drift"                },
+      { label: "Tokens",    href: "/design-system/tokens" },
     ],
   },
   {
-    section: "Reference",
+    section: "Labs",
     items: [
-      { label: "Components", href: "/components" },
-      { label: "Brands",     href: "/brands"     },
-      { label: "Figma",      href: "/figma"      },
-      { label: "GitHub",     href: "/github"     },
+      { label: "Token Guard", href: "/token-guard" },
     ],
   },
 ];

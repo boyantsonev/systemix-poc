@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AppShell } from "@/components/systemix/AppShell";
-import { SectionHeading } from "@/components/docs/SectionHeading";
 import { RoleSetupTabs } from "@/components/pipeline/RoleSetupTabs";
 import type { AnchorItem } from "@/components/systemix/RightAnchorNav";
 
@@ -16,7 +15,7 @@ const ANCHOR_ITEMS: Record<RoleId, AnchorItem[]> = {
     { id: "dev-step-4", label: "Add MCP to Claude"         },
     { id: "dev-step-5", label: "Verify Connection"         },
     { id: "dev-step-6", label: "Install Skills"            },
-    { id: "dev-step-7", label: "Configure Sub-Agents"      },
+    { id: "dev-step-7", label: "Configure Agents"           },
     { id: "dev-step-8", label: "Run First Workflow"        },
   ],
   designer: [
@@ -24,7 +23,7 @@ const ANCHOR_ITEMS: Record<RoleId, AnchorItem[]> = {
     { id: "des-step-2", label: "Bridge Plugin"            },
     { id: "des-step-3", label: "Token Structure"          },
     { id: "des-step-4", label: "Share File URL"           },
-    { id: "des-step-5", label: "What the Pipeline Does"   },
+    { id: "des-step-5", label: "What the Workflow Does"   },
   ],
   product: [
     { id: "prod-step-1", label: "Approve Changes"      },
@@ -37,8 +36,8 @@ export default function SetupPage() {
 
   return (
     <AppShell anchorItems={ANCHOR_ITEMS[role]}>
-      <SectionHeading accent="#6366f1">Setup Guide</SectionHeading>
-      <p className="text-muted-foreground mb-8 leading-relaxed max-w-prose">
+      <h1 className="text-2xl font-black tracking-tight mb-1">Setup Guide</h1>
+      <p className="text-[13px] text-muted-foreground mb-6 max-w-prose">
         Step-by-step setup for every role. Select your role below — each guide covers exactly
         what you need, nothing more.
       </p>

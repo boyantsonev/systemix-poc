@@ -1,0 +1,36 @@
+name: 'Systemix TokenGuard'
+description: 'Run Systemix sync with token budget enforcement. Prevents runaway token spend in CI.'
+author: 'verolab'
+
+inputs:
+  command:
+    description: 'Systemix command to run (default: sync)'
+    required: false
+    default: 'sync'
+  file:
+    description: 'Figma file key (overrides project-context.json)'
+    required: false
+  budget:
+    description: 'Max token budget — abort if estimate exceeds this'
+    required: false
+    default: '30000'
+  incremental:
+    description: 'Only sync changed nodes since last run'
+    required: false
+    default: 'true'
+  node_version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20'
+
+outputs:
+  tokens_used:
+    description: 'Actual tokens used in this run'
+  cache_hit_ratio:
+    description: 'Cache hit ratio (0-1)'
+  run_id:
+    description: 'Systemix run ID for this execution'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

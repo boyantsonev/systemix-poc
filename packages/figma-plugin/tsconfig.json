@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["ES2017", "DOM"],
+    "strict": true,
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "typeRoots": ["./node_modules/@figma/plugin-typings", "./node_modules/@types"],
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

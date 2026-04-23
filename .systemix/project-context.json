@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "Systemix",
+    "description": "Design-code sync pipeline dashboard"
+  },
+  "figma": {
+    "fileKey": "h1m7dfFILe1wGSfxwQ6U02",
+    "fileName": "Systemix — Token Bridge",
+    "fileUrl": "https://www.figma.com/design/h1m7dfFILe1wGSfxwQ6U02",
+    "modeIds": null,
+    "variableIds": null
+  },
+  "codebase": {
+    "root": ".",
+    "srcDir": "src",
+    "componentsDir": "src/components",
+    "stylesFile": "src/app/globals.css",
+    "tokensFile": ".systemix/tokens.bridge.json",
+    "manifestFile": ".systemix/systemix.json"
+  },
+  "brand": {
+    "defaultSlug": "default",
+    "themesDir": "src/styles/themes"
+  },
+  "pipeline": {
+    "skillsDir": "~/.claude/skills",
+    "handoffsDir": ".systemix/handoffs",
+    "cacheDir": ".systemix/cache",
+    "runsDir": ".systemix/runs"
+  },
+  "deploy": {
+    "previewUrl": "https://systemix-alpha.vercel.app",
+    "devUrl": "http://localhost:3001"
+  }
+}

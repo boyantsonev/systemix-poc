@@ -231,22 +231,31 @@ export function HitlApprovalCard({ step, node, onDecision }: Props) {
     node.approvalPrompt ?? step.log[0] ?? "Review required before proceeding.";
 
   return (
-    <div className="rounded-lg border-2 border-amber-400 bg-amber-50 dark:border-amber-500/60 dark:bg-amber-950/20 overflow-hidden">
+    <div
+      className="rounded-lg overflow-hidden"
+      style={{
+        border: "1px solid color-mix(in oklch, var(--color-drifted) 40%, transparent)",
+        backgroundColor: "var(--color-drifted-surface)",
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-amber-300 dark:border-amber-500/20">
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
-        <HeaderIcon size={13} className="text-amber-700 dark:text-amber-400 flex-shrink-0" />
-        <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">{headerLabel}</span>
+      <div
+        className="flex items-center gap-2 px-3 py-2 border-b"
+        style={{ borderColor: "color-mix(in oklch, var(--color-drifted) 25%, transparent)" }}
+      >
+        <span className="w-1.5 h-1.5 rounded-full animate-pulse flex-shrink-0" style={{ backgroundColor: "var(--color-drifted)" }} />
+        <span className="flex-shrink-0" style={{ color: "var(--color-drifted)" }}><HeaderIcon size={12} /></span>
+        <span className="text-[12px] font-semibold" style={{ color: "var(--color-drifted)" }}>{headerLabel}</span>
       </div>
 
       {/* Content */}
       <div className="px-3 py-2.5">
-        <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-widest mb-2">
+        <p className="text-[10px] uppercase tracking-wide text-muted-foreground/60 mb-2">
           {node.label}
         </p>
 
         {!payload && (
-          <pre className="text-[10px] font-mono text-foreground/80 whitespace-pre-wrap leading-relaxed">
+          <pre className="text-[11px] font-mono text-foreground/80 whitespace-pre-wrap leading-relaxed">
             {prompt}
           </pre>
         )}
@@ -272,19 +281,19 @@ export function HitlApprovalCard({ step, node, onDecision }: Props) {
       <div className="flex gap-2 px-3 pb-3">
         <Button
           size="sm"
-          className="flex-1 h-7 text-xs gap-1.5 bg-emerald-700 hover:bg-emerald-600 text-white border-0"
+          className="flex-1 h-7 px-3 text-[11px] font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 border-0"
           onClick={() => onDecision("approve")}
         >
-          <CheckCircle2 size={12} />
+          <CheckCircle2 size={11} />
           Approve
         </Button>
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 h-7 text-xs gap-1.5 text-red-700 border-red-500 hover:bg-red-100 dark:text-red-400 dark:border-red-500/40 dark:hover:bg-red-950/30 dark:hover:text-red-300"
+          className="flex-1 h-7 px-3 text-[11px] font-medium rounded-md border border-border/60 hover:bg-muted/60"
           onClick={() => onDecision("reject")}
         >
-          <XCircle size={12} />
+          <XCircle size={11} />
           Reject
         </Button>
       </div>

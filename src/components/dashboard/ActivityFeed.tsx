@@ -1,5 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { agentRuns } from "@/lib/data/pipeline";
 
 function formatRelative(iso: string) {
@@ -11,35 +9,59 @@ function formatRelative(iso: string) {
   return `${d}d ago`;
 }
 
+const AGENT_COLORS: Record<string, string> = {
+  "token-sync": "var(--agent-flux)",
+  "design-drift-detector": "var(--agent-scout)",
+  "figma-to-code": "var(--agent-ada)",
+  "component-themer": "var(--agent-prism)",
+  "doc-sync": "var(--agent-echo)",
+  "storybook": "var(--agent-sage)",
+  "deploy": "var(--agent-ship)",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  success: "bg-emerald-500",
+  failure: "bg-red-500",
+  running: "bg-amber-500",
+};
+
 export function ActivityFeed() {
   const runs = agentRuns.slice(0, 10);
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium">Recent Agent Activity</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-1.5">
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">
+        Recent Agent Activity
+      </p>
+      <div className="rounded-lg border border-border/60 bg-card">
         {runs.map((run) => (
-          <div key={run.id} className="flex items-start gap-3 p-2.5 rounded-md hover:bg-muted transition-colors">
-            <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
-              run.status === "success" ? "bg-emerald-500" : run.status === "failure" ? "bg-red-500" : "bg-amber-500"
-            }`} />
+          <div
+            key={run.id}
+            className="flex items-start gap-3 px-4 py-2 border-b border-border/40 last:border-0"
+          >
+            <span
+              className={`size-1.5 rounded-full mt-1.5 shrink-0 ${
+                STATUS_COLORS[run.status] ?? "bg-muted-foreground/40"
+              }`}
+            />
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                  {run.agent}
-                </Badge>
-                <code className="text-muted-foreground text-xs font-mono">{run.command}</code>
-              </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">{run.summary}</p>
+              <span
+                className="text-[11px] font-mono font-medium"
+                style={{ color: AGENT_COLORS[run.agent] ?? "var(--muted-foreground)" }}
+              >
+                {run.agent}
+              </span>
+              <code className="text-[11px] text-muted-foreground/60 font-mono ml-2">
+                {run.command}
+              </code>
+              <p className="text-[12px] text-muted-foreground truncate">{run.summary}</p>
             </div>
-            <span className="text-muted-foreground text-xs whitespace-nowrap flex-shrink-0">
+            <span className="text-[10px] text-muted-foreground/50 tabular-nums ml-auto shrink-0 mt-0.5">
               {formatRelative(run.startedAt)}
             </span>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

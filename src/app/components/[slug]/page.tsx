@@ -153,7 +153,7 @@ export default async function ComponentDetailPage({ params }: { params: Promise<
                     <span className="text-muted-foreground/60 text-xs font-mono">{component.name} stories</span>
                     <div className="flex flex-wrap gap-1 justify-center px-2">
                       {component.variants.slice(0, 4).map((v) => (
-                        <span key={v} className="text-[9px] font-mono bg-background text-muted-foreground border border-border rounded px-1 py-0.5">
+                        <span key={v} className="text-[10px] font-mono bg-background text-muted-foreground border border-border rounded px-1 py-0.5">
                           {v}
                         </span>
                       ))}

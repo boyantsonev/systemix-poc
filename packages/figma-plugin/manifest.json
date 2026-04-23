@@ -1,0 +1,14 @@
+{
+  "name": "Systemix Figma Plugin",
+  "id": "com.bastion-labs.systemix",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "permissions": ["currentuser"],
+  "networkAccess": {
+    "allowedDomains": ["https://systemix-alpha.vercel.app"],
+    "devAllowedDomains": ["http://localhost:3001"],
+    "reasoning": "Connects to the Systemix workspace to sync design tokens and trigger skill runs"
+  }
+}

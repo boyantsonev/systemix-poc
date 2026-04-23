@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# systemix runtime files (generated at runtime, not committed)
+.systemix/tokens.bridge.json
+.systemix/handoffs/
+.systemix/cache/
+.systemix/runs/

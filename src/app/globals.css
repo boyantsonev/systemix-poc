@@ -81,9 +81,9 @@
   --radius: 0.5rem; /* nova: slightly tighter than default 0.625 */
 
   /* Light mode */
-  --background: oklch(1 0 0);
+  --background: oklch(98% 0.002 250);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(100% 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
@@ -91,12 +91,13 @@
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: oklch(96% 0.003 250);
   --muted-foreground: oklch(0.5 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
+  --destructive-foreground: oklch(98% 0 0);
+  --border: oklch(88% 0.005 250);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
 
@@ -115,25 +116,106 @@
   --status-drifted: oklch(0.55 0.22 27);    /* red */
   --status-stale: oklch(0.65 0.18 75);      /* amber */
   --status-new: oklch(0.55 0.2 290);        /* violet */
+
+  /* ── Status / state semantic palette ─────────────────────── */
+  --color-synced: oklch(68% 0.16 160);      /* emerald */
+  --color-drifted: oklch(72% 0.18 75);      /* amber */
+  --color-stale: oklch(60% 0.12 30);        /* orange */
+  --color-new: oklch(65% 0.17 240);         /* blue */
+  --color-error: oklch(62% 0.22 25);        /* red */
+  --color-warning: oklch(75% 0.18 80);      /* yellow */
+  --color-info: oklch(65% 0.15 245);        /* blue */
+
+  /* Status surfaces */
+  --color-synced-surface: oklch(68% 0.16 160 / 0.10);
+  --color-drifted-surface: oklch(72% 0.18 75 / 0.10);
+  --color-stale-surface: oklch(60% 0.12 30 / 0.10);
+  --color-error-surface: oklch(62% 0.22 25 / 0.10);
+
+  /* ── Agent color tokens ───────────────────────────────────── */
+  --agent-ada: oklch(68% 0.18 280);         /* violet — Figma→Code */
+  --agent-flux: oklch(70% 0.16 185);        /* teal — Token Sync */
+  --agent-scout: oklch(72% 0.18 75);        /* amber — Drift Detector */
+  --agent-prism: oklch(68% 0.20 350);       /* rose — Component Themer */
+  --agent-echo: oklch(65% 0.17 240);        /* blue — Doc Sync */
+  --agent-sage: oklch(68% 0.16 160);        /* emerald — Storybook */
+  --agent-ship: oklch(60% 0.08 240);        /* slate — Deploy */
+
+  /* Agent surface tints (10% opacity backgrounds) */
+  --agent-ada-surface: oklch(68% 0.18 280 / 0.10);
+  --agent-flux-surface: oklch(70% 0.16 185 / 0.10);
+  --agent-scout-surface: oklch(72% 0.18 75 / 0.10);
+  --agent-prism-surface: oklch(68% 0.20 350 / 0.10);
+  --agent-echo-surface: oklch(65% 0.17 240 / 0.10);
+  --agent-sage-surface: oklch(68% 0.16 160 / 0.10);
+  --agent-ship-surface: oklch(60% 0.08 240 / 0.10);
+
+  /* ── Typography scale — WCAG AA floor: 12px minimum for readable text ── */
+  --font-size-2xs: 0.6875rem;   /* 11px — decorative labels only */
+  --font-size-xs: 0.75rem;      /* 12px — metadata, badges */
+  --font-size-sm: 0.8125rem;    /* 13px — secondary text */
+  --font-size-base: 0.875rem;   /* 14px — body text (shadcn default) */
+  --font-size-md: 1rem;         /* 16px — comfortable reading */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+
+  --font-mono: ui-monospace, "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+
+  /* ── Spacing scale — 4px base grid ──────────────────────── */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ── Border + shadow tokens ──────────────────────────────── */
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.12);
+  --shadow-md: 0 2px 8px oklch(0% 0 0 / 0.16);
+  --shadow-lg: 0 4px 16px oklch(0% 0 0 / 0.20);
+  --shadow-glow-ada: 0 0 20px oklch(68% 0.18 280 / 0.25);
+  --shadow-glow-flux: 0 0 20px oklch(70% 0.16 185 / 0.25);
+
+  /* ── Animation tokens ────────────────────────────────────── */
+  --duration-instant: 50ms;
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  /* ── Dark mode surface hierarchy ─────────────────────────── */
+  --background: oklch(12% 0.005 250);       /* deepest bg */
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(15% 0.006 250);             /* card bg */
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(17% 0.006 250);          /* popover/dropdown */
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.65 0 0);
+  --muted: oklch(18% 0.007 250);            /* muted areas */
+  --muted-foreground: oklch(0.72 0 0);      /* bumped: 4.6:1 contrast on dark bg */
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --destructive-foreground: oklch(98% 0 0);
+  --border: oklch(25% 0.01 250);            /* subtle borders */
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
 
@@ -155,6 +237,9 @@
 }
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
   * {
     @apply border-border outline-ring/50;
   }
@@ -163,3 +248,5 @@
     line-height: 1.65;
   }
 }
+
+/* Mobile font size floor — base scale already meets 11px+ floor */

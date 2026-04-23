@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppShell } from "@/components/systemix/AppShell";
 import { DiffViewer } from "@/components/pipeline/DiffViewer";
 import { Button } from "@/components/ui/button";
@@ -68,7 +68,7 @@ const EXAMPLE_RUNS: QueueRun[] = [
   {
     id: "run-token-01",
     agent: "token-sync",
-    skill: "/sync-tokens",
+    skill: "/tokens",
     status: "done",
     startedAt: Date.now() - 3_600_000,
     log: "Synced 174 tokens from Figma. 4 new tokens added, 1 value updated. globals.css written.",
@@ -76,7 +76,7 @@ const EXAMPLE_RUNS: QueueRun[] = [
   {
     id: "run-ftc-01",
     agent: "figma-to-code",
-    skill: "/generate-from-figma",
+    skill: "/figma",
     status: "done",
     startedAt: Date.now() - 7_200_000,
     log: "Generated Badge.tsx from Figma node 22:104. 47 lines, 6 tokens mapped. Drift score: 0.",
@@ -230,7 +230,18 @@ function QueueCard({
 export default function QueuePage() {
   const [runs, setRuns] = useState<QueueRun[]>(EXAMPLE_RUNS);
 
-  function handleDecision(id: string, decision: "approve" | "reject") {
+  useEffect(() => {
+    fetch("/api/hitl")
+      .then(res => res.json())
+      .then((data: { tasks?: QueueRun[] } | QueueRun[]) => {
+        const tasks = Array.isArray(data) ? data : (data.tasks ?? []);
+        if (tasks.length > 0) setRuns(tasks);
+      })
+      .catch(() => {/* keep example runs on error */});
+  }, []);
+
+  async function handleDecision(id: string, decision: "approve" | "reject") {
+    // Optimistic update
     setRuns(prev =>
       prev.map(r =>
         r.id !== id ? r : {
@@ -243,6 +254,22 @@ export default function QueuePage() {
         }
       )
     );
+
+    try {
+      const res = await fetch("/api/hitl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId: id, action: decision }),
+      });
+      if (!res.ok) throw new Error("POST failed");
+    } catch {
+      // Revert on error
+      setRuns(prev =>
+        prev.map(r =>
+          r.id !== id ? r : { ...r, status: "hitl" as const }
+        )
+      );
+    }
   }
 
   const hitlCount = runs.filter(r => r.status === "hitl").length;

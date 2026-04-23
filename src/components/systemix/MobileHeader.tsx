@@ -26,7 +26,7 @@ export function MobileHeader() {
         </div>
         <button
           onClick={() => setOpen(true)}
-          className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+          className="p-2.5 min-h-[44px] min-w-[44px] rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
           aria-label="Open navigation"
         >
           <Menu size={18} />
@@ -58,7 +58,7 @@ export function MobileHeader() {
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+            className="p-2.5 min-h-[44px] min-w-[44px] rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
             aria-label="Close navigation"
           >
             <X size={16} />
@@ -80,7 +80,7 @@ export function MobileHeader() {
                       key={href}
                       href={href}
                       onClick={() => setOpen(false)}
-                      className={`flex items-center gap-2 px-2 py-2 rounded-md text-sm transition-colors ${
+                      className={`flex items-center gap-2 px-2 py-2 rounded-md text-sm transition-colors duration-100 ${
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                           : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"

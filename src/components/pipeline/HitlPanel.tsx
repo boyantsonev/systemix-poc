@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HitlTask, HitlTaskType } from "@/lib/data/pipeline";
+import { useHitlQueue, type HitlTask as LiveHitlTask } from "@/hooks/useHitlQueue";
 
 // ── Color maps ─────────────────────────────────────────────────────────────────
 
@@ -42,13 +43,17 @@ const PRIORITY_CONFIG = {
   low:    { label: "low",    class: "text-slate-600 bg-slate-100 border-slate-300 dark:text-slate-400 dark:bg-slate-800/40 dark:border-slate-600/20" },
 };
 
-const TYPE_CONFIG: Record<HitlTaskType, { Icon: React.ElementType; label: string }> = {
+const TYPE_CONFIG: Record<HitlTaskType | string, { Icon: React.ElementType; label: string }> = {
   "token-diff":       { Icon: GitCommit,  label: "Token Diff"     },
   "code-review":      { Icon: FileCode2,  label: "Code Review"    },
   "drift-report":     { Icon: BarChart2,  label: "Drift Report"   },
   "docs-review":      { Icon: BookOpen,   label: "Docs Review"    },
   "deploy-preview":   { Icon: Rocket,     label: "Deploy Preview" },
   "storybook-verify": { Icon: Eye,        label: "Story Verify"   },
+  "approve":          { Icon: CheckCircle2, label: "Approval"     },
+  "reject":           { Icon: XCircle,    label: "Rejection"      },
+  "input":            { Icon: FileCode2,  label: "Input Required" },
+  "review":           { Icon: Eye,        label: "Review"         },
 };
 
 // ── Relative time ──────────────────────────────────────────────────────────────
@@ -157,21 +162,56 @@ function HitlCard({
   );
 }
 
+// ── Normalise a live task to the shape HitlCard expects ──────────────────────
+
+function normalizeLiveTask(t: LiveHitlTask): HitlTask {
+  const priorityMap: Record<string, "high" | "medium" | "low"> = {
+    critical: "high",
+    high: "high",
+    normal: "medium",
+    low: "low",
+  };
+  return {
+    id: t.id,
+    agentId: t.agent ?? "unknown",
+    skill: t.agent ?? "unknown",
+    skillColor: "slate",
+    title: t.title,
+    type: (t.type as HitlTaskType) ?? "code-review",
+    description: t.description,
+    priority: priorityMap[t.priority] ?? "medium",
+    createdAt: t.createdAt,
+    meta: undefined,
+  };
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
-type Props = { tasks: HitlTask[] };
+type Props = { tasks: HitlTask[]; useLive?: boolean };
 
-export function HitlPanel({ tasks: initialTasks }: Props) {
-  const [tasks, setTasks] = useState<HitlTask[]>(initialTasks);
+export function HitlPanel({ tasks: initialTasks, useLive = false }: Props) {
+  // Mock-mode state
+  const [mockTasks, setMockTasks] = useState<HitlTask[]>(initialTasks);
   const [resolved, setResolved] = useState<{ id: string; decision: "approve" | "reject" }[]>([]);
 
-  function handleDecision(id: string, decision: "approve" | "reject") {
-    setTasks(prev => prev.filter(t => t.id !== id));
-    setResolved(prev => [...prev, { id, decision }]);
+  // Live-mode state
+  const { tasks: liveTasks, pendingCount: livePendingCount, resolve: liveResolve } = useHitlQueue(3000);
+
+  async function handleDecision(id: string, decision: "approve" | "reject") {
+    if (useLive) {
+      await liveResolve(id, decision === "approve" ? "approved" : "rejected");
+    } else {
+      setMockTasks(prev => prev.filter(t => t.id !== id));
+      setResolved(prev => [...prev, { id, decision }]);
+    }
   }
 
+  const tasks = useLive
+    ? liveTasks.filter(t => t.status === "pending").map(normalizeLiveTask)
+    : mockTasks;
+
   const highCount   = tasks.filter(t => t.priority === "high").length;
-  const pendingCount = tasks.length;
+  const pendingCount = useLive ? livePendingCount : tasks.length;
 
   return (
     <div className="flex flex-col h-full">

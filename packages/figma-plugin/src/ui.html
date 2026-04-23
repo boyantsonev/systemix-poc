@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Systemix Figma Plugin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* ── Surfaces ── slightly lifted from pure black for surface separation */
+    --bg:            #17171b;
+    --surface:       #1e1e24;
+    --surface-2:     #26262f;
+    --border:        #32323e;
+    --border-bright: #46464f; /* visible borders */
+
+    /* ── Text — WCAG AA contrast on dark bg */
+    --text:          #f0f0f5;   /* primary: 13:1 */
+    --text-muted:    #9898aa;   /* secondary: 5.5:1 */
+    --text-dim:      #60606e;   /* tertiary: 3.0:1 */
+
+    /* ── Accent: indigo-ish, readable */
+    --accent:        #8b9cf8;
+    --accent-dim:    rgba(139,156,248,0.12);
+
+    /* ── Semantic */
+    --green:         #3ecf8e;
+    --green-dim:     rgba(62,207,142,0.10);
+    --amber:         #f0a050;
+    --amber-dim:     rgba(240,160,80,0.10);
+    --red:           #f06060;
+    --red-dim:       rgba(240,96,96,0.10);
+    --radius:        5px;
+
+    /* ── Workflow type colours */
+    --wt-linear:        #60b8f0;
+    --wt-linear-dim:    rgba(96,184,240,0.10);
+    --wt-parallel:      #3ecf8e;
+    --wt-parallel-dim:  rgba(62,207,142,0.10);
+    --wt-orch:          #c084fc;
+    --wt-orch-dim:      rgba(192,132,252,0.10);
+    --wt-review:        #f0a050;
+    --wt-review-dim:    rgba(240,160,80,0.10);
+    --wt-snapshot:      #9898aa;
+    --wt-snapshot-dim:  rgba(152,152,170,0.10);
+
+    /* ── Mono font — only for code/values */
+    --font-mono: ui-monospace, 'Cascadia Code', 'Fira Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Monospace only where it matters */
+  code, .code-preview, .cn-cmd, .var-value, .var-css {
+    font-family: var(--font-mono);
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 4px;
+  }
+
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .tab {
+    padding: 7px 11px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* ── Tab panels ── */
+  .panel { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
+  .panel.active { display: flex; }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .status-dot.ok    { background: var(--green); }
+  .status-dot.warn  { background: var(--amber); }
+  .status-dot.error { background: var(--red); }
+  .status-dot.spin  { background: var(--accent); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
+
+  .status-text { font-size: 11px; color: var(--text-muted); flex: 1; }
+  .status-count { font-size: 11px; color: var(--text-dim); }
+
+  /* ── Collection group ── */
+  .collection {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .collection-header {
+    padding: 8px 12px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .collection-header:hover { background: var(--surface-2); }
+
+  .collection-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .collection-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .chevron { color: var(--text-dim); transition: transform 0.15s; }
+  .collection.collapsed .chevron { transform: rotate(-90deg); }
+  .collection.collapsed .collection-body { display: none; }
+
+  /* ── Mode tabs inside collection ── */
+  .mode-tabs {
+    display: flex;
+    gap: 0;
+    padding: 6px 12px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mode-tab {
+    font-size: 11px;
+    padding: 4px 9px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius) var(--radius) 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background: none;
+    font-family: inherit;
+    transition: color 0.1s, background 0.1s;
+  }
+
+  .mode-tab:hover { color: var(--text-muted); }
+  .mode-tab.active {
+    color: var(--text);
+    background: var(--bg);
+    border-color: var(--border);
+    margin-bottom: -1px;
+  }
+
+  /* ── Variable row ── */
+  .var-row {
+    display: grid;
+    grid-template-columns: 14px 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  .var-row:hover { background: var(--surface-2); }
+  .var-row:last-child { border-bottom: none; }
+
+  .swatch {
+    width: 14px; height: 14px;
+    border-radius: 2px;
+    border: 1px solid var(--border-bright);
+    flex-shrink: 0;
+  }
+
+  .var-name {
+    font-size: 11px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .var-css {
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  .var-value {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Empty / loading states ── */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-dim);
+  }
+
+  .empty-icon { font-size: 28px; }
+  .empty-title { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+  .empty-sub { font-size: 11px; line-height: 1.7; max-width: 240px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: var(--radius);
+    font-size: 11px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.15s;
+    border: 1px solid var(--border-bright);
+    background: var(--surface-2);
+    color: var(--text);
+  }
+
+  .btn:hover { background: var(--border); }
+  .btn:active { opacity: 0.7; }
+
+  .btn-primary {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-primary:hover { background: rgba(124,140,244,0.18); }
+
+  .btn-sm { padding: 4px 8px; font-size: 11px; }
+
+  /* ── Footer actions ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  /* ── Export panel ── */
+  .export-section {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .code-preview {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 11px;
+    line-height: 1.8;
+    overflow: auto;
+    max-height: 180px;
+    color: var(--text-muted);
+    white-space: pre;
+  }
+
+  .code-preview .key   { color: var(--accent); }
+  .code-preview .val   { color: var(--green); }
+  .code-preview .str   { color: var(--amber); }
+
+  /* ── TokenGuard panel ── */
+  .tg-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tg-tool { font-size: 11px; color: var(--text); }
+  .tg-range { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; text-align: right; }
+  .tg-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .tg-badge.critical { background: var(--red-dim); color: var(--red); }
+  .tg-badge.high     { background: rgba(240,120,60,0.08); color: #f07840; }
+  .tg-badge.medium   { background: var(--amber-dim); color: var(--amber); }
+  .tg-badge.low      { background: var(--green-dim); color: var(--green); }
+  .tg-badge.minimal  { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+
+  .tg-callout {
+    margin: 10px 12px;
+    padding: 8px 10px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(124,140,244,0.2);
+    border-radius: var(--radius);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .tg-callout strong { color: var(--text); }
+
+  /* ── First-run banner ── */
+  .firstrun-banner {
+    margin: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: none;
+  }
+  .firstrun-banner.visible { display: block; }
+  .firstrun-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .firstrun-steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .firstrun-steps li {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+  }
+  .firstrun-steps li .step-num {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--border-bright);
+    font-size: 9px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .firstrun-steps li.done .step-num {
+    background: var(--green-dim);
+    border-color: rgba(62,207,142,0.35);
+    color: var(--green);
+  }
+
+  /* ── Workflow action bar labels ── */
+  .canvas-copy-label { display: inline; }
+  .canvas-run-label  { display: inline; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+  /* ── Workflows panel ── */
+  .conn-bar {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .conn-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .conn-dot.online {
+    background: var(--green);
+    box-shadow: 0 0 0 2px rgba(62,207,142,0.20);
+  }
+  .conn-dot.offline { background: var(--text-dim); }
+  .conn-label { color: var(--text-muted); flex: 1; font-size: 11px; }
+  .conn-url {
+    color: var(--text-muted);
+    font-size: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  /* ── Workflow canvas ── */
+
+  /* describe problem bar */
+  .describe-bar {
+    display: flex;
+    gap: 6px;
+    padding: 7px 10px 5px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .describe-input {
+    flex: 1;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 9px;
+    font-size: 11px;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+  }
+  .describe-input::placeholder { color: var(--text-dim); }
+  .describe-input:focus { border-color: var(--border-bright); }
+  .describe-match-hint {
+    margin: 0 10px 6px;
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(124,140,244,0.20);
+    border-radius: 4px;
+    padding: 4px 8px;
+    display: none;
+  }
+  .describe-match-hint.visible { display: flex; align-items: center; gap: 6px; }
+
+  /* type filter bar */
+  .wf-type-bar {
+    display: flex;
+    gap: 4px;
+    padding: 8px 10px 6px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    scrollbar-width: none;
+  }
+  .wf-type-bar::-webkit-scrollbar { display: none; }
+  .wf-pill {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.12s, background 0.12s, border-color 0.12s;
+  }
+  .wf-pill:hover { color: var(--text-muted); border-color: var(--border-bright); }
+  .wf-pill.active {
+    color: var(--accent);
+    background: var(--accent-dim);
+    border-color: rgba(124,140,244,0.35);
+  }
+
+  /* tile grid */
+  .wf-tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    padding: 4px 10px 8px;
+    overflow-y: auto;
+    max-height: 168px;
+  }
+  .wf-tile {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 9px;
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .wf-tile:hover { border-color: var(--border-bright); background: var(--surface); }
+  .wf-tile.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .wf-tile-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .wf-tile-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .wf-tile-badge {
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 1px 6px;
+    border: 1px solid transparent;
+  }
+  .wf-tile-badge.linear      { color: var(--wt-linear);   background: var(--wt-linear-dim);   border-color: rgba(96,184,240,0.25); }
+  .wf-tile-badge.parallel    { color: var(--wt-parallel); background: var(--wt-parallel-dim); border-color: rgba(62,207,142,0.25); }
+  .wf-tile-badge.orchestration { color: var(--wt-orch);   background: var(--wt-orch-dim);     border-color: rgba(192,132,252,0.25); }
+  .wf-tile-badge.review      { color: var(--wt-review);   background: var(--wt-review-dim);   border-color: rgba(240,160,80,0.25); }
+  .wf-tile-badge.snapshot    { color: var(--wt-snapshot); background: var(--wt-snapshot-dim); border-color: rgba(100,100,110,0.25); }
+  .wf-tile-steps {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  /* canvas area */
+  .wf-canvas {
+    border-top: 1px solid var(--border);
+    padding: 10px;
+    flex-shrink: 0;
+  }
+  .canvas-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .canvas-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+  /* canvas stage: React Flow container */
+  .canvas-stage {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    height: 190px;
+    width: 100%;
+  }
+
+  /* linear/review track */
+  .cs-linear, .cs-review {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  /* parallel tracks */
+  .cs-parallel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .cs-tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cs-track {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* orchestration */
+  .cs-orch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .cs-agents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+  }
+
+  /* snapshot */
+  .cs-snapshot {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .cs-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* node primitives */
+  .cn-pole {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--border-bright);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .cn-pole.src { border-color: rgba(96,184,240,0.40); color: #60b8f0; }
+  .cn-pole.dst { border-color: rgba(62,207,142,0.40); color: var(--green); }
+
+  .cn-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    border-radius: 5px;
+    padding: 4px 7px;
+    flex-shrink: 0;
+    min-width: 44px;
+  }
+  .cn-node.review-gate {
+    border-color: rgba(240,160,80,0.45);
+    background: rgba(240,160,80,0.05);
+  }
+  .cn-cmd {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent);
+    white-space: nowrap;
+    max-width: 76px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cn-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .cn-node.review-gate .cn-label { color: var(--wt-review); }
+
+  .cn-coord {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(124,140,244,0.35);
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .cn-agent {
+    font-size: 10px;
+    color: var(--wt-orch);
+    background: var(--wt-orch-dim);
+    border: 1px solid rgba(192,132,252,0.25);
+    border-radius: 4px;
+    padding: 3px 7px;
+    white-space: nowrap;
+  }
+
+  .cn-check {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 7px;
+    white-space: nowrap;
+  }
+  .cn-check::before { content: "→ "; color: var(--text-dim); }
+
+  .cn-arrow {
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    padding: 0 1px;
+  }
+  .cn-fork {
+    font-size: 10px;
+    color: var(--wt-parallel);
+    opacity: 0.7;
+    flex-shrink: 0;
+    font-weight: 700;
+    padding: 0 2px;
+  }
+
+  .canvas-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+  .canvas-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+  }
+  .canvas-mcps {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .canvas-mcp {
+    font-size: 10px;
+    border-radius: 4px;
+    padding: 2px 6px;
+    border: 1px solid transparent;
+  }
+  .canvas-mcp.cli     { color: var(--green);  background: var(--green-dim);  border-color: rgba(62,207,142,0.20); }
+  .canvas-mcp.figma   { color: var(--accent); background: var(--accent-dim); border-color: rgba(124,140,244,0.20); }
+  .canvas-mcp.console { color: #60b8f0;       background: rgba(96,184,240,0.06); border-color: rgba(96,184,240,0.20); }
+  .canvas-mcp.vercel  { color: var(--text-muted); background: var(--surface-2); border-color: var(--border); }
+
+  .btn-run {
+    background: var(--green-dim);
+    border-color: rgba(62,207,142,0.35);
+    color: var(--green);
+    font-weight: 600;
+  }
+  .btn-run:hover { background: rgba(62,207,142,0.14); border-color: var(--green); }
+  .btn-run:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .wf-spinner {
+    display: inline-block;
+    width: 11px; height: 11px;
+    border: 1.5px solid var(--text-dim);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .wf-progress {
+    display: none;
+    padding: 5px 8px;
+    background: rgba(0,0,0,0.25);
+    border-radius: var(--radius);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-height: 60px;
+    overflow: hidden;
+  }
+  .wf-canvas[data-state="running"] .wf-progress,
+  .wf-canvas[data-state="success"] .wf-progress,
+  .wf-canvas[data-state="error"]   .wf-progress { display: block; }
+
+  .wf-canvas[data-state="success"] .wf-progress { color: var(--green); }
+  .wf-canvas[data-state="error"]   .wf-progress { color: var(--red); }
+
+  /* ── Settings overlay ── */
+  .settings-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .settings-overlay.open { display: flex; }
+  .settings-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .settings-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+  .settings-body {
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .settings-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .settings-section-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+  .settings-field {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .settings-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    width: 72px;
+    flex-shrink: 0;
+  }
+  .settings-input {
+    flex: 1;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 9px;
+    font-size: 11px;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+  }
+  .settings-input:focus { border-color: var(--border-bright); }
+  .settings-input::placeholder { color: var(--text-dim); }
+  .settings-status {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .settings-status.ok { color: var(--green); }
+  .settings-status.err { color: var(--red); }
+
+  .setup-guide {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .setup-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .setup-item:last-child { border-bottom: none; }
+  .setup-item-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .setup-item-icon.done { background: var(--green-dim); color: var(--green); border: 1px solid rgba(62,207,142,0.3); }
+  .setup-item-icon.warn { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(240,160,80,0.3); }
+  .setup-item-icon.info { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); }
+  .setup-item-content { flex: 1; min-width: 0; }
+  .setup-item-name { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .setup-item-desc { font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+  .setup-item-action { margin-top: 5px; }
+
+  /* ── SVG canvas edges ── */
+  .canvas-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .canvas-edge {
+    fill: none;
+    stroke: var(--border-bright);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+    animation: flow-edge 1s linear infinite;
+  }
+  .canvas-edge.active {
+    stroke: var(--accent);
+    opacity: 0.7;
+  }
+  .canvas-edge.review-gate {
+    stroke: var(--wt-review);
+    opacity: 0.6;
+  }
+  @keyframes flow-edge { to { stroke-dashoffset: -18; } }
+
+  /* ── Preview panel ── */
+  .preview-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .preview-url-pill {
+    flex: 1;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+  .preview-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #fff;
+    display: block;
+  }
+  .preview-offline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 20px;
+    gap: 14px;
+    overflow-y: auto;
+  }
+  .offline-icon { font-size: 24px; opacity: 0.25; }
+  .offline-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+  }
+  .offline-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .offline-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .offline-card-dev {
+    border-color: rgba(139,156,248,0.25);
+    background: rgba(139,156,248,0.04);
+  }
+  .offline-role {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .offline-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .offline-cmd-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .offline-cmd {
+    flex: 1;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+  #panel-preview {
+    display: none;
+    flex-direction: column;
+    height: calc(100% - 76px); /* full panel minus header+tabs+status */
+  }
+  #panel-preview.active { display: flex; }
+
+  /* ── React Flow canvas ── */
+  /* __REACTFLOW_CSS__ */
+
+  /* Override React Flow dark theme to match plugin palette */
+  .react-flow { background: var(--surface) !important; border-radius: var(--radius); }
+  .react-flow__background { background: var(--surface) !important; }
+  .react-flow__pane { cursor: default !important; }
+
+  /* Custom node styles */
+  .rf-pole {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-bright);
+    background: var(--surface-2);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .rf-pole[data-variant="src"] { border-color: rgba(96,184,240,0.5); color: #60b8f0; }
+  .rf-pole[data-variant="dst"] { border-color: rgba(62,207,142,0.5); color: var(--green); }
+
+  .rf-skill {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
+    width: 72px; height: 48px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-bright);
+    background: var(--surface-2);
+    padding: 4px 6px;
+  }
+  .rf-skill-cmd {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .rf-skill-label {
+    font-size: 9px; font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    text-align: center;
+  }
+
+  .rf-review {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px;
+    width: 72px; height: 48px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(240,160,80,0.5);
+    background: rgba(240,160,80,0.08);
+    padding: 4px 6px;
+  }
+  .rf-review-icon { font-size: 13px; color: var(--amber); }
+  .rf-review .rf-skill-label { color: var(--amber); }
+
+  .rf-coord {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    height: 40px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(192,132,252,0.4);
+    background: rgba(192,132,252,0.08);
+    padding: 0 10px;
+    font-size: 10px; font-weight: 600; color: #c084fc;
+  }
+  .rf-coord-icon { font-size: 14px; }
+  .rf-coord-label { color: #c084fc; }
+
+  .rf-agent {
+    display: flex; align-items: center; justify-content: center;
+    height: 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(192,132,252,0.3);
+    background: rgba(192,132,252,0.07);
+    padding: 0 8px;
+    font-size: 9px; color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .rf-check {
+    display: flex; align-items: center;
+    height: 28px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    padding: 0 8px;
+    font-size: 9px; color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* Hide React Flow handles visually */
+  .react-flow__handle {
+    width: 6px !important; height: 6px !important;
+    background: var(--border-bright) !important;
+    border: none !important;
+    opacity: 0;
+  }
+  .react-flow__handle:hover { opacity: 0.6; }
+
+  /* Edge label tweaks */
+  .react-flow__edge-path { cursor: default; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">sys<span>·</span>temix <span style="color:var(--text-dim);font-weight:300">figma plugin</span></div>
+  <div class="header-right">
+    <button class="btn btn-sm" id="btn-refresh" title="Re-extract variables">↺ Refresh</button>
+    <button class="btn btn-sm" id="btn-settings" title="Settings">⚙</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="tokens">Tokens</button>
+  <button class="tab" data-tab="export">Export</button>
+  <button class="tab" data-tab="tokenguard">TokenGuard</button>
+  <button class="tab" data-tab="workflows">Workflows</button>
+  <button class="tab" data-tab="preview">Preview</button>
+</div>
+
+<!-- Status bar -->
+<div class="status-bar">
+  <div class="status-dot spin" id="status-dot"></div>
+  <div class="status-text" id="status-text">Scanning variables…</div>
+  <div class="status-count" id="status-count"></div>
+</div>
+
+<!-- ── Panel: Tokens ── -->
+<div class="panel active" id="panel-tokens">
+  <div class="firstrun-banner" id="firstrun-banner">
+    <div class="firstrun-title">👋 Welcome to Systemix</div>
+    <ul class="firstrun-steps">
+      <li class="done"><span class="step-num">✓</span> Plugin opened in Figma</li>
+      <li id="fr-step-extract"><span class="step-num">2</span> Click <strong>Refresh</strong> above to scan your Figma variables</li>
+      <li id="fr-step-server"><span class="step-num">3</span> <span id="fr-server-text">Start the workspace to run workflows (ask your developer)</span></li>
+    </ul>
+    <button class="btn btn-sm" id="firstrun-dismiss" style="font-size:10px;color:var(--text-dim)">Dismiss</button>
+  </div>
+  <div class="empty-state" id="tokens-empty">
+    <div class="empty-icon">⬡</div>
+    <div class="empty-title">No variables found</div>
+    <div class="empty-sub">Open a Figma file with local variable collections, then click Refresh.</div>
+  </div>
+  <div id="tokens-list" style="display:none"></div>
+</div>
+
+<!-- ── Panel: Export ── -->
+<div class="panel" id="panel-export">
+  <div class="export-section">
+    <div class="section-label">Bridge JSON — .systemix/tokens.bridge.json</div>
+    <div class="code-preview" id="export-preview">
+      <span style="color:var(--text-dim)">// Extract tokens first to preview bridge JSON</span>
+    </div>
+  </div>
+  <div class="export-section">
+    <div class="section-label">globals.css snippet</div>
+    <div class="code-preview" id="export-css">
+      <span style="color:var(--text-dim)">// Extract tokens first to generate CSS</span>
+    </div>
+  </div>
+  <div class="footer">
+    <button class="btn btn-primary" id="btn-copy-json">Copy JSON</button>
+    <button class="btn" id="btn-copy-css">Copy CSS</button>
+    <span style="margin-left:auto;font-size:10px;color:var(--text-dim)" id="export-meta"></span>
+  </div>
+</div>
+
+<!-- ── Panel: TokenGuard ── -->
+<div class="panel" id="panel-tokenguard">
+  <div class="tg-callout">
+    <strong>TokenGuard</strong> — Figma MCP calls have wildly different token costs.
+    Use scoped calls to cut a 5-skill pipeline from ~335k to ~30k tokens.
+  </div>
+
+  <div style="padding:8px 12px 4px">
+    <div class="section-label">MCP Tool Cost Reference</div>
+  </div>
+
+  <div class="tg-row" style="background:var(--surface);border-top:1px solid var(--border)">
+    <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)">MCP Tool</div>
+    <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Tokens</div>
+    <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)">Risk</div>
+  </div>
+
+  <div class="tg-row">
+    <div class="tg-tool">get_file_data</div>
+    <div class="tg-range">50k – 400k+</div>
+    <div class="tg-badge critical">CRITICAL</div>
+  </div>
+  <div class="tg-row">
+    <div class="tg-tool">get_design_context (unscoped)</div>
+    <div class="tg-range">20k – 80k</div>
+    <div class="tg-badge high">HIGH</div>
+  </div>
+  <div class="tg-row">
+    <div class="tg-tool">get_design_context (scoped) ✓</div>
+    <div class="tg-range">2k – 20k</div>
+    <div class="tg-badge medium">MEDIUM</div>
+  </div>
+  <div class="tg-row">
+    <div class="tg-tool">get_variables</div>
+    <div class="tg-range">5k – 40k</div>
+    <div class="tg-badge medium">MEDIUM</div>
+  </div>
+  <div class="tg-row">
+    <div class="tg-tool">get_variables (summary) ✓</div>
+    <div class="tg-range">1k – 5k</div>
+    <div class="tg-badge low">LOW</div>
+  </div>
+  <div class="tg-row">
+    <div class="tg-tool">get_component (single) ✓</div>
+    <div class="tg-range">1k – 8k</div>
+    <div class="tg-badge low">LOW</div>
+  </div>
+  <div class="tg-row">
+    <div class="tg-tool">get_design_system_summary ✓</div>
+    <div class="tg-range">500 – 2k</div>
+    <div class="tg-badge minimal">MINIMAL</div>
+  </div>
+
+  <div style="padding:10px 12px">
+    <div class="section-label" style="margin-bottom:6px">Install TokenGuard</div>
+    <div class="code-preview" style="max-height:80px">$ npx systemix add token-guard</div>
+    <div style="margin-top:6px;font-size:10px;color:var(--text-dim);line-height:1.7">
+      Registers the MCP proxy in your editor config.<br>
+      Intercepts get_file_data → scoped reads automatically.
+    </div>
+  </div>
+</div>
+
+<!-- ── Panel: Workflows ── -->
+<div class="panel" id="panel-workflows">
+
+  <!-- Connection bar -->
+  <div class="conn-bar">
+    <div class="conn-dot offline" id="conn-dot"></div>
+    <span class="conn-label" id="conn-label">Checking…</span>
+    <span class="conn-url" id="conn-url"></span>
+  </div>
+
+  <!-- Describe problem -->
+  <div class="describe-bar">
+    <input type="text" class="describe-input" id="describe-input" placeholder="What do you need? e.g. 'fix drifted colors', 'push tokens', 'generate component'" />
+    <button class="btn btn-sm" id="describe-find">Find →</button>
+  </div>
+
+  <!-- Match hint (shown after describe search) -->
+  <div class="describe-match-hint" id="describe-hint"></div>
+
+  <!-- Type filter pills -->
+  <div class="wf-type-bar" id="wf-type-bar">
+    <button class="wf-pill active" data-filter="all">All</button>
+    <button class="wf-pill" data-filter="linear">Linear</button>
+    <button class="wf-pill" data-filter="parallel">Parallel</button>
+    <button class="wf-pill" data-filter="orchestration">Orch</button>
+    <button class="wf-pill" data-filter="review">Review</button>
+    <button class="wf-pill" data-filter="snapshot">Snapshot</button>
+  </div>
+
+  <!-- Template tile grid — populated by JS -->
+  <div class="wf-tile-grid" id="wf-tile-grid"></div>
+
+  <!-- Canvas: visual pipeline (appears on tile click) -->
+  <div class="wf-canvas" id="wf-canvas" data-state="idle" style="display:none">
+    <div class="canvas-header">
+      <span class="canvas-name" id="canvas-name"></span>
+      <span class="wf-tile-badge" id="canvas-badge"></span>
+    </div>
+    <div class="canvas-stage" id="canvas-stage"></div>
+    <div class="canvas-desc" id="canvas-desc"></div>
+    <div class="canvas-bar">
+      <div class="canvas-mcps" id="canvas-mcps"></div>
+      <div style="flex:1"></div>
+      <button class="btn btn-sm" id="canvas-copy" title="Copy the slash command to run in your terminal">Copy command</button>
+      <button class="btn btn-sm btn-run" id="canvas-run" title="Run this workflow in the workspace">Open in workspace ▸</button>
+    </div>
+    <div class="wf-progress" id="canvas-progress"></div>
+  </div>
+
+</div>
+
+<!-- ── Panel: Preview ── -->
+<div class="panel" id="panel-preview">
+  <div class="preview-toolbar">
+    <button class="btn btn-sm" id="preview-back" title="Previous page">‹</button>
+    <button class="btn btn-sm" id="preview-fwd" title="Next page">›</button>
+    <div class="preview-url-pill" id="preview-url-pill">localhost:3001</div>
+    <button class="btn btn-sm" id="preview-reload" title="Reload">↺</button>
+    <button class="btn btn-sm" id="preview-open" title="Open in browser">↗</button>
+  </div>
+  <!-- iframe shown when connected -->
+  <iframe
+    id="preview-frame"
+    class="preview-frame"
+    src=""
+    style="display:none"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+  ></iframe>
+  <!-- offline state -->
+  <div class="preview-offline" id="preview-offline">
+    <div class="offline-icon">⬡</div>
+    <div class="offline-title">Workspace not connected</div>
+    <div class="offline-cards">
+      <div class="offline-card">
+        <div class="offline-role">🎨 Designers</div>
+        <div class="offline-text">The workspace isn't running yet. Ask your developer to start it — this panel will update automatically.</div>
+      </div>
+      <div class="offline-card offline-card-dev">
+        <div class="offline-role">💻 Developers</div>
+        <div class="offline-text">Run this in the project root:</div>
+        <div class="offline-cmd-row">
+          <code class="offline-cmd">npm run dev</code>
+          <button class="btn btn-sm" id="offline-copy-cmd">Copy</button>
+        </div>
+        <div class="offline-text" style="margin-top:4px;font-size:10px;color:var(--text-dim)">Then refresh — the preview loads automatically.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Settings overlay ── -->
+<div class="settings-overlay" id="settings-overlay">
+  <div class="settings-header">
+    <span class="settings-title">Settings</span>
+    <button class="btn btn-sm" id="settings-close">✕ Close</button>
+  </div>
+  <div class="settings-body">
+
+    <!-- Workspace -->
+    <div class="settings-section">
+      <div class="settings-section-title">Workspace</div>
+      <div class="settings-section-desc">The Systemix Next.js app. Workflows open here.</div>
+      <div class="settings-field">
+        <span class="settings-label">URL</span>
+        <input class="settings-input" id="setting-workspace" type="url" placeholder="http://localhost:3001" />
+        <button class="btn btn-sm" id="setting-workspace-test">Test</button>
+      </div>
+      <div class="settings-status" id="setting-workspace-status"></div>
+    </div>
+
+    <!-- Storybook -->
+    <div class="settings-section">
+      <div class="settings-section-title">Storybook</div>
+      <div class="settings-section-desc">Used by the /storybook skill to preview components. Run locally or paste your deployed URL.</div>
+      <div class="settings-field">
+        <span class="settings-label">URL</span>
+        <input class="settings-input" id="setting-storybook" type="url" placeholder="http://localhost:6006" />
+        <button class="btn btn-sm" id="setting-storybook-test">Test</button>
+      </div>
+      <div class="settings-status" id="setting-storybook-status"></div>
+    </div>
+
+    <!-- Vercel -->
+    <div class="settings-section">
+      <div class="settings-section-title">Vercel</div>
+      <div class="settings-section-desc">Your deployed project. Used by /deploy-annotate to link Figma frames to preview URLs.</div>
+      <div class="settings-field">
+        <span class="settings-label">URL</span>
+        <input class="settings-input" id="setting-vercel" type="url" placeholder="https://your-project.vercel.app" />
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="settings-save" style="width:100%">Save settings</button>
+
+    <!-- Setup guide -->
+    <div class="settings-section">
+      <div class="settings-section-title">Setup guide</div>
+      <div class="settings-section-desc">Some integrations require one-time setup outside the plugin.</div>
+      <div class="setup-guide">
+        <div class="setup-item">
+          <div class="setup-item-icon info">1</div>
+          <div class="setup-item-content">
+            <div class="setup-item-name">Claude Code CLI</div>
+            <div class="setup-item-desc">Install on every developer machine. Runs the slash-command skills.</div>
+            <div class="setup-item-action">
+              <button class="btn btn-sm" onclick="parent.postMessage({pluginMessage:{type:'open-url',url:'https://claude.ai/download'}},'*')">Download Claude Code ↗</button>
+            </div>
+          </div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-icon info">2</div>
+          <div class="setup-item-content">
+            <div class="setup-item-name">Figma MCP Server</div>
+            <div class="setup-item-desc">Official Figma MCP — lets Claude read your Figma designs. Configure in Claude Code settings.</div>
+            <div class="setup-item-action">
+              <button class="btn btn-sm" id="copy-figma-mcp-config">Copy MCP config</button>
+            </div>
+          </div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-icon info">3</div>
+          <div class="setup-item-content">
+            <div class="setup-item-name">Figma Console MCP</div>
+            <div class="setup-item-desc">Needed for write operations (push tokens, update variables). Requires Figma Desktop running.</div>
+            <div class="setup-item-action">
+              <button class="btn btn-sm" id="copy-console-mcp-config">Copy config</button>
+            </div>
+          </div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-icon info">4</div>
+          <div class="setup-item-content">
+            <div class="setup-item-name">Vercel MCP</div>
+            <div class="setup-item-desc">For /deploy and /deploy-annotate. Needs a Vercel API token configured in your Claude Code MCP settings.</div>
+            <div class="setup-item-action">
+              <button class="btn btn-sm" id="copy-vercel-mcp-config">Copy config</button>
+            </div>
+          </div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-icon warn">!</div>
+          <div class="setup-item-content">
+            <div class="setup-item-name">Storybook</div>
+            <div class="setup-item-desc">Run locally with <code style="color:var(--accent);font-family:var(--font-mono)">npm run storybook</code> or paste your deployed Storybook URL above.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>/* __UI_SCRIPT__ */</script>
+</body>
+</html>

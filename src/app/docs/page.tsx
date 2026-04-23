@@ -45,9 +45,19 @@ export default function DocsPage() {
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section id="overview" className="space-y-6 pb-2">
 
+        {/* Context banner */}
+        <div className="rounded-lg border border-border/60 bg-muted/30 px-4 py-3 mb-6">
+          <p className="text-[12px] font-medium text-foreground mb-0.5">Agent-generated component docs</p>
+          <p className="text-[11px] text-muted-foreground">
+            This section is written by the <code className="font-mono text-[10px] bg-muted px-1 py-0.5 rounded">Echo</code> agent when you run{" "}
+            <code className="font-mono text-[10px] bg-muted px-1 py-0.5 rounded">/sync-docs</code>.{" "}
+            Content updates automatically as your design system evolves.
+          </p>
+        </div>
+
         {/* Title + description */}
         <div className="space-y-2">
-          <h1 className="text-xl font-bold text-foreground tracking-tight">Documentation</h1>
+          <h1 className="text-xl font-bold text-foreground tracking-tight">Component Docs</h1>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-[520px]">
             A closed-loop agentic pipeline — Claude agents generate components from Figma designs,
             sync tokens back, and keep documentation up to date automatically.

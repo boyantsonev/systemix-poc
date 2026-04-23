@@ -1,0 +1,29 @@
+{
+  "name": "systemix-mcp-server",
+  "version": "0.1.0",
+  "description": "Local MCP server for Systemix state — bridges skills and dashboard",
+  "license": "MIT",
+  "bin": {
+    "systemix-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0"
+  }
+}

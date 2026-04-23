@@ -1,18 +1,17 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Zap, RefreshCw, AlertTriangle, Paintbrush } from "lucide-react";
 
 const actions = [
   {
-    command: "/generate-from-figma",
-    label: "Generate Component",
-    desc: "Turn a Figma node into production code",
+    command: "/figma",
+    label: "Extract from Figma",
+    desc: "Pull design context from a Figma node",
     icon: Zap,
     agent: "figma-to-code",
   },
   {
-    command: "/sync-tokens",
+    command: "/tokens",
     label: "Sync Tokens",
-    desc: "Pull latest Figma variables to codebase",
+    desc: "Diff Figma variables against globals.css",
     icon: RefreshCw,
     agent: "token-sync",
   },
@@ -34,20 +33,22 @@ const actions = [
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      {actions.map(({ command, label, desc, icon: Icon, agent }) => (
-        <Card key={command} className="hover:bg-accent transition-colors cursor-pointer">
-          <CardContent className="pt-4 pb-4">
-            <Icon size={16} className="text-muted-foreground mb-3" />
-            <code className="text-xs font-mono text-muted-foreground block mb-1.5">{command}</code>
-            <div className="font-medium text-foreground text-sm mb-1">{label}</div>
-            <div className="text-muted-foreground text-xs leading-relaxed mb-2">{desc}</div>
-            <div className="text-muted-foreground text-xs border-t border-border pt-2 mt-2">
-              {agent}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">
+        Quick Actions
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {actions.map(({ command, label, icon: Icon, agent }) => (
+          <button
+            key={command}
+            className="h-8 px-3 text-[12px] font-medium rounded-md border border-border/60 bg-transparent hover:bg-muted/60 transition-colors inline-flex items-center gap-2 cursor-pointer"
+            title={`${label} — ${agent}`}
+          >
+            <Icon className="size-3.5 text-muted-foreground" />
+            <code className="font-mono text-muted-foreground">{command}</code>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

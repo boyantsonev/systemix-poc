@@ -1,0 +1,23 @@
+{
+  "name": "systemix-figma-plugin",
+  "version": "0.1.0",
+  "description": "Figma plugin — extract tokens & components, detect drift, sync with Systemix",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.90.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.10.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  }
+}

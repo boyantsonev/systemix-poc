@@ -1,0 +1,35 @@
+{
+  "name": "figma-to-code",
+  "displayName": "Figma → Code",
+  "description": "Full 15-skill pipeline: extract design context, sync tokens, generate components, verify stories, deploy preview, push back to Figma, inspect nodes, run drift reports, apply themes, link components, check parity, and annotate deploys.",
+  "version": "0.2.0",
+  "author": "systemix",
+  "skills": [
+    "figma",
+    "tokens",
+    "component",
+    "storybook",
+    "deploy",
+    "sync-to-figma",
+    "figma-push",
+    "figma-inspect",
+    "sync",
+    "design-to-code",
+    "drift-report",
+    "apply-theme",
+    "connect",
+    "check-parity",
+    "deploy-annotate",
+    "sync-docs"
+  ],
+  "requires": {
+    "mcp": [
+      "Figma MCP (mcp__claude_ai_Figma__)",
+      "Figma Console MCP (mcp__figma-console__ or mcp__claude_ai_Figma_Console__) — for write-back skills",
+      "Vercel MCP (mcp__claude_ai_Vercel__) — for /deploy and /deploy-annotate"
+    ],
+    "tools": ["Claude Code ≥ 1.0", "Vercel CLI (for /deploy)", "Figma Desktop on port 3845 (for /figma-inspect write ops)"]
+  },
+  "startWith": "/figma [your-figma-url]",
+  "cliVersion": "1.1.0"
+}

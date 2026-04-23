@@ -9,7 +9,7 @@ type FlowStep = {
 };
 
 const flow: FlowStep[] = [
-  { label: "You type",        code: "/generate-from-figma\nhttps://figma.com/...", variant: "purple", role: "TRIGGER"  },
+  { label: "You type",        code: "/figma\nhttps://figma.com/...", variant: "purple", role: "TRIGGER"  },
   { label: "Skill injected",  code: "Prompt loaded into\nconversation",           variant: "slate"                     },
   { label: "Claude decides",  code: "Needs figma-to-code\nagent",                 variant: "slate"                     },
   { label: "Agent spawns",    code: "Reads codebase\nFetches Figma\nGenerates",   variant: "teal",   role: "WORKER"   },

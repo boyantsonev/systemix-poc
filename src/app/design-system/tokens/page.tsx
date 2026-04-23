@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AppShell } from "@/components/systemix/AppShell";
-import { SectionHeading } from "@/components/docs/SectionHeading";
 import { FigmaSyncBanner } from "@/components/tokens/FigmaSyncBanner";
 import { TokenTable } from "@/components/tokens/TokenTable";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -10,18 +9,14 @@ import { tokenRegistry, type TokenCollection } from "@/lib/data/tokens";
 import type { AnchorItem } from "@/components/systemix/RightAnchorNav";
 
 const anchorItems: AnchorItem[] = [
-  { id: "sync", label: "Sync Status" },
-  { id: "color", label: "Color Tokens" },
-  { id: "spacing", label: "Spacing" },
-  { id: "typography", label: "Typography" },
-  { id: "radius", label: "Radius" },
+  { id: "sync",   label: "Sync Status" },
+  { id: "tokens", label: "Tokens"      },
 ];
 
 const collections: { key: TokenCollection | "all"; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "color", label: "Color" },
-  { key: "spacing", label: "Spacing" },
-  { key: "typography", label: "Typography" },
+  { key: "all",    label: "All"    },
+  { key: "color",  label: "Color"  },
+  { key: "status", label: "Status" },
   { key: "radius", label: "Radius" },
 ];
 
@@ -35,14 +30,25 @@ export default function TokensPage() {
 
   return (
     <AppShell anchorItems={anchorItems}>
+
+      <h1 className="text-2xl font-black text-foreground mb-1">Tokens</h1>
+      <p className="text-sm text-muted-foreground mb-6 max-w-prose">
+        31 design tokens sourced from{" "}
+        <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded text-foreground">globals.css</code>{" "}
+        and converted to Figma-ready hex via{" "}
+        <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded text-foreground">npm run tokens</code>.
+        Run{" "}
+        <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded text-foreground">/sync-to-figma</code>{" "}
+        to create these as Figma Variables (Light + Dark modes) in the Token Bridge file.
+      </p>
+
       <section id="sync">
-        <SectionHeading accent="#a855f7">Token Explorer</SectionHeading>
         <FigmaSyncBanner />
       </section>
 
-      <section id="color">
+      <section id="tokens">
         <Tabs defaultValue="all" onValueChange={setTab}>
-          <TabsList className="mb-6">
+          <TabsList className="mb-4">
             {collections.map(({ key, label }) => (
               <TabsTrigger key={key} value={key}>
                 {label}
@@ -57,11 +63,18 @@ export default function TokensPage() {
 
           {collections.map(({ key }) => (
             <TabsContent key={key} value={key}>
-              <TokenTable tokens={key === "all" ? tokenRegistry.tokens : tokenRegistry.tokens.filter(t => t.collection === key)} />
+              <TokenTable
+                tokens={
+                  key === "all"
+                    ? tokenRegistry.tokens
+                    : tokenRegistry.tokens.filter((t) => t.collection === key)
+                }
+              />
             </TabsContent>
           ))}
         </Tabs>
       </section>
+
     </AppShell>
   );
 }

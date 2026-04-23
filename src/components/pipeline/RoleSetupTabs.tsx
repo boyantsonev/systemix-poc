@@ -35,7 +35,7 @@ function Note({ children, variant = "info" }: { children: React.ReactNode; varia
   );
 }
 
-function SetupStep({ id, number, icon, title, children, isLast }: {
+function SetupStep({ id, number, icon, title, children, isLast: _isLast }: {
   id?: string;
   number: number;
   icon: React.ReactNode;
@@ -44,19 +44,16 @@ function SetupStep({ id, number, icon, title, children, isLast }: {
   isLast?: boolean;
 }) {
   return (
-    <div id={id} className="flex gap-4 scroll-mt-8">
-      <div className="flex flex-col items-center flex-shrink-0">
-        <div className="w-8 h-8 rounded-full bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400 text-xs font-black">
-          {number}
-        </div>
-        {!isLast && <div className="w-px flex-1 bg-border mt-2 min-h-4" />}
+    <div id={id} className="flex items-start gap-3 py-3 border-b border-border/40 last:border-0 scroll-mt-8">
+      <div className="size-5 rounded-full border border-border/60 flex items-center justify-center text-[10px] font-mono text-muted-foreground/60 shrink-0 mt-px">
+        {number}
       </div>
-      <div className={`${isLast ? "pb-2" : "pb-10"} flex-1 min-w-0`}>
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-muted-foreground">{icon}</span>
-          <h3 className="text-base font-semibold text-foreground">{title}</h3>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className="text-muted-foreground/60">{icon}</span>
+          <h3 className="text-[13px] font-semibold text-foreground">{title}</h3>
         </div>
-        <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+        <div className="text-[12px] text-muted-foreground mt-0.5 leading-relaxed space-y-2">
           {children}
         </div>
       </div>
@@ -94,14 +91,14 @@ function DesignerGuide() {
           </div>
           <Note variant="info">
             You don&apos;t need to run any code. Your role is to keep Figma organised with proper variables
-            and keep the Figma Desktop Bridge active while your team runs the pipeline.
+            and keep the Figma Desktop Bridge active while your team runs the workflow.
           </Note>
         </CardContent>
       </Card>
 
       <SetupStep id="des-step-1" number={1} icon={<MonitorCheck size={14} />} title="Install Figma Desktop">
         <p>
-          The pipeline needs{" "}
+          The workflow needs{" "}
           <ExternalA href="https://www.figma.com/downloads/">Figma Desktop</ExternalA>{" "}
           (not the browser version) to expose your open file to Claude Code via the Desktop Bridge Plugin.
           The browser version is sandboxed and cannot open a local WebSocket server.
@@ -127,7 +124,7 @@ function DesignerGuide() {
           The{" "}
           <ExternalA href="https://github.com/southleft/figma-console-mcp">Figma Console MCP</ExternalA>{" "}
           plugin by Southleft runs inside Figma Desktop and opens a local WebSocket that Claude Code
-          connects to. Without it, the pipeline can only access files via the REST API (read-only, slower).
+          connects to. Without it, the workflow can only access files via the REST API (read-only, slower).
         </p>
         <ol className="space-y-2.5 mt-2">
           {[
@@ -153,7 +150,7 @@ function DesignerGuide() {
 
       <SetupStep id="des-step-3" number={3} icon={<Palette size={14} />} title="Structure your tokens as Figma Variables">
         <p>
-          The pipeline syncs your{" "}
+          The workflow syncs your{" "}
           <ExternalA href="https://help.figma.com/hc/en-us/articles/15339657135383-Guide-to-variables-in-Figma">
             Figma Variables
           </ExternalA>{" "}
@@ -182,7 +179,7 @@ function DesignerGuide() {
 
       <SetupStep id="des-step-4" number={4} icon={<Eye size={14} />} title="Share your Figma file URL with the team">
         <p>
-          When a developer or the pipeline needs to sync from your file, they need the full Figma URL.
+          When a developer or the workflow needs to sync from your file, they need the full Figma URL.
           You can find it in the browser address bar or via{" "}
           <strong className="text-foreground">Share → Copy link</strong> in Figma Desktop.
           The URL format is:
@@ -192,19 +189,19 @@ function DesignerGuide() {
         </div>
         <p className="mt-2">
           The <strong className="text-foreground">fileKey</strong> (the path segment after{" "}
-          <CodeInline>/design/</CodeInline>) is what the pipeline uses. The node-id is optional —
+          <CodeInline>/design/</CodeInline>) is what the workflow uses. The node-id is optional —
           it scopes the command to a specific frame or component.
         </p>
       </SetupStep>
 
-      <SetupStep id="des-step-5" number={5} icon={<CheckCircle2 size={14} />} title="What happens when the pipeline runs" isLast>
+      <SetupStep id="des-step-5" number={5} icon={<CheckCircle2 size={14} />} title="What happens when the workflow runs" isLast>
         <p>
           When a developer runs <CodeInline>/tokens</CodeInline> or <CodeInline>/component</CodeInline>
-          pointing at your file, here&apos;s what the pipeline does — and what it does <em>not</em> do:
+          pointing at your file, here&apos;s what the workflow does — and what it does <em>not</em> do:
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
           <div className="rounded-lg border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/20 p-3">
-            <p className="text-xs font-black tracking-widest text-emerald-700 dark:text-emerald-400 uppercase mb-2">The pipeline does</p>
+            <p className="text-xs font-black tracking-widest text-emerald-700 dark:text-emerald-400 uppercase mb-2">The workflow does</p>
             <ul className="space-y-1">
               {[
                 "Read your variables and component structure",
@@ -221,7 +218,7 @@ function DesignerGuide() {
             </ul>
           </div>
           <div className="rounded-lg border border-border bg-muted/40 p-3">
-            <p className="text-xs font-black tracking-widest text-muted-foreground/60 uppercase mb-2">The pipeline does NOT</p>
+            <p className="text-xs font-black tracking-widest text-muted-foreground/60 uppercase mb-2">The workflow does NOT</p>
             <ul className="space-y-1">
               {[
                 "Modify your Figma file or variables",
@@ -239,7 +236,7 @@ function DesignerGuide() {
           </div>
         </div>
         <Note>
-          All pipeline reads are <strong>non-destructive</strong>. The Desktop Bridge Plugin has
+          All workflow reads are <strong>non-destructive</strong>. The Desktop Bridge Plugin has
           read-only access to your file contents. Write operations (creating components, modifying
           variables) are only triggered by explicit commands that require user confirmation first.
         </Note>
@@ -280,10 +277,10 @@ function ProductGuide() {
         </p>
         <div className="space-y-2 mt-3">
           {[
-            { skill: "/sync-tokens",         color: "bg-teal-500",   desc: "Shows token additions, changes, and removals before writing globals.css." },
-            { skill: "/generate-from-figma", color: "bg-violet-500", desc: "Shows the generated component code before it is saved to the repo." },
-            { skill: "/drift-report",        color: "bg-amber-500",  desc: "Lists every hardcoded value found — approve to write the report." },
-            { skill: "/apply-theme",         color: "bg-rose-500",   desc: "Shows the new theme CSS file before it is written." },
+            { skill: "/tokens",      color: "bg-teal-500",   desc: "Shows token additions, changes, and removals before writing globals.css." },
+            { skill: "/component",   color: "bg-violet-500", desc: "Shows the generated component code before it is saved to the repo." },
+            { skill: "/drift-report", color: "bg-amber-500", desc: "Lists every hardcoded value found — approve to write the report." },
+            { skill: "/apply-theme", color: "bg-rose-500",   desc: "Shows the new theme CSS file before it is written." },
           ].map(({ skill, color, desc }) => (
             <div key={skill} className="flex items-start gap-2.5 rounded-md border border-border p-2.5 bg-muted/40">
               <span className={`w-1.5 h-1.5 rounded-full ${color} flex-shrink-0 mt-2`} />

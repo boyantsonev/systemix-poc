@@ -1,6 +1,9 @@
 // Workflow definitions for the visual pipeline builder
 // Static — defines the DAG structure. Runtime state lives in WorkflowBuilder component.
 
+import type { StepIOContract, WorkflowContext } from "@/lib/workflow/step-io";
+import type { ConditionalBranchNode } from "@/lib/workflow/branching";
+
 export type NodeType = "trigger" | "skill" | "hitl" | "output";
 
 export type NodeStatus =
@@ -78,6 +81,8 @@ export type WorkflowNodeDef = {
   approvalPrompt?: string;         // fallback plain-text prompt (legacy)
   hitlPayload?: HitlPayload;       // structured payload for rich HITL cards
   simulatedLog?: string[];
+  ioContract?: StepIOContract;     // typed inter-step data passing contract
+  branchNode?: ConditionalBranchNode; // conditional branching after this step
 };
 
 export type WorkflowEdgeDef = {
@@ -92,6 +97,14 @@ export type WorkflowDef = {
   description: string;
   nodes: WorkflowNodeDef[];
   edges: WorkflowEdgeDef[];
+};
+
+export type WorkflowRun = {
+  id: string;
+  workflowId: string;
+  startedAt: string;        // ISO timestamp
+  status: "running" | "done" | "error" | "awaiting-approval";
+  context?: WorkflowContext; // inter-step data produced during this run
 };
 
 // Canvas layout constants
@@ -119,17 +132,17 @@ export const workflows: WorkflowDef[] = [
         sublabel: "Manual / scheduled",
         description: "Detected change in Figma variables or manually triggered from the dashboard.",
         position: { x: X0, y: ROW_Y },
-        simulatedLog: ["Trigger received — starting token sync pipeline"],
+        simulatedLog: ["Trigger received — starting token sync workflow"],
       },
       {
         id: "ts-fetch",
         type: "skill",
         label: "Fetch Variables",
-        sublabel: "/sync-tokens",
+        sublabel: "/tokens",
         description:
           "Pulls all Figma variables via MCP (get_variable_defs) and diffs against every token file in the codebase.",
         agentName: "token-sync",
-        skillCommand: "/sync-tokens",
+        skillCommand: "/tokens",
         position: { x: X0 + GAP, y: ROW_Y },
         durationMs: 2400,
         simulatedLog: [
@@ -202,7 +215,7 @@ export const workflows: WorkflowDef[] = [
           "lib/data/tokens.ts — 4 tokens updated",
           "lib/data/docs.ts — 2 variable-group docs refreshed",
           "lib/data/metrics.ts — lastSynced updated",
-          "Pipeline complete ✓",
+          "Workflow complete ✓",
         ],
       },
     ],
@@ -228,17 +241,17 @@ export const workflows: WorkflowDef[] = [
         sublabel: "Paste Figma URL",
         description: "User provides a Figma node URL to generate a component from.",
         position: { x: X0, y: ROW_Y },
-        simulatedLog: ["Trigger received — starting component generation pipeline"],
+        simulatedLog: ["Trigger received — starting component generation workflow"],
       },
       {
         id: "cg-generate",
         type: "skill",
         label: "Generate Component",
-        sublabel: "/generate-from-figma",
+        sublabel: "/figma",
         description:
           "Reads Figma design context, maps design values to project tokens, generates a production React component with TypeScript types.",
         agentName: "figma-to-code",
-        skillCommand: "/generate-from-figma",
+        skillCommand: "/figma",
         position: { x: X0 + GAP, y: ROW_Y },
         durationMs: 3200,
         simulatedLog: [
@@ -383,7 +396,7 @@ export function AlertCard({ className, variant, title, children, ...props }: Ale
           "src/components/ui/AlertCard.tsx written ✓",
           "lib/data/components.ts — status: New",
           "lib/data/docs.ts — alertcard entry created",
-          "Pipeline complete ✓",
+          "Workflow complete ✓",
         ],
       },
     ],
@@ -410,7 +423,7 @@ export function AlertCard({ className, variant, title, children, ...props }: Ale
         sublabel: "Triggered after agent run",
         description: "Triggered manually via /sync-docs or automatically after any agent completes a write.",
         position: { x: X0, y: ROW_Y },
-        simulatedLog: ["Trigger received — starting doc sync pipeline"],
+        simulatedLog: ["Trigger received — starting doc sync workflow"],
       },
       {
         id: "ds-read",
@@ -503,7 +516,7 @@ export function AlertCard({ className, variant, title, children, ...props }: Ale
         simulatedLog: [
           "lib/data/docs.ts — 3 entries updated",
           "Dashboard /docs section is now current",
-          "Pipeline complete ✓",
+          "Workflow complete ✓",
         ],
       },
     ],

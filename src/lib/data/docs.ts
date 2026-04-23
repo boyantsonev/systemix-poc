@@ -8,6 +8,7 @@ export type DocMeta = {
   writtenAt: string;
   runId: string;
   figmaNodeId?: string;
+  figmaFileKey?: string;
   sourceFile?: string;
 };
 
@@ -93,6 +94,7 @@ export const docs: Doc[] = [
       writtenAt: "2026-02-25T14:02:12Z",
       runId: "run-003",
       figmaNodeId: "12:345",
+      figmaFileKey: "h1m7dfFILe1wGSfxwQ6U02",
       sourceFile: "src/components/ui/button.tsx",
     },
     props: [
@@ -218,6 +220,7 @@ export const docs: Doc[] = [
       writtenAt: "2026-02-26T08:34:12Z",
       runId: "run-002",
       figmaNodeId: "12:347",
+      figmaFileKey: "h1m7dfFILe1wGSfxwQ6U02",
       sourceFile: "src/components/ui/badge.tsx",
     },
     props: [
@@ -303,6 +306,7 @@ export const docs: Doc[] = [
       writtenAt: "2026-02-24T10:15:00Z",
       runId: "run-008",
       figmaNodeId: "12:346",
+      figmaFileKey: "h1m7dfFILe1wGSfxwQ6U02",
       sourceFile: "src/components/ui/card.tsx",
     },
     props: [
@@ -480,6 +484,7 @@ export const docs: Doc[] = [
       writtenAt: "2026-02-25T16:23:44Z",
       runId: "run-003",
       figmaNodeId: "15:892",
+      figmaFileKey: "h1m7dfFILe1wGSfxwQ6U02",
       sourceFile: "src/components/ui/progress.tsx",
     },
     props: [

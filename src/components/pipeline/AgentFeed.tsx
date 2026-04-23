@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Cpu,
   FileSearch,
@@ -14,6 +14,7 @@ import {
   Plug,
 } from "lucide-react";
 import type { FeedEvent, FeedEventType } from "@/lib/data/pipeline";
+import { useEventStream, type StreamEvent } from "@/hooks/useEventStream";
 
 // ── Persona color maps ─────────────────────────────────────────────────────────
 
@@ -149,72 +150,82 @@ function FeedEntry({ event }: { event: FeedEvent }) {
     return `${Math.round(diff / 3600)}h ago`;
   }
 
+  // Determine type badge color class
+  const typeBadgeClass = (() => {
+    switch (event.type) {
+      case "tool-call":     return "text-[--agent-flux]";
+      case "file-write":    return "text-[--agent-ada]";
+      case "thinking":      return "text-muted-foreground/60";
+      case "error":         return "text-[--color-error]";
+      default:              return "text-muted-foreground/50";
+    }
+  })();
+
   return (
     <div
-      className={`feed-entry border-l-2 pl-3 py-2 ${color.border} ${isHitl ? "bg-amber-50 dark:bg-amber-950/10" : ""}`}
+      className={`flex items-start gap-2 py-1.5 border-b border-border/30 last:border-0 font-mono text-[11px] ${isHitl ? "bg-amber-50/40 dark:bg-amber-950/10" : ""}`}
     >
-      {/* Header row */}
-      <div className="flex items-start gap-2">
-        {/* Type icon */}
-        <Icon size={12} className={`${cfg.iconClass} mt-0.5 flex-shrink-0`} />
+      {/* Timestamp */}
+      <span className="hidden sm:flex text-muted-foreground/40 tabular-nums w-[52px] shrink-0 pt-px">
+        {relativeTime(event.timestamp)}
+      </span>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-            {/* Skill badge */}
-            <span className={`text-[10px] font-semibold border rounded px-1.5 py-0.5 font-mono ${color.badge}`}>
-              {event.skill}
+      {/* Type badge */}
+      <span className={`hidden sm:flex text-[10px] uppercase tracking-wide w-[48px] shrink-0 pt-px font-mono ${typeBadgeClass}`}>
+        {cfg.label.replace(" ", "_").toLowerCase().slice(0, 8)}
+      </span>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+          {/* Skill badge */}
+          <span className={`text-[10px] font-semibold border rounded px-1.5 py-0.5 font-mono ${color.badge}`}>
+            {event.skill}
+          </span>
+
+          {/* Step badge */}
+          {event.step && event.totalSteps && (
+            <StepBadge step={event.step} total={event.totalSteps} />
+          )}
+
+          {/* MCP chip */}
+          {event.mcpServer && <McpChip server={event.mcpServer} />}
+
+          {/* Tool name */}
+          {event.toolName && (
+            <span className="text-[10px] font-mono text-muted-foreground/70">
+              {event.toolName}()
             </span>
-
-            {/* Step badge */}
-            {event.step && event.totalSteps && (
-              <StepBadge step={event.step} total={event.totalSteps} />
-            )}
-
-            {/* MCP chip */}
-            {event.mcpServer && <McpChip server={event.mcpServer} />}
-
-            {/* Tool name */}
-            {event.toolName && (
-              <span className="text-[10px] font-mono text-muted-foreground/70">
-                {event.toolName}()
-              </span>
-            )}
-          </div>
-
-          {/* Main content */}
-          <p className="text-xs text-foreground/90 font-mono leading-relaxed">
-            {event.content}
-            {isThinking && <ThinkingDots />}
-            {event.isActive && !isThinking && (
-              <span className="agent-cursor opacity-70" />
-            )}
-          </p>
-
-          {/* Sub content */}
-          {hasSubContent && (
-            <div className="mt-1">
-              {expanded ? (
-                <pre className="text-[10px] font-mono text-muted-foreground/70 whitespace-pre-wrap leading-relaxed">
-                  {event.subContent}
-                </pre>
-              ) : (
-                <button
-                  onClick={() => setExpanded(true)}
-                  className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground flex items-center gap-0.5 transition-colors"
-                >
-                  <ChevronDown size={10} />
-                  details
-                </button>
-              )}
-            </div>
           )}
         </div>
 
-        {/* Timestamp */}
-        <span className="text-[10px] text-muted-foreground/40 flex-shrink-0 pt-0.5 tabular-nums">
-          {relativeTime(event.timestamp)}
-        </span>
+        {/* Main content */}
+        <p className="text-xs sm:text-[11px] text-foreground/80 font-mono leading-relaxed">
+          {event.content}
+          {isThinking && <ThinkingDots />}
+          {event.isActive && !isThinking && (
+            <span className="agent-cursor opacity-70" />
+          )}
+        </p>
+
+        {/* Sub content */}
+        {hasSubContent && (
+          <div className="mt-1">
+            {expanded ? (
+              <pre className="text-[10px] font-mono text-muted-foreground/70 whitespace-pre-wrap leading-relaxed">
+                {event.subContent}
+              </pre>
+            ) : (
+              <button
+                onClick={() => setExpanded(true)}
+                className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground flex items-center gap-0.5 transition-colors"
+              >
+                <ChevronDown size={10} />
+                details
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -263,11 +274,134 @@ function AgentGroupHeader({
   );
 }
 
+// ── StreamEvent → FeedEvent mapper ────────────────────────────────────────────
+
+let _liveCounter = 0;
+
+function mapStreamEvent(evt: StreamEvent): FeedEvent {
+  const id = evt.id ?? `live-${++_liveCounter}`;
+  const agentId = evt.agent ?? evt.runId ?? "live-agent";
+  const skill = evt.agent ?? "live";
+  const skillColor = "teal";
+  const timestamp = evt.timestamp;
+  const data = evt.data ?? {};
+
+  switch (evt.type) {
+    case "tool_call":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "tool-call",
+        content: String(data.tool ?? data.summary ?? evt.type),
+        toolName: data.tool ? String(data.tool) : undefined,
+      };
+    case "file_read":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "file-read",
+        content: String(data.path ?? "file"),
+      };
+    case "file_write":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "file-write",
+        content: String(data.path ?? "file"),
+      };
+    case "thinking":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "thinking",
+        content: String(data.message ?? "thinking..."),
+        isActive: true,
+      };
+    case "agent_start":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "step-start",
+        content: `Agent started${data.command ? `: ${data.command}` : ""}`,
+      };
+    case "agent_complete":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "step-done",
+        content: String(data.summary ?? "Agent completed"),
+      };
+    case "agent_error":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "error",
+        content: String(data.message ?? "Agent error"),
+      };
+    case "hitl_requested":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "awaiting-hitl",
+        content: String(data.prompt ?? "Awaiting human review"),
+      };
+    case "hitl_resolved":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "step-done",
+        content: String(data.resolution ?? "Review resolved"),
+      };
+    case "sync_complete":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "step-done",
+        content: String(data.summary ?? "Sync complete"),
+      };
+    case "deploy_complete":
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "step-done",
+        content: String(data.url ?? "Deploy complete"),
+      };
+    default:
+      return {
+        id, agentId, skill, skillColor, timestamp,
+        type: "message",
+        content: String(data.message ?? evt.type),
+      };
+  }
+}
+
+// ── Live status indicator ──────────────────────────────────────────────────────
+
+function LiveIndicator({ connected }: { connected: boolean }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span
+        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+          connected
+            ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse"
+            : "bg-slate-400 dark:bg-slate-500"
+        }`}
+      />
+      <span className={`text-[10px] font-mono font-semibold ${
+        connected ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground/50"
+      }`}>
+        {connected ? "Live" : "Offline"}
+      </span>
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
-type Props = { events: FeedEvent[] };
+type Props = { events: FeedEvent[]; useLive?: boolean };
 
-export function AgentFeed({ events }: Props) {
+export function AgentFeed({ events: mockEvents, useLive = false }: Props) {
+  const { events: streamEvents, connected } = useEventStream({ enabled: useLive });
+
+  const liveEvents = useMemo(
+    () => streamEvents.map(mapStreamEvent),
+    [streamEvents],
+  );
+
+  // Prepend live events to mock; cap at 50
+  const events = useLive
+    ? [...liveEvents, ...mockEvents].slice(0, 50)
+    : mockEvents;
+
   // Group events by agentId in order of first appearance
   const groups: { agentId: string; skill: string; skillColor: string; events: FeedEvent[] }[] = [];
   const seen = new Set<string>();
@@ -287,36 +421,45 @@ export function AgentFeed({ events }: Props) {
     return Number(bActive) - Number(aActive);
   });
 
-  if (events.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Cpu size={32} className="text-muted-foreground/20 mb-3" />
-        <p className="text-sm text-muted-foreground/40">No agent activity yet.</p>
-        <p className="text-xs text-muted-foreground/30 mt-1">Run a skill to start the feed.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-0">
-      {groups.map((group) => {
-        const isActive = group.events.some(e => e.isActive || e.type === "thinking");
-        return (
-          <div key={group.agentId}>
-            <AgentGroupHeader
-              skill={group.skill}
-              agentId={group.agentId}
-              skillColor={group.skillColor}
-              isActive={isActive}
-            />
-            <div className="space-y-0.5 ml-3.5">
-              {group.events.map((evt) => (
-                <FeedEntry key={evt.id} event={evt} />
-              ))}
-            </div>
-          </div>
-        );
-      })}
+    <div className="font-mono text-[11px]">
+      {useLive && (
+        <div className="flex items-center justify-between px-1 pb-2 mb-1 border-b border-border/60">
+          <span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/50">
+            Agent Feed
+          </span>
+          <LiveIndicator connected={connected} />
+        </div>
+      )}
+
+      {events.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <Cpu size={28} className="text-muted-foreground/20 mb-3" />
+          <p className="text-[12px] text-muted-foreground/40">No agent activity yet.</p>
+          <p className="text-[11px] text-muted-foreground/30 mt-1">Run a skill to start the feed.</p>
+        </div>
+      ) : (
+        <div className="space-y-0">
+          {groups.map((group) => {
+            const isActive = group.events.some(e => e.isActive || e.type === "thinking");
+            return (
+              <div key={group.agentId}>
+                <AgentGroupHeader
+                  skill={group.skill}
+                  agentId={group.agentId}
+                  skillColor={group.skillColor}
+                  isActive={isActive}
+                />
+                <div className="space-y-0 ml-3.5">
+                  {group.events.map((evt) => (
+                    <FeedEntry key={evt.id} event={evt} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

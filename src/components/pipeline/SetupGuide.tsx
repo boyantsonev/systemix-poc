@@ -36,17 +36,17 @@ function Note({ children, variant = "info" }: { children: React.ReactNode; varia
 
 function CodeBlock({ code, label, lang = "bash" }: { code: string; label?: string; lang?: string }) {
   return (
-    <div className="rounded-lg overflow-hidden border border-border mt-3">
+    <div className="mt-2">
       {label && (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted border-b border-border">
-          <Terminal size={10} className="text-muted-foreground/50" />
-          <span className="text-[10px] font-mono text-muted-foreground/60">{label}</span>
+        <div className="flex items-center gap-1.5 mb-1">
+          <Terminal size={10} className="text-muted-foreground/40" />
+          <span className="text-[10px] font-mono text-muted-foreground/50">{label}</span>
           {lang !== "bash" && (
             <span className="ml-auto text-[10px] text-muted-foreground/40">{lang}</span>
           )}
         </div>
       )}
-      <pre className="text-xs font-mono text-foreground bg-muted p-3.5 overflow-x-auto leading-relaxed whitespace-pre">
+      <pre className="bg-muted rounded-md px-3 py-2 text-[11px] font-mono border border-border/60 overflow-x-auto leading-relaxed whitespace-pre">
         {code}
       </pre>
     </div>
@@ -64,19 +64,16 @@ type SetupStepProps = {
 
 function SetupStep({ id, number, icon, title, children, isLast }: SetupStepProps) {
   return (
-    <div id={id} className="flex gap-4 scroll-mt-8">
-      <div className="flex flex-col items-center flex-shrink-0">
-        <div className="w-8 h-8 rounded-full bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400 text-xs font-black">
-          {number}
-        </div>
-        {!isLast && <div className="w-px flex-1 bg-border mt-2 min-h-4" />}
+    <div id={id} className={`flex items-start gap-3 py-3 border-b border-border/40 last:border-0 scroll-mt-8 ${isLast ? "" : ""}`}>
+      <div className="size-5 rounded-full border border-border/60 flex items-center justify-center text-[10px] font-mono text-muted-foreground/60 shrink-0 mt-px">
+        {number}
       </div>
-      <div className={`${isLast ? "pb-2" : "pb-10"} flex-1 min-w-0`}>
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-muted-foreground">{icon}</span>
-          <h3 className="text-base font-semibold text-foreground">{title}</h3>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className="text-muted-foreground/60">{icon}</span>
+          <h3 className="text-[13px] font-semibold text-foreground">{title}</h3>
         </div>
-        <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+        <div className="text-[12px] text-muted-foreground mt-0.5 leading-relaxed space-y-2">
           {children}
         </div>
       </div>
@@ -136,7 +133,7 @@ function ArchitectureDiagram() {
           ) : (
             <div key={i} className={`rounded-lg border px-2.5 py-1.5 ${item.color}`}>
               <p className="font-semibold text-xs">{item.label}</p>
-              {item.sub && <p className="text-[9px] font-mono opacity-70 mt-0.5">{item.sub}</p>}
+              {item.sub && <p className="text-[10px] font-mono opacity-70 mt-0.5">{item.sub}</p>}
             </div>
           )
         )}
@@ -249,7 +246,7 @@ export function SetupGuide() {
       <SetupStep id="dev-step-1" number={1} icon={<Terminal size={14} />} title="Install Claude Code">
         <p>
           Install the Claude Code CLI globally. This is the AI coding assistant that hosts MCP servers,
-          runs skills as slash commands, and spawns sub-agents. Authenticate with your{" "}
+          runs skills as slash commands, and spawns agents. Authenticate with your{" "}
           <ExternalA href="https://console.anthropic.com">Anthropic account</ExternalA> after installation.
           Requires a paid plan or active{" "}
           <ExternalA href="https://claude.ai">claude.ai</ExternalA> Pro/Team subscription.
@@ -438,37 +435,52 @@ claude
       {/* Step 6 */}
       <SetupStep id="dev-step-6" number={6} icon={<Puzzle size={14} />} title="Install the Skills">
         <p>
-          Skills are markdown prompt files in{" "}
-          <CodeInline>~/.claude/commands/</CodeInline>. Claude Code loads them on startup as{" "}
-          <CodeInline>/command</CodeInline> slash commands. Copy each prompt from the{" "}
-          <a href="/pipeline#skills" className="text-violet-400 underline underline-offset-2 hover:text-violet-300">
-            Skills Library
+          Skills are markdown prompt files stored in{" "}
+          <CodeInline>~/.claude/skills/[name]/SKILL.md</CodeInline>. Claude Code loads them on
+          startup as <CodeInline>/name</CodeInline> slash commands. Copy each prompt from the{" "}
+          <a href="/skills" className="text-violet-400 underline underline-offset-2 hover:text-violet-300">
+            Skills page
           </a>{" "}
-          on the Pipeline page and save to the paths below.
+          and save to the paths below.
         </p>
         <CodeBlock
           label="terminal"
-          code={`mkdir -p ~/.claude/commands
+          code={`# Create the skills directory
+mkdir -p ~/.claude/skills
 
-# Save each skill prompt to its path:
-# ~/.claude/commands/generate-from-figma.md   → /generate-from-figma
-# ~/.claude/commands/sync-tokens.md            → /sync-tokens
-# ~/.claude/commands/drift-report.md           → /drift-report
-# ~/.claude/commands/apply-theme.md            → /apply-theme
+# Workflow skills (5-step figma-to-code flow):
+mkdir -p ~/.claude/skills/figma      # /figma     — extract design context + tokens
+mkdir -p ~/.claude/skills/tokens     # /tokens    — sync Figma variables → globals.css
+mkdir -p ~/.claude/skills/component  # /component — generate React component + stories
+mkdir -p ~/.claude/skills/storybook  # /storybook — verify + fix Storybook stories
+mkdir -p ~/.claude/skills/deploy     # /deploy    — build + deploy to Vercel
 
-# Restart Claude Code, then type / to see all four in autocomplete`}
+# Tool skills (on-demand utilities):
+mkdir -p ~/.claude/skills/sync-to-figma    # /sync-to-figma     — push tokens → Figma variables
+mkdir -p ~/.claude/skills/drift-report     # /drift-report      — audit codebase for token drift
+mkdir -p ~/.claude/skills/apply-theme      # /apply-theme       — generate client theme override
+mkdir -p ~/.claude/skills/figma-inspect    # /figma-inspect     — inspect any Figma node
+mkdir -p ~/.claude/skills/figma-push       # /figma-push        — screenshot URL → Figma frame
+mkdir -p ~/.claude/skills/sync             # /sync              — full bidirectional sync
+mkdir -p ~/.claude/skills/design-to-code   # /design-to-code    — end-to-end workflow
+mkdir -p ~/.claude/skills/connect          # /connect           — link components to Figma
+mkdir -p ~/.claude/skills/check-parity     # /check-parity      — detect design-code drift
+mkdir -p ~/.claude/skills/deploy-annotate  # /deploy-annotate   — post deploy URL to Figma
+
+# Restart Claude Code, then type / to see all skills in autocomplete`}
         />
         <Note>
           Skills use <CodeInline>$ARGUMENTS</CodeInline> to capture what you type after the command.
-          If no argument is given the skill will ask interactively. All four skills call the
-          Figma Console MCP tools internally — the MCP server must be connected for them to work.
+          If no argument is given the skill will ask interactively. Skills that read from Figma
+          need the Official Figma MCP; skills that write back to Figma need{" "}
+          <CodeInline>figma-console-mcp</CodeInline> with the Desktop Bridge active.
         </Note>
       </SetupStep>
 
       {/* Step 7 */}
-      <SetupStep id="dev-step-7" number={7} icon={<Layers size={14} />} title="Configure Sub-Agents (optional but recommended)">
+      <SetupStep id="dev-step-7" number={7} icon={<Layers size={14} />} title="Configure Agents (optional but recommended)">
         <p>
-          Sub-agents are specialist Claude instances in{" "}
+          Agents are specialist Claude instances in{" "}
           <CodeInline>~/.claude/agents/</CodeInline> — each with a focused system prompt, curated
           tools, and a persistent memory directory. Skills spawn them via the{" "}
           <CodeInline>Task</CodeInline> tool. Without agent files the skills still work, but you
@@ -477,7 +489,7 @@ claude
         <CodeBlock
           label="terminal"
           code={`mkdir -p ~/.claude/agents
-mkdir -p ~/.claude/agent-memory/{figma-to-code,token-sync,design-drift-detector,component-themer}`}
+mkdir -p ~/.claude/agent-memory/{figma,tokens,component,drift-report,apply-theme}`}
         />
         <CodeBlock
           label="~/.claude/agents/token-sync.md  (example)"
@@ -514,34 +526,33 @@ Preserve file comments and structure. Write a session summary to memory after ea
       {/* Step 8 */}
       <SetupStep id="dev-step-8" number={8} icon={<Play size={14} />} title="Run your first workflow" isLast>
         <p>
-          Open Claude Code in your project root with Figma Desktop open on the target file.
-          The first run is slower — agents read your codebase and build their memory baseline.
+          Open Claude Code in your project root. The 5-step workflow runs sequentially — each skill
+          hands off to the next. You can also run any skill individually.
         </p>
         <CodeBlock
           label="claude code — terminal"
           code={`cd /path/to/your/project
 claude
 
-# ── Sync tokens from Figma ────────────────────────────────────
-/sync-tokens https://figma.com/design/<fileKey>/MyDesignSystem
+# ── 5-step workflow: Figma URL → deployed component ──────────
+/figma https://figma.com/design/<fileKey>/MyDesignSystem?node-id=15-892
+# → /tokens → /component → /storybook → /deploy  (chain manually or use /design-to-code)
 
-# ── Audit the codebase for drift ─────────────────────────────
+# ── Or run the full workflow in one command ───────────────────
+/design-to-code https://figma.com/design/<fileKey>/DS?node-id=15-892
+
+# ── Individual tool skills ────────────────────────────────────
+/tokens https://figma.com/design/<fileKey>/MyDesignSystem
 /drift-report
-
-# Scope to a single file
 /drift-report src/components/ui/button.tsx
-
-# ── Generate a component from Figma ──────────────────────────
-# Right-click any node in Figma → Copy link → paste here
-/generate-from-figma https://figma.com/design/<fileKey>/DS?node-id=15-892
-
-# ── Apply a brand theme ───────────────────────────────────────
-/apply-theme acme https://figma.com/design/<fileKey>/AcmeBrand`}
+/apply-theme acme https://figma.com/design/<fileKey>/AcmeBrand
+/sync-to-figma
+/check-parity https://figma.com/design/<fileKey>/MyDesignSystem`}
         />
         <Note>
-          After each run the agent writes results to <CodeInline>lib/data/</CodeInline> TypeScript files.
-          Restart the Systemix dev server (or redeploy) — updated tokens, drift scores, and component
-          statuses appear immediately as Next.js reads the new data files.
+          Skills with an <strong>HITL gate</strong> pause before writing and show a diff in your terminal.
+          Type <CodeInline>approve</CodeInline> to apply or <CodeInline>reject</CodeInline> to discard —
+          nothing is written without your sign-off.
         </Note>
       </SetupStep>
     </div>

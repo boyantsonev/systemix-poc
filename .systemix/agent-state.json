@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "updatedAt": "2026-04-04T00:00:00.000Z",
+  "agents": {
+    "ada": { "name": "Ada", "skill": "figma-to-code", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 },
+    "flux": { "name": "Flux", "skill": "token-sync", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 },
+    "scout": { "name": "Scout", "skill": "drift-detector", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 },
+    "prism": { "name": "Prism", "skill": "component-themer", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 },
+    "echo": { "name": "Echo", "skill": "doc-sync", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 },
+    "sage": { "name": "Sage", "skill": "storybook", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 },
+    "ship": { "name": "Ship", "skill": "deploy", "status": "idle", "lastRun": null, "lastRunStatus": null, "runsTotal": 0, "runsSuccess": 0 }
+  }
+}

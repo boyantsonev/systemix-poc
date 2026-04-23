@@ -124,6 +124,16 @@ export default function ComponentsPage() {
         </div>
       </div>
 
+      <div className="rounded-lg border border-dashed border-border/60 bg-muted/30 px-4 py-3 mb-6 flex items-start gap-3">
+        <div className="size-1.5 rounded-full bg-[--color-drifted] mt-2 shrink-0" />
+        <div>
+          <p className="text-[12px] font-medium text-foreground">Demo data — no real components yet</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            Run <code className="font-mono text-[10px] bg-muted px-1 py-0.5 rounded">/component</code> in Claude Code to generate your first component from Figma.
+          </p>
+        </div>
+      </div>
+
       {/* Two-column layout: category sidebar + grid */}
       <div className="flex gap-8 items-start">
         {/* Category sidebar — desktop only */}

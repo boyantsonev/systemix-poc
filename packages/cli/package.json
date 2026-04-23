@@ -1,0 +1,23 @@
+{
+  "name": "systemix",
+  "version": "0.1.0",
+  "description": "Agentic design system ops for Claude Code — install pipelines in one command.",
+  "keywords": ["claude-code", "design-system", "figma", "agents", "ai"],
+  "homepage": "https://systemix-alpha.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pivotool/systemix"
+  },
+  "license": "MIT",
+  "bin": {
+    "systemix": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "pipelines"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -81,7 +81,7 @@ export const components: Component[] = [
       number: 142,
       title: "fix(button): replace hardcoded #a855f7 with --color-primary token",
       agentCreated: true,
-      skill: "/generate-from-figma",
+      skill: "/figma",
     },
     props: [
       { name: "variant", type: '"default" | "destructive" | "outline" | "ghost"', default: '"default"' },
@@ -396,7 +396,7 @@ export function Example() {
       number: 141,
       title: "feat(table): add sortable columns and row selection",
       agentCreated: true,
-      skill: "/generate-from-figma",
+      skill: "/figma",
     },
     props: [
       { name: "data", type: "unknown[]", required: true },

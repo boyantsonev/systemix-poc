@@ -108,7 +108,7 @@ function DocTopBar({ doc }: { doc: ComponentDoc | VariableGroupDoc }) {
           className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft size={10} />
-          Documentation
+          Component Docs
         </Link>
         <span className="text-border">·</span>
         <div className="flex items-center gap-1.5">
@@ -131,9 +131,9 @@ function DocTopBar({ doc }: { doc: ComponentDoc | VariableGroupDoc }) {
           <span>{formatDate(doc.meta.writtenAt)}</span>
         </div>
 
-        {doc.meta.figmaNodeId && (
+        {doc.meta.figmaFileKey && doc.meta.figmaNodeId && (
           <a
-            href={`https://figma.com/file/-/node-id=${doc.meta.figmaNodeId}`}
+            href={`https://figma.com/design/${doc.meta.figmaFileKey}?node-id=${doc.meta.figmaNodeId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-[10px] text-violet-400 hover:text-violet-300 transition-colors"
@@ -449,7 +449,7 @@ function VariableGroupDocView({ doc }: { doc: VariableGroupDoc }) {
                     <span className={`text-[10px] font-medium ${cfg.cls}`}>{cfg.label}</span>
                   </div>
                   {v.description && (
-                    <p className="text-[9px] text-muted-foreground leading-tight">
+                    <p className="text-[10px] text-muted-foreground leading-tight">
                       {v.description}
                     </p>
                   )}
