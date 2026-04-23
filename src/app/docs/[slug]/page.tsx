@@ -12,10 +12,8 @@ import {
   ExternalLink,
   Zap,
 } from "lucide-react";
-import { AppShell } from "@/components/systemix/AppShell";
 import { docs } from "@/lib/data/docs";
 import type { ComponentDoc, VariableGroupDoc } from "@/lib/data/docs";
-import type { AnchorItem } from "@/components/systemix/RightAnchorNav";
 
 // ── Static params ──────────────────────────────────────────────────────────────
 
@@ -474,31 +472,16 @@ export default async function DocSlugPage({
   const doc = docs.find((d) => d.slug === slug);
   if (!doc) notFound();
 
-  const anchorItems: AnchorItem[] =
-    doc.type === "component"
-      ? [
-          { id: "summary", label: "Summary" },
-          { id: "props",   label: "Props"   },
-          { id: "tokens",  label: "Tokens"  },
-          { id: "drift",   label: "Drift"   },
-          { id: "usage",   label: "Usage"   },
-        ]
-      : [
-          { id: "overview",   label: "Overview"   },
-          { id: "variables",  label: "Variables"  },
-        ];
-
-  const topBar = <DocTopBar doc={doc} />;
-
   return (
-    <AppShell anchorItems={anchorItems} topBar={topBar}>
-      <div className="space-y-12">
+    <article>
+      <DocTopBar doc={doc} />
+      <div className="space-y-12 mt-8">
         {doc.type === "component" ? (
           <ComponentDocView doc={doc} />
         ) : (
           <VariableGroupDocView doc={doc} />
         )}
       </div>
-    </AppShell>
+    </article>
   );
 }
