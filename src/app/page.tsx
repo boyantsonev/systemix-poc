@@ -208,6 +208,120 @@ function HowItWorks() {
   );
 }
 
+function UseCases() {
+  const personas = [
+    {
+      label: "Consultancies managing multiple client themes",
+      body: "You maintain 8 brands on one design system. Each client has token overrides, custom fonts, and a Figma file that's always slightly out of date. Systemix tracks which tokens are client-specific, which are shared, and flags the moment a shared base token breaks a client theme.",
+    },
+    {
+      label: "AI-first product teams",
+      body: "Your agents write components. They need to know what tokens exist, which are deprecated, and what the GIGO score is before they touch anything. Systemix is the MCP server your agents were waiting for.",
+    },
+    {
+      label: "Solo engineers with a design system debt problem",
+      body: "You've got 200 hardcoded hex values, a Figma file no one fully trusts, and a backlog of \"fix the tokens\" tickets. Systemix gives you a score, a ranked list of conflicts, and a path to ≥ 90%.",
+    },
+  ];
+
+  return (
+    <section className="py-24 border-t border-border/40">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-14">
+          Built for teams where design<br />and code both matter.
+        </h2>
+
+        <div className="space-y-px">
+          {personas.map(({ label, body }) => (
+            <div key={label} className="py-6 border-b border-border/40 last:border-0">
+              <p className="text-[14px] font-bold text-foreground mb-2">{label}</p>
+              <p className="text-[13px] text-muted-foreground leading-relaxed max-w-2xl">{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GigoCallout() {
+  const tiers = [
+    { score: "≥ 90%", state: "Green", dot: "bg-emerald-500", body: "Contract is clean. Agent reads are reliable. Safe to ship." },
+    { score: "≥ 80%", state: "Amber", dot: "bg-amber-500", body: "Drifts exist. Agents will encounter ambiguity. Triage recommended." },
+    { score: "< 80%", state: "Red. Pipeline halts.", dot: "bg-red-400", body: "Data quality is too low to trust agent decisions. Fix conflicts before proceeding." },
+  ];
+
+  return (
+    <section className="py-24 border-t border-border/40">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-4">
+          Know before you ship.
+        </h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
+          GIGO — Garbage In, Garbage Out — is Systemix&apos;s quality signal for your contract. It measures how trustworthy your design system data is before it reaches an agent or a CI gate.
+        </p>
+
+        <div className="space-y-px rounded-xl overflow-hidden border border-border/40">
+          {tiers.map(({ score, state, dot, body }) => (
+            <div key={score} className="flex items-start gap-4 px-5 py-5 bg-background border-b border-border/40 last:border-0">
+              <span className={`mt-1 shrink-0 inline-block w-2 h-2 rounded-full ${dot}`} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-foreground mb-1">
+                  <span className="font-mono">{score}</span>
+                  {" — "}
+                  {state}
+                </p>
+                <p className="text-[13px] text-muted-foreground leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-[13px] text-muted-foreground leading-relaxed mt-6 max-w-xl">
+          The score rises as you resolve conflicts. It drops when sources drift apart. It&apos;s a forcing function, not a vanity metric.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function BottomCTA() {
+  return (
+    <section className="py-24 border-t border-border/40">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-10">
+          Start in three commands.
+        </h2>
+
+        <div className="bg-muted/30 border border-border/40 rounded-xl px-5 py-5 font-mono text-[13px] space-y-2 mb-8">
+          {[
+            { cmd: "npx @systemix/init", comment: "scaffold config + .systemix folder" },
+            { cmd: "systemix scan",      comment: "ingest sources, build contract.json" },
+            { cmd: "systemix serve",     comment: "start MCP server on localhost:3845" },
+          ].map(({ cmd, comment }) => (
+            <div key={cmd} className="flex items-center gap-3">
+              <span className="text-muted-foreground/30 select-none">$</span>
+              <span className="text-foreground">{cmd}</span>
+              <span className="text-muted-foreground/40 hidden sm:inline">{"# " + comment}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-[14px] text-muted-foreground mb-6">
+          Your agent can now ask: &quot;What are the colour tokens?&quot; and get a sourced, versioned answer.
+        </p>
+
+        <a
+          href="/docs/guides/setup"
+          className="text-[13px] font-medium text-foreground hover:opacity-70 transition-opacity"
+        >
+          Read the getting started guide →
+        </a>
+      </div>
+    </section>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
@@ -218,7 +332,9 @@ export default function LandingPage() {
         <Hero />
         <Problem />
         <HowItWorks />
-        {/* Use cases + GIGO + CTA — SYSTMIX-193 */}
+        <UseCases />
+        <GigoCallout />
+        <BottomCTA />
       </main>
       <LandingFooter />
     </div>
