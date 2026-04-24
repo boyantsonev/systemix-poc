@@ -1,9 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { X, Menu } from "lucide-react";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { mockProjects, mockActivity, type Project, type ActivityEvent, type ActivityEventType } from "@/lib/data/mock-projects";
 
-function gigoColor(score: number): string {
+function scoreColor(score: number): string {
   if (score >= 0.90) return "text-emerald-500";
   if (score >= 0.80) return "text-amber-500";
   return "text-red-400";
@@ -41,7 +45,7 @@ function ProjectCard({ p }: { p: Project }) {
             <span className="text-sm font-semibold text-foreground">{p.name}</span>
             <StatusBadge status={p.status} />
           </div>
-          <span className={`text-sm font-mono tabular-nums font-bold ${gigoColor(p.gigoScore)}`}>
+          <span className={`text-sm font-mono tabular-nums font-bold ${scoreColor(p.gigoScore)}`}>
             {Math.round(p.gigoScore * 100)}%
           </span>
         </div>
@@ -126,41 +130,96 @@ function ActivityRow({ e }: { e: ActivityEvent }) {
   );
 }
 
+// ── Mobile nav drawer ─────────────────────────────────────────────────────────
+
+const NAV_LINKS = [
+  { label: "Pipeline",     href: "/pipeline"  },
+  { label: "Drift",        href: "/drift"      },
+  { label: "Tokens",       href: "/design-system/tokens" },
+  { label: "Docs",         href: "/docs"       },
+  { label: "Architecture", href: "/graph"      },
+];
+
+function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <>
+      {open && (
+        <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={onClose} />
+      )}
+      <div className={`fixed inset-y-0 right-0 z-50 w-56 bg-card border-l border-border flex flex-col md:hidden transition-transform duration-200 ${open ? "translate-x-0" : "translate-x-full"}`}>
+        <div className="h-11 flex items-center justify-between px-4 border-b border-border/50">
+          <span className="text-[11px] font-mono text-muted-foreground">Navigation</span>
+          <button onClick={onClose} className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors" aria-label="Close menu">
+            <X size={14} />
+          </button>
+        </div>
+        <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
+          {NAV_LINKS.map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className="block px-3 py-2 rounded-md text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default function HomePage() {
+  const [navOpen, setNavOpen] = useState(false);
   const totalPending = mockProjects.reduce((n, p) => n + p.pendingHitl, 0);
   const totalDrift   = mockProjects.reduce((n, p) => n + p.driftCount, 0);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Top bar */}
-      <header className="h-11 border-b border-border flex items-center px-5 gap-3 shrink-0 bg-card">
+      <header className="h-11 border-b border-border flex items-center px-4 md:px-5 gap-3 shrink-0 bg-card">
         <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
           <SLogo size={15} className="text-foreground" />
           <span className="text-[13px] font-black tracking-tight">systemix</span>
         </Link>
         <span className="text-muted-foreground/30 text-xs">·</span>
         <span className="text-[11px] text-muted-foreground">Dashboard</span>
-        <div className="ml-auto flex items-center gap-3 text-[10px] font-mono text-muted-foreground/50">
+
+        <div className="ml-auto flex items-center gap-2 md:gap-3">
           {totalPending > 0 && (
-            <span className="text-amber-500">{totalPending} pending HITL</span>
+            <span className="hidden sm:block text-[10px] font-mono text-amber-500">{totalPending} pending</span>
           )}
           {totalDrift > 0 && (
-            <span className="text-amber-500/70">{totalDrift} drift total</span>
+            <span className="hidden sm:block text-[10px] font-mono text-amber-500/70">{totalDrift} drift</span>
           )}
-          <Link
-            href="/docs"
-            className="text-muted-foreground/40 hover:text-muted-foreground transition-colors px-2 py-1 rounded hover:bg-muted/40"
-          >
-            Docs ↗
-          </Link>
+          {/* Desktop nav links */}
+          <nav className="hidden md:flex items-center gap-1 text-[11px] font-mono text-muted-foreground/50">
+            <Link href="/pipeline" className="px-2 py-1 rounded hover:bg-muted/40 hover:text-muted-foreground transition-colors">Pipeline</Link>
+            <Link href="/drift"    className="px-2 py-1 rounded hover:bg-muted/40 hover:text-muted-foreground transition-colors">Drift</Link>
+            <Link href="/docs"     className="px-2 py-1 rounded hover:bg-muted/40 hover:text-muted-foreground transition-colors">Docs</Link>
+            <Link href="/graph"    className="px-2 py-1 rounded hover:bg-muted/40 hover:text-muted-foreground transition-colors">Architecture</Link>
+          </nav>
           <ThemeToggle />
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setNavOpen(true)}
+            className="md:hidden p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            aria-label="Open navigation"
+          >
+            <Menu size={15} />
+          </button>
         </div>
       </header>
 
+      <MobileNav open={navOpen} onClose={() => setNavOpen(false)} />
+
       {/* Body */}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden flex-col md:flex-row">
         {/* Projects */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto min-h-0">
           <div className="mb-2 flex items-baseline gap-3">
             <h2 className="text-[10px] font-black tracking-widest uppercase text-muted-foreground/50">
               Projects
@@ -176,7 +235,7 @@ export default function HomePage() {
           </div>
 
           {/* Empty state hint */}
-          <div className="mt-10 max-w-2xl rounded-lg border border-dashed border-border/50 px-5 py-4">
+          <div className="mt-8 md:mt-10 max-w-2xl rounded-lg border border-dashed border-border/50 px-5 py-4">
             <p className="text-[11px] text-muted-foreground/50 font-mono leading-relaxed">
               <span className="text-muted-foreground">Add a project →</span>{" "}
               cd your-project && npx @systemix/init
@@ -184,8 +243,8 @@ export default function HomePage() {
           </div>
         </main>
 
-        {/* Activity feed */}
-        <aside className="w-64 shrink-0 border-l border-border flex flex-col overflow-hidden">
+        {/* Activity feed — desktop sidebar, hidden on mobile */}
+        <aside className="hidden md:flex w-64 shrink-0 border-l border-border flex-col overflow-hidden">
           <div className="h-11 border-b border-border flex items-center px-4 shrink-0">
             <span className="text-[10px] font-black tracking-widest uppercase text-muted-foreground/50">
               Activity
@@ -197,6 +256,20 @@ export default function HomePage() {
             ))}
           </div>
         </aside>
+      </div>
+
+      {/* Activity — mobile bottom strip */}
+      <div className="md:hidden border-t border-border bg-card">
+        <div className="h-9 flex items-center px-4">
+          <span className="text-[10px] font-black tracking-widest uppercase text-muted-foreground/50">
+            Recent activity
+          </span>
+        </div>
+        <div className="divide-y divide-border/40 max-h-48 overflow-y-auto">
+          {mockActivity.slice(0, 5).map((e) => (
+            <ActivityRow key={e.id} e={e} />
+          ))}
+        </div>
       </div>
     </div>
   );

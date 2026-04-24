@@ -925,7 +925,7 @@ Storybook operation for: $ARGUMENTS
     triggersAgent: "Ship",
     category: "pipeline",
     group: "output",
-    mcp: { required: ["vercel-mcp"] },
+    mcp: { required: ["vercel-mcp"], optional: ["posthog-mcp"] },
     promptContent: `---
 description: Build and deploy the project to Vercel, then post the preview URL as a comment on the relevant Figma node.
 ---
@@ -1304,7 +1304,7 @@ Report:
     triggersAgent: "Scout",
     category: "pipeline",
     group: "quality",
-    mcp: { required: [], optional: ["figma-mcp"] },
+    mcp: { required: [], optional: ["figma-mcp", "posthog-mcp"] },
     promptContent: `---
 description: Audit the codebase for design-code drift and generate a parity report
 ---

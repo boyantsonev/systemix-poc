@@ -156,6 +156,7 @@ const BASE_NODES: Node<GraphNodeData>[] = [
   // ── Tools ──
   mkNode("claude-code",     1010, 175, "Claude Code",     "tool",     "sm"),
   mkNode("cursor",          1010, 340, "Cursor",          "tool",     "sm"),
+  mkNode("posthog",         1010, 500, "PostHog",         "tool",     "sm"),
 ];
 
 type EStyle = { stroke: string; strokeWidth: number; opacity: number; strokeDasharray?: string };
@@ -211,7 +212,217 @@ const BASE_EDGES: Edge[] = [
   // ── hermes → tools ──
   mkEdge("hermes-claude",       "hermes",        "claude-code",   { stroke: "#0891b2", strokeWidth: 1.5 }),
   mkEdge("hermes-cursor",       "hermes",        "cursor",        { stroke: "#0891b2", strokeWidth: 1.5 }),
+  mkEdge("hermes-posthog",      "hermes",        "posthog",       { stroke: "#0891b2", strokeDasharray: "3 3" }),
 ];
+
+// ── Node metadata (descriptions + links + commands) ────────────────────────────
+
+type NodeMeta = {
+  desc: string;
+  docHrefs?: { label: string; href: string }[];
+  command?: string;
+};
+
+const NODE_META: Record<string, NodeMeta> = {
+  "figma-src": {
+    desc: "Figma file — source of design variables, component specs, and variant definitions. Read via Official Figma REST MCP.",
+    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+  },
+  "css-src": {
+    desc: "globals.css — CSS custom properties that define the code-side token values. The canonical code source of truth.",
+    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+  },
+  "storybook-src": {
+    desc: "Running Storybook instance — component inventory and story screenshots. Accessed via Storybook MCP.",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "s-figma": {
+    desc: "Extract design context — tokens, layout, variants — from any Figma URL. Run this first before generating components.",
+    command: "/figma",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "s-tokens": {
+    desc: "Diff Figma variables against your CSS token file. Shows Added / Changed / Removed before writing any file.",
+    command: "/tokens",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "s-component": {
+    desc: "Generate a production-ready React TypeScript component and Storybook story from a Figma URL.",
+    command: "/component",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "s-storybook": {
+    desc: "Read, verify, and update Storybook stories. Compares screenshots against the Figma spec and reports drift.",
+    command: "/storybook",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "s-deploy": {
+    desc: "Build the project and deploy a preview to Vercel. Returns a preview URL and posts it to Figma.",
+    command: "/deploy",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "s-drift": {
+    desc: "Audit the codebase for hardcoded values that should be tokens. Produces a severity-graded report.",
+    command: "/drift-report",
+    docHrefs: [
+      { label: "Skills library →", href: "/docs/skills" },
+      { label: "Drift & Reconciliation →", href: "/docs/concepts/drift" },
+    ],
+  },
+  "s-sync-figma": {
+    desc: "Push CSS custom property values back to Figma variables. Reverse of /tokens — use when code is the source.",
+    command: "/sync-to-figma",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "ada": {
+    desc: "Translates Figma designs into production-ready React components. Invoked by /figma and /component.",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "flux": {
+    desc: "Keeps Figma variables and CSS token files in lock-step. Runs both /tokens and /sync-to-figma directions.",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "sage": {
+    desc: "Reads and verifies Storybook stories against Figma specs. Generates missing stories and fixes token mismatches.",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "ship": {
+    desc: "Builds the project and deploys to Vercel. Auto-fixes build errors before deploying. Returns a preview URL.",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "scout": {
+    desc: "Audits the codebase for design-code drift. Detects hardcoded hex, px spacing, and token value mismatches.",
+    docHrefs: [
+      { label: "Skills library →", href: "/docs/skills" },
+      { label: "Drift →", href: "/docs/concepts/drift" },
+    ],
+  },
+  "contract": {
+    desc: "The verified design contract. Every token traced to its source, every conflict recorded, every decision annotated with rationale.",
+    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+  },
+  "tokens-bridge": {
+    desc: "tokens.bridge.json — CSS tokens pre-converted to hex/rgba for the Figma API. Intermediate artifact used by /sync-to-figma.",
+    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+  },
+  "components": {
+    desc: "Generated React components with TypeScript types and Storybook stories, written to src/components/.",
+    docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
+  },
+  "hermes": {
+    desc: "The Systemix skill runner. Executes Claude Code slash commands and routes outputs to the right MCP servers.",
+    docHrefs: [{ label: "Introduction →", href: "/docs/introduction" }],
+  },
+  "quality": {
+    desc: "Quality score (0–100%) from resolved token ratio, source coverage, and completeness. Below 80%, MCP server won't start.",
+    docHrefs: [{ label: "Quality Score →", href: "/docs/concepts/gigo-score" }],
+  },
+  "hitl": {
+    desc: "Human-in-the-loop checkpoint. Agent pauses here when a decision — token conflict, deploy approval — requires human review.",
+    docHrefs: [{ label: "Drift & Reconciliation →", href: "/docs/concepts/drift" }],
+  },
+  "claude-code": {
+    desc: "Anthropic's AI coding assistant. Reads the contract via Hermes MCP before writing components or modifying tokens.",
+    docHrefs: [{ label: "Quick Install →", href: "/docs/quick-install" }],
+  },
+  "cursor": {
+    desc: "AI code editor. Uses Hermes MCP to query verified token values and component specs before generating code.",
+    docHrefs: [{ label: "Quick Install →", href: "/docs/quick-install" }],
+  },
+  "posthog": {
+    desc: "Product analytics. Receives skill run events, drift metric trends, and quality score changes from Hermes via PostHog MCP.",
+    docHrefs: [{ label: "Architecture →", href: "/graph" }],
+  },
+};
+
+// ── Node detail panel ──────────────────────────────────────────────────────────
+
+const TYPE_LABEL: Record<NType, string> = {
+  source:   "source",
+  skill:    "skill",
+  agent:    "agent",
+  artifact: "artifact",
+  infra:    "infra",
+  concept:  "concept",
+  tool:     "tool",
+};
+
+function CopyBtn({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono rounded border border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 transition-colors"
+    >
+      {copied ? "✓ copied" : "copy"}
+    </button>
+  );
+}
+
+function NodeInfoPanel({ nodeId }: { nodeId: string }) {
+  const node = BASE_NODES.find(n => n.id === nodeId);
+  const meta = NODE_META[nodeId];
+  if (!node || !meta) return null;
+
+  const { ntype, sub } = node.data;
+  const col = TYPE_COLOR[ntype];
+  const label = node.data.label;
+
+  return (
+    <div
+      className="w-56 rounded-xl border border-white/8 bg-black/70 backdrop-blur-md p-3.5"
+      style={{ backdropFilter: "blur(12px)", background: "rgba(8,8,22,0.85)" }}
+    >
+      {/* Header */}
+      <div className="flex items-start gap-2 mb-2.5">
+        <svg width={8} height={8} className="mt-1 shrink-0">
+          <circle cx={4} cy={4} r={3.5} fill={col.fill} stroke={col.stroke} strokeWidth={1.5} />
+        </svg>
+        <div className="min-w-0">
+          <p className="text-[11px] font-mono font-semibold text-white/80 leading-tight">{label}</p>
+          {sub && <p className="text-[10px] font-mono text-white/30 mt-0.5">{sub}</p>}
+          <p className="text-[9px] font-mono uppercase tracking-widest mt-0.5" style={{ color: col.stroke }}>
+            {TYPE_LABEL[ntype]}
+          </p>
+        </div>
+      </div>
+
+      {/* Description */}
+      <p className="text-[11px] text-white/45 leading-relaxed font-mono mb-3">
+        {meta.desc}
+      </p>
+
+      {/* Command copy (skills only) */}
+      {meta.command && (
+        <div className="flex items-center gap-2 mb-2.5 p-2 rounded-lg border border-white/6 bg-white/3">
+          <code className="text-[11px] font-mono flex-1" style={{ color: col.text }}>
+            {meta.command}
+          </code>
+          <CopyBtn text={meta.command} />
+        </div>
+      )}
+
+      {/* Doc links */}
+      {meta.docHrefs && meta.docHrefs.length > 0 && (
+        <div className="flex flex-col gap-1">
+          {meta.docHrefs.map(({ label: linkLabel, href }) => (
+            <a
+              key={href}
+              href={href}
+              className="text-[10px] font-mono text-white/25 hover:text-white/55 transition-colors"
+            >
+              {linkLabel}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -256,7 +467,7 @@ export function SystemGraph() {
   );
 
   return (
-    <div className="w-full h-full" style={{ background: "#080812" }}>
+    <div className="w-full h-full relative" style={{ background: "#080812" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -284,6 +495,13 @@ export function SystemGraph() {
           style={{ background: "#080812" }}
         />
       </ReactFlow>
+
+      {/* Node detail panel */}
+      {hoveredId && (
+        <div className="absolute top-3 right-3 z-10 pointer-events-auto">
+          <NodeInfoPanel nodeId={hoveredId} />
+        </div>
+      )}
     </div>
   );
 }

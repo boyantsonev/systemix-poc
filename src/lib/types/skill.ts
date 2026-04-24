@@ -31,7 +31,8 @@ export type McpServer =
   | 'github-mcp'
   | 'storybook-mcp'
   | 'vercel-mcp'
-  | 'figma-desktop-mcp';
+  | 'figma-desktop-mcp'
+  | 'posthog-mcp';
 
 export interface SkillMcpRequirements {
   required: McpServer[];

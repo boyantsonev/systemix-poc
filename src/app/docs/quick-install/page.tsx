@@ -79,13 +79,13 @@ export default function QuickInstallPage() {
           <Step n="2" title="Scan">
             <CodeBlock>systemix scan</CodeBlock>
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-3">
-              Ingests your CSS tokens, runs reconciliation, and writes your first <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">contract.json</code>. You&apos;ll see a GIGO score.
+              Ingests your CSS tokens, runs reconciliation, and writes your first <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">contract.json</code>. You&apos;ll see a quality score.
             </p>
             <p className="text-[12px] font-mono text-muted-foreground/60 mb-1">Expected output:</p>
             <OutputBlock>{`✓ Ingested 47 tokens from globals.css
 ✓ Ingested 31 variables from Figma (h1m7dfFILe1wGSfxwQ6U02)
 ⚠  12 conflicts detected — run \`systemix drift\` to review
-GIGO score: 0.82 (amber)
+Quality score: 0.82 (amber)
 Contract written to .systemix/contract.json`}</OutputBlock>
           </Step>
 
@@ -100,11 +100,11 @@ Contract written to .systemix/contract.json`}</OutputBlock>
 
       <section>
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-4">What&apos;s next</h2>
-        <div className="space-y-2">
+        <div className="space-y-2 mb-8">
           {[
             { href: "/docs/guides/setup",          label: "Read the Setup Guide for a full walkthrough" },
             { href: "/docs/concepts/contract",     label: "Learn about contract.json structure" },
-            { href: "/docs/concepts/gigo-score",   label: "Understand your GIGO score" },
+            { href: "/docs/concepts/gigo-score",   label: "Understand your quality score" },
           ].map(({ href, label }) => (
             <Link
               key={href}
@@ -115,6 +115,19 @@ Contract written to .systemix/contract.json`}</OutputBlock>
               {label}
             </Link>
           ))}
+        </div>
+
+        <div className="rounded-xl border border-border/40 px-4 py-4 bg-muted/20">
+          <p className="text-[12px] font-bold text-foreground mb-1.5">Optional: PostHog MCP</p>
+          <p className="text-[12px] text-muted-foreground leading-relaxed mb-2">
+            Add the PostHog MCP server to Hermes to track skill run events, drift metric trends, and quality score changes over time.
+          </p>
+          <Link
+            href="/graph"
+            className="text-[11px] font-mono text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+          >
+            See PostHog in the architecture diagram →
+          </Link>
         </div>
       </section>
     </article>

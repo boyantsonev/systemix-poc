@@ -54,7 +54,7 @@ export default function IntroductionPage() {
           {[
             { href: "/docs/quick-install", label: "Quick Install", sub: "Up and running in under 5 minutes" },
             { href: "/docs/concepts/contract", label: "contract.json", sub: "How the contract is structured" },
-            { href: "/docs/concepts/gigo-score", label: "GIGO Score", sub: "What quality means in Systemix" },
+            { href: "/docs/concepts/gigo-score", label: "Quality Score", sub: "What quality means in Systemix" },
             { href: "/docs/guides/setup", label: "Setup Guide", sub: "Full walkthrough for your first project" },
           ].map(({ href, label, sub }) => (
             <Link
