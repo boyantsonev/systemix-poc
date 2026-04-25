@@ -1,0 +1,25 @@
+{
+  "_comment": "Simulated PostHog API response for component_render events — shape matches real /api/projects/{id}/insights/trend/ response",
+  "component": "Button",
+  "event": "component_render",
+  "period_days": 30,
+  "fetched_at": "2026-04-25",
+  "total_renders": 12847,
+  "variants": {
+    "default":     { "renders": 9201, "unique_users": 3420, "pages": ["/dashboard", "/docs", "/contract"] },
+    "outline":     { "renders": 2190, "unique_users": 890,  "pages": ["/docs", "/graph"] },
+    "destructive": { "renders": 891,  "unique_users": 410,  "pages": ["/dashboard"] },
+    "ghost":       { "renders": 565,  "unique_users": 280,  "pages": ["/docs"] }
+  },
+  "ctr_by_variant": {
+    "default":     0.034,
+    "outline":     0.021,
+    "destructive": 0.071,
+    "ghost":       0.012
+  },
+  "top_pages_by_renders": [
+    { "page": "/dashboard", "renders": 5840 },
+    { "page": "/docs",      "renders": 4210 },
+    { "page": "/contract",  "renders": 2797 }
+  ]
+}

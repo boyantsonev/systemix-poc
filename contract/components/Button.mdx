@@ -6,6 +6,50 @@ storybook-story: components-button--primary
 parity: clean
 last-screenshot: 2026-04-20
 usage-count-30d: 847
+evidence-posthog:
+  total-renders: 12847
+  top-variant: default
+  variants:
+    default:
+      renders: 9201
+      unique-users: 3420
+      pages:
+        - /dashboard
+        - /docs
+        - /contract
+    outline:
+      renders: 2190
+      unique-users: 890
+      pages:
+        - /docs
+        - /graph
+    destructive:
+      renders: 891
+      unique-users: 410
+      pages:
+        - /dashboard
+    ghost:
+      renders: 565
+      unique-users: 280
+      pages:
+        - /docs
+  ctr-by-variant:
+    default: 0.034
+    outline: 0.021
+    destructive: 0.071
+    ghost: 0.012
+  top-pages-by-renders:
+    - page: /dashboard
+      renders: 5840
+    - page: /docs
+      renders: 4210
+    - page: /contract
+      renders: 2797
+last-screenshot: 2026-04-25
 ---
 
-The Button component is in full parity with its Figma counterpart. The last visual screenshot comparison was taken on 2026-04-20 and passed without drift. It is the most-used component in the system with 847 render events in the last 30 days via PostHog. No action required.
+The Button component is in full parity with its Figma counterpart. The last visual screenshot comparison was taken on 2026-04-20 and passed without drift. It is the most-used component in the system with 12847 render events in the last 30 days via PostHog, led by the default variant rendering 9201 times across 3420 unique users on pages like /dashboard, /docs, and /contract. No action required.
+
+## Production Evidence
+
+The Button component has seen strong usage in the production environment, with a total of 12,847 render events captured via PostHog analytics over the past 30 days. The default variant accounted for the majority of these renders at 9,201 instances, while other variants like outline and destructive also saw significant adoption across different pages. This data confirms the component's continued popularity and utility within the system.

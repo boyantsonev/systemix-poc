@@ -1,0 +1,13 @@
+{
+  "name": "spike-3-posthog",
+  "version": "0.0.1",
+  "description": "SYSTMIX-202: PostHog feedback loop — auto-instrument, query, evidence write-back, HITL gate",
+  "type": "module",
+  "scripts": {
+    "instrument":  "node instrument.js",
+    "query":       "node posthog-query.js",
+    "writeback":   "node evidence-writeback.js",
+    "loop":        "node loop.js"
+  },
+  "engines": { "node": ">=18" }
+}
