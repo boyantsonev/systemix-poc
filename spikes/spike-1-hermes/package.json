@@ -1,0 +1,12 @@
+{
+  "name": "spike-1-hermes",
+  "version": "0.0.1",
+  "description": "SYSTMIX-200: Hermes-3 as MDX contract author — baseline test, prompt eval, latency benchmark",
+  "type": "module",
+  "scripts": {
+    "test":      "node spike.js",
+    "eval":      "node eval.js",
+    "benchmark": "node benchmark.js"
+  },
+  "engines": { "node": ">=18" }
+}
