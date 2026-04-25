@@ -56,7 +56,7 @@ resolve_reason: ${tc.resolve_reason ?? "null"}
 FRONTMATTER SCHEMA (use exactly these field names):
 token: string
 value: string  (ALWAYS the code_value above — never substitute figma_value even if resolve_decision is "figma-wins")
-figma-value: string or null
+figma-value: string or null  (raw Figma export format: hex e.g. "#0063c4" or HSL — NEVER OKLCH, NEVER the code_value format)
 status: clean | drifted | missing-in-figma
 resolved: boolean
 collection: string

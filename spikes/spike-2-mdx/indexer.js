@@ -6,6 +6,26 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, basename } from "node:path";
 import matter from "gray-matter";
+import { parse as parseColor, formatHex, differenceCiede2000, oklch } from "culori";
+
+// ΔE threshold below which two colors are considered equivalent (imperceptible)
+const DE_THRESHOLD = 2.0;
+
+function colorDeltaE(codeValue, figmaValue) {
+  try {
+    const a = parseColor(codeValue);
+    const b = parseColor(figmaValue);
+    if (!a || !b) return null;
+    return differenceCiede2000()(a, b);
+  } catch {
+    return null;
+  }
+}
+
+function isColorToken(value) {
+  if (!value || typeof value !== "string") return false;
+  return /^(#|oklch|oklab|rgb|hsl|color\()/.test(value.trim());
+}
 
 // ── Index builder ─────────────────────────────────────────────────────────────
 
@@ -26,7 +46,21 @@ function buildIndex(contractDir) {
       const { data: fm, content } = matter(raw);
 
       if (fm.token) {
-        tokens.set(fm.token, { ...fm, prose: content.trim(), file: fullPath });
+        const record = { ...fm, prose: content.trim(), file: fullPath };
+        // Augment color tokens with normalized hex and ΔE distance
+        if (fm.value && fm["figma-value"] && isColorToken(fm.value)) {
+          const codeHex = formatHex(parseColor(fm.value) ?? {}) ?? null;
+          const figmaHex = formatHex(parseColor(fm["figma-value"]) ?? {}) ?? null;
+          const deltaE = colorDeltaE(fm.value, fm["figma-value"]);
+          record["figma-value-normalized"] = figmaHex;
+          record["code-value-normalized"]  = codeHex;
+          record["delta-e"] = deltaE !== null ? Math.round(deltaE * 10) / 10 : null;
+          // Override status to clean if colors are perceptually equivalent despite different formats
+          if (record.status === "drifted" && deltaE !== null && deltaE < DE_THRESHOLD) {
+            record["status-override"] = "clean (ΔE < 2, perceptually equivalent)";
+          }
+        }
+        tokens.set(fm.token, record);
       } else if (fm.component) {
         components.set(fm.component, { ...fm, prose: content.trim(), file: fullPath });
       }
@@ -49,7 +83,14 @@ function listDrifted(index) {
   const driftedTokens = [...index.tokens.values()].filter(t => t.status === "drifted");
   const driftedComponents = [...index.components.values()].filter(c => c.parity === "drifted");
   return {
-    tokens: driftedTokens.map(t => ({ token: t.token, value: t.value, "figma-value": t["figma-value"], resolved: t.resolved })),
+    tokens: driftedTokens.map(t => ({
+      token: t.token,
+      value: t.value,
+      "figma-value": t["figma-value"],
+      "delta-e": t["delta-e"] ?? null,
+      "status-override": t["status-override"] ?? null,
+      resolved: t.resolved,
+    })),
     components: driftedComponents.map(c => ({ component: c.component, path: c.path, "last-screenshot": c["last-screenshot"] })),
     total: driftedTokens.length + driftedComponents.length,
   };
