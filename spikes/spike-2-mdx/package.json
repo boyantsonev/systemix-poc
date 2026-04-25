@@ -1,0 +1,16 @@
+{
+  "name": "spike-2-mdx",
+  "version": "0.0.1",
+  "description": "SYSTMIX-201: MDX as contract format — indexer, schema, rendering, perf",
+  "type": "module",
+  "scripts": {
+    "index":    "node indexer.js",
+    "perf":     "node perf-test.js",
+    "queries":  "node query-demo.js"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "chokidar": "^3.6.0"
+  },
+  "engines": { "node": ">=18" }
+}
