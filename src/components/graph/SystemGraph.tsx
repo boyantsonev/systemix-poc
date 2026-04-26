@@ -153,14 +153,16 @@ const BASE_NODES: Node<GraphNodeData>[] = [
   mkNode("scout",           355, 490, "Drift Detector",   "agent",    "sm"),
 
   // ── Artifacts ──
-  mkNode("contract",        630, 270, "contract.json",    "artifact", "lg"),
+  mkNode("contract",        630, 270, "MDX Contracts",    "artifact", "lg"),
   mkNode("tokens-bridge",   600, 470, "tokens.bridge",    "artifact", "sm"),
   mkNode("components",      590, 110, "Components",       "artifact", "sm"),
 
   // ── Infrastructure ──
-  mkNode("hermes",          830, 255, "Hermes",           "agent",    "md", "NousResearch"),
-  mkNode("quality",         790, 430, "Quality Score",    "concept",  "sm"),
-  mkNode("hitl",            890, 490, "Drift Room",       "concept",  "sm", "HITL"),
+  mkNode("hermes",          830, 255, "Hermes",           "agent",    "md", "Ollama / local"),
+  mkNode("mdx-indexer",     720, 390, "MDX Indexer",      "infra",    "sm"),
+  mkNode("quality",         790, 480, "Quality Score",    "concept",  "sm"),
+  mkNode("hitl",            890, 540, "Drift Room",       "concept",  "sm", "HITL"),
+  mkNode("contract-ui",     800, 610, "/contract UI",     "concept",  "sm"),
 
   // ── Tools ──
   mkNode("claude-code",     1010, 175, "Claude Code",     "tool",     "sm"),
@@ -207,10 +209,13 @@ const BASE_EDGES: Edge[] = [
   mkEdge("flux-bridge",         "flux",          "tokens-bridge", { stroke: "#2563eb" }),
   mkEdge("bridge-synk",         "tokens-bridge", "s-sync-figma",  { stroke: "#059669", strokeDasharray: "3 3" }),
 
-  mkEdge("contract-hermes",     "contract",      "hermes",        { stroke: "#e11d48", strokeWidth: 2 }, true),
+  mkEdge("hermes-contract",     "hermes",        "contract",      { stroke: "#e11d48", strokeWidth: 2 }, true),
 
-  mkEdge("contract-quality",    "contract",      "quality",       { stroke: "#475569" }),
+  mkEdge("contract-indexer",    "contract",      "mdx-indexer",   { stroke: "#475569" }),
+  mkEdge("indexer-quality",     "mdx-indexer",   "quality",       { stroke: "#475569" }),
   mkEdge("quality-hitl",        "quality",       "hitl",          { stroke: "#475569", strokeDasharray: "3 3" }),
+  mkEdge("contract-contractui", "contract",      "contract-ui",   { stroke: "#475569", strokeDasharray: "3 3" }),
+  mkEdge("posthog-contract",    "posthog",       "contract",      { stroke: "#0891b2", strokeDasharray: "4 2", opacity: 0.35 }),
 
   mkEdge("hermes-claude",       "hermes",        "claude-code",   { stroke: "#0891b2", strokeWidth: 1.5 }),
   mkEdge("hermes-cursor",       "hermes",        "cursor",        { stroke: "#0891b2", strokeWidth: 1.5 }),
@@ -230,11 +235,11 @@ type NodeMeta = {
 const NODE_META: Record<string, NodeMeta> = {
   "figma-src": {
     desc: "Figma file — source of design variables, component specs, and variant definitions. Read via the official Figma REST MCP; write-back uses the Figma Console MCP by TJ Pitre (southleft).",
-    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+    docHrefs: [{ label: "Contract →", href: "/docs/concepts/contract" }],
   },
   "css-src": {
     desc: "globals.css — CSS custom properties that define the code-side token values. The canonical code source of truth.",
-    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+    docHrefs: [{ label: "Contract →", href: "/docs/concepts/contract" }],
   },
   "storybook-src": {
     desc: "Running Storybook instance — component inventory and story screenshots. Accessed via Storybook MCP.",
@@ -302,19 +307,19 @@ const NODE_META: Record<string, NodeMeta> = {
     ],
   },
   "contract": {
-    desc: "The verified design contract. Every token traced to its source, every conflict recorded, every decision annotated with rationale.",
-    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+    desc: "MDX contract files — one per token and component. YAML frontmatter stores status, figma-value, delta-e, resolve-decision, and evidence-posthog. Prose body holds the rationale. Written by Hermes; indexed by the MDX Indexer.",
+    docHrefs: [{ label: "Contract →", href: "/docs/concepts/contract" }],
   },
   "tokens-bridge": {
     desc: "tokens.bridge.json — CSS tokens pre-converted to hex/rgba for the Figma API. Intermediate artifact used by /sync-to-figma.",
-    docHrefs: [{ label: "contract.json →", href: "/docs/concepts/contract" }],
+    docHrefs: [{ label: "Contract →", href: "/docs/concepts/contract" }],
   },
   "components": {
     desc: "Generated React components with TypeScript types and Storybook stories, written to src/components/.",
     docHrefs: [{ label: "Skills library →", href: "/docs/skills" }],
   },
   "hermes": {
-    desc: "The Systemix skill runner, powered by the NousResearch Hermes LLM. Hermes agents orchestrate skill execution, call MCP servers (Figma Console by TJ Pitre, Vercel, PostHog), and route structured outputs back to the contract.",
+    desc: "Local LLM running via Ollama (hermes3 model, http://localhost:11434). Invoked by prompt files to author MDX contracts — it reads source data (token values, usage counts, screenshot paths) and writes the frontmatter + rationale prose back to contract/tokens/ and contract/components/.",
     docHrefs: [
       { label: "Introduction →", href: "/docs/introduction" },
       { label: "Skills library →", href: "/docs/skills" },
@@ -325,8 +330,16 @@ const NODE_META: Record<string, NodeMeta> = {
     docHrefs: [{ label: "Quality Score →", href: "/docs/concepts/quality-score" }],
   },
   "hitl": {
-    desc: "Human-in-the-loop checkpoint. Agent pauses here when a decision — token conflict, deploy approval — requires human review.",
+    desc: "Human-in-the-loop checkpoint. Agent pauses here when a decision — token conflict, deploy approval — requires human review. Implemented via .pending.json sidecar files; CLI presents a Y/N prompt; HITL_AUTO_APPROVE=1 for CI.",
     docHrefs: [{ label: "Drift & Reconciliation →", href: "/docs/concepts/drift" }],
+  },
+  "mdx-indexer": {
+    desc: "Reads all MDX contract files at build time, parses YAML frontmatter, and computes the quality score via CIEDE2000 perceptual distance (culori). Classifies token drift as imperceptible (ΔE < 2) vs. real. Powers the /contract UI and the dashboard quality metric.",
+    docHrefs: [{ label: "Quality Score →", href: "/docs/concepts/quality-score" }],
+  },
+  "contract-ui": {
+    desc: "The /contract section of the Systemix UI — landing page with quality score, /contract/tokens and /contract/components index pages with filter pills, and /contract/[slug] detail views with color swatches, ΔE indicators, and inline resolve controls.",
+    docHrefs: [{ label: "Contract →", href: "/docs/concepts/contract" }],
   },
   "claude-code": {
     desc: "Anthropic's AI coding assistant. Reads the contract via Hermes MCP before writing components or modifying tokens.",
@@ -574,7 +587,8 @@ export function GraphLegend() {
     ["skill",    "Skill (slash command)"],
     ["agent",    "Agent / runtime"],
     ["artifact", "Artifact"],
-    ["concept",  "Concept"],
+    ["infra",    "Infrastructure"],
+    ["concept",  "Concept / UI"],
     ["tool",     "AI tool"],
   ];
 
