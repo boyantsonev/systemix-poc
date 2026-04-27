@@ -12,7 +12,7 @@ const SKILLS_DIR = path.join(os.homedir(), ".claude", "skills");
 const USER_CONFIG_PATH = path.join(os.homedir(), ".systemix", "config.json");
 const CLAUDE_JSON_PATH = path.join(os.homedir(), ".claude.json");
 
-// The 15 skills from the figma-to-code pipeline
+// The 16 skills from the figma-to-code pipeline
 const ALL_SKILLS = [
   "figma",
   "tokens",
@@ -29,6 +29,7 @@ const ALL_SKILLS = [
   "connect",
   "check-parity",
   "deploy-annotate",
+  "sync-docs",
 ];
 
 const GITIGNORE_ENTRIES = [

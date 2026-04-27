@@ -2,12 +2,15 @@
   "name": "systemix",
   "version": "0.1.0",
   "private": true,
+  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "tokens": "tsx scripts/token-converter.ts"
+    "tokens": "tsx scripts/token-converter.ts",
+    "generate-contracts": "tsx scripts/generate-contracts.ts",
+    "build:mcp": "npm run build -w packages/mcp-server"
   },
   "dependencies": {
     "@xyflow/react": "^12.10.2",

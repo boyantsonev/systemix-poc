@@ -22,10 +22,18 @@ const os   = require("os");
 // ── Server definition ─────────────────────────────────────────────────────────
 
 const SERVER_NAME = "systemix-mcp";
-const SERVER_CONFIG = {
-  command: "node",
-  args: ["./packages/mcp-server/dist/index.js", "--project-root", "."],
-};
+
+function getServerConfig() {
+  const projectRoot = process.cwd();
+  return {
+    command: "node",
+    args: [
+      path.join(projectRoot, "packages/mcp-server/dist/index.js"),
+      "--project-root",
+      projectRoot,
+    ],
+  };
+}
 
 // ── Client definitions (mirrors mcp-registrar.js) ─────────────────────────────
 
@@ -139,7 +147,7 @@ function registerServer(configPath) {
     return;
   }
 
-  config.mcpServers[SERVER_NAME] = SERVER_CONFIG;
+  config.mcpServers[SERVER_NAME] = getServerConfig();
   writeConfig(configPath, config);
   console.log(`  ✓ Registered "${SERVER_NAME}" in ${configPath}`);
 }
@@ -185,5 +193,5 @@ module.exports = {
   isRegistered,
   listRegistered,
   SERVER_NAME,
-  SERVER_CONFIG,
+  getServerConfig,
 };

@@ -68,7 +68,7 @@ import {
   getWorkflowHandler,
 } from "./tools/workflow.js";
 
-import type { ToolHandler } from "./types.js";
+import type { ToolHandler, ToolResult } from "./types.js";
 
 // ---------------------------------------------------------------------------
 // CLI args — parse --project-root
@@ -107,7 +107,7 @@ const tools = [
 ];
 
 // Map tool name → handler, bound to projectRoot
-const handlers = new Map<string, (args: Record<string, unknown>) => Promise<unknown>>([
+const handlers = new Map<string, (args: Record<string, unknown>) => Promise<ToolResult>>([
   [getProjectContextDefinition.name, (a) => getProjectContextHandler(a as Parameters<typeof getProjectContextHandler>[0], PROJECT_ROOT)],
   [setProjectContextDefinition.name, (a) => setProjectContextHandler(a as Parameters<typeof setProjectContextHandler>[0], PROJECT_ROOT)],
   [getAgentStateDefinition.name, (a) => getAgentStateHandler(a as Parameters<typeof getAgentStateHandler>[0], PROJECT_ROOT)],
@@ -162,7 +162,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     const result = await handler((rawArgs ?? {}) as Record<string, unknown>);
-    return result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return result as any;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return {
