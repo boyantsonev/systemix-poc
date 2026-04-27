@@ -33,28 +33,27 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Top bar */}
-      <header className="h-11 border-b border-border flex items-center px-4 gap-3 shrink-0 bg-card">
+      <header className="h-11 border-b border-border flex items-center px-3 md:px-4 gap-2 md:gap-3 shrink-0 bg-card overflow-hidden">
         <Link
           href="/"
-          className="flex items-center gap-1.5 text-muted-foreground/50 hover:text-muted-foreground transition-colors mr-1"
+          className="flex items-center gap-1 text-muted-foreground/50 hover:text-muted-foreground transition-colors shrink-0"
         >
           <SLogo size={13} className="text-current" />
-          <span className="text-[11px] font-mono">systemix</span>
-          <span className="text-[11px] font-mono">/</span>
+          <span className="hidden md:inline text-[11px] font-mono">systemix /</span>
         </Link>
 
-        <span className="text-[13px] font-semibold text-foreground">
+        <span className="text-[13px] font-semibold text-foreground shrink-0">
           {p?.name ?? slug}
         </span>
 
         {p && (
-          <span className={`text-[11px] font-mono font-bold tabular-nums ${qualityColor(p.qualityScore)}`}>
+          <span className={`text-[11px] font-mono font-bold tabular-nums shrink-0 ${qualityColor(p.qualityScore)}`}>
             {Math.round(p.qualityScore * 100)}%
           </span>
         )}
 
-        {/* Tab nav */}
-        <div className="ml-4 flex items-center gap-0.5">
+        {/* Tab nav — horizontally scrollable on mobile */}
+        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none ml-1 md:ml-4">
           {tabs.map(({ label, href, badge }) => {
             const active = pathname.startsWith(href);
             return (
@@ -62,7 +61,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] transition-colors",
+                  "flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 rounded text-[11px] transition-colors whitespace-nowrap shrink-0",
                   active
                     ? "bg-muted text-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -79,9 +78,9 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
           })}
         </div>
 
-        {/* Adapter status */}
+        {/* Adapter status — desktop only */}
         {p && (
-          <div className="ml-auto flex items-center gap-2 text-[10px] text-muted-foreground/40 font-mono">
+          <div className="ml-auto hidden md:flex items-center gap-2 text-[10px] text-muted-foreground/40 font-mono shrink-0">
             <div className="flex items-center gap-1">
               {Object.values(p.adapters).map((status, i) => (
                 <span
@@ -94,7 +93,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             <span>{p.componentCount} components · {p.tokenCount} tokens</span>
           </div>
         )}
-        <ThemeToggle className="ml-2 shrink-0" />
+        <ThemeToggle className="ml-auto md:ml-2 shrink-0" />
       </header>
 
       {/* Page content */}
@@ -104,13 +103,13 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
 
       {/* Status bar */}
       <footer className="h-8 shrink-0 border-t border-border bg-card flex items-center px-4 gap-3">
-        <span className="text-[10px] font-mono text-muted-foreground/30 flex-1">
+        <span className="text-[10px] font-mono text-muted-foreground/30 flex-1 truncate">
           {p?.name ?? slug} · {p?.componentCount ?? 0} components · {p?.tokenCount ?? 0} tokens
         </span>
         {p && p.pendingHitl > 0 ? (
           <Link
             href={`/projects/${slug}/drift`}
-            className="flex items-center gap-1.5 text-amber-500 hover:text-amber-400 transition-colors"
+            className="flex items-center gap-1.5 text-amber-500 hover:text-amber-400 transition-colors shrink-0"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
             <span className="text-[10px] font-mono font-bold tabular-nums">
@@ -118,7 +117,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             </span>
           </Link>
         ) : (
-          <span className="text-[10px] font-mono text-muted-foreground/30">no pending conflicts</span>
+          <span className="text-[10px] font-mono text-muted-foreground/30 shrink-0">clear</span>
         )}
       </footer>
     </div>
