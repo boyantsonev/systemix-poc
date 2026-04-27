@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
-import { CopyCommand } from "@/components/systemix/CopyCommand";
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -88,14 +87,21 @@ function Hero() {
           One infrastructure · Two use cases
         </p>
         <h1 className="text-[2.75rem] sm:text-[3.5rem] font-black tracking-tight leading-[1.1] mb-6">
-          The design system<br />
-          <span className="text-muted-foreground">contract layer.</span>
+          Your design system<br />
+          <span className="text-muted-foreground">is lying to you.</span>
         </h1>
         <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
-          Systemix builds a verified contract between Figma, your codebase, and every tool in your workflow — so you can validate design hypotheses fast, or reconcile years of drift with confidence.
+          Token drift means your A/B test measured a variant nobody designed. Your platform migration starts from a Figma file nobody fully trusts. Systemix puts a verified contract between your design system and everything downstream — so the feedback loop is clean, and the baseline is real.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <CopyCommand command="npx systemix init" />
+          <a
+            href="https://github.com/boyantsonev/systemix-poc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-[13px] font-medium bg-foreground text-background px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+          >
+            Star on GitHub →
+          </a>
           <Link
             href="/docs/quick-install"
             className="text-[13px] text-muted-foreground hover:text-foreground transition-colors"
@@ -233,10 +239,10 @@ function TwoUseCases() {
               Use case 01
             </p>
             <p className="text-[16px] font-bold text-foreground mb-3 leading-snug">
-              Prototype and validate hypotheses fast
+              Test faster. Measure what you actually designed.
             </p>
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
-              Design is the backbone of your testing loop. Ship a variant, measure it with PostHog, iterate. The contract layer keeps tokens and components clean so your data reflects design intent — not drift. When the design system is trustworthy, the feedback loop is fast.
+              If a token drifted before your test ran, PostHog gave you an answer to the wrong question. Systemix keeps tokens and components in sync with your Figma source so every variant ships clean. The feedback loop runs on real data — not whatever the agent ingested last.
             </p>
             <div className="space-y-1.5">
               {[
@@ -258,10 +264,10 @@ function TwoUseCases() {
               Use case 02
             </p>
             <p className="text-[16px] font-bold text-foreground mb-3 leading-snug">
-              Reconcile a legacy platform at scale
+              Know what you actually have before you redesign anything.
             </p>
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
-              Years of software, a Figma file nobody fully trusts, hundreds of tokens with no clear owner. Before redesigning, you need to know what you actually have. Systemix audits every token and component, surfaces drift with perceptual accuracy (ΔE), and gives the team a structured path from chaos to a clean baseline.
+              Inherited a platform nobody fully documented? Systemix audits every token and component, surfaces drift with perceptual accuracy (ΔE color difference), and gives you a structured path from chaos to a clean baseline. One number — the quality score — tells you when the system is trustworthy enough to build on.
             </p>
             <div className="space-y-1.5">
               {[
@@ -334,10 +340,10 @@ function BottomCTA() {
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-[1.75rem] font-black tracking-tight mb-4">
-          How the POC runs today.
+          Run it locally.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
-          No CLI yet. Hermes authors contracts locally via Ollama. The quality score and drift resolution live in the browser.
+          Hermes authors contracts locally via Ollama — no API key, no cloud. The quality score and drift resolution live in the browser.
         </p>
 
         <div className="space-y-px rounded-xl overflow-hidden border border-border/40 mb-8">
@@ -378,10 +384,10 @@ export default function LandingPage() {
       <LandingNav />
       <main className="max-w-4xl mx-auto px-6">
         <Hero />
-        <Problem />
         <TwoUseCases />
-        <HowItWorks />
+        <Problem />
         <QualityGate />
+        <HowItWorks />
         <BottomCTA />
       </main>
       <LandingFooter />
