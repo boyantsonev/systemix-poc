@@ -101,6 +101,26 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
       <div className="flex-1 flex min-h-0">
         {children}
       </div>
+
+      {/* Status bar */}
+      <footer className="h-8 shrink-0 border-t border-border bg-card flex items-center px-4 gap-3">
+        <span className="text-[10px] font-mono text-muted-foreground/30 flex-1">
+          {p?.name ?? slug} · {p?.componentCount ?? 0} components · {p?.tokenCount ?? 0} tokens
+        </span>
+        {p && p.pendingHitl > 0 ? (
+          <Link
+            href={`/projects/${slug}/drift`}
+            className="flex items-center gap-1.5 text-amber-500 hover:text-amber-400 transition-colors"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
+            <span className="text-[10px] font-mono font-bold tabular-nums">
+              {p.pendingHitl} pending
+            </span>
+          </Link>
+        ) : (
+          <span className="text-[10px] font-mono text-muted-foreground/30">no pending conflicts</span>
+        )}
+      </footer>
     </div>
   );
 }
