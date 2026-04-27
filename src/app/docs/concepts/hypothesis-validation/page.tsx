@@ -6,10 +6,37 @@ export default function HypothesisValidationPage() {
         Hypothesis Validation Loop
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        PostHog tells you what happened. The contract tells you why the baseline was what it was. Hermes reads both and proposes what to test next. Every decision closes the loop — written back to memory before the next hypothesis starts.
+        Every section of your landing page is a claim. The hypothesis loop turns those claims into tested decisions — and writes the reasoning back to memory so the next agent, sprint, or campaign starts from known ground, not a blank slate.
       </p>
 
       <hr className="border-border/40 mb-8" />
+
+      <section className="mb-10">
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What gets tested</h2>
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
+          The hypothesis loop isn&apos;t about visual tokens. It&apos;s about the decisions that determine whether a visitor converts: how the problem is framed, whether the value proposition matches the ICP arriving from a given channel, whether the &ldquo;How it works&rdquo; section reduces or creates friction, and which CTA copy drives action. The contract stores the rationale behind those decisions — and the evidence that validated or refuted them.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { label: "Messaging", examples: ["Value proposition headline variants", "Problem framing for different ICPs", "Benefit ordering by funnel stage"] },
+            { label: "Structure", examples: ["Section sequence (proof before features?)", "Above-the-fold density vs. clarity", "Social proof placement and format"] },
+            { label: "Conversion", examples: ["CTA copy and placement", "Form field count vs. completion rate", "Pricing anchor visibility"] },
+            { label: "Audience fit", examples: ["Channel-specific landing variants", "Persona-matched problem framing", "Segment-aware feature emphasis"] },
+          ].map(({ label, examples }) => (
+            <div key={label} className="border border-border/40 rounded-xl px-4 py-4">
+              <p className="text-[12px] font-bold uppercase tracking-wide text-foreground/70 mb-2">{label}</p>
+              <ul className="space-y-1">
+                {examples.map((ex) => (
+                  <li key={ex} className="text-[12px] text-muted-foreground flex gap-2">
+                    <span className="text-muted-foreground/40 shrink-0">→</span>
+                    {ex}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="mb-10">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">The loop, step by step</h2>
@@ -17,33 +44,33 @@ export default function HypothesisValidationPage() {
           {[
             {
               step: "1",
-              label: "Baseline is verified",
-              body: "Before any experiment runs, the contract confirms that the token values in the deployed build match what was designed. If --primary drifted before the test, you measured the wrong thing. Systemix catches this at experiment setup.",
+              label: "Intent is written to contract",
+              body: "When a section is written or revised, its rationale is recorded in the contract: the ICP it targets, the funnel stage it addresses, the strategic claim it makes, and why the copy was written the way it was. This is the baseline — not a visual state, but an argument.",
             },
             {
               step: "2",
-              label: "Experiment runs in PostHog",
-              body: "A/B tests, feature flags, or funnel comparisons run normally in PostHog. Systemix doesn't replace your experimentation platform — it wraps around it.",
+              label: "Growth agent identifies the hypothesis",
+              body: "A growth or CRO agent reads PostHog funnel data and the contract memory for that section. It surfaces where drop-off is occurring, which ICP segments aren't converting, and proposes a testable hypothesis — e.g. \"The Problem section is written for technical founders but 60% of inbound is coming from ops-heavy roles via LinkedIn.\"",
             },
             {
               step: "3",
-              label: "Hermes reads the results",
-              body: "On a 24-hour schedule (or on-demand via /drift-report), Hermes pulls event counts, experiment results, and component-level PostHog evidence via the PostHog MCP. It reads the relevant contract memory — what was designed, what was decided before, what was tried and rejected.",
+              label: "Marketing agent writes the variants",
+              body: "A marketing or ad creative agent generates copy variants grounded in the hypothesis. Each variant is tied to a specific claim: who it's written for, what objection it addresses, what conversion action it targets. Variants are stored in the contract before the experiment ships.",
             },
             {
               step: "4",
-              label: "Synthesis and card generation",
-              body: "Hermes generates a hypothesis validation card for the HITL queue. It includes: the experiment result, a confidence score, its synthesis reading prior contract memory, and a proposed action (promote variant, run longer, or reject).",
+              label: "Experiment runs in PostHog",
+              body: "Feature flags or A/B tests serve the variants. PostHog tracks the events that matter for that section — scroll depth, section engagement time, click-through to the next stage, and ultimately conversion. Systemix doesn't replace your experimentation layer — it wraps around it.",
             },
             {
               step: "5",
-              label: "Human approves or overrides",
-              body: "The card surfaces in the dashboard queue. One click to approve, reject, or modify. The decision and its rationale are required before the loop closes.",
+              label: "Hermes synthesizes the result",
+              body: "When the experiment reaches significance, Hermes reads the result against the full contract memory for that section: the original intent, the ICP hypothesis, every prior test and its outcome. It generates a HITL card with the result, a confidence score, and a recommended action — grounded in what's been tried before.",
             },
             {
               step: "6",
               label: "Decision written to contract",
-              body: "Hermes writes the outcome back to the contract MDX files for every affected token and component. The next experiment — and the next agent — starts from this known ground.",
+              body: "The approved decision — promote the variant, run longer, or reject the hypothesis — is written back to the contract. The next agent, the next sprint, the next growth campaign starts from this known ground. Nothing is re-litigated from scratch.",
             },
           ].map(({ step, label, body }) => (
             <div key={step} className="flex gap-4 pb-6">
@@ -63,34 +90,58 @@ export default function HypothesisValidationPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Why the contract makes experiments trustworthy</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Why contract memory makes experiments trustworthy</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Without a verified baseline, A/B test results are unreliable. If a token drifted between the design approval and the build, your two variants are measuring noise — not your hypothesis.
+          Without a record of intent, experiments produce isolated data points. You know which variant won — you don&apos;t know why the original was written the way it was, which audience hypothesis it was testing, or what was tried and rejected before. That context disappears into Slack threads and stale Notion docs.
         </p>
         <div className="grid sm:grid-cols-2 gap-3">
           <div className="border border-border/40 rounded-xl px-4 py-4">
             <p className="text-[12px] font-bold uppercase tracking-wide text-red-400/80 mb-2">Without Systemix</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              PostHog says variant B won. But the primary color was oklch(0.45 0.18 250) in the design and oklch(0.205 0 0) in the build. You measured neither variant cleanly. The winning insight is wrong.
+              PostHog shows the Problem section has 47% drop-off. You rewrite it. Six months later a new growth agent (or new hire) proposes the exact framing you already tested and rejected. The cycle repeats. Institutional knowledge lives in no one&apos;s head consistently.
             </p>
           </div>
           <div className="border border-border/40 rounded-xl px-4 py-4">
             <p className="text-[12px] font-bold uppercase tracking-wide text-emerald-400/80 mb-2">With Systemix</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              Before the experiment ships, the contract confirms tokens are synced. After it completes, Hermes reads the result against the contract&apos;s history of what was tried on this component. The decision it proposes is grounded.
+              The contract shows: this section was written for ops-heavy ICPs in March, a more technical variant was tested in April and rejected at 62% confidence, and the current copy won on scroll-to-pricing conversion. Hermes proposes the next hypothesis informed by all of this — not from scratch.
             </p>
           </div>
         </div>
       </section>
 
       <section className="mb-10">
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Example: value proposition test</h2>
+        <pre className="text-[12px] font-mono bg-muted/40 border border-border/40 rounded-xl p-4 overflow-x-auto text-foreground/80 leading-relaxed">{`# HITL card generated by Hermes
+
+type: hypothesis
+section: hero-value-prop
+experiment: vp-icp-match-test
+hypothesis: "Ops-role visitors (46% of LinkedIn traffic) convert
+  lower because the headline targets technical founders"
+variants:
+  control: "Your design system. Your agents. Your source of truth."
+  variant_b: "Ship faster without the ops overhead of keeping
+    design and code in sync."
+confidence: 0.84
+result: variant_b +38% scroll-to-pricing, +22% trial signup
+recommendation: promote
+rationale: |
+  Variant B addresses the ops-overhead framing directly.
+  Prior test (March) that leaned harder on 'AI agent' language
+  underperformed — current ICP reads 'agent' as hype.
+  Recommend promoting B and testing CTA copy next.`}</pre>
+      </section>
+
+      <section className="mb-10">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What Hermes reads before synthesizing</h2>
         <ul className="space-y-2 text-[14px] text-muted-foreground list-none">
           {[
-            "The current contract state for every token and component touched by the experiment",
-            "The full rationale history — every previous decision and its reasoning",
-            "Past PostHog evidence recorded in the contract for the same component",
-            "The quality score trend — whether the design system was healthy when the experiment ran",
+            "The original copywriting rationale for the section — who it was written for and what claim it makes",
+            "The ICP hypothesis that motivated the current copy — including the channel and funnel stage",
+            "Every prior experiment result recorded in the contract for this section, including rejections",
+            "PostHog funnel data: where visitors come from, where they drop, what they do after the section",
+            "Adjacent section performance — whether context before or after the section is influencing the result",
           ].map((item) => (
             <li key={item} className="flex gap-2.5">
               <span className="text-muted-foreground/40 mt-0.5 shrink-0">→</span>
@@ -100,11 +151,31 @@ export default function HypothesisValidationPage() {
         </ul>
       </section>
 
+      <section className="mb-10">
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Multi-agent orchestration</h2>
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
+          The hypothesis loop is designed to be composable. Growth agents surface the opportunity. Marketing and ad creative agents write the variants. Hermes synthesizes results against memory and generates the HITL card. The approval writes the decision back. Each agent reads the contract for context — and writes to it when the loop closes.
+        </p>
+        <div className="space-y-2">
+          {[
+            { agent: "Growth / Analytics agent", role: "Reads PostHog funnel data, identifies low-converting sections, proposes testable hypotheses" },
+            { agent: "Ad Creative / Marketing agent", role: "Generates copy variants grounded in the hypothesis — per ICP, per funnel stage, per channel" },
+            { agent: "Hermes (local LLM)", role: "Synthesizes experiment results against contract memory, generates HITL card with recommendation" },
+            { agent: "Human (HITL queue)", role: "Approves, rejects, or modifies — decision and rationale written to contract before loop closes" },
+          ].map(({ agent, result: _, role }) => (
+            <div key={agent} className="flex gap-3 text-[13px]">
+              <span className="font-mono text-foreground/70 shrink-0 w-[210px]">{agent}</span>
+              <span className="text-muted-foreground leading-relaxed">{role}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mb-6">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">See also</h2>
         <div className="flex flex-col gap-1.5 text-[13px] font-mono">
-          <a href="/docs/concepts/memory-layer" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ The Memory Layer — how decisions persist</a>
-          <a href="/docs/concepts/hermes" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Hermes — the synthesis engine</a>
+          <a href="/docs/concepts/memory-layer" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Memory Layer — how decisions persist across agents and sprints</a>
+          <a href="/docs/concepts/hermes" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Hermes — the synthesis engine that reads the contract</a>
           <a href="/docs/concepts/hitl" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ HITL & Decision Queue — approving hypothesis cards</a>
         </div>
       </section>
