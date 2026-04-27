@@ -1,33 +1,35 @@
 import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
+import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { HeroCTAs, NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 
 function LandingNav() {
   return (
-    <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto px-6 h-14 flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <SLogo size={16} className="text-white" />
-          <span className="text-[13px] font-black tracking-tight text-white">systemix</span>
+          <SLogo size={16} className="text-foreground" />
+          <span className="text-[13px] font-black tracking-tight">systemix</span>
         </Link>
 
         <nav className="flex items-center gap-1 ml-4">
-          <Link href="/docs" className="text-[13px] text-white/60 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/10">
+          <Link href="/docs" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 hover:bg-muted/50">
             Docs
           </Link>
           <a
             href="https://github.com/boyantsonev/systemix"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[13px] text-white/60 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/10"
+            className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 hover:bg-muted/50"
           >
             GitHub
           </a>
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
           <NavCTAs />
         </div>
       </div>
@@ -72,33 +74,16 @@ function LandingFooter() {
 
 function Hero() {
   return (
-    <section
-      className="relative min-h-[90vh] flex items-center overflow-hidden"
-      style={{
-        background: "linear-gradient(150deg, #0d1e35 0%, #1a3a5e 22%, #2d5f90 42%, #7b5292 62%, #b0607a 82%, #d49080 100%)",
-      }}
-    >
-      {/* Painterly grain overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-          backgroundSize: "200px 200px",
-        }}
-      />
-
-      <div className="relative max-w-3xl mx-auto text-center px-6 py-28">
-        <p className="text-[11px] font-mono text-white/50 uppercase tracking-widest mb-7">
+    <section className="pt-24 pb-24">
+      <div className="max-w-3xl mx-auto text-center">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-6">
           The Memory Layer for managing design systems
         </p>
-        <h1
-          className="font-display text-[3.75rem] sm:text-[5.5rem] font-semibold leading-[1.05] mb-7 text-white"
-          style={{ fontFamily: "var(--font-cormorant)", letterSpacing: "-0.01em" }}
-        >
+        <h1 className="text-[2.75rem] sm:text-[3.5rem] font-black tracking-tight leading-[1.1] mb-6">
           Your design system<br />
-          <span className="text-white/55 italic">is lying to you.</span>
+          <span className="text-muted-foreground">is lying to you.</span>
         </h1>
-        <p className="text-[17px] text-white/70 leading-relaxed max-w-xl mx-auto mb-10">
+        <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
           Token drift means your A/B test measured a variant nobody designed. Your platform migration starts from a Figma file nobody fully trusts. Systemix puts a verified contract between your design system and everything downstream — so the feedback loop is clean, and the baseline is real.
         </p>
         <HeroCTAs />
@@ -107,8 +92,8 @@ function Hero() {
           <InstallCommand />
         </div>
 
-        <p className="text-[12px] font-mono text-white/30 mt-7 max-w-md mx-auto leading-relaxed">
-          When an agent asks &quot;what is <code className="text-white/50">--color-primary</code>?&quot; — the contract answers. Not a hallucination.
+        <p className="text-[12px] font-mono text-muted-foreground/40 mt-6 max-w-md mx-auto leading-relaxed">
+          When an agent asks &quot;what is <code className="text-muted-foreground/60">--color-primary</code>?&quot; — the contract answers. Not a hallucination.
         </p>
       </div>
     </section>
@@ -134,10 +119,7 @@ function Problem() {
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
-        <h2
-          className="font-display text-[2.25rem] font-semibold leading-[1.1] mb-4"
-          style={{ fontFamily: "var(--font-cormorant)" }}
-        >
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-4">
           Design systems drift.<br />Everything downstream suffers.
         </h2>
         <div className="text-[15px] text-muted-foreground leading-relaxed space-y-4 mb-14 max-w-2xl">
@@ -168,10 +150,7 @@ function HowItWorks() {
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
-        <h2
-          className="font-display text-[2.25rem] font-semibold leading-[1.1] mb-3"
-          style={{ fontFamily: "var(--font-cormorant)" }}
-        >
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
           How it works
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
@@ -315,10 +294,7 @@ function SectionGlossary() {
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
-        <h2
-          className="font-display text-[2.25rem] font-semibold leading-[1.1] mb-3"
-          style={{ fontFamily: "var(--font-cormorant)" }}
-        >
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
           What each part does
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
@@ -379,10 +355,7 @@ function TwoUseCases() {
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
           One memory layer · Five use cases
         </p>
-        <h2
-          className="font-display text-[2.25rem] font-semibold leading-[1.1] mb-12"
-          style={{ fontFamily: "var(--font-cormorant)" }}
-        >
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-12">
           Same contract. Different problem solved.
         </h2>
 

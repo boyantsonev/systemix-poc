@@ -16,14 +16,14 @@ export function HeroCTAs() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => ph.capture("hero_cta_click", { cta: "github" })}
-        className="inline-flex items-center gap-2 text-[14px] font-medium bg-white text-black px-7 py-3 rounded-full hover:bg-white/90 transition-opacity"
+        className="inline-flex items-center gap-2 text-[13px] font-medium bg-foreground text-background px-4 py-2 hover:opacity-90 transition-opacity"
       >
         Star on GitHub →
       </a>
       <Link
         href="/docs/quick-install"
         onClick={() => ph.capture("hero_cta_click", { cta: "docs" })}
-        className="inline-flex items-center gap-2 text-[14px] font-medium border border-white/30 text-white/80 px-7 py-3 rounded-full hover:bg-white/10 hover:text-white transition-all"
+        className="text-[13px] text-muted-foreground hover:text-foreground transition-colors"
       >
         Read the docs →
       </Link>
@@ -37,18 +37,18 @@ export function NavCTAs() {
   const ph = usePostHog();
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="ml-auto flex items-center gap-2">
       <Link
         href="/design-system"
         onClick={() => ph.capture("nav_cta_click", { cta: "design-system" })}
-        className="text-[12px] font-medium border border-white/20 text-white/70 px-3 py-1.5 rounded-full hover:bg-white/10 hover:text-white transition-all"
+        className="text-[12px] font-medium border border-border text-foreground px-3 py-1.5 hover:bg-muted/50 transition-colors"
       >
         Try Design System →
       </Link>
       <Link
         href="/docs/quick-install"
         onClick={() => ph.capture("nav_cta_click", { cta: "get-started" })}
-        className="text-[12px] font-medium bg-white text-black px-4 py-1.5 rounded-full hover:bg-white/90 transition-opacity"
+        className="text-[12px] font-medium bg-foreground text-background px-3 py-1.5 hover:opacity-90 transition-opacity"
       >
         Get started →
       </Link>
@@ -74,12 +74,12 @@ export function InstallCommand() {
   return (
     <div
       onClick={copy}
-      className="inline-flex items-center gap-3 font-mono text-[13px] bg-white/10 border border-white/20 rounded-full px-5 py-2.5 cursor-pointer hover:bg-white/15 transition-colors select-none"
+      className="inline-flex items-center gap-3 font-mono text-[13px] bg-muted/60 border border-border/60 rounded-lg px-4 py-2.5 cursor-pointer hover:bg-muted transition-colors select-none"
       title="Click to copy"
     >
-      <span className="text-white/40">$</span>
-      <span className="text-white/70">{cmd}</span>
-      <span className="text-[10px] text-white/40 ml-1">
+      <span className="text-muted-foreground/40">$</span>
+      <span className="text-foreground/80">{cmd}</span>
+      <span className="text-[10px] text-muted-foreground/40 ml-1">
         {copied ? "copied!" : "copy"}
       </span>
     </div>

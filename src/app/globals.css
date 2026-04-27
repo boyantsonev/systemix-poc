@@ -45,7 +45,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-manrope);
-  --font-display: var(--font-cormorant);
   --font-mono: var(--font-jetbrains-mono);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -79,7 +78,7 @@
 
 /* ── Nova style — neutral, compact ───────────────────────────── */
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 
   /* Light mode */
   --background: oklch(98% 0.002 250);
