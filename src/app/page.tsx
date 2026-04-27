@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
+import { HeroCTAs, NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -29,18 +30,7 @@ function LandingNav() {
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <Link
-            href="/design-system"
-            className="text-[12px] font-medium border border-border text-foreground px-3 py-1.5 rounded-md hover:bg-muted/50 transition-colors"
-          >
-            Try Design System →
-          </Link>
-          <Link
-            href="/docs/quick-install"
-            className="text-[12px] font-medium bg-foreground text-background px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"
-          >
-            Get started →
-          </Link>
+          <NavCTAs />
         </div>
       </div>
     </header>
@@ -96,22 +86,7 @@ function Hero() {
         <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
           Token drift means your A/B test measured a variant nobody designed. Your platform migration starts from a Figma file nobody fully trusts. Systemix puts a verified contract between your design system and everything downstream — so the feedback loop is clean, and the baseline is real.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href="https://github.com/boyantsonev/systemix-poc"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-[13px] font-medium bg-foreground text-background px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
-          >
-            Star on GitHub →
-          </a>
-          <Link
-            href="/docs/quick-install"
-            className="text-[13px] text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Read the docs →
-          </Link>
-        </div>
+        <HeroCTAs />
 
         <p className="text-[12px] font-mono text-muted-foreground/40 mt-8 max-w-md mx-auto leading-relaxed">
           When an agent asks &quot;what is <code className="text-muted-foreground/60">--color-primary</code>?&quot; — the contract answers. Not a hallucination.
@@ -489,12 +464,12 @@ function BottomCTA() {
           Each token gets a contract file: code value, Figma value, perceptual distance, and a rationale written by Hermes. You approve or override. The score rises.
         </p>
 
-        <a
+        <Link
           href="/docs/quick-install"
           className="text-[13px] font-medium text-foreground hover:opacity-70 transition-opacity"
         >
           See the full workflow →
-        </a>
+        </Link>
       </div>
     </section>
   );
@@ -508,12 +483,12 @@ export default function LandingPage() {
       <LandingNav />
       <main className="max-w-4xl mx-auto px-6">
         <Hero />
-        <TwoUseCases />
-        <Problem />
-        <HowItWorks />
-        <SectionGlossary />
-        <QualityGate />
-        <BottomCTA />
+        <SectionTrack name="two-use-cases"><TwoUseCases /></SectionTrack>
+        <SectionTrack name="problem"><Problem /></SectionTrack>
+        <SectionTrack name="how-it-works"><HowItWorks /></SectionTrack>
+        <SectionTrack name="glossary"><SectionGlossary /></SectionTrack>
+        <SectionTrack name="quality-gate"><QualityGate /></SectionTrack>
+        <SectionTrack name="bottom-cta"><BottomCTA /></SectionTrack>
       </main>
       <LandingFooter />
     </div>
