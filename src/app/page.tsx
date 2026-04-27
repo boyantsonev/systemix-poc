@@ -46,7 +46,7 @@ function LandingFooter() {
         <div className="flex items-center gap-2">
           <SLogo size={14} className="text-muted-foreground/40" />
           <span className="text-[12px] text-muted-foreground/40 font-mono">
-            One infrastructure. Two use cases.
+            The Memory Layer for managing design systems.
           </span>
         </div>
         <div className="flex items-center gap-4 text-[12px] text-muted-foreground/40 font-mono">
@@ -77,7 +77,7 @@ function Hero() {
     <section className="pt-24 pb-24">
       <div className="max-w-3xl mx-auto text-center">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-6">
-          One infrastructure · Two use cases
+          The Memory Layer for managing design systems
         </p>
         <h1 className="text-[2.75rem] sm:text-[3.5rem] font-black tracking-tight leading-[1.1] mb-6">
           Your design system<br />
@@ -88,7 +88,11 @@ function Hero() {
         </p>
         <HeroCTAs />
 
-        <p className="text-[12px] font-mono text-muted-foreground/40 mt-8 max-w-md mx-auto leading-relaxed">
+        <div className="mt-5 flex justify-center">
+          <InstallCommand />
+        </div>
+
+        <p className="text-[12px] font-mono text-muted-foreground/40 mt-6 max-w-md mx-auto leading-relaxed">
           When an agent asks &quot;what is <code className="text-muted-foreground/60">--color-primary</code>?&quot; — the contract answers. Not a hallucination.
         </p>
       </div>
@@ -321,66 +325,58 @@ function SectionGlossary() {
 }
 
 function TwoUseCases() {
+  const cases = [
+    {
+      audience: "Product teams",
+      headline: "Measure what you actually designed.",
+      body: "If a token drifted before your test ran, PostHog gave you an answer to the wrong question. Systemix keeps tokens in sync with Figma so every variant ships clean and the feedback loop runs on real data.",
+    },
+    {
+      audience: "Agencies",
+      headline: "Deliver on a verified baseline every sprint.",
+      body: "Client approves the Figma. You ship the code. Systemix proves they match — and writes the rationale so the next agency doesn't have to reverse-engineer your decisions.",
+    },
+    {
+      audience: "Legacy design systems",
+      headline: "Know what you have before you redesign.",
+      body: "Inherited a platform nobody documented? Systemix audits every token and component, surfaces drift with perceptual accuracy (ΔE), and gives you a quality score that rises as you resolve conflicts.",
+    },
+    {
+      audience: "AI-assisted builders",
+      headline: "Give your agents a memory.",
+      body: "When an agent asks what --color-primary is, it reads the contract — not a stale comment or a hallucinated value. Every resolved token becomes a fact the whole pipeline can trust.",
+    },
+    {
+      audience: "Consultancies",
+      headline: "Turn audits into a repeatable deliverable.",
+      body: "Run the pipeline on a client's repo. Export the contract. Hand over a structured audit with quality scores, drift findings, and Hermes-authored rationale — in hours, not weeks.",
+    },
+  ];
+
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
-          One infrastructure · Two use cases
+          One memory layer · Five use cases
         </p>
-        <h2 className="text-[1.75rem] font-black tracking-tight mb-14">
-          Same contract layer.<br />Different problem solved.
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-12">
+          Same contract. Different problem solved.
         </h2>
 
-        <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-xl overflow-hidden border border-border/40">
-          {/* Use case 1 */}
-          <div className="bg-background px-6 py-8">
-            <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-3">
-              Use case 01
-            </p>
-            <p className="text-[16px] font-bold text-foreground mb-3 leading-snug">
-              Test faster. Measure what you actually designed.
-            </p>
-            <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
-              If a token drifted before your test ran, PostHog gave you an answer to the wrong question. Systemix keeps tokens and components in sync with your Figma source so every variant ships clean. The feedback loop runs on real data — not whatever the agent ingested last.
-            </p>
-            <div className="space-y-1.5">
-              {[
-                "Product teams shipping and testing variants",
-                "Agencies building fast prototypes for clients",
-                "AI-assisted workflows where agents author components",
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-2 text-[12px] text-muted-foreground">
-                  <span className="mt-1.5 shrink-0 w-1 h-1 rounded-full bg-muted-foreground/40" />
-                  {item}
-                </div>
-              ))}
+        <div className="grid sm:grid-cols-2 gap-3">
+          {cases.map(({ audience, headline, body }) => (
+            <div key={audience} className="border border-border/40 rounded-xl px-5 py-6 bg-background">
+              <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-3">
+                {audience}
+              </p>
+              <p className="text-[14px] font-bold text-foreground mb-2 leading-snug">
+                {headline}
+              </p>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
+                {body}
+              </p>
             </div>
-          </div>
-
-          {/* Use case 2 */}
-          <div className="bg-background px-6 py-8 border-t sm:border-t-0 sm:border-l border-border/40">
-            <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-3">
-              Use case 02
-            </p>
-            <p className="text-[16px] font-bold text-foreground mb-3 leading-snug">
-              Know what you actually have before you redesign anything.
-            </p>
-            <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
-              Inherited a platform nobody fully documented? Systemix audits every token and component, surfaces drift with perceptual accuracy (ΔE color difference), and gives you a structured path from chaos to a clean baseline. One number — the quality score — tells you when the system is trustworthy enough to build on.
-            </p>
-            <div className="space-y-1.5">
-              {[
-                "Enterprise design system teams doing platform redesigns",
-                "Design ops managing drift across multiple codebases",
-                "Consultancies inheriting a client's messy token layer",
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-2 text-[12px] text-muted-foreground">
-                  <span className="mt-1.5 shrink-0 w-1 h-1 rounded-full bg-muted-foreground/40" />
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
