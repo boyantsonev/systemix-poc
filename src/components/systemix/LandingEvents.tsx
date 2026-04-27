@@ -38,13 +38,15 @@ export function NavCTAs() {
 
   return (
     <div className="ml-auto flex items-center gap-2">
-      <Link
-        href="/design-system"
-        onClick={() => ph.capture("nav_cta_click", { cta: "design-system" })}
+      <a
+        href="https://github.com/boyantsonev/systemix-poc"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => ph.capture("nav_cta_click", { cta: "github" })}
         className="text-[12px] font-medium border border-border text-foreground px-3 py-1.5 hover:bg-muted/50 transition-colors"
       >
-        Try Design System →
-      </Link>
+        GitHub →
+      </a>
       <Link
         href="/docs/quick-install"
         onClick={() => ph.capture("nav_cta_click", { cta: "get-started" })}

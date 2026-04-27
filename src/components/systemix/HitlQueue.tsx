@@ -267,7 +267,7 @@ function StandardCard({
 
 // ── Queue panel ───────────────────────────────────────────────────────────────
 
-export function HitlQueue({ projectSlug }: { projectSlug?: string }) {
+export function HitlQueue({ projectSlug, className }: { projectSlug?: string; className?: string }) {
   const [cards, setCards] = useState<QueueCard[]>([]);
   const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -307,7 +307,7 @@ export function HitlQueue({ projectSlug }: { projectSlug?: string }) {
   }
 
   return (
-    <div className="max-w-2xl mt-8 md:mt-10">
+    <div className={className ?? "max-w-2xl mt-8 md:mt-10"}>
       <div className="flex items-baseline gap-3 mb-3">
         <h2 className="text-[11px] font-black tracking-widest uppercase text-muted-foreground/50">
           Hermes Queue

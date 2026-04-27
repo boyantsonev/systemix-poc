@@ -127,23 +127,29 @@ export default function DesignSystemOverview() {
   );
   const componentIssues = components.filter(c => c.parity !== "clean");
 
-  const recentDecisions = tokens
-    .filter(t => t.resolved === true)
-    .sort((a, b) => String(b["last-updated"] ?? "").localeCompare(String(a["last-updated"] ?? "")))
-    .slice(0, 5);
 
   return (
     <div>
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-[1.5rem] font-black tracking-tight mb-1">Design System</h1>
-        <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl">
-          Token and component parity between Figma and your code. Run{" "}
-          <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/tokens</code>{" "}
-          or{" "}
-          <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/check-parity</code>{" "}
-          in Claude Code or Cursor to populate this view.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-[1.5rem] font-black tracking-tight mb-1">Design System</h1>
+            <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl">
+              Token and component parity between Figma and your code. Run{" "}
+              <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/tokens</code>{" "}
+              or{" "}
+              <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/check-parity</code>{" "}
+              in Claude Code or Cursor to populate this view.
+            </p>
+          </div>
+          <Link
+            href="/contract"
+            className="shrink-0 text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground border border-border/30 px-2.5 py-1.5 rounded hover:border-border/60 transition-colors whitespace-nowrap"
+          >
+            Contract memory →
+          </Link>
+        </div>
       </div>
 
       {/* Quality Score */}
@@ -269,34 +275,6 @@ export default function DesignSystemOverview() {
               </>
             );
           })()}
-        </div>
-      )}
-
-      {/* Recent decisions */}
-      {recentDecisions.length > 0 && (
-        <div className="mb-10">
-          <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-3">
-            Recent decisions
-          </p>
-          <div className="rounded-lg border border-border/50 overflow-hidden divide-y divide-border/30">
-            {recentDecisions.map(t => (
-              <Link
-                key={t.slug}
-                href={`/design-system/tokens/${t.slug}`}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-              >
-                <span className="flex-1 font-mono text-[13px] text-foreground">{t.name}</span>
-                {t["resolve-decision"] && (
-                  <span className="text-[11px] font-mono text-muted-foreground/60">{t["resolve-decision"]}</span>
-                )}
-                <span className="text-[10px] font-mono text-muted-foreground/40">{t["last-resolver"] ?? "resolved"}</span>
-                {t["last-updated"] && (
-                  <span className="text-[10px] font-mono text-muted-foreground/40">{String(t["last-updated"]).slice(0, 10)}</span>
-                )}
-                <span className="text-muted-foreground/30 text-[11px]">→</span>
-              </Link>
-            ))}
-          </div>
         </div>
       )}
 

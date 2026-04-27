@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { mockProjects, mockActivity, type Project, type ActivityEvent, type ActivityEventType } from "@/lib/data/mock-projects";
-import { HitlQueue } from "@/components/systemix/HitlQueue";
 
 function scoreColor(score: number): string {
   if (score >= 0.90) return "text-emerald-500";
@@ -168,7 +167,20 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <HitlQueue />
+          <div className="mt-6 max-w-2xl">
+            <Link
+              href="/queue"
+              className="flex items-center justify-between rounded-lg border border-border/40 px-4 py-3 hover:bg-muted/20 transition-colors group"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60 shrink-0" />
+                <span className="text-[12px] text-muted-foreground">Hermes decision queue</span>
+              </div>
+              <span className="text-[11px] font-mono text-muted-foreground/40 group-hover:text-muted-foreground transition-colors">
+                View queue →
+              </span>
+            </Link>
+          </div>
         </main>
 
         {/* Activity feed — desktop */}

@@ -162,7 +162,7 @@ rationale: |
             { agent: "Ad Creative / Marketing agent", role: "Generates copy variants grounded in the hypothesis — per ICP, per funnel stage, per channel" },
             { agent: "Hermes (local LLM)", role: "Synthesizes experiment results against contract memory, generates HITL card with recommendation" },
             { agent: "Human (HITL queue)", role: "Approves, rejects, or modifies — decision and rationale written to contract before loop closes" },
-          ].map(({ agent, result: _, role }) => (
+          ].map(({ agent, role }) => (
             <div key={agent} className="flex gap-3 text-[13px]">
               <span className="font-mono text-foreground/70 shrink-0 w-[210px]">{agent}</span>
               <span className="text-muted-foreground leading-relaxed">{role}</span>
