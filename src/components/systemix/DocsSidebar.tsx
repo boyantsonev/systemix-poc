@@ -11,28 +11,23 @@ const NAV = [
     items: [
       { label: "Introduction",  href: "/docs/introduction"  },
       { label: "Quick Install", href: "/docs/quick-install" },
+      { label: "Setup Guide",   href: "/docs/guides/setup"  },
     ],
   },
   {
     section: "Concepts",
     items: [
-      { label: "MDX Contracts",            href: "/docs/concepts/contract"   },
-      { label: "Quality Score",          href: "/docs/concepts/quality-score" },
-      { label: "Drift & Reconciliation", href: "/docs/concepts/drift"      },
-    ],
-  },
-  {
-    section: "Guides",
-    items: [
-      { label: "Setup Guide", href: "/docs/guides/setup" },
+      { label: "MDX Contracts",            href: "/docs/concepts/contract"      },
+      { label: "Quality Score",            href: "/docs/concepts/quality-score" },
+      { label: "Drift & Reconciliation",   href: "/docs/concepts/drift"         },
     ],
   },
   {
     section: "Reference",
     items: [
-      { label: "Skills library",  href: "/docs/skills"         },
-      { label: "Architecture",    href: "/graph"               },
-      { label: "Design System",   href: "/design-system/tokens" },
+      { label: "Skills library",  href: "/docs/skills",        external: false },
+      { label: "Architecture",    href: "/docs/architecture",  external: false },
+      { label: "Design System",   href: "/design-system/tokens", external: true  },
     ],
   },
 ];
@@ -56,19 +51,22 @@ export function DocsSidebar() {
               {section}
             </p>
             <div className="space-y-0.5">
-              {items.map(({ label, href }) => {
-                const active = pathname === href || pathname.startsWith(href + "/");
+              {items.map(({ label, href, external }) => {
+                const active = !external && (pathname === href || pathname.startsWith(href + "/"));
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`block px-2 py-1.5 rounded-md text-[13px] transition-colors ${
+                    className={`flex items-center justify-between px-2 py-1.5 rounded-md text-[13px] transition-colors ${
                       active
                         ? "bg-muted text-foreground font-medium"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
                     {label}
+                    {external && (
+                      <span className="text-[10px] text-muted-foreground/30">↗</span>
+                    )}
                   </Link>
                 );
               })}

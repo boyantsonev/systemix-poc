@@ -14,26 +14,23 @@ const MOBILE_NAV = [
     items: [
       { label: "Introduction",  href: "/docs/introduction"  },
       { label: "Quick Install", href: "/docs/quick-install" },
+      { label: "Setup Guide",   href: "/docs/guides/setup"  },
     ],
   },
   {
     section: "Concepts",
     items: [
-      { label: "MDX Contracts",           href: "/docs/concepts/contract"   },
-      { label: "Quality Score",          href: "/docs/concepts/quality-score" },
-      { label: "Drift & Reconciliation", href: "/docs/concepts/drift"      },
+      { label: "MDX Contracts",           href: "/docs/concepts/contract"      },
+      { label: "Quality Score",           href: "/docs/concepts/quality-score" },
+      { label: "Drift & Reconciliation",  href: "/docs/concepts/drift"         },
     ],
-  },
-  {
-    section: "Guides",
-    items: [{ label: "Setup Guide", href: "/docs/guides/setup" }],
   },
   {
     section: "Reference",
     items: [
-      { label: "Skills library",  href: "/docs/skills"          },
-      { label: "Architecture",    href: "/graph"                },
-      { label: "Design System",   href: "/design-system/tokens" },
+      { label: "Skills library",  href: "/docs/skills"           },
+      { label: "Architecture",    href: "/docs/architecture"     },
+      { label: "Design System ↗", href: "/design-system/tokens"  },
     ],
   },
 ];
@@ -63,7 +60,7 @@ function MobileDocNav({ open, onClose }: { open: boolean; onClose: () => void })
               </p>
               <div className="space-y-0.5">
                 {items.map(({ label, href }) => {
-                  const active = pathname === href || pathname.startsWith(href + "/");
+                  const active = !href.startsWith("/design-system") && (pathname === href || pathname.startsWith(href + "/"));
                   return (
                     <Link
                       key={href}
