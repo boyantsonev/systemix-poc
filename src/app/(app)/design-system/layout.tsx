@@ -1,7 +1,8 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
 import { DesignSystemSidebar } from "@/components/systemix/DesignSystemSidebar";
+import { DesignSystemMobileHeader } from "@/components/systemix/DesignSystemSidebar";
 import type { TokenNav, ComponentNav } from "@/components/systemix/DesignSystemSidebar";
 
 const TOKEN_DIR     = join(process.cwd(), "contract", "tokens");
@@ -48,10 +49,12 @@ export default function DesignSystemLayout({ children }: { children: React.React
   const components = readComponentsForNav();
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div className="flex bg-background text-foreground" style={{ minHeight: "calc(100vh - 44px)" }}>
       <DesignSystemSidebar tokens={tokens} components={components} />
       <div className="flex-1 min-w-0">
-        <main className="max-w-2xl mx-auto px-6 md:px-10 py-12 md:py-16">
+        {/* Mobile section header — shows current section name + hamburger for sidebar */}
+        <DesignSystemMobileHeader tokens={tokens} components={components} />
+        <main className="max-w-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
           {children}
         </main>
       </div>

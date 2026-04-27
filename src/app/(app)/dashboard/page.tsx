@@ -1,10 +1,4 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { X, Menu } from "lucide-react";
-import { SLogo } from "@/components/systemix/SLogo";
-import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { mockProjects, mockActivity, type Project, type ActivityEvent, type ActivityEventType } from "@/lib/data/mock-projects";
 
 function scoreColor(score: number): string {
@@ -42,7 +36,6 @@ function ProjectCard({ p }: { p: Project }) {
   return (
     <div className="group rounded-lg border border-border bg-card hover:border-border/60 transition-colors">
       <div className="px-4 pt-4 pb-3">
-        {/* Row 1: name + status + score */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-foreground">{p.name}</span>
@@ -53,7 +46,6 @@ function ProjectCard({ p }: { p: Project }) {
           </span>
         </div>
 
-        {/* Row 2: alert line — only when there's something wrong */}
         {hasAlert && (
           <p className="text-[11px] text-amber-500 mb-3">
             {[
@@ -63,7 +55,6 @@ function ProjectCard({ p }: { p: Project }) {
           </p>
         )}
 
-        {/* Row 3: adapter dots */}
         <div className="flex items-center gap-2 text-[11px] text-muted-foreground/50">
           <div className="flex items-center gap-1">
             <AdapterDot status={p.adapters.codebase} />
@@ -74,8 +65,7 @@ function ProjectCard({ p }: { p: Project }) {
         </div>
       </div>
 
-      {/* Footer: hidden by default, shown on hover (desktop) */}
-      <div className="border-t border-border/40 px-3 py-2 hidden group-hover:flex items-center gap-0.5 md:flex md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+      <div className="border-t border-border/40 px-3 py-2 flex md:opacity-0 md:group-hover:opacity-100 transition-opacity items-center gap-0.5">
         {[
           { label: "Inspect", href: `/projects/${p.slug}/inspect` },
           { label: "Drift",   href: `/projects/${p.slug}/drift`,   badge: p.pendingHitl > 0 ? p.pendingHitl : undefined },
@@ -130,80 +120,23 @@ function ActivityRow({ e }: { e: ActivityEvent }) {
   );
 }
 
-// ── Mobile nav drawer ─────────────────────────────────────────────────────────
-
-const NAV_LINKS = [
-  { label: "Docs",         href: "/docs"  },
-  { label: "Architecture", href: "/docs/architecture" },
-];
-
-function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
-  return (
-    <>
-      {open && (
-        <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={onClose} />
-      )}
-      <div className={`fixed inset-y-0 right-0 z-50 w-56 bg-card border-l border-border flex flex-col md:hidden transition-transform duration-200 ${open ? "translate-x-0" : "translate-x-full"}`}>
-        <div className="h-11 flex items-center justify-between px-4 border-b border-border/50">
-          <span className="text-[11px] font-mono text-muted-foreground">Navigation</span>
-          <button onClick={onClose} className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors" aria-label="Close menu">
-            <X size={14} />
-          </button>
-        </div>
-        <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-          {NAV_LINKS.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={onClose}
-              className="block px-3 py-2 rounded-md text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-
-export default function HomePage() {
-  const [navOpen, setNavOpen] = useState(false);
-
+export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Top bar */}
-      <header className="h-11 border-b border-border flex items-center px-4 md:px-5 gap-3 shrink-0 bg-card">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-          <SLogo size={15} className="text-foreground" />
-          <span className="text-[13px] font-black tracking-tight">systemix</span>
+      {/* Mock data notice */}
+      <div className="border-b border-amber-500/20 bg-amber-500/5 px-4 md:px-5 py-2.5 flex items-center gap-3">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60 shrink-0" />
+        <p className="text-[12px] text-amber-500/80 leading-snug">
+          <span className="font-medium">Sample data.</span>{" "}
+          Real projects populate automatically once Systemix is connected to Claude Code, Cursor, or any MCP-compatible editor.
+        </p>
+        <Link href="/docs/quick-install" className="ml-auto shrink-0 text-[11px] text-amber-500/60 hover:text-amber-500 transition-colors whitespace-nowrap font-mono">
+          How to connect →
         </Link>
-        <span className="text-muted-foreground/30 text-xs">·</span>
-        <span className="text-[11px] text-muted-foreground">Dashboard</span>
-
-        <div className="ml-auto flex items-center gap-2 md:gap-3">
-          <nav className="hidden md:flex items-center gap-1 text-[11px] font-mono text-muted-foreground/50">
-            <Link href="/docs"  className="px-2 py-1 rounded hover:bg-muted/40 hover:text-muted-foreground transition-colors">Docs</Link>
-            <Link href="/docs/architecture" className="px-2 py-1 rounded hover:bg-muted/40 hover:text-muted-foreground transition-colors">Architecture</Link>
-          </nav>
-          <ThemeToggle />
-          <button
-            onClick={() => setNavOpen(true)}
-            className="md:hidden p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-            aria-label="Open navigation"
-          >
-            <Menu size={15} />
-          </button>
-        </div>
-      </header>
-
-      <MobileNav open={navOpen} onClose={() => setNavOpen(false)} />
+      </div>
 
       {/* Body */}
       <div className="flex flex-1 min-h-0 overflow-hidden flex-col md:flex-row">
-        {/* Projects */}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto min-h-0">
           <div className="mb-4 flex items-baseline gap-3">
             <h2 className="text-[11px] font-black tracking-widest uppercase text-muted-foreground/50">
@@ -227,7 +160,7 @@ export default function HomePage() {
           </div>
         </main>
 
-        {/* Activity feed */}
+        {/* Activity feed — desktop */}
         <aside className="hidden md:flex w-52 shrink-0 border-l border-border flex-col overflow-hidden">
           <div className="h-11 border-b border-border flex items-center px-4 shrink-0">
             <span className="text-[11px] font-black tracking-widest uppercase text-muted-foreground/50">
@@ -242,7 +175,7 @@ export default function HomePage() {
         </aside>
       </div>
 
-      {/* Activity — mobile bottom strip */}
+      {/* Activity — mobile strip */}
       <div className="md:hidden border-t border-border bg-card">
         <div className="h-9 flex items-center px-4">
           <span className="text-[11px] font-black tracking-widest uppercase text-muted-foreground/50">

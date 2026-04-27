@@ -25,9 +25,11 @@ const NAV = [
   {
     section: "Reference",
     items: [
-      { label: "Skills library",  href: "/docs/skills",        external: false },
-      { label: "Architecture",    href: "/docs/architecture",  external: false },
+      { label: "Skills library",  href: "/docs/skills",           external: false },
+      { label: "Architecture",    href: "/docs/architecture",    external: false },
       { label: "Design System",   href: "/design-system/tokens", external: true  },
+      { label: "Contract",        href: "/contract",             external: true  },
+      { label: "Dashboard",       href: "/dashboard",            external: true  },
     ],
   },
 ];

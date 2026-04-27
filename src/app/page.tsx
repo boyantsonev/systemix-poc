@@ -25,13 +25,16 @@ function LandingNav() {
           >
             GitHub
           </a>
-          <Link href="/dashboard" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-muted/50">
-            Dashboard
-          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
+          <Link
+            href="/contract"
+            className="text-[12px] font-medium border border-border text-foreground px-3 py-1.5 rounded-md hover:bg-muted/50 transition-colors"
+          >
+            Try Contract →
+          </Link>
           <Link
             href="/docs/quick-install"
             className="text-[12px] font-medium bg-foreground text-background px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"

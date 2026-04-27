@@ -31,6 +31,8 @@ const MOBILE_NAV = [
       { label: "Skills library",  href: "/docs/skills"           },
       { label: "Architecture",    href: "/docs/architecture"     },
       { label: "Design System ↗", href: "/design-system/tokens"  },
+      { label: "Contract ↗",      href: "/contract"              },
+      { label: "Dashboard ↗",     href: "/dashboard"             },
     ],
   },
 ];

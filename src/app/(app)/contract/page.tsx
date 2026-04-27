@@ -143,11 +143,6 @@ export default function ContractLandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-3xl mx-auto px-6 py-12">
 
-        {/* Breadcrumb */}
-        <nav className="mb-10 text-[11px] font-mono text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors">← dashboard</Link>
-        </nav>
-
         {/* ── Quality Score ─────────────────────────────────────── */}
         <div className="mb-10">
           <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mb-4">
