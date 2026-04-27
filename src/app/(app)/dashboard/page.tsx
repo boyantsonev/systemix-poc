@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { mockProjects, mockActivity, type Project, type ActivityEvent, type ActivityEventType } from "@/lib/data/mock-projects";
+import { HitlQueue } from "@/components/systemix/HitlQueue";
 
 function scoreColor(score: number): string {
   if (score >= 0.90) return "text-emerald-500";
@@ -158,6 +159,8 @@ export default function DashboardPage() {
               cd your-project && npx systemix init
             </p>
           </div>
+
+          <HitlQueue />
         </main>
 
         {/* Activity feed — desktop */}
