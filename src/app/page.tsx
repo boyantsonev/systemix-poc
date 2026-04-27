@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
-import { HeroCTAs, NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
+import { NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -86,9 +86,8 @@ function Hero() {
         <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
           Token drift means your A/B test measured a variant nobody designed. Your platform migration starts from a Figma file nobody fully trusts. Systemix puts a verified contract between your design system and everything downstream — so the feedback loop is clean, and the baseline is real.
         </p>
-        <HeroCTAs />
 
-        <div className="mt-5 flex justify-center">
+        <div className="flex justify-center">
           <InstallCommand />
         </div>
 
@@ -97,6 +96,69 @@ function Hero() {
         </p>
       </div>
     </section>
+  );
+}
+
+function WorksWith() {
+  const tools = [
+    {
+      name: "Claude Code",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 1.5a8.5 8.5 0 110 17 8.5 8.5 0 010-17zm0 3.25a.75.75 0 00-.75.75v3.75H7.5a.75.75 0 000 1.5h3.75v3.75a.75.75 0 001.5 0v-3.75h3.75a.75.75 0 000-1.5h-3.75V7.5A.75.75 0 0012 6.75z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Codex",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 004.981 4.18a5.985 5.985 0 00-3.998 2.9 6.046 6.046 0 00.743 7.097 5.98 5.98 0 00.51 4.911 6.051 6.051 0 006.515 2.9A5.985 5.985 0 0013.26 24a6.056 6.056 0 005.772-4.206 5.99 5.99 0 003.997-2.9 6.056 6.056 0 00-.747-7.073zM13.26 22.43a4.476 4.476 0 01-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 00.392-.681v-6.737l2.02 1.168a.071.071 0 01.038.052v5.583a4.504 4.504 0 01-4.494 4.494zM3.6 18.304a4.47 4.47 0 01-.535-3.014l.142.085 4.783 2.759a.771.771 0 00.78 0l5.843-3.369v2.332a.08.08 0 01-.033.062L9.74 19.95a4.5 4.5 0 01-6.14-1.646zM2.34 7.896a4.485 4.485 0 012.366-1.973V11.6a.766.766 0 00.388.676l5.815 3.355-2.02 1.168a.076.076 0 01-.071 0l-4.83-2.786A4.504 4.504 0 012.34 7.896zm16.597 3.868l-5.843-3.38 2.019-1.164a.076.076 0 01.072 0l4.83 2.786a4.49 4.49 0 01-.676 8.105v-5.683a.79.79 0 00-.402-.664zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 00-.785 0L9.409 9.23V6.897a.066.066 0 01.028-.061l4.83-2.787a4.5 4.5 0 016.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 01-.038-.057V6.075a4.5 4.5 0 017.375-3.453l-.142.08-4.778 2.758a.795.795 0 00-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Gemini CLI",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+      ),
+    },
+    {
+      name: "OpenCode",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
+        </svg>
+      ),
+    },
+    {
+      name: "Cursor",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="2"/>
+          <path d="M8 12h8M12 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div className="border-t border-border/40 py-5">
+      <div className="flex items-center gap-6 flex-wrap justify-center">
+        <span className="text-[11px] font-mono text-muted-foreground/30 uppercase tracking-widest shrink-0">
+          Works with
+        </span>
+        {tools.map(({ name, icon }) => (
+          <div key={name} className="flex items-center gap-1.5 text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors">
+            {icon}
+            <span className="text-[12px] font-medium">{name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -475,6 +537,7 @@ export default function LandingPage() {
       <LandingNav />
       <main className="max-w-4xl mx-auto px-6">
         <Hero />
+        <WorksWith />
         <SectionTrack name="two-use-cases"><TwoUseCases /></SectionTrack>
         <SectionTrack name="problem"><Problem /></SectionTrack>
         <SectionTrack name="how-it-works"><HowItWorks /></SectionTrack>

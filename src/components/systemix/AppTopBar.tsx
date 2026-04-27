@@ -8,10 +8,8 @@ import { SLogo } from "./SLogo";
 import { ThemeToggle } from "./ThemeToggle";
 
 const APP_NAV = [
-  { label: "Dashboard",     href: "/dashboard"     },
-  { label: "Queue",         href: "/queue"         },
-  { label: "Contract",      href: "/contract"      },
-  { label: "Design System", href: "/design-system" },
+  { label: "Queue",    href: "/queue"    },
+  { label: "Contract", href: "/contract" },
 ];
 
 function PendingBadge() {
