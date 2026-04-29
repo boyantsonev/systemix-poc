@@ -6,7 +6,7 @@ export default function HypothesisValidationPage() {
         Hypothesis Validation Loop
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        Every section of your landing page is a claim. The hypothesis loop turns those claims into tested decisions — and writes the reasoning back to memory so the next agent, sprint, or campaign starts from known ground, not a blank slate.
+        Every section of your landing page is a claim. The hypothesis loop turns those claims into tested decisions — and writes the evidence back to the contract so the next agent, sprint, or campaign starts from known ground, not a blank slate.
       </p>
 
       <hr className="border-border/40 mb-8" />

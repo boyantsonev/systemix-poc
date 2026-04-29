@@ -127,10 +127,10 @@ runs, this token carries missing-in-figma status.`}</OutputBlock>
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-4">What&apos;s next</h2>
         <div className="space-y-2 mb-8">
           {[
-            { href: "/docs/guides/setup",             label: "Read the Setup Guide for a full walkthrough" },
-            { href: "/docs/concepts/contract",        label: "Learn about the MDX contract format" },
-            { href: "/docs/concepts/quality-score",   label: "Understand your quality score" },
-            { href: "/docs/concepts/drift",           label: "Drift types and HITL resolution" },
+            { href: "/docs/concepts/evidence-layer",  label: "How production results are written back to the contract" },
+            { href: "/docs/concepts/hermes",          label: "Hermes — the local LLM that authors contracts" },
+            { href: "/docs/concepts/contract",        label: "MDX contract format — frontmatter + prose" },
+            { href: "/docs/concepts/hitl",            label: "Decision Queue — approving Hermes cards" },
           ].map(({ href, label }) => (
             <Link
               key={href}
@@ -144,15 +144,15 @@ runs, this token carries missing-in-figma status.`}</OutputBlock>
         </div>
 
         <div className="rounded-xl border border-border/40 px-4 py-4 bg-muted/20">
-          <p className="text-[12px] font-bold text-foreground mb-1.5">PostHog evidence</p>
+          <p className="text-[12px] font-bold text-foreground mb-1.5">Start the evidence loop</p>
           <p className="text-[12px] text-muted-foreground leading-relaxed mb-2">
-            Component contracts support a <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">evidence-posthog</code> frontmatter field — usage counts from your analytics feed back into the contract to inform drift resolution decisions.
+            Run <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">npx systemix watch</code> to start Hermes continuously. It watches your CSS and Figma for changes, polls PostHog for experiment results, and writes evidence back into each component&apos;s MDX contract as a dated record. The Decision Queue surfaces anything that needs human approval before the contract updates.
           </p>
           <Link
-            href="/graph"
+            href="/docs/concepts/evidence-layer"
             className="text-[11px] font-mono text-muted-foreground/50 hover:text-muted-foreground transition-colors"
           >
-            See the full architecture →
+            Evidence Layer →
           </Link>
         </div>
       </section>
