@@ -116,10 +116,10 @@ export default function SkillsPage() {
           </p>
         </div>
         <div className="rounded-xl border border-border/40 px-4 py-4 bg-muted/20">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-foreground/60 mb-1.5">Agent runtime</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-foreground/60 mb-1.5">Hermes — local LLM author</p>
           <p className="text-[12px] text-muted-foreground leading-relaxed">
-            Skills are executed by <span className="text-foreground font-medium">Hermes</span> — the Systemix agent runtime powered by{" "}
-            <span className="text-foreground font-medium">NousResearch Hermes LLM</span>. Hermes agents orchestrate MCP calls and route outputs to the contract.
+            <span className="text-foreground font-medium">Hermes</span> runs via Ollama (<code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">hermes3</code>, local, no API key).
+            It watches for CSS and Figma changes, authors MDX contract files, polls PostHog for experiment results, and writes evidence back into the contract. Skills are the manual trigger; <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">npx systemix watch</code> runs it continuously.
           </p>
         </div>
       </div>

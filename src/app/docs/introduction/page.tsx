@@ -5,18 +5,21 @@ export default function IntroductionPage() {
     <article className="prose-custom">
       <p className="text-[13px] font-mono text-muted-foreground mb-3">Introduction</p>
       <h1 className="text-[2rem] font-black tracking-tight leading-[1.15] mb-4">
-        The design contract layer<br />for your agents.
+        The evidence layer<br />for your design system.
       </h1>
       <p className="text-[16px] text-muted-foreground leading-relaxed mb-10">
-        Systemix keeps your Figma design system and codebase in verified sync — one token at a time, with a local LLM that writes the rationale, not just the diff.
+        Systemix connects your Figma tokens, production code, and PostHog experiments into one MDX contract per component — with a local LLM that writes the evidence, not just the diff.
       </p>
 
       <hr className="border-border/40 mb-10" />
 
       <section className="mb-10">
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">What it is</h2>
-        <p className="text-[15px] text-muted-foreground leading-relaxed">
-          Systemix ingests tokens and components from Figma and your codebase, detects perceptual drift between them, and has a local LLM (Hermes, via Ollama) author a human-readable contract for each one — with rationale, not just values. The result is a browsable documentation layer where every token and component has a verified status and a prose explanation of any conflict.
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-3">
+          Every component ships as a guess. PostHog measures whether it worked. Hermes — a local LLM running via Ollama — reads the result against the contract&apos;s prior decisions and writes the evidence back as a structured record in the component&apos;s MDX file. The next agent, the next sprint, starts from that ground.
+        </p>
+        <p className="text-[14px] text-muted-foreground leading-relaxed">
+          Systemix also detects perceptual drift between Figma and CSS (CIEDE2000 ΔE scoring), surfaces decisions in a human-in-the-loop queue, and gives every AI coding agent a verified baseline through an MCP server.
         </p>
       </section>
 
@@ -27,11 +30,16 @@ export default function IntroductionPage() {
         </p>
         <div className="grid sm:grid-cols-2 gap-2">
           {([
-            { audience: "Product teams",        headline: "Measure what you actually designed.",          sub: "Token drift corrupts A/B test results before they run." },
-            { audience: "Agencies",             headline: "Deliver on a verified baseline every sprint.", sub: "Client approves Figma. Systemix proves code matches." },
-            { audience: "Legacy systems",       headline: "Know what you have before you redesign.",      sub: "Quality score rises as you resolve conflicts." },
-            { audience: "AI-assisted builders", headline: "Give your agents a memory.",                   sub: "Contract files replace hallucinated token values." },
-            { audience: "Consultancies",        headline: "Turn audits into a repeatable deliverable.",   sub: "Structured findings in hours, not weeks." },
+            {
+              audience: "AI-native product teams",
+              headline: "Give your agents evidence, not guesses.",
+              sub: "Contract files carry verified token values, rationale, and prior experiment results — so agents don't hallucinate baselines.",
+            },
+            {
+              audience: "PostHog / Statsig teams",
+              headline: "Write experiment results back to the component.",
+              sub: "Winning variants are recorded in the contract MDX. The next test starts from what already worked.",
+            },
           ] as const).map(({ audience, headline, sub }) => (
             <div key={audience} className="border border-border/40 rounded-xl px-4 py-4">
               <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">{audience}</p>
@@ -59,10 +67,10 @@ export default function IntroductionPage() {
         {/* Secondary links */}
         <div className="grid sm:grid-cols-2 gap-3">
           {[
-            { href: "/docs/concepts/contract",     label: "MDX Contracts",   sub: "How the contract is structured" },
-            { href: "/docs/guides/setup",           label: "Setup Guide",     sub: "Full walkthrough for your first project" },
-            { href: "/docs/concepts/drift",         label: "Drift & Reconciliation", sub: "How drift is detected and resolved" },
-            { href: "/docs/architecture",           label: "Architecture",    sub: "How all the pieces connect" },
+            { href: "/docs/concepts/evidence-layer", label: "Evidence Layer",       sub: "How PostHog results are written back to the contract" },
+            { href: "/docs/concepts/hermes",         label: "Hermes",               sub: "The local LLM that authors and updates contracts" },
+            { href: "/docs/concepts/contract",       label: "MDX Contracts",        sub: "How the contract is structured" },
+            { href: "/docs/architecture",            label: "Architecture",         sub: "How all the pieces connect" },
           ].map(({ href, label, sub }) => (
             <Link
               key={href}
