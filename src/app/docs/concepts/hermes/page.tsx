@@ -35,7 +35,7 @@ export default function HermesPage() {
             },
             {
               label: "Hypothesis validation cards",
-              body: "When PostHog experiment results are available, Hermes synthesizes the result against the contract memory and writes a HITL card to the queue — including its recommended action and the reasoning chain.",
+              body: "When PostHog experiment results are available, Hermes synthesizes the result against the contract evidence and writes a HITL card to the queue — including its recommended action and the reasoning chain.",
             },
             {
               label: "Drift rationale",

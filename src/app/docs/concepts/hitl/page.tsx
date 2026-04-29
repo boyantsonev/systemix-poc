@@ -43,7 +43,7 @@ export default function HitlPage() {
               type: "hypothesis",
               label: "Hypothesis validation",
               color: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
-              body: "A PostHog experiment has enough data. Hermes synthesizes the result against contract memory and proposes an action. Options: promote the winning variant, run the test longer for more confidence, or reject the hypothesis.",
+              body: "A PostHog experiment has enough data. Hermes synthesizes the result against contract evidence and proposes an action. Options: promote the winning variant, run the test longer for more confidence, or reject the hypothesis.",
               example: "Hero headline A/B: variant B +47% CTR at 87% confidence — promote?",
             },
           ].map(({ type, label, color, body, example }) => (

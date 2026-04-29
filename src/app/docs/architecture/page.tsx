@@ -9,7 +9,7 @@ export default function ArchitecturePage() {
         System graph
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
-        How PostHog, Hermes, contract memory, skills, and your codebase connect. Click any node to inspect it.
+        How PostHog, Hermes, the evidence contract, skills, and your codebase connect. Click any node to inspect it.
       </p>
 
       {/* Full-bleed graph canvas */}

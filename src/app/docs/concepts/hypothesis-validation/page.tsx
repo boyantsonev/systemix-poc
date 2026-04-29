@@ -50,7 +50,7 @@ export default function HypothesisValidationPage() {
             {
               step: "2",
               label: "Growth agent identifies the hypothesis",
-              body: "A growth or CRO agent reads PostHog funnel data and the contract memory for that section. It surfaces where drop-off is occurring, which ICP segments aren't converting, and proposes a testable hypothesis — e.g. \"The Problem section is written for technical founders but 60% of inbound is coming from ops-heavy roles via LinkedIn.\"",
+              body: "A growth or CRO agent reads PostHog funnel data and the contract evidence for that section. It surfaces where drop-off is occurring, which ICP segments aren't converting, and proposes a testable hypothesis — e.g. \"The Problem section is written for technical founders but 60% of inbound is coming from ops-heavy roles via LinkedIn.\"",
             },
             {
               step: "3",
@@ -65,7 +65,7 @@ export default function HypothesisValidationPage() {
             {
               step: "5",
               label: "Hermes synthesizes the result",
-              body: "When the experiment reaches significance, Hermes reads the result against the full contract memory for that section: the original intent, the ICP hypothesis, every prior test and its outcome. It generates a HITL card with the result, a confidence score, and a recommended action — grounded in what's been tried before.",
+              body: "When the experiment reaches significance, Hermes reads the result against the full contract evidence for that section: the original intent, the ICP hypothesis, every prior test and its outcome. It generates a HITL card with the result, a confidence score, and a recommended action — grounded in what's been tried before.",
             },
             {
               step: "6",
@@ -90,7 +90,7 @@ export default function HypothesisValidationPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Why contract memory makes experiments trustworthy</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Why contract evidence makes experiments trustworthy</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
           Without a record of intent, experiments produce isolated data points. You know which variant won — you don&apos;t know why the original was written the way it was, which audience hypothesis it was testing, or what was tried and rejected before. That context disappears into Slack threads and stale Notion docs.
         </p>
@@ -160,7 +160,7 @@ rationale: |
           {[
             { agent: "Growth / Analytics agent", role: "Reads PostHog funnel data, identifies low-converting sections, proposes testable hypotheses" },
             { agent: "Ad Creative / Marketing agent", role: "Generates copy variants grounded in the hypothesis — per ICP, per funnel stage, per channel" },
-            { agent: "Hermes (local LLM)", role: "Synthesizes experiment results against contract memory, generates HITL card with recommendation" },
+            { agent: "Hermes (local LLM)", role: "Synthesizes experiment results against contract evidence, generates HITL card with recommendation" },
             { agent: "Human (HITL queue)", role: "Approves, rejects, or modifies — decision and rationale written to contract before loop closes" },
           ].map(({ agent, role }) => (
             <div key={agent} className="flex gap-3 text-[13px]">
