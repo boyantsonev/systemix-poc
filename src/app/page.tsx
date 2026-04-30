@@ -5,8 +5,8 @@ import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
 
 export const metadata: Metadata = {
-  title: "Systemix — Every component is a guess until production proves it.",
-  description: "The evidence layer for design systems. Production results, attributed to the variant, written into your component contracts. Open source. MCP-native.",
+  title: "Systemix — You shipped. Did it work?",
+  description: "The contract that holds what you shipped, what the signals said, and what you decided next. Hermes reads PostHog, Vercel, Figma, and social — you decide what ships next. Open source.",
 };
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ function LandingFooter() {
         <div className="flex items-center gap-2">
           <SLogo size={14} className="text-muted-foreground/40" />
           <span className="text-[12px] text-muted-foreground/40 font-mono">
-            The Evidence Layer for design systems.
+            The contract for what you ship.
           </span>
         </div>
         <div className="flex items-center gap-4 text-[12px] text-muted-foreground/40 font-mono">
@@ -80,130 +80,246 @@ function LandingFooter() {
 
 function Hero() {
   return (
-    <section className="pt-24 pb-24">
+    <section className="pt-24 pb-20">
       <div className="max-w-3xl mx-auto text-center">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-6">
-          The Evidence Layer for design systems
+          The contract for what you ship, measure, and learn
         </p>
         <h1 className="text-[2.75rem] sm:text-[3.5rem] font-black tracking-tight leading-[1.1] mb-6">
-          Every component is a guess<br />
-          <span className="text-muted-foreground">until production proves it.</span>
+          You shipped.<br />
+          <span className="text-muted-foreground">Did it work?</span>
         </h1>
         <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
-          Your A/B test measured a variant nobody designed. Your agent shipped a token Figma deprecated last quarter. Systemix is the layer where every component carries its production evidence — so the next design decision is informed by what actually worked, not by what got documented.
+          A landing page, a component, a feature flag — every experiment leaves signals scattered across PostHog, Vercel, Figma, social. Systemix is the contract that pulls them together. Hermes reads everything. You decide what ships next.
         </p>
 
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-4">
           <InstallCommand />
+          <p className="text-[12px] font-mono text-muted-foreground/40">
+            Open source · Works with Claude Code · Cursor · Codex · Gemini CLI
+          </p>
         </div>
-
-        <p className="text-[12px] font-mono text-muted-foreground/40 mt-6 max-w-md mx-auto leading-relaxed">
-          When an agent asks &quot;what is <code className="text-muted-foreground/60">--color-primary</code>?&quot; — the contract answers with the value, the rationale, and the experiment that proved it.
-        </p>
       </div>
     </section>
   );
 }
 
-function WorksWith() {
-  const tools = [
-    {
-      name: "Claude Code",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
-          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 1.5a8.5 8.5 0 110 17 8.5 8.5 0 010-17zm0 3.25a.75.75 0 00-.75.75v3.75H7.5a.75.75 0 000 1.5h3.75v3.75a.75.75 0 001.5 0v-3.75h3.75a.75.75 0 000-1.5h-3.75V7.5A.75.75 0 0012 6.75z" />
-        </svg>
-      ),
-    },
-    {
-      name: "Codex",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
-          <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 004.981 4.18a5.985 5.985 0 00-3.998 2.9 6.046 6.046 0 00.743 7.097 5.98 5.98 0 00.51 4.911 6.051 6.051 0 006.515 2.9A5.985 5.985 0 0013.26 24a6.056 6.056 0 005.772-4.206 5.99 5.99 0 003.997-2.9 6.056 6.056 0 00-.747-7.073zM13.26 22.43a4.476 4.476 0 01-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 00.392-.681v-6.737l2.02 1.168a.071.071 0 01.038.052v5.583a4.504 4.504 0 01-4.494 4.494zM3.6 18.304a4.47 4.47 0 01-.535-3.014l.142.085 4.783 2.759a.771.771 0 00.78 0l5.843-3.369v2.332a.08.08 0 01-.033.062L9.74 19.95a4.5 4.5 0 01-6.14-1.646zM2.34 7.896a4.485 4.485 0 012.366-1.973V11.6a.766.766 0 00.388.676l5.815 3.355-2.02 1.168a.076.076 0 01-.071 0l-4.83-2.786A4.504 4.504 0 012.34 7.896zm16.597 3.868l-5.843-3.38 2.019-1.164a.076.076 0 01.072 0l4.83 2.786a4.49 4.49 0 01-.676 8.105v-5.683a.79.79 0 00-.402-.664zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 00-.785 0L9.409 9.23V6.897a.066.066 0 01.028-.061l4.83-2.787a4.5 4.5 0 016.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 01-.038-.057V6.075a4.5 4.5 0 017.375-3.453l-.142.08-4.778 2.758a.795.795 0 00-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
-        </svg>
-      ),
-    },
-    {
-      name: "Gemini CLI",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        </svg>
-      ),
-    },
-    {
-      name: "OpenCode",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <polyline points="16 18 22 12 16 6" />
-          <polyline points="8 6 2 12 8 18" />
-        </svg>
-      ),
-    },
-    {
-      name: "Cursor",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="2"/>
-          <path d="M8 12h8M12 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      ),
-    },
+// ── The Loop (circular diagram) ───────────────────────────────────────────────
+
+function LoopDiagram() {
+  const nodes = [
+    { id: "ship",     label: "You ship",     sub: "landing, feature, prototype", angle: 270, color: "text-foreground", border: "border-border bg-muted/20" },
+    { id: "signals",  label: "Signals",      sub: "PostHog · Vercel · social",   angle: 342, color: "text-cyan-400",   border: "border-cyan-500/30 bg-cyan-500/5" },
+    { id: "hermes",   label: "Hermes",       sub: "synthesizes the result",      angle: 54,  color: "text-amber-400",  border: "border-amber-500/30 bg-amber-500/5" },
+    { id: "decision", label: "Decision",     sub: "you approve or reject",       angle: 126, color: "text-violet-400", border: "border-violet-500/30 bg-violet-500/5" },
+    { id: "contract", label: "Contract",     sub: "evidence written back",       angle: 198, color: "text-emerald-400", border: "border-emerald-500/30 bg-emerald-500/5" },
   ];
 
+  const r = 130;
+  const cx = 200;
+  const cy = 200;
+
   return (
-    <div className="border-t border-border/40 py-5">
-      <div className="flex items-center gap-6 flex-wrap justify-center">
-        <span className="text-[11px] font-mono text-muted-foreground/30 uppercase tracking-widest shrink-0">
-          Works with
-        </span>
-        {tools.map(({ name, icon }) => (
-          <div key={name} className="flex items-center gap-1.5 text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors">
-            {icon}
-            <span className="text-[12px] font-medium">{name}</span>
+    <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+      {/* SVG loop */}
+      <div className="shrink-0 relative" style={{ width: 400, height: 400 }}>
+        <svg viewBox="0 0 400 400" className="w-full h-full">
+          <circle
+            cx={cx} cy={cy} r={r}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeDasharray="4 6"
+            className="text-border/40"
+          />
+
+          {nodes.map((node, i) => {
+            const next = nodes[(i + 1) % nodes.length];
+            const aRad = (node.angle * Math.PI) / 180;
+            const bRad = (next.angle * Math.PI) / 180;
+            const ax = cx + r * Math.cos(aRad);
+            const ay = cy + r * Math.sin(aRad);
+            const bx = cx + r * Math.cos(bRad);
+            const by = cy + r * Math.sin(bRad);
+            const midAngle = ((node.angle + next.angle) / 2 * Math.PI) / 180;
+            const mx = cx + (r + 18) * Math.cos(midAngle);
+            const my = cy + (r + 18) * Math.sin(midAngle);
+            return (
+              <path
+                key={node.id}
+                d={`M ${ax} ${ay} Q ${mx} ${my} ${bx} ${by}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                markerEnd="url(#arrow)"
+                className="text-border/50"
+              />
+            );
+          })}
+
+          <defs>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="currentColor" className="text-border/60" />
+            </marker>
+          </defs>
+
+          {nodes.map((node) => {
+            const rad = (node.angle * Math.PI) / 180;
+            const x = cx + r * Math.cos(rad);
+            const y = cy + r * Math.sin(rad);
+            return (
+              <circle key={node.id} cx={x} cy={y} r="8" fill="hsl(var(--background))" stroke="currentColor" strokeWidth="1.5" className="text-border" />
+            );
+          })}
+        </svg>
+
+        {nodes.map((node) => {
+          const rad = (node.angle * Math.PI) / 180;
+          const lx = cx + (r + 52) * Math.cos(rad);
+          const ly = cy + (r + 52) * Math.sin(rad);
+          return (
+            <div
+              key={node.id}
+              className="absolute text-center"
+              style={{
+                left: `${(lx / 400) * 100}%`,
+                top: `${(ly / 400) * 100}%`,
+                transform: "translate(-50%, -50%)",
+                width: 100,
+              }}
+            >
+              <p className={`text-[11px] font-bold ${node.color} leading-none mb-0.5`}>{node.label}</p>
+              <p className="text-[9px] font-mono text-muted-foreground/50 leading-tight">{node.sub}</p>
+            </div>
+          );
+        })}
+
+        <div
+          className="absolute text-center"
+          style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
+        >
+          <p className="text-[10px] font-mono text-muted-foreground/40 uppercase tracking-widest leading-tight">build<br />measure<br />learn</p>
+        </div>
+      </div>
+
+      {/* Step-by-step */}
+      <div className="flex-1 space-y-0">
+        {[
+          { n: "01", label: "You ship something", body: "A landing variant, a new component, a feature flag rollout, a Figma update. Anything that has consequences in production." },
+          { n: "02", label: "Signals come in",    body: "PostHog tracks behavior. Vercel logs the deploy. Social posts get engagement. Figma drift gets flagged. Systemix listens to all of it." },
+          { n: "03", label: "Hermes reads against the contract", body: "A local LLM (any Ollama model) reads the new signals against the contract's history — what was tested before, what was rejected, what worked." },
+          { n: "04", label: "A decision card queues for you", body: "Promote the variant. Run longer. Reject the hypothesis. One click. Hermes shows the rationale, you decide." },
+          { n: "05", label: "Evidence is written back", body: "The decision, the data, and the date are written into the contract. The next experiment — by you, an agent, or a teammate — starts from this ground." },
+        ].map(({ n, label, body }) => (
+          <div key={n} className="flex gap-4 pb-5">
+            <div className="flex flex-col items-center gap-0 shrink-0">
+              <div className="w-6 h-6 rounded-full border border-border/60 flex items-center justify-center text-[9px] font-mono font-bold text-muted-foreground/40 shrink-0">
+                {n}
+              </div>
+              {n !== "05" && <div className="w-px flex-1 bg-border/25 mt-1" />}
+            </div>
+            <div className="pb-1">
+              <p className="text-[13px] font-semibold text-foreground mb-1">{label}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed">{body}</p>
+            </div>
           </div>
         ))}
+        <Link
+          href="/docs/concepts/hypothesis-validation"
+          className="text-[12px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+        >
+          Deep dive: the hypothesis validation loop →
+        </Link>
       </div>
     </div>
   );
 }
 
-function Problem() {
-  const pains = [
+function TheLoop() {
+  return (
+    <section className="py-24 border-t border-border/40">
+      <div className="max-w-4xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          How it works
+        </p>
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+          One contract. Every signal.<br />The decision Hermes wrote so you don&apos;t have to.
+        </h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
+          The same loop, whether you&apos;re shipping a landing page, a component, or a full prototype. Systemix is the glue between the tools you already use.
+        </p>
+
+        <LoopDiagram />
+      </div>
+    </section>
+  );
+}
+
+// ── What an experiment can be ────────────────────────────────────────────────
+
+function ExperimentTypes() {
+  const types = [
     {
-      label: "Lost rationale",
-      body: "The variant that won in March is now a hex value with no story attached. Six months later the same dead-end gets proposed again, by a human or an agent.",
+      tag: "landing-page",
+      label: "A landing page",
+      example: "Test 'evidence layer' vs 'memory layer' framing on ops-role traffic",
+      signals: ["PostHog conversion", "Twitter engagement", "Vercel deploy ID"],
+      decision: "Promote variant B (+47% CTR · 87% confidence)",
     },
     {
-      label: "Stale context",
-      body: "Your agent reads the current token value but not the experiment that set it. It ships whichever color was in the file last — not the one production validated.",
+      tag: "component",
+      label: "A component",
+      example: "Hero CTA button — copy and color variants",
+      signals: ["PostHog click events", "Figma drift", "Storybook story"],
+      decision: "Keep current variant — 5% lift not significant",
     },
     {
-      label: "Blind baseline",
-      body: "PostHog says variant B won. But if the token drifted before the test, you measured a variant nobody designed. The result isn't wrong — it's about the wrong thing.",
+      tag: "feature-flag",
+      label: "A feature flag",
+      example: "New onboarding flow rolled out to 20% of new users",
+      signals: ["PostHog activation funnel", "Retention cohort", "Support tickets"],
+      decision: "Run longer — needs 14 days for retention signal",
     },
   ];
 
   return (
     <section className="py-24 border-t border-border/40">
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-[1.75rem] font-black tracking-tight mb-4">
-          Storybook tells your agent what exists.<br />Nobody tells it what worked.
+      <div className="max-w-4xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          What an experiment can be
+        </p>
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+          The contract scales with what you ship.
         </h2>
-        <div className="text-[15px] text-muted-foreground leading-relaxed space-y-4 mb-14 max-w-2xl">
-          <p>
-            You can document a component. You can sync it across Figma and code. You can write a story for it. But you still can&apos;t answer the question that decides the next sprint: <em>did this design decision work?</em> The answer lives in PostHog, in someone&apos;s head, or in a Slack thread from March.
-          </p>
-          <p>
-            Systemix writes the answer back into the component&apos;s contract — measured in production, attributed to the variant, dated. The next agent reading it sees the evidence, not just the value.
-          </p>
-        </div>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
+          One MDX file per experiment. Same format. Same loop. Whether you&apos;re a builder testing a landing page or a team measuring a design system change — the contract holds the hypothesis, the signals, and the decision.
+        </p>
 
-        <div className="grid sm:grid-cols-3 gap-px bg-border/40 rounded-xl overflow-hidden border border-border/40">
-          {pains.map(({ label, body }) => (
-            <div key={label} className="bg-background px-5 py-6">
-              <p className="text-[12px] font-bold text-foreground/80 mb-2 uppercase tracking-wide">{label}</p>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">{body}</p>
+        <div className="grid md:grid-cols-3 gap-3">
+          {types.map(({ tag, label, example, signals, decision }) => (
+            <div key={tag} className="border border-border/40 rounded-xl px-4 py-4 bg-background flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[10px] font-mono text-muted-foreground/50 border border-border/40 px-1.5 py-0.5 rounded">
+                  {tag}
+                </span>
+              </div>
+              <p className="text-[14px] font-bold text-foreground mb-2">{label}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed mb-4">{example}</p>
+
+              <p className="text-[10px] font-mono text-muted-foreground/40 uppercase tracking-widest mb-1.5">Signals</p>
+              <ul className="space-y-0.5 mb-4">
+                {signals.map((s) => (
+                  <li key={s} className="text-[11px] font-mono text-muted-foreground/70 flex gap-1.5">
+                    <span className="text-muted-foreground/30">→</span>
+                    {s}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto pt-3 border-t border-border/30">
+                <p className="text-[10px] font-mono text-emerald-400/70 uppercase tracking-widest mb-1">Decision</p>
+                <p className="text-[11px] font-mono text-foreground/70 leading-snug">{decision}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -212,191 +328,161 @@ function Problem() {
   );
 }
 
-function HowItWorks() {
+// ── HITL Preview ──────────────────────────────────────────────────────────────
+
+function HitlPreview() {
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          Hermes &middot; Live decision card
+        </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
-          How it works
+          Hermes tells you what it found.<br />You decide what happens next.
         </h2>
-        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
-          Every component on Systemix is a hypothesis. PostHog measures whether it worked. Hermes reads the result against the contract — past experiments, prior decisions, what&apos;s already been tried — and writes the evidence back as a structured line in the component&apos;s MDX file. The next agent, the next sprint, starts from that ground.
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
+          When the signals reach significance, Hermes surfaces a card with the result, a recommendation, and the contract evidence behind the call. One click writes everything back.
         </p>
 
-        {/* Hypothesis validation loop */}
-        <div className="rounded-xl border border-border/40 bg-muted/5 overflow-hidden mb-6">
-          <div className="px-4 py-2.5 border-b border-border/30 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted-foreground/50">Hypothesis validation — what the loop looks like</span>
-            <Link
-              href="/dashboard"
-              className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
-            >
-              Open Dashboard →
-            </Link>
-          </div>
-
-          {/* Experiment result */}
-          <div className="px-4 py-4 border-b border-border/20">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-mono font-medium bg-cyan-500/15 text-cyan-400 border-cyan-500/30">
-                experiment
-              </span>
-              <span className="text-[13px] font-mono text-foreground">Hero headline — variant A vs B</span>
-              <span className="text-[10px] font-mono text-emerald-400 ml-auto">87% confidence</span>
+        <div className="rounded-xl border border-emerald-500/20 bg-card overflow-hidden mb-6">
+          <div className="px-4 pt-3.5 pb-3">
+            <div className="flex items-start gap-2.5 mb-3">
+              <span className="text-[12px] font-mono mt-px shrink-0 text-emerald-400">◈</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-400">Hypothesis</span>
+                  <span className="text-[10px] font-mono text-muted-foreground/30">2h ago</span>
+                  <span className="text-[10px] font-mono text-muted-foreground/30">Systemix Landing</span>
+                </div>
+                <p className="text-[12px] font-mono text-foreground/80 leading-snug">
+                  Hero headline — &ldquo;You shipped. Did it work?&rdquo; vs control framing
+                </p>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wide shrink-0 text-amber-400">pending</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="pl-5 mb-3 grid grid-cols-3 gap-2">
               {[
-                { label: "Baseline (A)",  value: "3.2% CTR",  color: "text-muted-foreground" },
-                { label: "Variant (B)",   value: "4.7% CTR",  color: "text-emerald-400"       },
-                { label: "Delta",         value: "+47%  ↑",   color: "text-emerald-400"       },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="rounded-lg border border-border/40 px-3 py-2.5">
-                  <p className="text-[10px] font-mono text-muted-foreground/50 mb-1">{label}</p>
-                  <p className={`text-[13px] font-mono font-medium ${color}`}>{value}</p>
+                { label: "Baseline", value: "3.2%", sub: "CTR" },
+                { label: "Variant B", value: "4.7%", sub: "CTR", highlight: true },
+                { label: "Delta", value: "+47%", sub: "↑", highlight: true },
+              ].map(({ label, value, sub, highlight }) => (
+                <div key={label} className={`rounded border px-2.5 py-2 ${highlight ? "border-emerald-500/20 bg-emerald-500/5" : "border-border/40"}`}>
+                  <p className="text-[9px] font-mono text-muted-foreground/40 mb-0.5 uppercase">{label}</p>
+                  <p className={`text-[14px] font-mono font-bold ${highlight ? "text-emerald-400" : "text-foreground/60"}`}>{value} <span className="text-[10px]">{sub}</span></p>
                 </div>
               ))}
             </div>
 
-            {/* Hermes synthesis */}
-            <div className="rounded-lg bg-muted/30 border border-border/30 px-3 py-2.5 mb-4">
-              <p className="text-[10px] font-mono text-amber-400/70 uppercase tracking-widest mb-1.5">Hermes synthesis</p>
-              <p className="text-[12px] text-muted-foreground leading-relaxed">
-                Variant B converted +47% at 87% confidence. Contract evidence: the provocative framing tested in March underperformed by 23% on the same segment. Recommend promoting B and writing the rationale into the contract before the next iteration.
-              </p>
+            <div className="pl-5 mb-2.5 flex items-center gap-3">
+              <div className="w-[60px] h-1 rounded-full bg-muted/40 overflow-hidden">
+                <div className="h-full rounded-full bg-emerald-500/60" style={{ width: "87%" }} />
+              </div>
+              <span className="text-[10px] font-mono text-muted-foreground/50">87% confidence · 1,240 sessions</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1.5 rounded border border-border/50 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-border transition-colors">
+            <p className="text-[11px] text-muted-foreground/60 leading-relaxed pl-5 mb-2.5">
+              Variant B converts better on builder-persona traffic from Twitter and HN. Prior test (March) with the technical-founder framing underperformed 23% on the same audience. Contract history supports promoting B.
+            </p>
+
+            <div className="pl-5 mb-3 rounded-lg border border-emerald-500/15 bg-emerald-500/5 px-3 py-2">
+              <p className="text-[9px] font-mono text-emerald-400/60 uppercase tracking-widest mb-1">Hermes recommends</p>
+              <p className="text-[11px] font-mono text-emerald-300/80">Promote variant B. Write rationale to contract. Test CTA copy next.</p>
+            </div>
+
+            <div className="pl-5 flex items-center gap-1.5">
+              <button className="px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold hover:bg-emerald-500/20 transition-colors">
                 Promote variant
               </button>
-              <button className="px-3 py-1.5 rounded border border-border/50 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-border transition-colors">
+              <button className="px-3 py-1 rounded bg-muted border border-border text-muted-foreground text-[10px] font-bold hover:bg-muted/70 transition-colors">
                 Run longer
               </button>
-              <span className="text-[11px] font-mono text-muted-foreground/30 ml-2">— evidence is written back to the contract</span>
-            </div>
-          </div>
-
-          {/* Evidence trace */}
-          <div className="px-4 py-3 flex items-center gap-3 opacity-50">
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-mono font-medium bg-blue-500/15 text-blue-400 border-blue-500/30">
-              evidence
-            </span>
-            <span className="text-[12px] font-mono text-muted-foreground">Hero headline — contract carries 3 prior experiments + current decision</span>
-            <span className="text-[10px] font-mono text-muted-foreground/40 ml-auto">next agent will read this</span>
-          </div>
-        </div>
-
-        {/* Pipeline reference — secondary */}
-        <div className="grid grid-cols-3 gap-3 mb-6 opacity-70">
-          <div className="space-y-2">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground/40 mb-3 px-1">Sources</p>
-            {[
-              { label: "PostHog events", color: "bg-cyan-400"    },
-              { label: "contract/",      color: "bg-blue-400"    },
-              { label: "globals.css",    color: "bg-violet-400"  },
-            ].map(({ label, color }) => (
-              <div key={label} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/40 bg-muted/10">
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${color}`} />
-                <span className="text-[12px] font-mono text-muted-foreground truncate">{label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-2">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground/40 mb-3 px-1">Skills</p>
-            {["/tokens", "/component", "/drift-report", "/deploy"].map((cmd) => (
-              <div key={cmd} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/40 bg-muted/10">
-                <span className="text-muted-foreground/20 text-[10px] shrink-0">→</span>
-                <code className="text-[12px] font-mono text-foreground/70">{cmd}</code>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-2">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground/40 mb-3 px-1">Output</p>
-            <div className="px-3 py-2 rounded-lg border border-border/40 bg-muted/10">
-              <p className="text-[12px] font-mono text-muted-foreground">contract/</p>
-              <p className="text-[10px] font-mono text-muted-foreground/40 mt-0.5">evidence per token + decision</p>
-            </div>
-            <div className="px-3 py-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5">
-              <p className="text-[12px] font-mono text-emerald-400">Score 83 / 100</p>
-              <p className="text-[10px] font-mono text-muted-foreground/40 mt-0.5">healthy · 2 pending</p>
+              <button className="px-3 py-1 rounded bg-muted border border-border text-muted-foreground/50 text-[10px] font-bold hover:bg-muted/70 transition-colors">
+                Discard
+              </button>
             </div>
           </div>
         </div>
 
-        <Link
-          href="/docs/architecture"
-          className="text-[13px] text-muted-foreground/50 hover:text-muted-foreground transition-colors font-mono"
-        >
-          See full architecture diagram →
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link
+            href="/dashboard"
+            className="text-[13px] font-mono text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+          >
+            Open the dashboard →
+          </Link>
+          <Link
+            href="/docs/concepts/hitl"
+            className="text-[13px] font-mono text-muted-foreground/30 hover:text-muted-foreground transition-colors"
+          >
+            How HITL works →
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
-function SectionGlossary() {
+// ── The tools it connects ─────────────────────────────────────────────────────
+
+function MagicGlue() {
   const tools = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      tag: "app",
-      desc: "One score per project. See which contracts have fresh production evidence, which have unresolved drift, and which are running blind. The Beta starting point.",
-    },
-    {
-      name: "Design System",
-      href: "/design-system",
-      tag: "triage + docs",
-      desc: "Every token and component, with its contract open beside it. Evidence rows from PostHog, drift status, and the prose Hermes wrote — readable by humans and agents alike.",
-    },
-    {
-      name: "Skills",
-      href: "/docs/skills",
-      tag: "commands",
-      desc: "Slash commands inside Claude Code, Cursor, or any MCP editor. /component reads the contract before generating. /tokens syncs values. /evidence pulls the latest PostHog results into the contract.",
-    },
+    { name: "PostHog / Statsig", role: "Where your experiment data already lives. Systemix reads it — nothing moves." },
+    { name: "Vercel",            role: "Deploy target. The post-deploy hook tells Hermes a new variant is live, ready to measure." },
+    { name: "Figma",             role: "Source of design tokens. Drift between Figma and code is detected and surfaced for resolution before a test starts." },
+    { name: "Social signals",    role: "Twitter, LinkedIn, Reddit referrers attributed to specific deploys. Know which channel converted, not just that conversion happened." },
+    { name: "Ollama (Hermes)",   role: "Runs the synthesis locally. No API key. Any Ollama-compatible model works as the backend — swap in a config line." },
+    { name: "MCP server",        role: "Exposes contracts to Claude Code, Cursor, or any MCP-compatible agent. Agents read the contract before they ship the next variant." },
   ];
 
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
-          What each part does
-        </h2>
-        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
-          Three surfaces. One contract underneath. The contract is where the evidence lives — everything else reads it or writes to it.
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          The tools it connects
         </p>
-        <div className="grid sm:grid-cols-2 gap-3">
-          {tools.map(({ name, href, tag, desc }) => (
-            <Link
-              key={href}
-              href={href}
-              className="block border border-border/40 rounded-xl px-5 py-5 hover:border-border hover:bg-muted/20 transition-colors group"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-[14px] font-bold text-foreground group-hover:text-foreground">{name}</p>
-                <span className="text-[10px] font-mono text-muted-foreground/40 border border-border/40 px-1.5 py-0.5 rounded">{tag}</span>
-              </div>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
-            </Link>
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+          Systemix is the magic glue.<br />Not another tool to learn.
+        </h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
+          The stack you already have is the stack. Systemix wraps around it — listening, synthesizing, writing back to a single contract that everyone (you, your agents, your teammates) reads.
+        </p>
+
+        <div className="rounded-xl border border-border/40 overflow-hidden divide-y divide-border/30">
+          {tools.map(({ name, role }) => (
+            <div key={name} className="flex items-start gap-4 px-5 py-4 bg-background">
+              <span className="text-[12px] font-mono font-bold text-foreground/70 shrink-0 w-[160px] pt-0.5">{name}</span>
+              <span className="text-[13px] text-muted-foreground leading-relaxed">{role}</span>
+            </div>
           ))}
         </div>
+
+        <p className="text-[12px] font-mono text-muted-foreground/40 mt-6">
+          No database. No cloud account. No new API to learn. The contract is a file in your repo.
+        </p>
       </div>
     </section>
   );
 }
 
-function TwoUseCases() {
+// ── Use cases ─────────────────────────────────────────────────────────────────
+
+function UseCases() {
   const cases = [
     {
-      audience: "Product teams shipping with Cursor or Claude Code",
-      headline: "Stop guessing what your agent will pick.",
-      body: "Your agent reads the contract before it ships. Every token, every component carries the value, the rationale, and the production result that justified it. No more rediscovering the same dead-end variant six months apart.",
+      audience: "Builders shipping prototypes",
+      headline: "Know which experiment moved the metric.",
+      body: "Ship a landing variant in the morning. Hermes reads the PostHog signals, the Twitter referrer engagement, and the Vercel deploy. By evening you have a decision card: promote, run longer, or kill. The contract holds the rationale for the next iteration.",
     },
     {
-      audience: "Teams already running PostHog or Statsig",
+      audience: "Design system teams",
+      headline: "Stop re-litigating tokens that production already settled.",
+      body: "Every component carries the value, the rationale, and the production result that justified it. Your agent reads the contract before it ships. The variant that won in March doesn't get re-proposed by an agent in October.",
+    },
+    {
+      audience: "PostHog / Statsig teams",
       headline: "Close the loop your analytics never closed.",
-      body: "PostHog tells you variant B won. Systemix writes that result into the component's contract — attributed to the variant, dated, with confidence. Your next experiment starts from known ground, not a fresh guess.",
+      body: "PostHog tells you variant B won. Systemix writes that result into the experiment's contract — attributed, dated, with confidence. Your next test starts from known ground.",
     },
   ];
 
@@ -404,22 +490,22 @@ function TwoUseCases() {
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
-          The evidence layer · Two ways teams use it
+          Three teams. Same contract.
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-12">
-          Same contract. Different problem solved.
+          Same loop. Different problem solved.
         </h2>
 
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid sm:grid-cols-3 gap-3">
           {cases.map(({ audience, headline, body }) => (
-            <div key={audience} className="border border-border/40 rounded-xl px-5 py-6 bg-background">
+            <div key={audience} className="border border-border/40 rounded-xl px-5 py-5 bg-background">
               <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-3">
                 {audience}
               </p>
               <p className="text-[14px] font-bold text-foreground mb-2 leading-snug">
                 {headline}
               </p>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">
+              <p className="text-[12px] text-muted-foreground leading-relaxed">
                 {body}
               </p>
             </div>
@@ -430,11 +516,43 @@ function TwoUseCases() {
   );
 }
 
+// ── Storybook + drift (demoted, supporting context) ───────────────────────────
+
+function StorybookCallout() {
+  return (
+    <section className="py-20 border-t border-border/40">
+      <div className="max-w-3xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          For design system teams &middot; Why this matters
+        </p>
+        <h2 className="text-[1.5rem] font-black tracking-tight mb-4">
+          Storybook tells your agent what exists.<br />Nobody tells it what worked.
+        </h2>
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-6 max-w-2xl">
+          You can document a component. You can sync it across Figma and code. You can write a story for it. But you still can&apos;t answer the question that decides the next sprint: <em>did this design decision work?</em> The contract carries the answer — measured in production, attributed to the variant, dated.
+        </p>
+
+        <div className="rounded-xl border border-border/40 bg-muted/5 px-5 py-4">
+          <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Drift detection — supporting layer</p>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            Before any test result can be trusted, the component has to be in a known state. Systemix tracks Figma↔code token drift and surfaces it as a HITL card — so you know whether you measured what you designed, not a drifted variant.{" "}
+            <Link href="/design-system" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline underline-offset-2">
+              Design System health →
+            </Link>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Quality gate ──────────────────────────────────────────────────────────────
+
 function QualityGate() {
   const tiers = [
-    { score: "≥ 80", state: "Evidence-ready",  dot: "bg-emerald-500", body: "Contract is backed. Tokens are resolved against Figma, drift is cleared, recent production evidence is attached. Safe for agents to read, safe for the next experiment to build on." },
-    { score: "≥ 60", state: "Partial evidence", dot: "bg-amber-500",   body: "Some claims are unbacked. Either drift is unresolved or production data is missing. Your agent will still read the contract — but the next decision is partly a guess." },
-    { score: "< 60", state: "Unbacked",         dot: "bg-red-400",     body: "Too many open questions. Tokens drift, no recent production data, or contradictions Hermes flagged. Don't ship from this contract until it's triaged." },
+    { score: "≥ 80", state: "Evidence-ready",  dot: "bg-emerald-500", body: "Contract is backed. Recent production signals attached, drift cleared, decision history recorded. Safe for agents to read, safe for the next experiment to build on." },
+    { score: "≥ 60", state: "Partial evidence", dot: "bg-amber-500",   body: "Some claims are unbacked. Either drift is unresolved or production signals are stale. Your agent will still read the contract — but the next decision is partly a guess." },
+    { score: "< 60", state: "Unbacked",         dot: "bg-red-400",     body: "Too many open questions. No recent signals, contradictions Hermes flagged, or unresolved decisions. Don't ship from this contract until it's triaged." },
   ];
 
   return (
@@ -444,7 +562,7 @@ function QualityGate() {
           An evidence score on every contract.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
-          Systemix scores every contract from 0 to 100. The score reflects how much of the component is backed by evidence: tokens resolved, drift cleared, production results attached. It&apos;s the single number that tells your agent — and your team — whether the contract is ready to be relied on.
+          Systemix scores every contract from 0 to 100. The score reflects how much of the experiment is backed by evidence: signals attached, decisions recorded, drift cleared. It&apos;s the single number that tells your agent — and your team — whether the contract is ready to be relied on.
         </p>
 
         <div className="space-y-px rounded-xl overflow-hidden border border-border/40">
@@ -464,28 +582,30 @@ function QualityGate() {
         </div>
 
         <p className="text-[13px] text-muted-foreground leading-relaxed mt-6 max-w-xl">
-          The score rises as evidence accumulates. It drops when Figma drifts, when PostHog data goes stale, or when a decision is overridden without rationale. Target: ≥ 80 on every contract your agent reads.
+          The score rises as evidence accumulates. It drops when signals go stale, when a decision is overridden without rationale, or when drift goes unresolved. Target: ≥ 80 on every contract you ship from.
         </p>
       </div>
     </section>
   );
 }
 
+// ── Bottom CTA ────────────────────────────────────────────────────────────────
+
 function BottomCTA() {
   const steps = [
-    { n: "1", label: "Run Hermes locally",        cmd: "ollama pull hermes3", comment: "local LLM — no API key, no design data leaving your machine" },
-    { n: "2", label: "Open the contract surface", cmd: "npm run dev",         comment: "/design-system in your browser — every contract, every score" },
-    { n: "3", label: "Pull evidence in",          cmd: "npx systemix watch",  comment: "continuous Hermes run — pulls PostHog evidence into every contract" },
+    { n: "1", label: "Run Hermes locally",      cmd: "ollama pull hermes3", comment: "any Ollama model works · no API key · no cloud" },
+    { n: "2", label: "Initialize Systemix",     cmd: "npx systemix init",   comment: "creates contracts/, connects to PostHog, sets up the Vercel hook" },
+    { n: "3", label: "Start the loop",          cmd: "npx systemix watch",  comment: "Hermes pulls signals, queues HITL decisions" },
   ];
 
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-[1.75rem] font-black tracking-tight mb-4">
-          Run it locally.
+          Run it locally in three commands.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
-          Hermes runs on Ollama — no API key, no cloud, no design data leaving your machine. PostHog stays where it already is. The contract lives in your repo. Systemix is the layer that ties them together.
+          No database. No cloud account. No new API. Hermes runs on Ollama, the contract lives in your repo, and the signals come from where they already are. Works for any experiment you ship — not just design systems.
         </p>
 
         <div className="space-y-px rounded-xl overflow-hidden border border-border/40 mb-8">
@@ -494,25 +614,37 @@ function BottomCTA() {
               <span className="shrink-0 text-[11px] font-mono text-muted-foreground/30 tabular-nums pt-0.5">{n}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-bold text-foreground mb-1">{label}</p>
-                {cmd && (
-                  <code className="text-[12px] font-mono text-muted-foreground/70">{cmd}</code>
-                )}
+                <code className="text-[12px] font-mono text-muted-foreground/70">{cmd}</code>
                 <span className="text-[12px] font-mono text-muted-foreground/40 ml-2"># {comment}</span>
               </div>
             </div>
           ))}
         </div>
 
-        <p className="text-[13px] text-muted-foreground leading-relaxed mb-6 max-w-xl">
-          Every component gets a DESIGN.md-shaped contract: tokens, components, rationale, and a Production Evidence section Hermes writes from your PostHog events. You approve. The score rises. The next agent reads forward.
-        </p>
+        <div className="rounded-xl border border-border/40 bg-muted/5 px-5 py-4 mb-8">
+          <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">MCP server</p>
+          <p className="text-[13px] text-muted-foreground leading-relaxed mb-2">
+            Add Systemix as an MCP server in Claude Code or Cursor. Every agent query gets the contract, the signals, and the score — not a guess.
+          </p>
+          <code className="text-[12px] font-mono text-foreground/60 bg-muted/40 px-2 py-1 rounded">
+            npx systemix mcp
+          </code>
+        </div>
 
-        <Link
-          href="/docs/quick-install"
-          className="text-[13px] font-medium text-foreground hover:opacity-70 transition-opacity"
-        >
-          See the full workflow →
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link
+            href="/docs/quick-install"
+            className="text-[13px] font-medium text-foreground hover:opacity-70 transition-opacity"
+          >
+            See the full workflow →
+          </Link>
+          <Link
+            href="/docs/concepts/hermes"
+            className="text-[13px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+          >
+            Configure a different model →
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -526,11 +658,12 @@ export default function LandingPage() {
       <LandingNav />
       <main className="max-w-4xl mx-auto px-6">
         <Hero />
-        <WorksWith />
-        <SectionTrack name="two-use-cases"><TwoUseCases /></SectionTrack>
-        <SectionTrack name="problem"><Problem /></SectionTrack>
-        <SectionTrack name="how-it-works"><HowItWorks /></SectionTrack>
-        <SectionTrack name="glossary"><SectionGlossary /></SectionTrack>
+        <SectionTrack name="the-loop"><TheLoop /></SectionTrack>
+        <SectionTrack name="experiment-types"><ExperimentTypes /></SectionTrack>
+        <SectionTrack name="hitl-preview"><HitlPreview /></SectionTrack>
+        <SectionTrack name="magic-glue"><MagicGlue /></SectionTrack>
+        <SectionTrack name="use-cases"><UseCases /></SectionTrack>
+        <SectionTrack name="storybook-callout"><StorybookCallout /></SectionTrack>
         <SectionTrack name="quality-gate"><QualityGate /></SectionTrack>
         <SectionTrack name="bottom-cta"><BottomCTA /></SectionTrack>
       </main>

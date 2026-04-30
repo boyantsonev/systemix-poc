@@ -18,20 +18,29 @@ const MOBILE_NAV = [
     ],
   },
   {
-    section: "Concepts",
+    section: "The loop",
     items: [
-      { label: "MDX Contracts",           href: "/docs/concepts/contract"      },
-      { label: "Quality Score",           href: "/docs/concepts/quality-score" },
-      { label: "Drift & Reconciliation",  href: "/docs/concepts/drift"         },
+      { label: "Hypothesis Validation",  href: "/docs/concepts/hypothesis-validation" },
+      { label: "Hermes",                 href: "/docs/concepts/hermes"                },
+      { label: "HITL & Decision Queue",  href: "/docs/concepts/hitl"                  },
+      { label: "Evidence Layer",         href: "/docs/concepts/evidence-layer"        },
+    ],
+  },
+  {
+    section: "The stack",
+    items: [
+      { label: "MDX contracts",          href: "/docs/concepts/contract"      },
+      { label: "Drift & Reconciliation", href: "/docs/concepts/drift"         },
+      { label: "Quality Score",          href: "/docs/concepts/quality-score" },
     ],
   },
   {
     section: "Reference",
     items: [
-      { label: "Skills library",  href: "/docs/skills"           },
-      { label: "Architecture",    href: "/docs/architecture"     },
-      { label: "Design System ↗", href: "/design-system" },
-      { label: "Dashboard ↗",     href: "/dashboard"    },
+      { label: "Skills library",  href: "/docs/skills"       },
+      { label: "Architecture",    href: "/docs/architecture"  },
+      { label: "Design System ↗", href: "/design-system"     },
+      { label: "Dashboard ↗",     href: "/dashboard"         },
     ],
   },
 ];

@@ -1,113 +1,103 @@
 export default function ContractPage() {
-  const tokenFields = [
-    { field: "token",             desc: "CSS variable name without the -- prefix. Used as the slug for routing." },
-    { field: "value",             desc: "The CSS-side value — taken from globals.css." },
-    { field: "figma-value",       desc: "The Figma variable value as hex. Null until a Figma sync runs." },
-    { field: "status",            desc: "clean · drifted · missing-in-figma" },
-    { field: "resolved",          desc: "Boolean. True once a human has accepted a decision." },
-    { field: "collection",        desc: "Figma variable collection this token belongs to (Semantic, Status, Spacing & Radius)." },
-    { field: "source",            desc: "Always css for tokens generated from globals.css." },
-    { field: "last-updated",      desc: "ISO date of the last write — by generate-contracts or by the resolve API." },
-    { field: "last-resolver",     desc: "Who resolved: human email or hermes. Null if unresolved." },
-    { field: "resolve-decision",  desc: "code-wins or figma-wins — written by the inline resolve control." },
-  ];
-
-  const componentFields = [
-    { field: "component",           desc: "Component name. Used as the slug." },
-    { field: "parity",              desc: "clean · drifted · unknown" },
-    { field: "path",                desc: "Relative path to the component source file." },
-    { field: "figma-node",          desc: "Figma node URL for the corresponding component. Null if not mapped." },
-    { field: "evidence-storybook",  desc: "URL to the component's Storybook story. Null if not linked." },
-    { field: "last-updated",        desc: "ISO date of the last write." },
-  ];
-
   return (
     <article>
-      <p className="text-[13px] font-mono text-muted-foreground mb-3">Concepts</p>
+      <p className="text-[13px] font-mono text-muted-foreground mb-3">The stack</p>
       <h1 className="text-[2rem] font-black tracking-tight leading-[1.15] mb-4">
-        MDX Contracts
+        MDX contracts
       </h1>
       <p className="text-[16px] text-muted-foreground leading-relaxed mb-10">
-        One file per token. One file per component. Human-readable, machine-parseable, authored by a local LLM.
+        One file per component. YAML frontmatter the machines read. Prose rationale Hermes writes and humans approve. The contract is the single artifact where the loop closes.
       </p>
 
       <hr className="border-border/40 mb-10" />
 
       <section className="mb-10">
-        <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">What it is</h2>
+        <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">The format</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          A contract is an MDX file with two parts: a YAML frontmatter block that stores the machine-readable state (values, drift status, resolve decision, ΔE, evidence), and a prose body that holds the rationale — written by Hermes, readable by humans and agents alike.
+          Two layers in one file. The frontmatter is machine-readable: token values, Figma state, experiment results, the decision that closed the last loop. The prose body is human-readable: why the value was chosen, what was tested, what got rejected, what Hermes learned.
         </p>
-        <p className="text-[14px] text-muted-foreground leading-relaxed">
-          Contracts live in two directories: <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">contract/tokens/</code> and <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">contract/components/</code>. Each file is named after the token or component slug.
+        <p className="text-[13px] text-muted-foreground/60 leading-relaxed mb-6 border border-border/30 rounded-lg px-4 py-3 bg-muted/5">
+          This is the same MDX + YAML frontmatter pattern Google open-sourced as DESIGN.md in April 2026. You don&apos;t need to know that spec — Systemix generates and manages the contract file for you.
         </p>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-[1.15rem] font-bold tracking-tight mb-4">Token contract example</h2>
         <pre className="bg-muted/20 border border-border/40 rounded-xl px-5 py-5 font-mono text-[12px] text-foreground/80 leading-relaxed overflow-x-auto">{`---
-token: color-primary
-value: oklch(0.45 0.18 250)
-figma-value: "#0063c4"
-status: drifted
-resolved: false
-source: css
-collection: Semantic
+component: HeroCTA
+status: evidence-backed
+parity: clean
+figma-node: https://figma.com/file/...
+last-experiment: hero-headline-ab
+last-result: variant-b-wins
+confidence: 0.87
 last-updated: 2026-04-27
-last-resolver: null
-resolve-decision: null
 ---
 
-The primary brand colour differs between code (oklch(0.45 0.18 250)) and
-Figma (#0063c4). ΔE 8.3 — clearly visible, not perceptually equivalent.
+## HeroCTA
 
-This is an active drift requiring a human decision: either update the code
-to match Figma, or lock the code value and update Figma to reflect it.`}</pre>
+CTA button in the hero section. Current copy: "Start the loop."
+
+### Evidence
+
+Variant B ("Start the loop") outperformed the control ("Get started")
+by +47% CTR at 87% confidence across 1,240 sessions (April 2026).
+
+Prior test (March 2026): "Ship faster" — underperformed by 23% on
+ops-role visitors. Rejected. Do not re-propose this direction.
+
+### Token bindings
+
+Uses --color-primary and --radius-base. Both resolved, no active drift.`}</pre>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.15rem] font-bold tracking-tight mb-5">Token frontmatter schema</h2>
-        <div className="space-y-px rounded-xl overflow-hidden border border-border/40">
-          {tokenFields.map(({ field, desc }) => (
-            <div key={field} className="flex items-start gap-4 px-4 py-4 bg-background border-b border-border/40 last:border-0">
-              <code className="shrink-0 font-mono text-[12px] text-foreground/80 bg-muted/60 px-1.5 py-0.5 rounded mt-0.5 whitespace-nowrap">
-                {field}
-              </code>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-[1.15rem] font-bold tracking-tight mb-5">Component frontmatter schema</h2>
-        <div className="space-y-px rounded-xl overflow-hidden border border-border/40">
-          {componentFields.map(({ field, desc }) => (
-            <div key={field} className="flex items-start gap-4 px-4 py-4 bg-background border-b border-border/40 last:border-0">
-              <code className="shrink-0 font-mono text-[12px] text-foreground/80 bg-muted/60 px-1.5 py-0.5 rounded mt-0.5 whitespace-nowrap">
-                {field}
-              </code>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
-            </div>
-          ))}
+        <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">How much context does an agent need to load?</h2>
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
+          Contracts are intentionally small. A typical component contract is 50–200 lines of MDX. The frontmatter alone (20–40 lines) is enough for an agent to get the current value, parity status, and last decision. The full prose adds the rationale and experiment history — useful when an agent is generating variants or writing copy.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div className="border border-border/40 rounded-xl px-4 py-4">
+            <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Frontmatter only</p>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">~20–40 lines. Current value, Figma state, last experiment result, decision. Use this when the agent is reading a token or checking parity.</p>
+          </div>
+          <div className="border border-border/40 rounded-xl px-4 py-4">
+            <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Full contract</p>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">~50–200 lines. Adds the decision rationale, experiment history, rejected directions. Use this when the agent is writing, proposing variants, or generating copy.</p>
+          </div>
         </div>
       </section>
 
       <section className="mb-10">
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">Who writes it</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
-          <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">npm run generate-contracts</code> walks <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">.systemix/tokens.bridge.json</code> and calls Hermes (<code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">hermes3</code> via Ollama) to write each MDX file — frontmatter and prose rationale. If Ollama is not available it falls back to a placeholder body.
+          Hermes (via <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">npx systemix watch</code>) continuously authors and updates the contracts. When a PostHog experiment reaches significance, Hermes reads the result, checks the contract history, and writes both the decision and the rationale back to the MDX file. You approve through the HITL queue — the file is the source of truth, not a database.
         </p>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          When you resolve a drift decision in the UI, the resolve API (<code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">POST /api/contract/resolve</code>) writes <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">resolved: true</code> and <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">resolve-decision</code> back to the MDX frontmatter. The file is the source of truth — not a database.
+          When you resolve a drift decision in the dashboard, the resolve API writes directly to the MDX frontmatter. The contract file is committed to your repo. Your agents read it via the MCP server or directly from the filesystem.
         </p>
       </section>
 
-      <section>
+      <section className="mb-10">
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">Who reads it</h2>
-        <p className="text-[14px] text-muted-foreground leading-relaxed">
-          Today: the <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">/design-system</code> UI (quality score, drift triage, prose documentation). Next: the Systemix MCP server exposes contracts to agents via tool calls — so when an agent asks &quot;what is the primary colour?&quot; it gets a sourced, versioned, human-approved answer from the contract file, not from a hallucination.
-        </p>
+        <div className="space-y-2">
+          {[
+            { reader: "Hermes",           how: "Reads prior experiments and decisions before synthesizing a new result. This is how Hermes avoids re-proposing directions that were already tested and rejected." },
+            { reader: "MCP server",       how: "Exposes contracts to Claude Code, Cursor, and any MCP-compatible agent via tool calls. The agent asks about a component; the MCP returns the frontmatter + evidence prose." },
+            { reader: "Design System UI", how: "Renders contracts as the /design-system page — parity status, evidence rows, quality score." },
+            { reader: "You",              how: "The prose is readable. If Hermes writes bad rationale, you edit the MDX file directly. It's just a file." },
+          ].map(({ reader, how }) => (
+            <div key={reader} className="flex gap-3 text-[13px]">
+              <span className="font-mono text-foreground/60 shrink-0 w-[120px]">{reader}</span>
+              <span className="text-muted-foreground leading-relaxed">{how}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-6">
+        <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">See also</h2>
+        <div className="flex flex-col gap-1.5 text-[13px] font-mono">
+          <a href="/docs/concepts/hermes" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Hermes — what generates and updates the contracts</a>
+          <a href="/docs/concepts/hypothesis-validation" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Hypothesis Validation — the full loop the contract supports</a>
+          <a href="/docs/concepts/evidence-layer" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Evidence Layer — how production results reach the contract</a>
+        </div>
       </section>
     </article>
   );
