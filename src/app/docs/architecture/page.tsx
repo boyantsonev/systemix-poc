@@ -4,12 +4,12 @@ import { SystemGraph, GraphLegend } from "@/components/graph/SystemGraph";
 export default function ArchitecturePage() {
   return (
     <article>
-      <p className="text-[13px] font-mono text-muted-foreground mb-3">Architecture</p>
+      <p className="text-[13px] font-mono text-muted-foreground mb-3">Reference</p>
       <h1 className="text-[2rem] font-black tracking-tight leading-[1.15] mb-2">
-        System graph
+        Architecture
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
-        How PostHog, Hermes, the evidence contract, skills, and your codebase connect. Click any node to inspect it.
+        How PostHog, Hermes, the evidence contract, and your codebase connect into a continuous loop.
       </p>
 
       {/* Full-bleed graph canvas */}
@@ -41,43 +41,42 @@ export default function ArchitecturePage() {
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Node types</h2>
         <div className="space-y-2 text-[13px] text-muted-foreground">
           <p><span className="font-mono text-violet-400">source</span> — origin of truth (Figma, CSS, codebase)</p>
-          <p><span className="font-mono text-emerald-400">skill</span> — slash-command pipeline step</p>
-          <p><span className="font-mono text-amber-400">agent</span> — autonomous operator (Hermes, Claude)</p>
-          <p><span className="font-mono text-blue-400">artifact</span> — produced output (contract, token, story)</p>
-          <p><span className="font-mono text-red-400">infra</span> — infrastructure (Ollama, MCP servers)</p>
-          <p><span className="font-mono text-cyan-400">tool</span> — external tool (Figma, PostHog, Storybook)</p>
+          <p><span className="font-mono text-amber-400">agent</span> — autonomous operator (Hermes, any Ollama model)</p>
+          <p><span className="font-mono text-blue-400">artifact</span> — produced output (contract, decision, evidence record)</p>
+          <p><span className="font-mono text-red-400">infra</span> — infrastructure (Ollama, MCP server)</p>
+          <p><span className="font-mono text-cyan-400">tool</span> — external tool (Figma, PostHog, Vercel)</p>
         </div>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">Built on</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">The loop</h2>
         <div className="space-y-3">
           <div className="border border-border/40 rounded-xl px-4 py-4">
-            <p className="text-[13px] font-semibold text-foreground mb-1.5">Hermes — local Ollama LLM</p>
+            <p className="text-[13px] font-semibold text-foreground mb-1.5">Hermes — local LLM via Ollama</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              Hermes is a local LLM running via Ollama (<code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">hermes3</code> at <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">localhost:11434</code>). It watches your CSS and Figma for changes, authors MDX contract files — one per token and component — and polls PostHog for experiment results. When evidence comes in, Hermes synthesizes it against the contract&apos;s prior decisions and writes the result back as a dated evidence record. No API key. No cloud.
+              Hermes runs locally via Ollama — any compatible model, no API key required. It watches your codebase, Figma, and PostHog for changes; authors MDX contract files; and polls PostHog for experiment results. When evidence arrives, Hermes synthesizes it against the contract&apos;s prior decisions and writes the result back as a dated evidence record, then queues it for human review.
             </p>
           </div>
           <div className="border border-border/40 rounded-xl px-4 py-4">
             <p className="text-[13px] font-semibold text-foreground mb-1.5">PostHog — production evidence source</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              PostHog closes the loop. When an experiment finishes, Hermes reads the result, checks what the contract already knows about that component — prior experiments, rejected variants, baseline rates — and writes the winning evidence back into the MDX frontmatter. The Decision Queue surfaces the synthesis as a hypothesis card for human review before the contract is updated.
+              PostHog closes the loop. When an experiment finishes, Hermes reads the result, checks the contract history — prior experiments, rejected directions, baseline rates — and writes the winning evidence back into the MDX frontmatter. The Decision Queue surfaces the synthesis as a HITL card for human approval before the contract is updated.
             </p>
           </div>
           <div className="border border-border/40 rounded-xl px-4 py-4">
-            <p className="text-[13px] font-semibold text-foreground mb-1.5">Figma Console MCP — TJ Pitre</p>
+            <p className="text-[13px] font-semibold text-foreground mb-1.5">MCP server — agent access layer</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              All Figma write operations — pushing token variables, placing screenshots, updating component descriptions — go through the Figma Console MCP by TJ Pitre. It executes the Figma Plugin API remotely via a Desktop Bridge, enabling bidirectional sync without leaving your terminal. Read operations use the official Figma REST MCP.
+              The Systemix MCP server exposes contracts to Claude Code, Cursor, and any MCP-compatible agent. When an agent asks about a component or experiment, it gets the current value, the rationale, and the full evidence history — not a guess.
             </p>
           </div>
         </div>
       </section>
 
       <Link
-        href="/docs/skills"
+        href="/docs/concepts/hypothesis-validation"
         className="text-[13px] font-mono text-muted-foreground/50 hover:text-muted-foreground transition-colors"
       >
-        → Browse the skills library
+        → How the hypothesis validation loop works
       </Link>
     </article>
   );
