@@ -31,6 +31,15 @@ Summarise per experiment:
 - Variant breakdown (renders + unique users per variant)
 - Top pages where the component rendered
 
+Also read the `evidence-social` field from the hypothesis contract frontmatter. If present, include social signal data alongside PostHog product data:
+
+```
+Social signals (from evidence-social):
+  linkedin  2026-05-05  impressions: 2,400  clicks: 47  likes: 83  replies: 12
+```
+
+For experiments in early GTM phase (< 100 PostHog renders), social signals may be the primary evidence. Surface them prominently rather than flagging the experiment as "Insufficient".
+
 ### Step 3 — Score signal strength
 
 For each experiment, compute a signal score:

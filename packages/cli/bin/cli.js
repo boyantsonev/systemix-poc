@@ -11,6 +11,7 @@ const { tokenGuard } = require("../src/commands/token-guard");
 const { update } = require("../src/commands/update");
 const { tokens } = require("../src/commands/tokens");
 const { watch } = require("../src/commands/watch");
+const { socialSignal } = require("../src/commands/social-signal");
 
 const [, , command, ...args] = process.argv;
 
@@ -30,6 +31,7 @@ const HELP = `
     npx systemix token-profile [dir]     Scan for token inefficiency patterns
     npx systemix tokens                  Convert globals.css → .systemix/tokens.bridge.json
     npx systemix watch                   Continuous Hermes run — watch CSS + poll Figma
+    npx systemix social-signal           Log social post metrics into PostHog + hypothesis contract
     npx systemix token-guard [sub]       Manage TokenGuard (status|reset|remove)
 
   Workflows (install with: npx systemix workflow add <name>):
@@ -105,6 +107,9 @@ async function main() {
       break;
     case "watch":
       await watch(args);
+      break;
+    case "social-signal":
+      await socialSignal(args);
       break;
     case "help":
     case "--help":

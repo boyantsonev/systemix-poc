@@ -8,6 +8,17 @@ import { ContractAutoReload } from "@/components/contract/ContractAutoReload";
 
 const HYPOTHESIS_DIR = join(process.cwd(), "contract", "hypotheses");
 
+type SocialSignal = {
+  platform:    string;
+  url:         string;
+  recorded_at: string;
+  impressions?: number;
+  clicks?:     number;
+  likes?:      number;
+  replies?:    number;
+  shares?:     number;
+};
+
 type Fm = {
   id?:         string;
   section?:    string | null;
@@ -20,6 +31,7 @@ type Fm = {
   decision?:   string | null;
   confidence?: number | null;
   "evidence-posthog"?: unknown;
+  "evidence-social"?:  SocialSignal[] | null;
 };
 
 export async function generateStaticParams() {
@@ -142,6 +154,37 @@ export default async function HypothesisDocPage({ params }: { params: Promise<{ 
                 <p className="text-[14px] text-foreground leading-snug">&ldquo;{text}&rdquo;</p>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Social signals */}
+      {fm["evidence-social"] && Array.isArray(fm["evidence-social"]) && fm["evidence-social"].length > 0 && (
+        <div className="mb-8">
+          <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-3">Social signals</p>
+          <div className="space-y-2">
+            {fm["evidence-social"].map((s, i) => {
+              const metrics = [
+                s.impressions != null && `${s.impressions.toLocaleString()} impressions`,
+                s.clicks      != null && `${s.clicks.toLocaleString()} clicks`,
+                s.likes       != null && `${s.likes.toLocaleString()} likes`,
+                s.replies     != null && `${s.replies.toLocaleString()} replies`,
+                s.shares      != null && `${s.shares.toLocaleString()} shares`,
+              ].filter(Boolean);
+              return (
+                <div key={i} className="rounded-xl border border-border/40 bg-muted/5 px-4 py-3 flex items-start gap-4">
+                  <span className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest w-16 shrink-0 pt-0.5">{s.platform}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-mono text-muted-foreground/70 mb-1">{metrics.join("  ·  ") || "no metrics"}</p>
+                    <a href={s.url} target="_blank" rel="noopener noreferrer"
+                       className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground truncate block transition-colors">
+                      {s.url}
+                    </a>
+                  </div>
+                  <span className="text-[10px] font-mono text-muted-foreground/30 shrink-0">{s.recorded_at}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

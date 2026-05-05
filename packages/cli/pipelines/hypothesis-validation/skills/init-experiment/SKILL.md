@@ -58,6 +58,7 @@ result: null
 decision: null
 confidence: null
 evidence-posthog: null
+evidence-social: null
 ---
 
 ## Why This Hypothesis
