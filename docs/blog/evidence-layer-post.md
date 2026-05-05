@@ -1,34 +1,34 @@
 # The Evidence Layer: What Your GTM Experiments Are Missing
 
-**Target:** dev.to / personal blog / Substack  
-**Audience:** Founders building in Claude Code / Cursor, pre-PMF, running GTM experiments  
-**Goal:** Name the "evidence layer" pattern before a competitor does. Drive `npx systemix init` installs.  
-**Length:** ~950 words  
-**Status:** Draft v1 — 2026-05-05
+**Target:** Personal blog (canonical) → Show HN → X thread → dev.to (SEO) → r/SaaS → LinkedIn note  
+**Audience:** Pre-PMF founders vibe-coding in Claude Code / Cursor, running GTM experiments, using PostHog  
+**Goal:** Name the "evidence layer" pattern before anyone else does. Drive `npx systemix init` installs.  
+**Length:** ~900 words  
+**Status:** Final — 2026-05-05
 
 ---
 
-You shipped a landing page last Tuesday. Claude Code wrote most of it. You had two variants of the hero — one led with the problem, one led with the outcome. PostHog told you variant B had a 34% higher click-through.
+You shipped a landing page last Tuesday. Variant B won — 34% higher click-through. You updated the page and moved on.
 
-You updated the page to variant B and moved on.
+Three months later you're rewriting the hero again, and you have no idea why you made the last call.
 
-Three months later, you're rewriting the hero again. You don't remember why you made the last call. The PostHog dashboard still has the data if you look for it, but the reasoning — who the test was for, what you were trying to prove, why 34% was enough to decide — that's gone. Slack, maybe. A Notion doc you stopped updating. Nowhere you'd actually look before making the next decision.
+The PostHog data is still there if you dig for it. But the reasoning — who the test was for, what you were trying to prove, why 34% was enough to decide — is gone. Slack, maybe. A Notion doc you stopped updating. Nowhere you'd actually look before making the next decision.
 
 This is the experiment that forgot what it learned.
 
 ---
 
-## The problem isn't your tooling. It's that nothing closes the loop.
+## Nothing in your current stack closes the loop
 
-When you run a GTM experiment today, evidence lives in three places that never talk to each other:
+When you run a GTM experiment, evidence lands in three places that never talk to each other.
 
 **Your code.** What you actually shipped. Git has it, but git doesn't know which variant won or why.
 
-**Your analytics.** PostHog or Statsig or Amplitude. Accurate, but the context is gone — no link to the hypothesis, no record of the ICP you were targeting, no decision rationale.
+**Your analytics.** PostHog or Statsig or Amplitude. Accurate, but context-free — no link to the hypothesis, no record of the ICP you were targeting, no decision rationale.
 
-**Your social signals.** The LinkedIn post that got 80 likes and 4 DMs from exactly the right people. The Reddit thread where someone said "I've been looking for this for two years." That signal existed for 72 hours before it faded into the feed.
+**Your social signals.** The LinkedIn post that got 80 likes and 4 DMs from exactly the right people. The Reddit thread where someone said "I've been looking for this for two years." That signal lived for 72 hours before it faded into the feed.
 
-The loop should close: you run an experiment, you measure it, you write down what you learned, and the next decision starts from known ground instead of a fresh guess. But nothing in the current toolchain makes that happen automatically. So it doesn't happen.
+The loop should close: run an experiment, measure it, write down what you learned, and start the next decision from known ground instead of a fresh guess. Nothing in the current toolchain makes that happen automatically. So it doesn't happen.
 
 ---
 
@@ -38,15 +38,15 @@ An evidence layer sits between your experiments and your codebase. It's not a da
 
 An evidence layer is a contract that writes itself.
 
-Every experiment lives in a structured file: hypothesis, ICP, variants, success criteria. When you run `npx systemix social-signal`, the engagement numbers from your LinkedIn post go into the contract. When PostHog has enough data, the evidence loop pulls the results in and writes them back. When you decide — promote, iterate, kill — the decision and its rationale are recorded at the same place the hypothesis started.
+Every experiment lives in a structured file: hypothesis, ICP, variants, success criteria. When you run `npx systemix social-signal`, the engagement numbers from your LinkedIn post go into the contract. When PostHog has enough data, the evidence loop pulls the results in and writes them back. When you decide — promote, iterate, kill — the decision and its rationale are recorded at the exact place the hypothesis started.
 
-The contract becomes the permanent record of what you tried, what you measured, and what you concluded. The next time you touch that part of the product, the history is there.
+The contract becomes the permanent record of what you tried, what you measured, and what you concluded. The next time you touch that part of the product, the history is there. Not in Slack. Not in your head. There.
 
 ---
 
-## Concretely, it looks like this
+## What this looks like in practice
 
-You create an experiment:
+No design tools required. The hypothesis contract is a Markdown file with YAML frontmatter — your agent reads it, writes to it, and queries it through an MCP server. You create an experiment:
 
 ```
 /init-experiment hero-messaging-2026-05
@@ -78,7 +78,7 @@ npx systemix social-signal \
   --impressions 3200 --clicks 91 --replies 14
 ```
 
-The signal is logged to PostHog as a `hypothesis_social_signal` event and written back into the contract. When you run `/growth-audit` a week later, it cross-references the social engagement (high) against the PostHog product data (early, but directional) and gives you a brief: what's decision-ready, what needs more time, what's stalled.
+The signal is logged to PostHog as a `hypothesis_social_signal` event and written back into the contract. When you run `/growth-audit` a week later, it cross-references social engagement against PostHog product data and gives you a brief: what's decision-ready, what needs more time, what's stalled.
 
 When you close the experiment:
 
@@ -90,19 +90,9 @@ The result, the decision, and the confidence level go into the contract. Three m
 
 ---
 
-## You don't need Figma for any of this
+## The schema is open
 
-This is the part most design system tools get wrong: they assume you have a Figma file worth syncing. A lot of you don't. You're building in Claude Code, your CSS is your design system, and Figma is something you'll add later when you have a designer.
-
-The evidence layer doesn't care. The hypothesis contract is just a Markdown file with YAML frontmatter. Your agent can read it, write to it, and query it through an MCP server. You can add Figma integration later — drift detection, token parity, the full pipeline — but you don't need it to start tracking what your experiments are learning.
-
-The moat is the loop, not the Figma sync.
-
----
-
-## The spec
-
-The contract format is open. If you want to implement this in your own stack without Systemix, the schema is simple:
+If you want to implement this pattern in your own stack without Systemix, the structure is simple:
 
 ```yaml
 type: hypothesis
@@ -126,16 +116,34 @@ The pattern is the thing. The tooling is just what makes it automatic.
 
 ---
 
-## Try it
+## Start the loop
 
 ```bash
 npx systemix init
 ```
 
-Pick `hypothesis-validation` when asked which workflow you want. It installs four Claude Code skills: `/init-experiment`, `/write-variants`, `/growth-audit`, `/close-experiment`. No Figma required. PostHog optional — social signals work without it.
+Pick `hypothesis-validation` when asked which workflow you want. It installs four Claude Code skills: `/init-experiment`, `/write-variants`, `/growth-audit`, `/close-experiment`. PostHog optional — social signals work without it.
 
-The first experiment takes about ten minutes to set up. The second one takes two, because you already have the pattern.
+The first experiment takes about ten minutes to set up. The second one takes two, because you already have the pattern. Three months from now, you'll know exactly why you made the last call.
 
 ---
 
 *Systemix is an open evidence layer for product teams building with AI agents. The schema is public. [github.com/boyantsonev/systemix](https://github.com/boyantsonev/systemix-poc)*
+
+---
+
+## Distribution notes (internal — remove before publishing)
+
+**Sequence:**
+- Day 0, 8am ET: publish to personal blog (canonical URL)
+- Day 0, 9am ET: Show HN — title: "Show HN: Systemix – CLI that closes the loop on GTM experiments (PostHog + social signal pull)"
+- Day 0, 9am ET: post top comment on HN within 60s — problem in one sentence, what it does in one sentence, "we're using it on our own GTM, curious if others solved this differently"
+- Day 0, 11am ET (after HN has traction): X thread — CLI demo, one experiment file before/after, last tweet links to HN discussion
+- Day 0, 2pm ET: cross-post to dev.to with canonical back to blog
+- Day 1 morning: r/SaaS — question framing, link Systemix as your own answer
+- Day 1 afternoon: DM 5–10 pre-PMF founders using PostHog — ask for feedback, not shares
+- Day 2: respond to every live HN thread, share a follow-up X tweet answering the top objection
+- Day 3: LinkedIn short note (3 sentences + link, by now you have star count and HN points)
+
+**Do NOT:** lead with "evidence layer" in the HN title. Let comments name the pattern.  
+**Do NOT:** mention Figma anywhere in the published version.
