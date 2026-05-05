@@ -526,9 +526,34 @@ function StorybookCallout() {
         <h2 className="text-[1.5rem] font-black tracking-tight mb-4">
           Storybook tells your agent what exists.<br />Nobody tells it what worked.
         </h2>
-        <p className="text-[14px] text-muted-foreground leading-relaxed mb-6 max-w-2xl">
-          You can document a component. You can sync it across Figma and code. You can write a story for it. But you still can&apos;t answer the question that decides the next sprint: <em>did this design decision work?</em> The contract carries the answer — measured in production, attributed to the variant, dated.
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4 max-w-2xl">
+          You can document a component. You can sync it across Figma and code. You can write a story for it. But you still can&apos;t answer the question that decides the next sprint: <em>did this design decision work?</em> The answer lives in PostHog, in someone&apos;s head, or in a Slack thread from March.
         </p>
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-8 max-w-2xl">
+          Systemix writes the answer back into the component&apos;s contract — measured in production, attributed to the variant, dated. The next agent reading it sees the evidence, not just the value.
+        </p>
+
+        <div className="grid sm:grid-cols-3 gap-3 mb-8">
+          {[
+            {
+              label: "LOST RATIONALE",
+              body: "The variant that won in March is now a hex value with no story attached. Six months later the same dead-end gets proposed again, by a human or an agent.",
+            },
+            {
+              label: "STALE CONTEXT",
+              body: "Your agent reads the current token value but not the experiment that set it. It ships whichever color was in the file last — not the one production validated.",
+            },
+            {
+              label: "BLIND BASELINE",
+              body: "PostHog says variant B won. But if the token drifted before the test, you measured a variant nobody designed. The result isn't wrong — it's about the wrong thing.",
+            },
+          ].map(({ label, body }) => (
+            <div key={label} className="border border-border/40 rounded-xl px-4 py-4 bg-background">
+              <p className="text-[10px] font-mono font-bold text-muted-foreground/50 uppercase tracking-widest mb-2">{label}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
 
         <div className="rounded-xl border border-border/40 bg-muted/5 px-5 py-4">
           <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Drift detection — supporting layer</p>
@@ -548,9 +573,9 @@ function StorybookCallout() {
 
 function QualityGate() {
   const tiers = [
-    { score: "≥ 80", state: "Evidence-ready",  dot: "bg-emerald-500", body: "Contract is backed. Recent production signals attached, drift cleared, decision history recorded. Safe for agents to read, safe for the next experiment to build on." },
-    { score: "≥ 60", state: "Partial evidence", dot: "bg-amber-500",   body: "Some claims are unbacked. Either drift is unresolved or production signals are stale. Your agent will still read the contract — but the next decision is partly a guess." },
-    { score: "< 60", state: "Unbacked",         dot: "bg-red-400",     body: "Too many open questions. No recent signals, contradictions Hermes flagged, or unresolved decisions. Don't ship from this contract until it's triaged." },
+    { score: "≥ 80", state: "Evidence-ready",  dot: "bg-emerald-500", body: "Contract is backed. Tokens are resolved against Figma, drift is cleared, recent production evidence is attached. Safe for agents to read, safe for the next experiment to build on." },
+    { score: "≥ 60", state: "Partial evidence", dot: "bg-amber-500",   body: "Some claims are unbacked. Either drift is unresolved or production data is missing. Your agent will still read the contract — but the next decision is partly a guess." },
+    { score: "< 60", state: "Unbacked",         dot: "bg-red-400",     body: "Too many open questions. Tokens drift, no recent production data, or contradictions Hermes flagged. Don't ship from this contract until it's triaged." },
   ];
 
   return (
@@ -580,7 +605,7 @@ function QualityGate() {
         </div>
 
         <p className="text-[13px] text-muted-foreground leading-relaxed mt-6 max-w-xl">
-          The score rises as evidence accumulates. It drops when signals go stale, when a decision is overridden without rationale, or when drift goes unresolved. Target: ≥ 80 on every contract you ship from.
+          The score rises as evidence accumulates. It drops when Figma drifts, when PostHog data goes stale, or when a decision is overridden without rationale. Target: ≥ 80 on every contract your agent reads.
         </p>
       </div>
     </section>
