@@ -1,0 +1,42 @@
+---
+type: hypothesis
+id: landing-hitl-queue-prominence-2026-05
+section: hitl-preview
+hypothesis: "Placing the HITL queue card preview as the first section after the hero (before the loop diagram) increases founder engagement — the queue is the primary UX surface, so leading with it should convert better than leading with the mechanism diagram"
+icp: pre-pmf-founder
+status: running
+created: 2026-05-07
+variants:
+  control: "Loop diagram first (How it works → 5-step sequence → then HITL preview)"
+  variant_b: "HITL preview first (live decision card → then loop diagram as supporting context)"
+result: null
+decision: null
+confidence: null
+evidence-posthog: null
+---
+
+## Why This Hypothesis
+
+DIV-4b confirmed: the HITL Queue is the primary UX surface for the pre-PMF founder. The current landing page leads with the mechanism (5-node loop diagram, "How it works" section) before showing the queue card. This is correct for design-engineer ICPs who want to understand the architecture. It is backwards for founders who want to see the output: a decision card with Hermes synthesis and a one-click approve button.
+
+The founding insight: founders do not buy mechanisms. They buy outcomes they can visualize themselves using. The queue card IS the outcome — "Hermes recommends: Promote variant B. Write rationale to contract." If the founder sees that first, they understand the value proposition in under 10 seconds. The loop diagram explains how it works after they've already decided it's worth 5 minutes of their time.
+
+## Variants
+
+**Control** (`control`): Current section order — loop diagram before HITL preview.
+Mechanism-first framing. Requires reading comprehension before seeing the payoff.
+
+**Variant B** (`variant_b`): HITL preview moved above the loop diagram section.
+Outcome-first framing. Founder sees the queue card, reads Hermes synthesis, understands the loop from the output backwards.
+
+## Success Criteria
+
+- Primary: time-on-page on the HITL preview section (tracked as `section_view` with `section: hitl-preview` PostHog event)
+- Secondary: scroll completion rate (reaching the CTA section below the fold)
+- Threshold: ≥15% lift on primary metric (lower bar — this is structural, not copy)
+
+## Decision Criteria
+
+- `promote`: Variant B wins → reorder sections in `src/app/page.tsx`, update copy spec section ordering
+- `iterate`: no significant lift → test with explicit founder testimonial inside the HITL preview card
+- `kill`: scroll completion drops → current order is correct, do not reorder

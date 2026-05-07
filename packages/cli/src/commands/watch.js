@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
+const { evidence } = require("./evidence");
 
 // culori is a workspace dep — resolve from the monorepo root
 let _culori = null;
@@ -865,6 +866,7 @@ async function watch(args) {
     await pollFigma(projectRoot, dryRun);
     normalizeDriftStatus(projectRoot, dryRun);
     if (!noPosthog) await pollPostHog(projectRoot, dryRun);
+    if (!noPosthog) await evidence(["pull"]);
   }, intervalSec * 1000);
 
   // ── Graceful shutdown ───────────────────────────────────────────────────────

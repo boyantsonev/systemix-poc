@@ -12,6 +12,7 @@ const { update } = require("../src/commands/update");
 const { tokens } = require("../src/commands/tokens");
 const { watch } = require("../src/commands/watch");
 const { socialSignal } = require("../src/commands/social-signal");
+const { evidence } = require("../src/commands/evidence");
 
 const [, , command, ...args] = process.argv;
 
@@ -33,6 +34,7 @@ const HELP = `
     npx systemix watch                   Continuous Hermes run — watch CSS + poll Figma
     npx systemix social-signal           Log social post metrics into PostHog + hypothesis contract
     npx systemix token-guard [sub]       Manage TokenGuard (status|reset|remove)
+    npx systemix evidence [pull|close]   Pull PostHog data + Hermes synthesis → queue
 
   Workflows (install with: npx systemix workflow add <name>):
     design-system                        Product A — Figma↔code token sync (6 skills)
@@ -110,6 +112,9 @@ async function main() {
       break;
     case "social-signal":
       await socialSignal(args);
+      break;
+    case "evidence":
+      await evidence(args);
       break;
     case "help":
     case "--help":

@@ -1,0 +1,42 @@
+---
+type: hypothesis
+id: landing-hero-icp-pivot-2026-05
+section: hero
+hypothesis: "Reframing the hero for the pre-PMF founder ICP (agentic loop / close the loop) increases CTA engagement vs current design-engineer framing (component drift / evidence layer)"
+icp: pre-pmf-founder
+status: running
+created: 2026-05-07
+variants:
+  control: "Every component is a guess until production proves it."
+  variant_b: "You shipped it. Did it work? Close the loop."
+result: null
+decision: null
+confidence: null
+evidence-posthog: null
+---
+
+## Why This Hypothesis
+
+The current hero leads with component drift — a design-engineer concern. D3 resolved (2026-05-07): the primary ICP is the pre-PMF founder vibe-coding with Claude Code or Cursor, running GTM experiments, using PostHog. Their core pain is not "my component is wrong in Figma" — it is "I made a product decision from memory and I have no record of what I tested or why."
+
+The control framing positions Systemix as a design system correctness tool. Variant B positions it as a hypothesis validation loop — you shipped something, Hermes reads the signals, you close the loop. One click. Decision written back. The next experiment starts from known ground.
+
+## Variants
+
+**Control** (`control`): "Every component is a guess until production proves it."
+Design-engineer framing. Emotion: correctness, trust, anti-drift.
+
+**Variant B** (`variant_b`): "You shipped it. Did it work? Close the loop."
+Founder framing. Emotion: action, signal, closure. The loop is the product.
+
+## Success Criteria
+
+- Primary: click-through on `npx systemix init` install command or `/dashboard` link (tracked as `cta_click` PostHog event)
+- Secondary: scroll depth past the LoopDiagram section
+- Threshold: ≥20% lift on primary metric to declare winner
+
+## Decision Criteria
+
+- `promote`: Variant B wins → update hero in `src/app/page.tsx`, update `docs/copy-spec-evidence-layer-FINAL.md` section 1.1, write rationale here
+- `iterate`: direction positive but &lt;20% lift → test a third variant with stronger founder pain statement
+- `kill`: no lift or negative → revert to control, conduct founder interviews on messaging

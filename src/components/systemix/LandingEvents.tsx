@@ -90,8 +90,9 @@ export function InstallCommand() {
 
 // ── Section view tracker (Intersection Observer) ──────────────────────────────
 
-export function SectionTrack({ name, children, className }: {
+export function SectionTrack({ name, hypothesisId, children, className }: {
   name: string;
+  hypothesisId?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -107,13 +108,20 @@ export function SectionTrack({ name, children, className }: {
         if (entry.isIntersecting && !fired.current) {
           fired.current = true;
           ph.capture("section_viewed", { section: name });
+          if (hypothesisId) {
+            ph.capture("hypothesis_social_signal", {
+              hypothesis_id: hypothesisId,
+              section: name,
+              signal_type: "section_view",
+            });
+          }
         }
       },
       { threshold: 0.3 },
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [name, ph]);
+  }, [name, hypothesisId, ph]);
 
   return <div ref={ref} className={className}>{children}</div>;
 }

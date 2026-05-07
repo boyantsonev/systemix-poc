@@ -112,6 +112,65 @@ type InstrumentationCard = {
   resolution?: unknown;
 };
 
+type HypothesisCard = {
+  id: string;
+  type: string;
+  status: string;
+  hypothesisId?: string;
+  context?: string;
+  confidenceLevel?: number;
+  _posthogData?: { fetched_at?: string; source?: string };
+  resolvedAt?: string;
+  resolution?: unknown;
+};
+
+const HYPOTHESES_DIR = path.join(process.cwd(), "contract", "hypotheses");
+
+function applyHypothesisDecision(
+  card: HypothesisCard,
+  decision: "promote" | "kill",
+): { ok: boolean; error?: string } {
+  if (!card.hypothesisId) return { ok: false, error: "No hypothesisId on card" };
+  const filePath = path.join(HYPOTHESES_DIR, `${card.hypothesisId}.mdx`);
+  if (!fs.existsSync(filePath)) return { ok: false, error: `Contract not found: ${filePath}` };
+
+  const raw = fs.readFileSync(filePath, "utf8");
+  const match = raw.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---[\r\n]*([\s\S]*)$/);
+  if (!match) return { ok: false, error: "Could not parse frontmatter" };
+
+  let fm = match[1];
+  const body = match[2];
+  const now = card._posthogData?.fetched_at ?? new Date().toISOString().slice(0, 10);
+  const conf = card.confidenceLevel ?? 0;
+
+  fm = fm.replace(/^result:.*$/m,     `result: "${decision}"`);
+  fm = fm.replace(/^decision:.*$/m,   `decision: "${decision}"`);
+  fm = fm.replace(/^confidence:.*$/m, `confidence: ${conf}`);
+  fm = fm.replace(/^status:.*$/m,     `status: complete`);
+  fm = fm.replace(
+    /^evidence-posthog:.*$/m,
+    `evidence-posthog:\n  fetched_at: "${now}"\n  source: "${card._posthogData?.source ?? "dashboard"}"\n  confidence: ${conf}`,
+  );
+
+  const evidenceSection = [
+    "",
+    "## Production Evidence",
+    "",
+    card.context ?? "Decision recorded via dashboard.",
+    "",
+    `Decision: **${decision}**. Confidence: ${conf > 0 ? Math.round(conf * 100) + "%" : "manual"}. Recorded: ${now}.`,
+    "",
+  ].join("\n");
+
+  const bodyWithoutEvidence = body.replace(/\n## Production Evidence[\s\S]*$/, "").trimEnd();
+  const updated = `---\n${fm}\n---\n\n${bodyWithoutEvidence}\n${evidenceSection}`;
+
+  const tmp = filePath + ".tmp";
+  fs.writeFileSync(tmp, updated, "utf8");
+  fs.renameSync(tmp, filePath);
+  return { ok: true };
+}
+
 function applyInstrumentation(card: InstrumentationCard): { ok: boolean; error?: string } {
   if (!card.filePath) return { ok: false, error: "No filePath on card" };
   const absPath = path.join(process.cwd(), card.filePath);
@@ -185,6 +244,17 @@ export async function PATCH(req: NextRequest) {
     const result = applyInstrumentation(card);
     if (!result.ok) {
       return NextResponse.json({ error: result.error ?? "Instrumentation failed" }, { status: 500 });
+    }
+  }
+
+  // For hypothesis-validation: approved → promote, rejected → kill; deferred skips write-back
+  if (card.type === "hypothesis-validation") {
+    const decision = action === "approved" ? "promote" : action === "rejected" ? "kill" : null;
+    if (decision) {
+      const result = applyHypothesisDecision(card as HypothesisCard, decision);
+      if (!result.ok) {
+        return NextResponse.json({ error: result.error ?? "Evidence write-back failed" }, { status: 500 });
+      }
     }
   }
 

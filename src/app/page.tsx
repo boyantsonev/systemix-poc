@@ -691,12 +691,12 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <LandingNav />
       <main className="max-w-4xl mx-auto px-6">
-        <Hero />
+        <SectionTrack name="hero" hypothesisId="landing-hero-icp-pivot-2026-05"><Hero /></SectionTrack>
         <SectionTrack name="the-loop"><TheLoop /></SectionTrack>
         <SectionTrack name="experiment-types"><ExperimentTypes /></SectionTrack>
-        <SectionTrack name="hitl-preview"><HitlPreview /></SectionTrack>
+        <SectionTrack name="hitl-preview" hypothesisId="landing-hitl-queue-prominence-2026-05"><HitlPreview /></SectionTrack>
         <SectionTrack name="magic-glue"><MagicGlue /></SectionTrack>
-        <SectionTrack name="use-cases"><UseCases /></SectionTrack>
+        <SectionTrack name="use-cases" hypothesisId="landing-founder-pain-framing-2026-05"><UseCases /></SectionTrack>
         <SectionTrack name="storybook-callout"><StorybookCallout /></SectionTrack>
         <SectionTrack name="quality-gate"><QualityGate /></SectionTrack>
         <SectionTrack name="bottom-cta"><BottomCTA /></SectionTrack>
