@@ -6,7 +6,7 @@ export default function HermesPage() {
         Hermes
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        Hermes is the local LLM that authors your contract. It watches for changes, reads the context, writes the rationale, and routes decisions to the HITL queue when confidence is low. No API key. No cloud. Runs on your machine.
+        Local LLM. No API key. No cloud. Hermes runs on your machine via Ollama — any compatible model works. It reads your hypothesis contracts and PostHog signals, synthesizes the result, and outputs a decision card with a recommendation, confidence score, and rationale.
       </p>
 
       <hr className="border-border/40 mb-8" />
@@ -14,32 +14,32 @@ export default function HermesPage() {
       <section className="mb-10">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What Hermes is</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Hermes is the <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">hermes3</code> model running via Ollama at <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">localhost:11434</code>. It&apos;s a local, air-gapped LLM — nothing leaves your machine. It handles two jobs: writing MDX contract files when design system state changes, and synthesizing PostHog evidence into hypothesis validation cards.
+          Hermes defaults to the <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">hermes3</code> model running via Ollama at <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">localhost:11434</code>, but any Ollama-compatible model works. It&apos;s air-gapped — nothing leaves your machine. It has one job: reading your hypothesis contracts and PostHog experiment results, then synthesizing a decision card that tells you what to do next.
         </p>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          Hermes is not a chatbot. You don&apos;t talk to it. It runs as part of <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">npx systemix watch</code> — a background process that monitors your CSS, Figma sync output, and PostHog evidence, then writes or updates the contract when something changes.
+          Hermes is not a chatbot. You don&apos;t talk to it. It runs as part of <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">npx systemix watch</code> — a background process that monitors your PostHog experiments and hypothesis contracts, then generates a HITL card when an experiment reaches significance.
         </p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">What Hermes writes</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">What Hermes reads and outputs</h2>
         <div className="space-y-3">
           {[
             {
-              label: "Token contracts",
-              body: "When globals.css changes or a Figma sync runs, Hermes writes or updates contract/tokens/<slug>.mdx — frontmatter state plus a prose rationale explaining the current value, its source, and any relevant history.",
+              label: "Reads: the hypothesis contract history",
+              body: "Before synthesizing any result, Hermes reads the full contract: the original hypothesis, which ICP it targeted, prior experiment outcomes, and any rejected directions. This prevents re-proposing what's already been tried.",
             },
             {
-              label: "Component contracts",
-              body: "When a component's token consumption changes, its Storybook story updates, or PostHog evidence comes in, Hermes updates contract/components/<slug>.mdx with the latest parity state and instrumentation notes.",
+              label: "Reads: PostHog signals",
+              body: "Conversion rates, funnel drop-off, activation events, session data — whatever you're tracking for the hypothesis. Hermes reads the result when the experiment reaches your configured significance threshold.",
             },
             {
-              label: "Hypothesis validation cards",
-              body: "When PostHog experiment results are available, Hermes synthesizes the result against the contract evidence and writes a HITL card to the queue — including its recommended action and the reasoning chain.",
+              label: "Outputs: a decision card",
+              body: "Hermes writes a HITL card to the queue with three fields: recommendation (promote / run longer / kill), confidence score, and rationale — grounded in what the contract shows has been tried before.",
             },
             {
-              label: "Drift rationale",
-              body: "When a token drifts (CSS and Figma diverge), Hermes writes an explanation of the divergence and suggests a resolution. High-confidence drift is auto-queued; ambiguous cases go to HITL.",
+              label: "Writes: evidence back to the contract",
+              body: "After you approve in the HITL queue, Hermes writes the decision, the data, and the date permanently to the MDX contract. The next experiment or agent starts from this known ground.",
             },
           ].map(({ label, body }) => (
             <div key={label} className="border border-border/40 rounded-xl px-4 py-4">

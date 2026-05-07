@@ -6,7 +6,7 @@ export default function EvidenceLayerPage() {
         The Evidence Layer
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        The contract isn&apos;t a snapshot of the design system — it&apos;s the running record of what&apos;s been tried and what worked. When an agent, a sprint, or a new hire opens a Systemix-managed codebase, they don&apos;t start from a value. They start from the value plus the evidence that justified it.
+        The contract isn&apos;t a snapshot of what you built — it&apos;s the running record of what you tested and what worked. When you or an AI agent touches something you&apos;ve already experimented on, the evidence is there: the decision, the data, the date, and the rationale.
       </p>
 
       <hr className="border-border/40 mb-8" />
@@ -14,10 +14,10 @@ export default function EvidenceLayerPage() {
       <section className="mb-10">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Why evidence, not memory</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Most design systems have tokens in CSS, components in Figma, and the rationale somewhere between Slack threads and a Notion page nobody reads. When an agent asks what <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">--color-primary</code> should be, it gets the current value — not the experiment that set it, not the variant that lost, not the segment that responded.
+          Most pre-PMF founders make product decisions from memory — a Slack thread, a stale Notion doc, a vague recollection that &ldquo;we tested something like that.&rdquo; When an AI agent is about to ship a new landing variant, it has no way to know what you already ran, what got rejected, or why. It starts from scratch every time.
         </p>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          The point isn&apos;t to remember more. Plenty of tools already remember things. The point is that every claim a contract makes is backed by something a human can audit and an agent can act on: a Figma node, a PostHog event, a HITL decision, a dated rationale Hermes wrote. Memory is what you store. Evidence is what holds up under questioning.
+          The point isn&apos;t to remember more. Plenty of tools already remember things. The point is that every claim a contract makes is backed by something a human can audit and an agent can act on: a PostHog result, a HITL decision, a dated rationale Hermes wrote. Memory is what you store. Evidence is what holds up under questioning.
         </p>
       </section>
 
@@ -26,24 +26,24 @@ export default function EvidenceLayerPage() {
         <div className="space-y-3">
           {[
             {
-              label: "Token values and drift state",
-              body: "Current CSS value, last known Figma value, whether they match, when they last changed. Every sync writes to this. The basic visual-identity contract.",
+              label: "Hypothesis and intent",
+              body: "The original hypothesis — which ICP it targeted, which funnel stage it addressed, the strategic claim it made, and why it was written the way it was. The baseline, not just a value.",
             },
             {
               label: "Production evidence",
-              body: "Experiment results from PostHog, attributed to the variant that ran. A hero headline that drove +47% CTR is recorded here — dated, with confidence, with the segment it tested on.",
+              body: "Experiment results from PostHog, attributed to the variant that ran. A landing headline that drove +38% trial signups is recorded here — dated, with confidence, with the segment it tested on.",
             },
             {
               label: "Hermes rationale",
-              body: "Each time a token changes or a hypothesis resolves, Hermes writes prose into the contract body — why this value, what was rejected, what to read next. Audit trail in human language.",
+              body: "Each time a hypothesis resolves, Hermes writes prose into the contract body — what was recommended, why, and what to test next. Audit trail in human language.",
             },
             {
               label: "HITL decisions",
-              body: "Every promote / reject / extend the loop made in the dashboard is written back. The decision and the reasoning live with the artifact, not in a meeting note.",
+              body: "Every promote / kill / extend made in the queue is written back. The decision and reasoning live with the artifact, not in a meeting note or Slack thread.",
             },
             {
-              label: "Component parity",
-              body: "For each component: which tokens it consumes, its Storybook story status, its Figma-to-code parity score, and whether the variant currently shipped is the one production evidence supports.",
+              label: "Rejected directions",
+              body: "What didn't work is as important as what did. Rejected hypotheses are recorded permanently — preventing agents and future sprints from re-proposing directions already tested.",
             },
           ].map(({ label, body }) => (
             <div key={label} className="border border-border/40 rounded-xl px-4 py-4">
@@ -61,9 +61,9 @@ export default function EvidenceLayerPage() {
         </p>
         <ul className="space-y-2 text-[14px] text-muted-foreground list-none">
           {[
-            "A /component skill knows which tokens are drifted, which are evidence-backed, and which are unresolved — before it generates a single line.",
-            "A /evidence skill pulls the most recent PostHog results for the component into the contract, so the next decision reads forward, not backward.",
-            "A hypothesis validation card knows the full chain: design intent → token value → variant tested → result measured → decision recorded.",
+            "A /write-variants skill reads the contract before generating copy — it knows what's been tried, which ICPs were targeted, and what got rejected.",
+            "A /close-experiment skill pulls the PostHog result and writes it into the contract, so the next hypothesis starts from measured ground, not assumption.",
+            "Claude Code or Cursor reading the contract via MCP sees the full chain: original hypothesis → variants tested → result measured → decision recorded.",
           ].map((item) => (
             <li key={item} className="flex gap-2.5">
               <span className="text-muted-foreground/40 mt-0.5 shrink-0">→</span>
@@ -74,54 +74,47 @@ export default function EvidenceLayerPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Built on Google&apos;s DESIGN.md</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Why it matters for agents</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          The contract file is a DESIGN.md — Google&apos;s open visual-identity format, Apache 2.0, shipped April 2026. Stitch and any DESIGN.md-aware tool reads our files with zero lint errors, including the WCAG AA contrast checks the linter runs automatically. The visual-identity layer round-trips through <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">design.md export</code> to Tailwind or DTCG.
+          The evidence layer is what makes Systemix useful to AI agents. When Claude Code or Cursor is about to ship a new landing variant, it can read the contract via the MCP server and see what you already ran — including directions that were rejected and why. That&apos;s the difference between an agent that guesses and one that builds on what&apos;s known.
         </p>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          Systemix&apos;s contribution is the Production Evidence section — an unknown H2 the spec preserves, with one frontmatter row per measured outcome. The format is portable. The evidence is the part nobody else writes.
+          The evidence is permanently co-located with the artifact it describes. It doesn&apos;t live in Notion, Slack, or your head. It lives in the repo, committed alongside the code, readable by anyone or anything that opens the file.
         </p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Anatomy of a contract file</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What the evidence record looks like</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Each contract is one DESIGN.md file. Frontmatter is machine-readable: the visual-identity block (native to the spec) plus an <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">x-systemix</code> block (extension, silently preserved by the official linter). The body is prose — written by Hermes, read by humans and agents alike.
+          The frontmatter is machine-readable. The prose body is written by Hermes and approved by you. Both persist in the same file, committed to your repo.
         </p>
         <pre className="text-[12px] font-mono bg-muted/40 border border-border/40 rounded-xl p-4 overflow-x-auto text-foreground/80 leading-relaxed">{`---
-token: --primary
-value: oklch(0.205 0 0)
-figma-value: oklch(0.21 0 0)
-status: drifted
-resolved: false
-last-updated: 2026-04-27
-last-resolver: hermes
-x-systemix:
-  evidence-posthog:
-    experiment: hero-cta-color
-    variant: darker-primary
-    result: +12% CTR
-    confidence: 91%
-    segment: all-traffic
-    recorded: 2026-04-15
+id: onboarding-step2-copy
+hypothesis: "Step 2 drop-off is caused by friction in the
+  'connect your repo' instruction, not intent to quit"
+status: evidence-backed
+decision: promote
+confidence: 0.81
+evidence-posthog:
+  experiment: onboarding-step2-ab
+  variant: simplified-instruction
+  result: "+29% step completion"
+  sessions: 640
+  recorded: 2026-04-20
+last-updated: 2026-04-20
 ---
 
 ## Production Evidence
 
-This token was set on 2026-04-15 after the hero CTA experiment.
-The darker oklch(0.205 0 0) variant drove a 12% CTR lift at
-91% confidence across all traffic. The previous value
-oklch(0.35 0.1 250) (a blue) was rejected — users perceived it
-as less trustworthy in the context of a docs-style product.
+Simplified instruction variant ("Paste your repo URL below")
+outperformed the original ("Connect your codebase via the
+GitHub integration") by +29% step completion at 81% confidence.
 
-## Hermes Notes
-
-Current drift: Figma not yet updated. Run /sync-to-figma to
-propagate. Next test queued: contrast variant on dark-mode
-landing — predicted to push contrast above WCAG AA threshold
-without losing the brand read.`}</pre>
+Prior direction: adding a video walkthrough — tested February 2026,
+no measurable lift, increased time-on-step. Rejected.
+Do not re-propose video without new evidence.`}</pre>
         <p className="text-[14px] text-muted-foreground leading-relaxed mt-4">
-          The Production Evidence section is the durable record. The value can change. The Figma node can move. The evidence — what ran, what won, when, on which segment — stays attached to the artifact it describes.
+          The evidence record is durable. The copy can change. The onboarding flow can be rebuilt. The evidence — what ran, what won, when, and what was rejected — stays attached to the artifact it describes.
         </p>
       </section>
 

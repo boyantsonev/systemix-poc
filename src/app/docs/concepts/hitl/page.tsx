@@ -6,7 +6,7 @@ export default function HitlPage() {
         HITL & Decision Queue
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        Hermes acts autonomously when it&apos;s confident. When it&apos;s not, it queues a decision card for a human. One approval and the action executes — with the rationale written to the contract automatically.
+        The HITL queue is your primary decision surface. Every running hypothesis produces a card when it has enough data. Hermes synthesizes the result, you approve in one click, and the evidence is written permanently to the contract. This is the weekly cadence that closes the loop.
       </p>
 
       <hr className="border-border/40 mb-8" />
@@ -14,37 +14,37 @@ export default function HitlPage() {
       <section className="mb-10">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What HITL means in Systemix</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Human-in-the-Loop is the gate between Hermes&apos;s analysis and a write to your codebase or Figma. Systemix doesn&apos;t auto-apply changes it&apos;s uncertain about. Instead it surfaces a card in the dashboard queue — with context, evidence, and a pre-filled recommendation — so a human can approve, reject, or modify in one click.
+          The HITL queue is where you make product decisions. When a hypothesis has enough PostHog data, Hermes synthesizes the result against the full contract history — prior experiments, rejected directions, original intent — and surfaces a card with a recommendation. You approve, extend, or kill it in one click.
         </p>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          The queue persists in <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">.systemix/queue.json</code>. Cards stay until resolved. Every resolution is written back into the relevant contract MDX file as evidence — alongside the value, the rationale, and any prior experiments.
+          The queue persists in <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">.systemix/queue.json</code>. Cards stay until resolved. Every resolution is written back into the hypothesis contract as permanent evidence — the decision, the data, the date, and the rationale.
         </p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">Three card types</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">Three actions on every card</h2>
         <div className="space-y-3">
           {[
             {
-              type: "drift",
-              label: "Drift resolution",
+              type: "promote",
+              label: "Promote",
+              color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+              body: "The variant won. Hermes writes the result, the confidence, and the winning direction to the contract. The artifact becomes the new baseline. Future agents and experiments read this as known ground.",
+              example: "Landing headline variant B +38% trial signups at 84% confidence — promoted 2026-05-01",
+            },
+            {
+              type: "run longer",
+              label: "Run longer",
               color: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-              body: "A token's CSS value and Figma variable have diverged. Hermes shows both values, proposes which to trust as source of truth, and asks you to resolve. Options: update Figma to match code, update code to match Figma, or mark as intentional.",
-              example: "--primary: oklch(0.205 0 0) in CSS vs oklch(0.35 0.1 250) in Figma",
+              body: "Confidence is below threshold or the sample is too small. The card is re-queued. Hermes records that you extended the test and why — so the next review starts with that context.",
+              example: "Onboarding step 2 copy test — extended, 420 sessions, need 800 for 80% confidence",
             },
             {
-              type: "instrumentation",
-              label: "Instrumentation approval",
-              color: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-              body: "Hermes wants to add PostHog instrumentation (posthog.capture calls) to a component. It shows the component, the proposed event name, and which interactions it would track. You approve or adjust the tracking scope.",
-              example: "Add posthog.capture('hero_cta_click') to HeroCTAs component",
-            },
-            {
-              type: "hypothesis",
-              label: "Hypothesis validation",
-              color: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
-              body: "A PostHog experiment has enough data. Hermes synthesizes the result against contract evidence and proposes an action. Options: promote the winning variant, run the test longer for more confidence, or reject the hypothesis.",
-              example: "Hero headline A/B: variant B +47% CTR at 87% confidence — promote?",
+              type: "kill",
+              label: "Kill",
+              color: "bg-red-500/15 text-red-400 border-red-500/30",
+              body: "The hypothesis failed or isn't worth pursuing. The rejection is written to the contract permanently — preventing Hermes or any agent from re-proposing the same direction without surfacing the prior result.",
+              example: "GTM offer: free audit — killed. Attracted wrong ICP. Do not re-propose without reframing the audience.",
             },
           ].map(({ type, label, color, body, example }) => (
             <div key={type} className="border border-border/40 rounded-xl overflow-hidden">
@@ -64,16 +64,15 @@ export default function HitlPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What happens after approval</h2>
+        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What each action writes to the contract</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Every approval triggers a sequence — not just the action, but the evidence write:
+          Every decision triggers an evidence write — not just the action, but the rationale that closes the loop:
         </p>
         <div className="space-y-2">
           {[
-            { action: "Approve drift resolution", result: "globals.css or Figma updated, contract status set to clean, Hermes writes rationale" },
-            { action: "Approve instrumentation", result: "PostHog capture call added to component, contract updated with evidence-tracking fields" },
-            { action: "Promote hypothesis variant", result: "Token updated in globals.css, PostHog evidence written to contract, next test baseline recorded" },
-            { action: "Reject hypothesis", result: "Rejection reason written to contract — prevents Hermes from re-proposing the same direction" },
+            { action: "Promote", result: "Result, confidence, winning variant, and rationale written to contract. New baseline for next experiment." },
+            { action: "Run longer", result: "Extension reason written to contract. Card re-queued. Next synthesis picks up from here." },
+            { action: "Kill", result: "Rejection reason written permanently to contract — prevents Hermes from re-proposing the same direction." },
           ].map(({ action, result }) => (
             <div key={action} className="flex gap-3 text-[13px]">
               <span className="font-mono text-foreground/70 shrink-0 w-[200px]">{action}</span>
@@ -89,13 +88,13 @@ export default function HitlPage() {
 {
   "cards": [
     {
-      "id": "card_20260427_001",
+      "id": "card_20260501_001",
       "type": "hypothesis",
-      "component": "HeroCTAs",
+      "hypothesis": "landing-headline-icp-match",
       "experiment": "hero-headline-ab",
-      "confidence": 0.87,
+      "confidence": 0.84,
       "recommendation": "promote",
-      "createdAt": "2026-04-27T12:00:00Z",
+      "createdAt": "2026-05-01T09:00:00Z",
       "status": "pending"
     }
   ]

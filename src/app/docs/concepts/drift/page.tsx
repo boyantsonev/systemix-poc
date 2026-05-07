@@ -20,7 +20,7 @@ export default function DriftPage() {
         Drift &amp; Reconciliation
       </h1>
       <p className="text-[16px] text-muted-foreground leading-relaxed mb-10">
-        Drift is any disagreement between what your design sources say a token&apos;s value should be.
+        A supporting concept. Before you can trust an experiment result, the thing being tested needs to be in a known state. Drift detection ensures you measured what you designed — not an accidental variant.
       </p>
 
       <hr className="border-border/40 mb-10" />
@@ -28,7 +28,7 @@ export default function DriftPage() {
       <section className="mb-10">
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">What drift is</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          It&apos;s not a bug — it&apos;s a normal part of working across Figma and code. Figma moves. CSS moves. They move at different rates, maintained by different people. Systemix makes drift visible and manageable instead of letting it silently poison agent outputs.
+          Drift is any disagreement between what your design sources say a value should be — typically between Figma and code. It&apos;s a secondary concern for most pre-PMF founders, but it matters when you need to trust that your experiment measured the variant you intended, not an accidental divergence. Systemix makes drift visible and resolvable — it&apos;s not the primary workflow, but it keeps the primary workflow honest.
         </p>
       </section>
 
@@ -94,9 +94,9 @@ export default function DriftPage() {
       </section>
 
       <section>
-        <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">Why this matters for agents</h2>
+        <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">Why this matters for hypothesis validation</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          An agent that reads a <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">drifted</code> token without a rationale decision doesn&apos;t know which value to use. It will guess. The reconciliation process turns guesses into facts — and the quality score tracks how many facts you have.
+          An experiment result is only trustworthy if the thing being tested was in a known state when it ran. Unresolved drift means an agent or a deploy may have served a visual that differed from what you designed — and the PostHog result reflects that accidental variant, not the intended one. Resolving drift before shipping closes that gap.
         </p>
       </section>
     </article>

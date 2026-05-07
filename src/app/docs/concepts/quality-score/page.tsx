@@ -1,8 +1,8 @@
 export default function QualityScorePage() {
   const tiers = [
-    { score: "≥ 80",  state: "Clean",           dot: "bg-emerald-500", body: "Most contracts are resolved. The design system is trustworthy for agent consumption." },
-    { score: "≥ 60",  state: "Needs attention",  dot: "bg-amber-500",   body: "Unresolved drift exists. Agents will encounter ambiguous tokens. Triage before relying on the contracts." },
-    { score: "< 60",  state: "Critical",         dot: "bg-red-400",     body: "Too many unresolved conflicts. The contract layer is not reliable. Resolve open drift before using in any agent workflow." },
+    { score: "≥ 80",  state: "Evidence-ready",   dot: "bg-emerald-500", body: "Most contracts are backed by measured results. You can trust this as your experiment baseline — agents reading the contracts will get real decisions, not stale assumptions." },
+    { score: "≥ 60",  state: "Partial coverage",  dot: "bg-amber-500",   body: "Some hypotheses are unresolved or lack PostHog evidence. You can proceed, but agents may encounter contracts where the decision is still pending." },
+    { score: "< 60",  state: "Unbacked",          dot: "bg-red-400",     body: "Most contracts lack evidence. The baseline is not reliable — close open experiments and resolve pending HITL cards before trusting this for future hypotheses." },
   ];
 
   return (
@@ -12,7 +12,7 @@ export default function QualityScorePage() {
         Quality Score
       </h1>
       <p className="text-[16px] text-muted-foreground leading-relaxed mb-10">
-        A 0–100 measure of how clean your MDX contracts are — weighted by drift, unresolved conflicts, and missing Figma coverage.
+        A 0–100 measure of how much evidence backs your hypothesis contracts. The score tells you whether you can trust the baseline your next experiment starts from.
       </p>
 
       <hr className="border-border/40 mb-10" />
@@ -20,7 +20,7 @@ export default function QualityScorePage() {
       <section className="mb-10">
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">What it measures</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed">
-          The score reflects how much of your token and component set is fully reconciled — values that match across sources, or conflicts where a human has made an explicit decision. A low score means agents reading the contracts will encounter tokens where the right value is still ambiguous.
+          The score reflects how much of your contract set is backed by real evidence — hypotheses with PostHog results, HITL decisions recorded, and resolved drift. A low score means the contracts hold assumptions, not measurements. A high score means when you or an agent reads a contract, the decision there is real.
         </p>
       </section>
 
@@ -69,9 +69,9 @@ export default function QualityScorePage() {
         <h2 className="text-[1.15rem] font-bold tracking-tight mb-3">Improving your score</h2>
         <ul className="space-y-2">
           {[
-            "Open /design-system and resolve drifted tokens — each resolved conflict removes the unresolved penalty",
-            "Click a token with ΔE > 2.0 and choose code-wins or figma-wins — the decision is written back to the MDX frontmatter",
-            "Ensure your Figma token exports include all tokens defined in globals.css — gaps count as missing-in-figma",
+            "Open the HITL queue and resolve pending hypothesis cards — each approved decision adds evidence to a contract",
+            "Close running PostHog experiments with /close-experiment — the result is written to the contract and the score updates",
+            "Resolve any drifted visual state before shipping new variants — drift means the experiment may not have measured what you designed",
           ].map((item) => (
             <li key={item} className="flex items-start gap-3 text-[14px] text-muted-foreground">
               <span className="mt-2 shrink-0 w-1 h-1 rounded-full bg-muted-foreground/40" />

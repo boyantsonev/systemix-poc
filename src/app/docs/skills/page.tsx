@@ -6,10 +6,10 @@ import { pipelineSkills } from "@/lib/data/pipeline";
 import type { Skill, SkillGroup } from "@/lib/types/skill";
 
 const GROUP_META: Record<SkillGroup, { heading: string; subtitle: string }> = {
-  "the-loop":     { heading: "The loop",      subtitle: "Hypothesis validation — from idea to measured decision. Install workflow: npx systemix workflow add hypothesis-validation"  },
-  "design-system":{ heading: "Design system", subtitle: "Keep Figma and code in sync bidirectionally"             },
-  "deploy":       { heading: "Deploy",        subtitle: "Stories, builds, and Vercel deployments"                 },
-  "utilities":    { heading: "Utilities",     subtitle: "Lower-level helpers"                                     },
+  "the-loop":     { heading: "The loop",      subtitle: "Hypothesis validation — from idea to measured decision. The primary workflow. Install: npx systemix workflow add hypothesis-validation"  },
+  "design-system":{ heading: "Design system", subtitle: "Figma↔code sync for founders who want drift detection alongside hypothesis validation"             },
+  "deploy":       { heading: "Deploy",        subtitle: "Build, deploy, and annotate experiments on Vercel"                 },
+  "utilities":    { heading: "Utilities",     subtitle: "Lower-level helpers for contract management and PostHog querying"                                     },
 };
 
 const GROUP_ORDER: SkillGroup[] = ["the-loop", "design-system", "deploy", "utilities"];
@@ -148,10 +148,8 @@ export default function SkillsPage() {
         <code className="font-mono text-[14px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">~/.claude/skills/</code>.
       </p>
       <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-        Install a full workflow (recommended) with{" "}
-        <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">npx systemix workflow add hypothesis-validation</code>{" "}
-        or{" "}
-        <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">npx systemix workflow add design-system</code>.
+        Start with the hypothesis-validation workflow — it covers the full founder loop from writing an experiment to closing it with evidence. Install with{" "}
+        <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">npx systemix workflow add hypothesis-validation</code>.
         Or copy any prompt below and save it as a <code className="font-mono text-[13px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">.md</code> file manually.
       </p>
       <div className="rounded-xl border border-border/40 bg-muted/10 px-4 py-3 mb-8 flex items-start gap-3">
@@ -160,7 +158,7 @@ export default function SkillsPage() {
           <div className="space-y-1">
             <div className="flex items-baseline gap-2 text-[12px]">
               <code className="font-mono text-foreground/70 shrink-0">hypothesis-validation</code>
-              <span className="text-muted-foreground/60">— /init-experiment · /growth-audit · /write-variants · /close-experiment</span>
+              <span className="text-muted-foreground/60">— /init-experiment · /growth-audit · /write-variants · /close-experiment — <strong className="text-foreground/60">start here</strong></span>
             </div>
             <div className="flex items-baseline gap-2 text-[12px]">
               <code className="font-mono text-foreground/70 shrink-0">design-system</code>

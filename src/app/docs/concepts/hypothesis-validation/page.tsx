@@ -6,7 +6,7 @@ export default function HypothesisValidationPage() {
         Hypothesis Validation Loop
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        Every section of your landing page is a claim. The hypothesis loop turns those claims into tested decisions — and writes the evidence back to the contract so the next agent, sprint, or campaign starts from known ground, not a blank slate.
+        Every hypothesis you ship — a landing page variant, copy test, or onboarding flow — is a claim. The hypothesis loop turns those claims into tested decisions and writes the evidence back to the contract, so the next agent, sprint, or GTM experiment starts from known ground, not a blank slate.
       </p>
 
       <hr className="border-border/40 mb-8" />
@@ -14,7 +14,7 @@ export default function HypothesisValidationPage() {
       <section className="mb-10">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What gets tested</h2>
         <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          The hypothesis loop isn&apos;t about visual tokens. It&apos;s about the decisions that determine whether a visitor converts: how the problem is framed, whether the value proposition matches the ICP arriving from a given channel, whether the &ldquo;How it works&rdquo; section reduces or creates friction, and which CTA copy drives action. The contract stores the rationale behind those decisions — and the evidence that validated or refuted them.
+          The hypothesis loop applies to any artifact a founder ships. It&apos;s about the decisions that determine whether a visitor converts or a user activates: how the problem is framed, whether the value proposition matches the ICP arriving from a given channel, whether the onboarding flow reduces or creates friction, and which CTA copy drives action. The contract stores the rationale behind those decisions — and the evidence that validated or refuted them.
         </p>
         <div className="grid sm:grid-cols-2 gap-3">
           {[

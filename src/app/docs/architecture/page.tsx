@@ -9,7 +9,7 @@ export default function ArchitecturePage() {
         Architecture
       </h1>
       <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
-        How PostHog, Hermes, the evidence contract, and your codebase connect into a continuous loop.
+        How the CLI, PostHog, Hermes, MDX contracts, and the HITL queue connect into a continuous hypothesis validation loop.
       </p>
 
       {/* Full-bleed graph canvas */}
@@ -40,11 +40,11 @@ export default function ArchitecturePage() {
       <section className="mb-8">
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Node types</h2>
         <div className="space-y-2 text-[13px] text-muted-foreground">
-          <p><span className="font-mono text-violet-400">source</span> — origin of truth (Figma, CSS, codebase)</p>
+          <p><span className="font-mono text-violet-400">source</span> — origin of truth (hypothesis MDX, codebase)</p>
           <p><span className="font-mono text-amber-400">agent</span> — autonomous operator (Hermes, any Ollama model)</p>
-          <p><span className="font-mono text-blue-400">artifact</span> — produced output (contract, decision, evidence record)</p>
-          <p><span className="font-mono text-red-400">infra</span> — infrastructure (Ollama, MCP server)</p>
-          <p><span className="font-mono text-cyan-400">tool</span> — external tool (Figma, PostHog, Vercel)</p>
+          <p><span className="font-mono text-blue-400">artifact</span> — produced output (contract, HITL card, evidence record)</p>
+          <p><span className="font-mono text-red-400">infra</span> — infrastructure (Ollama, MCP server, queue.json)</p>
+          <p><span className="font-mono text-cyan-400">tool</span> — external tool (PostHog, Vercel, Figma optional)</p>
         </div>
       </section>
 
@@ -52,21 +52,27 @@ export default function ArchitecturePage() {
         <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">The loop</h2>
         <div className="space-y-3">
           <div className="border border-border/40 rounded-xl px-4 py-4">
-            <p className="text-[13px] font-semibold text-foreground mb-1.5">Hermes — local LLM via Ollama</p>
+            <p className="text-[13px] font-semibold text-foreground mb-1.5">CLI — npx systemix watch / init / close</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              Hermes runs locally via Ollama — any compatible model, no API key required. It watches your codebase, Figma, and PostHog for changes; authors MDX contract files; and polls PostHog for experiment results. When evidence arrives, Hermes synthesizes it against the contract&apos;s prior decisions and writes the result back as a dated evidence record, then queues it for human review.
+              The CLI is the primary entry point. <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">systemix init</code> scaffolds your contract directory. <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">systemix watch</code> runs Hermes continuously, polling PostHog and generating HITL cards. <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">systemix close</code> writes a decision to the contract manually.
             </p>
           </div>
           <div className="border border-border/40 rounded-xl px-4 py-4">
-            <p className="text-[13px] font-semibold text-foreground mb-1.5">PostHog — production evidence source</p>
+            <p className="text-[13px] font-semibold text-foreground mb-1.5">Hermes — local LLM via Ollama</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              PostHog closes the loop. When an experiment finishes, Hermes reads the result, checks the contract history — prior experiments, rejected directions, baseline rates — and writes the winning evidence back into the MDX frontmatter. The Decision Queue surfaces the synthesis as a HITL card for human approval before the contract is updated.
+              Hermes runs locally — any Ollama-compatible model, no API key required. It reads the hypothesis contract history and PostHog experiment results, synthesizes a recommendation (promote / run longer / kill), and writes a HITL card to <code className="font-mono text-[11px] bg-muted/60 px-1 py-0.5 rounded text-foreground">queue.json</code> for human approval.
+            </p>
+          </div>
+          <div className="border border-border/40 rounded-xl px-4 py-4">
+            <p className="text-[13px] font-semibold text-foreground mb-1.5">PostHog — experiment evidence source</p>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">
+              PostHog is where your experiment data lives. Systemix reads it — nothing moves. When an experiment reaches significance, Hermes pulls the result, checks the contract history, and writes the evidence back into the MDX frontmatter.
             </p>
           </div>
           <div className="border border-border/40 rounded-xl px-4 py-4">
             <p className="text-[13px] font-semibold text-foreground mb-1.5">MCP server — agent access layer</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              The Systemix MCP server exposes contracts to Claude Code, Cursor, and any MCP-compatible agent. When an agent asks about a component or experiment, it gets the current value, the rationale, and the full evidence history — not a guess.
+              The Systemix MCP server exposes contracts to Claude Code, Cursor, and any MCP-compatible agent. When an agent is about to work on something you&apos;ve already tested, it gets the prior decision, the PostHog evidence, and the rejected directions — not a guess.
             </p>
           </div>
         </div>
