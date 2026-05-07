@@ -5,8 +5,8 @@ import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
 
 export const metadata: Metadata = {
-  title: "Systemix — Every component is a guess until production proves it.",
-  description: "The evidence layer for design systems. Production results, attributed to the variant, written into your component contracts. Open source. MCP-native.",
+  title: "Systemix — You shipped a hypothesis. Now close the loop.",
+  description: "The hypothesis validation loop for builders. PostHog measures what you ship. Hermes synthesizes the result. One click writes the decision back to the contract. Open source. Runs locally.",
 };
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ function LandingFooter() {
         <div className="flex items-center gap-2">
           <SLogo size={14} className="text-muted-foreground/40" />
           <span className="text-[12px] text-muted-foreground/40 font-mono">
-            The Evidence Layer for design systems.
+            The hypothesis loop for builders.
           </span>
         </div>
         <div className="flex items-center gap-4 text-[12px] text-muted-foreground/40 font-mono">
@@ -83,20 +83,20 @@ function Hero() {
     <section className="pt-24 pb-20">
       <div className="max-w-3xl mx-auto text-center">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-6">
-          The Evidence Layer for design systems
+          For builders shipping with Claude Code
         </p>
         <h1 className="text-[2.75rem] sm:text-[3.5rem] font-black tracking-tight leading-[1.1] mb-6">
-          Every component is a guess<br />
-          <span className="text-muted-foreground">until production proves it.</span>
+          You shipped a hypothesis.<br />
+          <span className="text-muted-foreground">Now close the loop.</span>
         </h1>
         <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
-          Your A/B test measured a variant nobody designed. Your agent shipped a token Figma deprecated last quarter. Systemix is the layer where every component carries its production evidence — so the next design decision is informed by what actually worked, not by what got documented.
+          You&apos;re building fast with AI. PostHog is tracking. But when you ship the next thing, what does your agent read? Systemix is the layer where every experiment records its own result — permanently, in your repo. The next decision starts from evidence, not memory.
         </p>
 
         <div className="flex flex-col items-center gap-4">
           <InstallCommand />
           <p className="text-[12px] font-mono text-muted-foreground/40">
-            When an agent asks &ldquo;what is --color-primary?&rdquo; — the contract answers with the value, the rationale, and the experiment that proved it.
+            Hermes runs on Ollama — no API key, no cloud, no data leaving your machine.
           </p>
         </div>
       </div>
@@ -208,11 +208,11 @@ function LoopDiagram() {
       {/* Step-by-step */}
       <div className="flex-1 space-y-0">
         {[
-          { n: "01", label: "You ship something", body: "A landing variant, a new component, a feature flag rollout, a Figma update. Anything that has consequences in production." },
-          { n: "02", label: "Signals come in",    body: "PostHog tracks behavior. Vercel logs the deploy. Social posts get engagement. Figma drift gets flagged. Systemix listens to all of it." },
-          { n: "03", label: "Hermes reads against the contract", body: "A local LLM (any Ollama model) reads the new signals against the contract's history — what was tested before, what was rejected, what worked." },
-          { n: "04", label: "A decision card queues for you", body: "Promote the variant. Run longer. Reject the hypothesis. One click. Hermes shows the rationale, you decide." },
-          { n: "05", label: "Evidence is written back", body: "The decision, the data, and the date are written into the contract. The next experiment — by you, an agent, or a teammate — starts from this ground." },
+          { n: "01", label: "You write a hypothesis", body: "A landing variant, a copy test, a new onboarding flow. One MDX file with the question you're testing and what winning looks like. Takes 2 minutes." },
+          { n: "02", label: "You ship it",           body: "PostHog picks up the events. Vercel logs the deploy. Social signals come in. Systemix listens — nothing moves, nothing new to learn." },
+          { n: "03", label: "Hermes reads what happened", body: "A local LLM (any Ollama model) reads the signals against your contract's history — prior tests, rejected directions, original intent. No API key." },
+          { n: "04", label: "A decision card queues for you", body: "Promote. Run longer. Kill it. Hermes shows the synthesis. You make the call. One click." },
+          { n: "05", label: "The loop closes",       body: "Evidence written to the contract. Permanently co-located with the artifact. The next experiment — by you or an agent — starts from known ground, not a fresh guess." },
         ].map(({ n, label, body }) => (
           <div key={n} className="flex gap-4 pb-5">
             <div className="flex flex-col items-center gap-0 shrink-0">
@@ -246,10 +246,10 @@ function TheLoop() {
           How it works
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
-          One contract. Every signal.<br />The decision Hermes wrote so you don&apos;t have to.
+          One hypothesis. Every signal.<br />The decision Hermes wrote so you don&apos;t have to.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
-          The same loop, whether you&apos;re shipping a landing page, a component, or a full prototype. Systemix is the glue between the tools you already use.
+          The same loop, whether you&apos;re testing a landing page, a copy variant, or a new onboarding flow. Systemix ties together the tools you already use.
         </p>
 
         <LoopDiagram />
@@ -264,24 +264,24 @@ function ExperimentTypes() {
   const types = [
     {
       tag: "landing-page",
-      label: "A landing page",
-      example: "Test 'evidence layer' vs 'memory layer' framing on ops-role traffic",
-      signals: ["PostHog conversion", "Twitter engagement", "Vercel deploy ID"],
-      decision: "Promote variant B (+47% CTR · 87% confidence)",
+      label: "A landing hypothesis",
+      example: "Hero framing: 'close the loop' vs 'evidence layer' — which converts the pre-PMF founder?",
+      signals: ["PostHog CTR", "Scroll depth past fold", "Install command copy"],
+      decision: "Promote variant B (+34% CTR · 82% confidence)",
     },
     {
-      tag: "component",
-      label: "A component",
-      example: "Hero CTA button — copy and color variants",
-      signals: ["PostHog click events", "Figma drift", "Storybook story"],
-      decision: "Keep current variant — 5% lift not significant",
+      tag: "onboarding-flow",
+      label: "An onboarding flow",
+      example: "New 3-step setup vs control — measuring 7-day activation rate",
+      signals: ["PostHog activation funnel", "Time-to-first-pull", "Drop-off step"],
+      decision: "Run longer — 11 days, need 14 for retention signal",
     },
     {
-      tag: "feature-flag",
-      label: "A feature flag",
-      example: "New onboarding flow rolled out to 20% of new users",
-      signals: ["PostHog activation funnel", "Retention cohort", "Support tickets"],
-      decision: "Run longer — needs 14 days for retention signal",
+      tag: "gtm-hypothesis",
+      label: "A GTM hypothesis",
+      example: "HN post drove 18 signups — which copy? Which channel drove them?",
+      signals: ["Referrer attribution", "PostHog session source", "Social signal events"],
+      decision: "Promote: 'Show HN' framing wins. Rationale written to contract.",
     },
   ];
 
@@ -289,13 +289,13 @@ function ExperimentTypes() {
     <section className="py-24 border-t border-border/40">
       <div className="max-w-4xl mx-auto">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
-          What an experiment can be
+          What a hypothesis can be
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
-          The contract scales with what you ship.
+          One contract. Same loop. Whatever you ship.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
-          One MDX file per experiment. Same format. Same loop. Whether you&apos;re a builder testing a landing page or a team measuring a design system change — the contract holds the hypothesis, the signals, and the decision.
+          One MDX file per hypothesis. Landing pages, onboarding flows, GTM bets — same format, same loop. The contract holds the question, the signals, and the decision. Your agent reads it before touching anything you&apos;ve already tested.
         </p>
 
         <div className="grid md:grid-cols-3 gap-3">
@@ -338,13 +338,13 @@ function HitlPreview() {
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
-          Hermes &middot; Live decision card
+          The queue &middot; Your decision cadence
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
-          Hermes tells you what it found.<br />You decide what happens next.
+          Hermes did the synthesis.<br />You make the call.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
-          When the signals reach significance, Hermes surfaces a card with the result, a recommendation, and the contract evidence behind the call. One click writes everything back.
+          Every running hypothesis produces a card. Confidence score, PostHog data, prior contract history. One click writes the decision back. That&apos;s the whole product.
         </p>
 
         <div className="rounded-xl border border-emerald-500/20 bg-card overflow-hidden mb-6">
@@ -430,12 +430,12 @@ function HitlPreview() {
 
 function MagicGlue() {
   const tools = [
-    { name: "PostHog / Statsig", role: "Where your experiment data already lives. Systemix reads it — nothing moves." },
-    { name: "Vercel",            role: "Deploy target. The post-deploy hook tells Hermes a new variant is live, ready to measure." },
-    { name: "Figma",             role: "Source of design tokens. Drift between Figma and code is detected and surfaced for resolution before a test starts." },
+    { name: "PostHog / Statsig", role: "Where your experiment data already lives. Systemix reads it — nothing moves, nothing new to instrument." },
+    { name: "Ollama (Hermes)",   role: "Runs the synthesis locally. No API key. Any Ollama-compatible model works — swap in a config line." },
+    { name: "Vercel",            role: "Deploy target. The post-deploy hook tells Hermes a new variant is live and ready to measure." },
+    { name: "MCP server",        role: "Exposes contracts to Claude Code, Cursor, or any MCP-compatible agent. Agents read the contract before they ship the next thing." },
     { name: "Social signals",    role: "Twitter, LinkedIn, Reddit referrers attributed to specific deploys. Know which channel converted, not just that conversion happened." },
-    { name: "Ollama (Hermes)",   role: "Runs the synthesis locally. No API key. Any Ollama-compatible model works as the backend — swap in a config line." },
-    { name: "MCP server",        role: "Exposes contracts to Claude Code, Cursor, or any MCP-compatible agent. Agents read the contract before they ship the next variant." },
+    { name: "Figma",             role: "Supporting layer. Drift between Figma and code is detected before a test starts — so you measure what you designed, not a drifted variant." },
   ];
 
   return (
@@ -445,10 +445,10 @@ function MagicGlue() {
           The tools it connects
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
-          Systemix is the magic glue.<br />Not another tool to learn.
+          The stack you have is the stack.<br />Systemix is the glue.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
-          The stack you already have is the stack. Systemix wraps around it — listening, synthesizing, writing back to a single contract that everyone (you, your agents, your teammates) reads.
+          No new dashboard to learn. No data to migrate. Systemix wraps around what you already use — listening, synthesizing, writing results back to a single contract file in your repo.
         </p>
 
         <div className="rounded-xl border border-border/40 overflow-hidden divide-y divide-border/30">
@@ -473,14 +473,14 @@ function MagicGlue() {
 function UseCases() {
   const cases = [
     {
-      audience: "Product teams shipping with Cursor or Claude Code",
-      headline: "Stop guessing what your agent will pick.",
-      body: "Your agent reads the contract before it ships. Every token, every component carries the value, the rationale, and the production result that justified it. No more rediscovering the same dead-end variant six months apart.",
+      audience: "You — building alone with Claude Code",
+      headline: "The next thing you ship starts from what the last thing proved.",
+      body: "You shipped something last week. PostHog has 240 sessions. You have a gut feeling it's not converting. Systemix shows you the queue card — Hermes already synthesized what the data shows. You approve. The contract records it. The next sprint starts from there, not from the gut feeling.",
     },
     {
-      audience: "Teams already running PostHog or Statsig",
-      headline: "Close the loop your analytics never closed.",
-      body: "PostHog tells you variant B won. Systemix writes that result into the component's contract — attributed to the variant, dated, with confidence. Your next experiment starts from known ground, not a fresh guess.",
+      audience: "Your AI agent — reading before it ships",
+      headline: "Agents don't guess. They read the contract.",
+      body: "When Claude Code or Cursor touches something you've already tested, it reads the contract first — prior experiments, rejected directions, production results. No rediscovering dead-end variants six months later. No shipping what was already killed.",
     },
   ];
 
@@ -488,10 +488,10 @@ function UseCases() {
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
-          The evidence layer · Two ways teams use it
+          Who it&apos;s for
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-12">
-          Same contract. Different problem solved.
+          You and your agent. Same contract.
         </h2>
 
         <div className="grid sm:grid-cols-2 gap-3">
@@ -514,62 +514,56 @@ function UseCases() {
   );
 }
 
-// ── Storybook + drift (demoted, supporting context) ───────────────────────────
+// ── Storybook + drift (collapsed — for design system teams) ──────────────────
 
 function StorybookCallout() {
   return (
-    <section className="py-20 border-t border-border/40">
+    <section className="py-12 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
-        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
-          For design system teams &middot; Why this matters
-        </p>
-        <h2 className="text-[1.5rem] font-black tracking-tight mb-4">
-          Storybook tells your agent what exists.<br />Nobody tells it what worked.
-        </h2>
-        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4 max-w-2xl">
-          You can document a component. You can sync it across Figma and code. You can write a story for it. But you still can&apos;t answer the question that decides the next sprint: <em>did this design decision work?</em> The answer lives in PostHog, in someone&apos;s head, or in a Slack thread from March.
-        </p>
-        <p className="text-[14px] text-muted-foreground leading-relaxed mb-8 max-w-2xl">
-          Systemix writes the answer back into the component&apos;s contract — measured in production, attributed to the variant, dated. The next agent reading it sees the evidence, not just the value.
-        </p>
-
-        <div className="grid sm:grid-cols-3 gap-3 mb-8">
-          {[
-            {
-              label: "LOST RATIONALE",
-              body: "The variant that won in March is now a hex value with no story attached. Six months later the same dead-end gets proposed again, by a human or an agent.",
-            },
-            {
-              label: "STALE CONTEXT",
-              body: "Your agent reads the current token value but not the experiment that set it. It ships whichever color was in the file last — not the one production validated.",
-            },
-            {
-              label: "BLIND BASELINE",
-              body: "PostHog says variant B won. But if the token drifted before the test, you measured a variant nobody designed. The result isn't wrong — it's about the wrong thing.",
-            },
-          ].map(({ label, body }) => (
-            <div key={label} className="border border-border/40 rounded-xl px-4 py-4 bg-background">
-              <p className="text-[10px] font-mono font-bold text-muted-foreground/50 uppercase tracking-widest mb-2">{label}</p>
-              <p className="text-[12px] text-muted-foreground leading-relaxed">{body}</p>
+        <details className="group">
+          <summary className="cursor-pointer list-none flex items-center gap-2 text-[12px] font-mono text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors select-none">
+            <span className="group-open:rotate-90 transition-transform inline-block">›</span>
+            For design system teams — Storybook, drift detection, and the evidence layer
+          </summary>
+          <div className="mt-6 border border-border/30 rounded-xl px-6 py-6 bg-muted/5">
+            <h2 className="text-[1.25rem] font-black tracking-tight mb-3">
+              Storybook tells your agent what exists.<br />Nobody tells it what worked.
+            </h2>
+            <p className="text-[14px] text-muted-foreground leading-relaxed mb-3 max-w-2xl">
+              You can document a component. You can sync it across Figma and code. You can write a story for it. But you still can&apos;t answer the question that decides the next sprint: <em>did this design decision work?</em> The answer lives in PostHog, in someone&apos;s head, or in a Slack thread from March.
+            </p>
+            <p className="text-[14px] text-muted-foreground leading-relaxed mb-6 max-w-2xl">
+              Systemix writes the answer back into the component&apos;s contract — measured in production, attributed to the variant, dated. The next agent reading it sees the evidence, not just the value.
+            </p>
+            <div className="grid sm:grid-cols-3 gap-3 mb-6">
+              {[
+                { label: "LOST RATIONALE", body: "The variant that won in March is now a hex value with no story attached. Six months later the same dead-end gets proposed again, by a human or an agent." },
+                { label: "STALE CONTEXT",  body: "Your agent reads the current token value but not the experiment that set it. It ships whichever color was in the file last — not the one production validated." },
+                { label: "BLIND BASELINE", body: "PostHog says variant B won. But if the token drifted before the test, you measured a variant nobody designed. The result isn't wrong — it's about the wrong thing." },
+              ].map(({ label, body }) => (
+                <div key={label} className="border border-border/40 rounded-xl px-4 py-4 bg-background">
+                  <p className="text-[10px] font-mono font-bold text-muted-foreground/50 uppercase tracking-widest mb-2">{label}</p>
+                  <p className="text-[12px] text-muted-foreground leading-relaxed">{body}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        <div className="rounded-xl border border-border/40 bg-muted/5 px-5 py-4">
-          <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Drift detection — supporting layer</p>
-          <p className="text-[13px] text-muted-foreground leading-relaxed">
-            Before any test result can be trusted, the component has to be in a known state. Systemix tracks Figma↔code token drift and surfaces it as a HITL card — so you know whether you measured what you designed, not a drifted variant.{" "}
-            <Link href="/design-system" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline underline-offset-2">
-              Design System health →
-            </Link>
-          </p>
-        </div>
+            <div className="rounded-xl border border-border/40 bg-muted/5 px-5 py-4">
+              <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Drift detection — supporting layer</p>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
+                Before any test result can be trusted, the component has to be in a known state. Systemix tracks Figma↔code token drift and surfaces it as a HITL card — so you know whether you measured what you designed, not a drifted variant.{" "}
+                <Link href="/design-system" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline underline-offset-2">
+                  Design System health →
+                </Link>
+              </p>
+            </div>
+          </div>
+        </details>
       </div>
     </section>
   );
 }
 
-// ── Quality gate ──────────────────────────────────────────────────────────────
+// ── Quality gate (docs-only — removed from landing) ───────────────────────────
 
 function QualityGate() {
   const tiers = [
@@ -616,19 +610,19 @@ function QualityGate() {
 
 function BottomCTA() {
   const steps = [
-    { n: "1", label: "Run Hermes locally",        cmd: "ollama pull hermes3",          comment: "local LLM — no API key needed" },
-    { n: "2", label: "Wire up your evidence source", cmd: "npx systemix connect posthog", comment: "Statsig and Mixpanel adapters in beta" },
-    { n: "3", label: "Read the loop",             cmd: "npx systemix evidence pull",   comment: "pulls 30-day results into every contract — ~40s per component" },
+    { n: "1", label: "Run Hermes locally",          cmd: "ollama pull hermes3",       comment: "any Ollama model — no API key" },
+    { n: "2", label: "Init your first hypothesis",  cmd: "npx systemix init",         comment: "creates contract/hypotheses/ in your repo" },
+    { n: "3", label: "Watch the loop",              cmd: "npx systemix watch",        comment: "Hermes polls, queue fills, evidence writes back" },
   ];
 
   return (
     <section className="py-24 border-t border-border/40">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-[1.75rem] font-black tracking-tight mb-4">
-          Run it locally.
+          Up and running in three commands.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
-          Hermes runs on Ollama — no API key, no cloud, no design data leaving your machine. PostHog stays where it already is. The contract lives in your repo. Systemix is the layer that ties them together.
+          Hermes runs on Ollama — no API key, no cloud, your data stays local. PostHog stays where it already is. The contract is a file in your repo. Three commands and the loop is live.
         </p>
 
         <div className="space-y-px rounded-xl overflow-hidden border border-border/40 mb-8">
@@ -648,7 +642,7 @@ function BottomCTA() {
           <div>
             <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Install a workflow</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-2">
-              Every component gets a DESIGN.md-shaped contract: tokens, components, rationale, and a Production Evidence section Hermes writes from your PostHog events. You approve. The score rises. The next agent reads forward.
+              Every hypothesis gets a contract: the question, the variants, success criteria, and a Production Evidence section Hermes writes from your PostHog events. You approve. Evidence accumulates. The next experiment starts from known ground.
             </p>
             <code className="text-[12px] font-mono text-foreground/60 bg-muted/40 px-2 py-1 rounded">
               npx systemix workflow add hypothesis-validation
@@ -693,13 +687,12 @@ export default function LandingPage() {
       <main className="max-w-4xl mx-auto px-6">
         <SectionTrack name="hero" hypothesisId="landing-hero-icp-pivot-2026-05"><Hero /></SectionTrack>
         <SectionTrack name="the-loop"><TheLoop /></SectionTrack>
-        <SectionTrack name="experiment-types"><ExperimentTypes /></SectionTrack>
         <SectionTrack name="hitl-preview" hypothesisId="landing-hitl-queue-prominence-2026-05"><HitlPreview /></SectionTrack>
+        <SectionTrack name="experiment-types"><ExperimentTypes /></SectionTrack>
         <SectionTrack name="magic-glue"><MagicGlue /></SectionTrack>
         <SectionTrack name="use-cases" hypothesisId="landing-founder-pain-framing-2026-05"><UseCases /></SectionTrack>
-        <SectionTrack name="storybook-callout"><StorybookCallout /></SectionTrack>
-        <SectionTrack name="quality-gate"><QualityGate /></SectionTrack>
         <SectionTrack name="bottom-cta"><BottomCTA /></SectionTrack>
+        <SectionTrack name="storybook-callout"><StorybookCallout /></SectionTrack>
       </main>
       <LandingFooter />
     </div>
