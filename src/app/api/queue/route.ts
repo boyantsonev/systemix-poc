@@ -257,7 +257,7 @@ export async function PATCH(req: NextRequest) {
       }
       // Fire-and-forget: skill update after confirmed contract write
       void import("../../../../packages/cli/src/commands/skill-update.js")
-        .then(({ update }) => update((card as HypothesisCard).hypothesisId, decision, card))
+        .then(({ update }) => update((card as HypothesisCard).hypothesisId!, decision, card))
         .catch(() => {});
     }
   }
