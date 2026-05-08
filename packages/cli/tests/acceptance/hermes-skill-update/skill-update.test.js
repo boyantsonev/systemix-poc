@@ -212,7 +212,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── AC-2: Hermes unavailable — silent skip ─────────────────────────────────
 
-  it.skip(
+  it(
     // Given Ollama is not running (ECONNREFUSED)
     // When a hypothesis card is approved and skillUpdate.update() is called
     // Then the SKILL.md is not written, and a structured log entry is emitted
@@ -247,7 +247,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── AC-3: Hermes fails after 2 retries — HITL card written ────────────────
 
-  it.skip(
+  it(
     // Given Ollama is running but returns an error on every generate attempt
     // When skillUpdate.update() is called
     // Then a HITL card of type skill-update-failed appears in queue.json
@@ -280,7 +280,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── AC-4: Skill resolution from frontmatter ────────────────────────────────
 
-  it.skip(
+  it(
     // Given a hypothesis contract has skill-tags: [hermes] in its frontmatter
     // When the skill update runs
     // Then the write targets the hermes SKILL.md path and no other skill file
@@ -315,7 +315,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── AC-5: Skill resolution — default fallback ──────────────────────────────
 
-  it.skip(
+  it(
     // Given a hypothesis contract has no skill-tags field
     // When the skill update runs
     // Then the write targets the hermes SKILL.md default path
@@ -341,7 +341,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── AC-6: Atomic write — tmp file cleaned up after successful write ─────────
 
-  it.skip(
+  it(
     // Given a valid update completes successfully
     // When the write has finished
     // Then no .tmp file remains on disk (rename completed cleanly)
@@ -372,7 +372,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── AC-7: Structural change → HITL review card + write proceeds ─────────────
 
-  it.skip(
+  it(
     // Given the proposed patch from Hermes adds a new ## heading (structural change)
     // When the skill update runs
     // Then a HITL card of type skill-update-review is written to the queue
@@ -407,7 +407,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── Error path: hypothesis contract not found ──────────────────────────────
 
-  it.skip(
+  it(
     // Given a hypothesis ID is passed but no corresponding contract file exists on disk
     // When skillUpdate.update() is called
     // Then the call resolves without writing SKILL.md and without throwing
@@ -435,7 +435,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── Error path: SKILL.md target directory does not exist ──────────────────
 
-  it.skip(
+  it(
     // Given the resolved skill directory does not exist on disk
     // When skillUpdate.update() is called
     // Then the update is skipped gracefully — no file creation, no throw
@@ -468,7 +468,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── Error path: Hermes probe — model absent from Ollama ───────────────────
 
-  it.skip(
+  it(
     // Given Ollama is running but the hermes3 model is not installed
     // When skillUpdate.update() is called
     // Then the update is skipped and a health.startup.refused log is emitted with reason model-absent
@@ -512,7 +512,7 @@ describe("Skill update — hermes-skill-update acceptance tests", () => {
 
   // ── Error path: Hermes output fails validation (heading not preserved) ─────
 
-  it.skip(
+  it(
     // Given Hermes returns a section patch that does not begin with the expected heading
     // When the validation check runs
     // Then the SKILL.md is not written and a retry is attempted (up to cap)

@@ -2,6 +2,8 @@
 
 // npx systemix evidence pull [--hypothesis <id>] [--all]
 // npx systemix evidence close <id> --decision promote|iterate|kill
+
+const skillUpdate = require("./skill-update");
 //
 // Promotes the spike-3 PostHog feedback loop to a CLI command.
 // Pull: reads running hypothesis contracts → queries PostHog → Hermes synthesizes → writes to .systemix/queue.json
@@ -325,6 +327,9 @@ async function close(args) {
 
   const filePath = writeDecisionToContract(id, decision, evidence);
   console.log(`  ✓ Written: ${filePath}`);
+
+  // Fire-and-forget: skill update after confirmed contract write
+  skillUpdate.update(id, decision, card ?? {}).catch(() => {});
 
   if (card) {
     card.status     = "approved";

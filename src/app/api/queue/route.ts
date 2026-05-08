@@ -255,6 +255,10 @@ export async function PATCH(req: NextRequest) {
       if (!result.ok) {
         return NextResponse.json({ error: result.error ?? "Evidence write-back failed" }, { status: 500 });
       }
+      // Fire-and-forget: skill update after confirmed contract write
+      void import("../../../../packages/cli/src/commands/skill-update.js")
+        .then(({ update }) => update((card as HypothesisCard).hypothesisId, decision, card))
+        .catch(() => {});
     }
   }
 
