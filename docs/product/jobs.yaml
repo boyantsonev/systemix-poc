@@ -1,0 +1,136 @@
+---
+# Systemix — Jobs-to-be-Done Single Source of Truth
+# This file is the canonical JTBD reference for all product decisions.
+# Changes require a changelog entry. Do not modify without updating changelog below.
+
+version: "1.0.0"
+created: "2026-05-05"
+feature_ref: "agentic-loop-thesis"
+
+jobs:
+  - id: "JOB-001"
+    name: "evidence-permanence-at-decision-time"
+    status: "validated-conditional"
+    confidence: "medium"
+    validation_note: "Validated via secondary research (HN signals, competitor funding, competitive gap analysis). G1 formally requires 5+ customer interviews. Scores carry ESTIMATED flag pending interview validation."
+
+    abstraction_level: "physical"
+
+    functional_job: >
+      When a product decision is made based on measured evidence, convert that
+      evidence into a structured, co-located claim attached to the artifact the
+      decision describes — so any subsequent actor (human or agent) reads the
+      artifact and acts from the full decision chain, not just the current value.
+
+    emotional_job: >
+      Feel confident handing off a decision — to the next sprint, the next team
+      member, or an AI agent — knowing the context that justified it will still
+      be there and will be read before anything changes.
+
+    social_job: >
+      Be seen as a team that learns and compounds — not one that repeatedly
+      re-discovers the same lessons. The artifacts prove we iterate from
+      evidence, not opinion.
+
+    job_steps:
+      - step: "define"
+        current_state: "Teams define hypotheses verbally or in Notion, unstructured"
+        systemix_role: "/init-experiment writes structured contract at definition time"
+      - step: "locate"
+        current_state: "Evidence lives in PostHog, Slack, git — no single retrieval point"
+        systemix_role: "MCP server makes all contract evidence queryable by agents"
+      - step: "prepare"
+        current_state: "Running an experiment requires manual PostHog setup disconnected from hypothesis"
+        systemix_role: "/write-variants scaffolds variant structure and connects to PostHog event names"
+      - step: "confirm"
+        current_state: "No mechanism to know when an experiment has enough data to decide"
+        systemix_role: "Confidence threshold in YAML triggers HITL prompt at significance"
+      - step: "execute"
+        current_state: "Decision made verbally or in Slack, not recorded"
+        systemix_role: "/close-experiment writes decision + rationale at the moment it is made"
+      - step: "monitor"
+        current_state: "No live view of which hypotheses are open, stalled, or ready"
+        systemix_role: "/growth-audit surfaces the state of all running contracts"
+      - step: "modify"
+        current_state: "Results do not flow back to the artifact that was changed"
+        systemix_role: "PostHog write-back, DESIGN.md extension, evidence score update"
+      - step: "conclude"
+        current_state: "Next cycle starts with no institutional memory from prior cycle"
+        systemix_role: "Contract is the permanent record; agent reads it on next /component or /generate call"
+
+    odi_outcomes:
+      - id: "ODI-1"
+        statement: "Minimize the time it takes to retrieve the rationale and evidence behind a prior product decision when a related decision must be made."
+        importance_estimated: 9
+        satisfaction_estimated: 2
+        score_estimated: 16
+        status: "under-served-primary"
+
+      - id: "ODI-2"
+        statement: "Minimize the likelihood that an experiment result exists in one system while the artifact it describes exists in a separate, disconnected system with no link between them."
+        importance_estimated: 8
+        satisfaction_estimated: 2
+        score_estimated: 14
+        status: "under-served-whitespace"
+
+      - id: "ODI-3"
+        statement: "Minimize the likelihood that an AI agent acts on an artifact without awareness of the experiments and decisions that produced it."
+        importance_estimated: 8
+        satisfaction_estimated: 2
+        score_estimated: 14
+        status: "under-served-growth-vector"
+
+      - id: "ODI-4"
+        statement: "Minimize the effort required to record a product decision and its evidence at the moment the decision is made."
+        importance_estimated: 7
+        satisfaction_estimated: 2
+        score_estimated: 12
+        status: "under-served-automation"
+
+      - id: "ODI-5"
+        statement: "Minimize the likelihood that a previously validated decision is unknowingly overridden by a subsequent action (human or agent) without access to the prior evidence."
+        importance_estimated: 7
+        satisfaction_estimated: 3
+        score_estimated: 11
+        status: "under-served"
+
+      - id: "ODI-6"
+        statement: "Minimize the time it takes to demonstrate to any external observer that the product's own positioning decisions are tracked, evidenced, and iterable — not asserted."
+        importance_estimated: 6
+        satisfaction_estimated: 1
+        score_estimated: 11
+        status: "under-served-meta-narrative"
+
+    icps:
+      - id: "ICP-1"
+        name: "design-engineer-platform-team"
+        status: "secondary-candidate"
+        note: "Beta positioning ICP. Longer cycle. More contested (Knapsack, Fragments). Surrogate WTP evidence from competitor funding."
+        primary_pain: "Agent ships the wrong token — the component file has no awareness of the experiment that set the current value."
+
+      - id: "ICP-2"
+        name: "pre-pmf-founder-vibe-coding"
+        status: "primary-candidate-unvalidated"
+        note: "Blog post ICP. Faster feedback cycle. No current competitor. Unvalidated — 0 customer interviews."
+        primary_pain: "The experiment that won in March has no trace by October. Every related decision starts from scratch."
+
+      - id: "ICP-3"
+        name: "ops-director-founding-engineer"
+        status: "third-candidate"
+        note: "Hypothesis contract ICP. Appears in internal dogfood only. Not validated externally."
+        primary_pain: "Hypothesis-validation feedback loop has no closed-loop infrastructure — decisions are verbal, evidence is in dashboards."
+
+    tension_resolution:
+      claim: "Evidence permanence, decision quality, and agentic trust are the same job at three consecutive zoom levels — mechanism, outcome, system — not three separate jobs."
+      zoom_levels:
+        mechanism: "Evidence is permanently co-located with the artifact"
+        outcome: "The next decision is higher quality because prior evidence is accessible"
+        system: "Agents read verified ground truth and act correctly"
+
+changelog:
+  - version: "1.0.0"
+    date: "2026-05-05"
+    author: "nw-diverger (Flux)"
+    feature_ref: "agentic-loop-thesis"
+    summary: "Initial SSOT bootstrap. Job extracted from DISCOVER wave artifacts (wave-decisions.md, problem-validation.md, lean-canvas.md, opportunity-tree.md). Elevated from DISCOVER JTBD (operational level) to physical level. 6 ODI outcome statements produced. ICP candidates documented with status flags."
+    gate: "G1 conditional pass — all scores ESTIMATED, 5+ customer interviews required for formal G1 pass."
