@@ -2,14 +2,22 @@
   "name": "systemix",
   "version": "0.1.0",
   "description": "Agentic design system ops for Claude Code — install pipelines in one command.",
-  "keywords": ["claude-code", "design-system", "figma", "agents", "ai"],
+  "keywords": [
+    "claude-code",
+    "design-system",
+    "figma",
+    "agents",
+    "ai"
+  ],
   "homepage": "https://systemix-alpha.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/boyantsonev/systemix-poc"
   },
   "license": "MIT",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "systemix": "./bin/cli.js"
   },
@@ -20,5 +28,11 @@
   ],
   "engines": {
     "node": ">=18"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
