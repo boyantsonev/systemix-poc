@@ -335,88 +335,114 @@ function ExperimentTypes() {
 
 function HitlPreview() {
   return (
-    <section className="py-24 border-t border-border/40">
-      <div className="max-w-3xl mx-auto">
-        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+    <section className="relative py-24 bg-zinc-950 overflow-hidden">
+      {/* glassmorphism depth layer — the blur target */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-emerald-500/6 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-emerald-400/4 rounded-full blur-2xl" />
+      </div>
+
+      <div className="relative max-w-3xl mx-auto px-4">
+        <p className="text-[11px] font-mono text-emerald-500/50 uppercase tracking-widest mb-4">
           The queue &middot; Your decision cadence
         </p>
-        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3 text-white">
           Hermes did the synthesis.<br />You make the call.
         </h2>
-        <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
+        <p className="text-[15px] text-zinc-400 leading-relaxed mb-10 max-w-xl">
           Every running hypothesis produces a card. Confidence score, PostHog data, prior contract history. One click writes the decision back. That&apos;s the whole product.
         </p>
 
-        <div className="rounded-xl border border-emerald-500/20 bg-card overflow-hidden mb-6">
-          <div className="px-4 pt-3.5 pb-3">
-            <div className="flex items-start gap-2.5 mb-3">
-              <span className="text-[12px] font-mono mt-px shrink-0 text-emerald-400">◈</span>
+        {/* glassmorphism card */}
+        <div className="rounded-2xl border border-zinc-700/50 bg-zinc-900/70 backdrop-blur-xl shadow-[0_25px_60px_rgba(0,0,0,0.6),0_0_50px_rgba(16,185,129,0.07)] overflow-hidden mb-6">
+          <div className="px-5 pt-5 pb-5">
+
+            {/* header row */}
+            <div className="flex items-start gap-3 mb-4">
+              <span className="text-[13px] font-mono mt-0.5 shrink-0 text-emerald-400" aria-hidden>◈</span>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
+                <div className="flex items-center gap-2 mb-1">
                   <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-400">Hypothesis</span>
-                  <span className="text-[10px] font-mono text-muted-foreground/30">2h ago</span>
-                  <span className="text-[10px] font-mono text-muted-foreground/30">Systemix Landing</span>
+                  <span className="text-[10px] font-mono text-zinc-500">2h ago</span>
+                  <span className="text-[10px] font-mono text-zinc-500">Systemix Landing</span>
                 </div>
-                <p className="text-[12px] font-mono text-foreground/80 leading-snug">
+                <p className="text-[13px] font-mono text-zinc-100 leading-snug">
                   Hero headline — &ldquo;You shipped. Did it work?&rdquo; vs control framing
                 </p>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wide shrink-0 text-amber-400">pending</span>
+              <span className="text-[10px] font-bold uppercase tracking-wide shrink-0 text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-md">
+                pending
+              </span>
             </div>
 
-            <div className="pl-5 mb-3 grid grid-cols-3 gap-2">
+            {/* stat boxes */}
+            <div className="pl-6 mb-4 grid grid-cols-3 gap-2">
               {[
-                { label: "Baseline", value: "3.2%", sub: "CTR" },
+                { label: "Baseline", value: "3.2%", sub: "CTR", highlight: false },
                 { label: "Variant B", value: "4.7%", sub: "CTR", highlight: true },
-                { label: "Delta", value: "+47%", sub: "↑", highlight: true },
+                { label: "Delta",     value: "+47%",  sub: "↑",   highlight: true },
               ].map(({ label, value, sub, highlight }) => (
-                <div key={label} className={`rounded border px-2.5 py-2 ${highlight ? "border-emerald-500/20 bg-emerald-500/5" : "border-border/40"}`}>
-                  <p className="text-[9px] font-mono text-muted-foreground/40 mb-0.5 uppercase">{label}</p>
-                  <p className={`text-[14px] font-mono font-bold ${highlight ? "text-emerald-400" : "text-foreground/60"}`}>{value} <span className="text-[10px]">{sub}</span></p>
+                <div
+                  key={label}
+                  className={`rounded-xl border px-3 py-3 ${
+                    highlight
+                      ? "border-emerald-500/30 bg-emerald-500/10"
+                      : "border-zinc-700/60 bg-zinc-800/60"
+                  }`}
+                >
+                  <p className="text-[9px] font-mono text-zinc-500 mb-1 uppercase tracking-wider">{label}</p>
+                  <p className={`text-[15px] font-mono font-bold leading-none ${highlight ? "text-emerald-400" : "text-zinc-200"}`}>
+                    {value} <span className="text-[10px] font-normal">{sub}</span>
+                  </p>
                 </div>
               ))}
             </div>
 
-            <div className="pl-5 mb-2.5 flex items-center gap-3">
-              <div className="w-[60px] h-1 rounded-full bg-muted/40 overflow-hidden">
-                <div className="h-full rounded-full bg-emerald-500/60" style={{ width: "87%" }} />
+            {/* confidence bar */}
+            <div className="pl-6 mb-3.5 flex items-center gap-3">
+              <div className="w-[72px] h-1.5 rounded-full bg-zinc-700 overflow-hidden" role="progressbar" aria-valuenow={87} aria-valuemin={0} aria-valuemax={100} aria-label="87% confidence">
+                <div className="h-full rounded-full bg-emerald-500" style={{ width: "87%" }} />
               </div>
-              <span className="text-[10px] font-mono text-muted-foreground/50">87% confidence · 1,240 sessions</span>
+              <span className="text-[11px] font-mono text-zinc-400">87% confidence · 1,240 sessions</span>
             </div>
 
-            <p className="text-[11px] text-muted-foreground/60 leading-relaxed pl-5 mb-2.5">
+            {/* context */}
+            <p className="text-[12px] text-zinc-400 leading-relaxed pl-6 mb-4">
               Variant B converts better on builder-persona traffic from Twitter and HN. Prior test (March) with the technical-founder framing underperformed 23% on the same audience. Contract history supports promoting B.
             </p>
 
-            <div className="pl-5 mb-3 rounded-lg border border-emerald-500/15 bg-emerald-500/5 px-3 py-2">
-              <p className="text-[9px] font-mono text-emerald-400/60 uppercase tracking-widest mb-1">Hermes recommends</p>
-              <p className="text-[11px] font-mono text-emerald-300/80">Promote variant B. Write rationale to contract. Test CTA copy next.</p>
+            {/* Hermes recommends */}
+            <div className="pl-6 mb-5 rounded-xl border border-emerald-500/20 bg-emerald-500/8 px-4 py-3">
+              <p className="text-[9px] font-mono text-emerald-500/60 uppercase tracking-widest mb-1.5">Hermes recommends</p>
+              <p className="text-[12px] font-mono text-emerald-300 leading-relaxed">Promote variant B. Write rationale to contract. Test CTA copy next.</p>
             </div>
 
-            <div className="pl-5 flex items-center gap-1.5">
-              <button className="px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold hover:bg-emerald-500/20 transition-colors">
+            {/* action buttons — clear hierarchy */}
+            <div className="pl-6 flex items-center gap-2">
+              <button className="px-4 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-[11px] font-bold hover:bg-emerald-400 active:bg-emerald-600 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.35)]">
                 Promote variant
               </button>
-              <button className="px-3 py-1 rounded bg-muted border border-border text-muted-foreground text-[10px] font-bold hover:bg-muted/70 transition-colors">
+              <button className="px-4 py-1.5 rounded-lg bg-zinc-800 border border-zinc-600/60 text-zinc-200 text-[11px] font-bold hover:bg-zinc-700 transition-colors">
                 Run longer
               </button>
-              <button className="px-3 py-1 rounded bg-muted border border-border text-muted-foreground/50 text-[10px] font-bold hover:bg-muted/70 transition-colors">
+              <button className="px-4 py-1.5 rounded-lg text-zinc-500 text-[11px] font-bold hover:text-zinc-300 transition-colors">
                 Discard
               </button>
             </div>
+
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           <Link
             href="/dashboard"
-            className="text-[13px] font-mono text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="text-[13px] font-mono text-zinc-400 hover:text-white transition-colors"
           >
             Open the dashboard →
           </Link>
           <Link
             href="/docs/concepts/hitl"
-            className="text-[13px] font-mono text-muted-foreground/30 hover:text-muted-foreground transition-colors"
+            className="text-[13px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors"
           >
             How HITL works →
           </Link>
@@ -687,7 +713,7 @@ export default function LandingPage() {
       <main className="max-w-4xl mx-auto px-6">
         <SectionTrack name="hero" hypothesisId="landing-hero-icp-pivot-2026-05"><Hero /></SectionTrack>
         <SectionTrack name="the-loop"><TheLoop /></SectionTrack>
-        <SectionTrack name="hitl-preview" hypothesisId="landing-hitl-queue-prominence-2026-05"><HitlPreview /></SectionTrack>
+        <SectionTrack name="hitl-preview" hypothesisId="landing-hitl-card-glassmorphism-2026-05"><HitlPreview /></SectionTrack>
         <SectionTrack name="experiment-types"><ExperimentTypes /></SectionTrack>
         <SectionTrack name="magic-glue"><MagicGlue /></SectionTrack>
         <SectionTrack name="use-cases" hypothesisId="landing-founder-pain-framing-2026-05"><UseCases /></SectionTrack>
