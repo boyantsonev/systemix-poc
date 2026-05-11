@@ -418,7 +418,7 @@ function HitlPreview() {
             </div>
 
             {/* action buttons — clear hierarchy */}
-            <div className="pl-6 flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <button className="px-4 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-[11px] font-bold hover:bg-emerald-400 active:bg-emerald-600 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.35)]">
                 Promote variant
               </button>
