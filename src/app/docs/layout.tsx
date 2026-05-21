@@ -32,6 +32,7 @@ const MOBILE_NAV = [
       { label: "MDX contracts",          href: "/docs/concepts/contract"      },
       { label: "Drift & Reconciliation", href: "/docs/concepts/drift"         },
       { label: "Quality Score",          href: "/docs/concepts/quality-score" },
+      { label: "Figma MCPs",             href: "/docs/concepts/figma-mcps"    },
     ],
   },
   {
