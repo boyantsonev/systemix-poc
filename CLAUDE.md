@@ -37,13 +37,23 @@ A design-code sync pipeline. Keeps a Next.js design system in sync with Figma bi
 | `Spacing & Radius` | Default | 1 FLOAT (radius/base = 8px) |
 
 ## MCP Servers
+
+Full guide with decision rules: `docs/figma-mcp-guide.md`
+
 | Server | Prefix | Purpose | Needs |
 |---|---|---|---|
-| Official Figma MCP | `mcp__claude_ai_Figma__*` | Read design context, get vars, create files | Figma OAuth |
-| Figma Console MCP (southleft) | `mcp__claude_ai_Figma_Console__*` | Write variables, execute Plugin API, create nodes | FIGMA_ACCESS_TOKEN + Desktop Bridge cloud relay |
-| Figma Desktop Bridge | `mcp__figma-desktop__*` | Local bridge to Figma Desktop (write ops only) | Figma Desktop on port 3845 |
+| Official Figma MCP | `mcp__claude_ai_Figma__*` | Read design context, get vars, Code Connect, framework code gen | Figma OAuth |
+| Figma Console MCP (Southleft) | `mcp__figma-console__*` | Write variables/nodes, batch token ops, design system health, real-time events | FIGMA_ACCESS_TOKEN + Figma Desktop open |
+| Figma Desktop Bridge | `mcp__figma-desktop__*` | Local-only bridge (used by `/figma-inspect`) | Figma Desktop on port 3845 |
 | GitHub | `mcp__github__*` | Repo operations | token in ~/.claude.json |
 | Vercel | `mcp__claude_ai_Vercel__*` | Deploy, logs | Vercel OAuth |
+
+**Decision rule — which Figma MCP to call:**
+- **Reading from Figma → use Official** (`mcp__claude_ai_Figma__*`). No Desktop required.
+- **Writing to Figma → use Console** (`mcp__figma-console__*`). Requires Figma Desktop open.
+- **Code Connect → Official only** (`get_code_connect_map`, `send_code_connect_mappings`).
+- **Batch variable ops → Console only** (`figma_batch_create_variables`, `figma_batch_update_variables`).
+- **Both on the same skill** = bidirectional (/sync, /design-to-code): read with Official, write with Console.
 
 ## Skills Architecture
 
