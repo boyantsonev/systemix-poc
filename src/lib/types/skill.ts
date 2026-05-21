@@ -23,16 +23,21 @@ export type SkillCommand =
   | '/deploy'
   | '/deploy-annotate'
   | '/storybook'
+  // Design system — additional
+  | '/design-to-code'
   // Utilities
   | '/figma-inspect'
+  | '/figma-push'
+  | '/style-match'
   | '/sync-to-figma'
-  | '/connect';
+  | '/connect'
+  | '/contract-query';
 
 export type SkillCategory = 'pipeline' | 'tools';
 
 export type SkillGroup = 'the-loop' | 'design-system' | 'deploy' | 'utilities';
 
-export type AgentName = 'Ada' | 'Flux' | 'Scout' | 'Prism' | 'Echo' | 'Sage' | 'Ship' | 'Hermes';
+export type AgentName = 'Ada' | 'Canvas' | 'Flux' | 'Hermes' | 'Orion' | 'Prism' | 'Echo' | 'Sage' | 'Ship' | 'Scout';
 
 export type McpServer =
   | 'figma-console-mcp'

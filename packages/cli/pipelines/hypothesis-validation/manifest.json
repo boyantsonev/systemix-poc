@@ -5,6 +5,11 @@
   "version": "0.1.0",
   "author": "systemix",
   "skills": [
+    "hypothesis",
+    "measure",
+    "experiment",
+    "evidence",
+    "hermes",
     "init-experiment",
     "growth-audit",
     "write-variants",

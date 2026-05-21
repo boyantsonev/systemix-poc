@@ -1700,6 +1700,234 @@ This skill is also triggered automatically at the end of \`/deploy\` and \`/desi
 
 Run it manually when you deployed outside of those skills and want to post the URL retroactively.`,
   },
+  // ── Additional pipeline skills ────────────────────────────────────────────
+  {
+    command: "/figma-push",
+    name: "Push to Figma",
+    description: "Screenshot a localhost (or any) URL and push the image onto a Figma canvas frame. Uses figma-console-mcp to place the image as a fill.",
+    file: "~/.claude/skills/figma-push/SKILL.md",
+    triggersAgent: "Canvas",
+    category: "tools",
+    group: "utilities",
+    mcp: { required: ["figma-console-mcp"] },
+    promptContent: `---
+name: figma-push
+description: Screenshot a localhost (or any) URL and push the image onto a Figma canvas frame.
+argument-hint: [localhost-url] [figma-url]
+---
+
+Push a screenshot of $ARGUMENTS onto a Figma canvas.
+
+## Steps
+
+1. **Parse arguments** from $ARGUMENTS:
+   - First URL = source page to screenshot (e.g. \`http://localhost:3000\`)
+   - Second URL = target Figma file/frame (e.g. \`https://figma.com/design/...?node-id=...\`)
+   - If either is missing, ask the user before proceeding
+
+2. **Parse the Figma URL**:
+   - Extract \`fileKey\` from the URL path
+   - Extract \`nodeId\` from \`node-id\` query param — convert \`-\` to \`:\`
+   - If no \`node-id\`, create a new frame on the current page
+
+3. **Screenshot the source URL**:
+   - Use \`mcp__claude_ai_Figma_Console__figma_capture_screenshot\` if available
+   - Otherwise use the \`WebFetch\` tool to load the page, then ask the user to provide a screenshot path
+
+4. **Push to Figma**:
+   - If a target \`nodeId\` was provided: use \`mcp__claude_ai_Figma_Console__figma_set_image_fill\` to set the image as a fill
+   - If no nodeId: use \`mcp__claude_ai_Figma_Console__figma_create_child\` to create a new frame, then \`figma_set_image_fill\`
+   - Set a meaningful name on the frame: page title or URL hostname + timestamp
+
+5. **Report**: Figma file, frame name/nodeId, image placed successfully or error details.
+
+## Notes
+- Figma Desktop must be open with the target file for write operations via the desktop bridge
+- For localhost URLs, the Figma Desktop bridge (port 3845) must be running`,
+  },
+  {
+    command: "/style-match",
+    name: "Style Match",
+    description: "Scrape the visual identity (colors, typography, radius) from any live URL and propose a globals.css diff that transforms the project to match that look and feel. HITL gates the final apply.",
+    file: "~/.claude/skills/style-match/SKILL.md",
+    triggersAgent: "Hermes",
+    category: "tools",
+    group: "utilities",
+    mcp: { required: [] },
+    promptContent: `---
+name: style-match
+description: Scrape visual identity from any URL and propose a globals.css diff to match it.
+argument-hint: <url>
+---
+
+# Style Match: $ARGUMENTS
+
+Scrape the visual identity from the target URL, map it to tokens, and propose a look-and-feel change set for HITL approval.
+
+## Steps
+
+### Step 1 — Validate input
+
+Extract the URL from $ARGUMENTS. If no URL provided, stop and ask.
+
+Validate reachability:
+\`\`\`bash
+curl -sI "$URL" | head -1
+\`\`\`
+
+### Step 2 — Run the style scraper
+
+\`\`\`bash
+npx tsx scripts/scrape-style.ts "$URL"
+\`\`\`
+
+Key fields: \`mappedTokens.colors\`, \`fonts\`, \`currentValues\`, \`hasMappings\`, \`cssBytes\`.
+
+If \`hasMappings\` is false or \`cssBytes < 5000\`, the site is likely JS-rendered — offer manual CSS paste.
+
+### Step 3 — Show the extracted palette
+
+Display a table: Token | Extracted value | Current value. Then ask: "Shall I (A) Apply all, (B) Select which, or (C) Cancel?"
+
+### Step 4 — Build and show the diff
+
+For each approved token, show the unified diff. Normalize \`px\` radius to \`rem\` if needed. Ask to confirm before applying.
+
+### Step 5 — Apply the changes
+
+For each confirmed token:
+1. Update \`src/app/globals.css\` — surgical replacement only
+2. Update \`contract/tokens/<slug>.mdx\`: set \`status: drifted\`, \`resolved: false\`, \`last-resolver: style-match\`, add \`style-source\`
+3. Write Hermes rationale to contract prose (template, no LLM call)
+
+### Step 6 — Regenerate bridge
+
+\`\`\`bash
+npm run tokens
+\`\`\`
+
+### Step 7 — Report
+
+\`\`\`
+✓ Style match applied from <url>
+  <N> tokens updated in globals.css
+  <N> contract files updated (status: drifted)
+
+Next: npm run dev | /sync-to-figma
+\`\`\`
+
+## Notes
+- No MCP or external service calls — reads web, writes to \`globals.css\` + \`contract/\`.
+- Color space conversions (hex → oklch) are left as-is. Run \`/tokens\` after to normalize.`,
+  },
+  {
+    command: "/design-to-code",
+    name: "Full Design-to-Code",
+    description: "Full bidirectional Figma-to-deployed-code workflow — parity check, token sync, component generation, Code Connect linking, build, deploy, and Figma annotation.",
+    file: "~/.claude/skills/design-to-code/SKILL.md",
+    triggersAgent: "Orion",
+    category: "pipeline",
+    group: "design-system",
+    mcp: { required: ["figma-mcp", "vercel-mcp"] },
+    promptContent: `---
+name: design-to-code
+description: Full Figma-to-deployed-code workflow.
+argument-hint: [figma-url] [--skip-deploy?] [--skip-figma?]
+---
+
+# Full Design-to-Code Workflow: $ARGUMENTS
+
+## Steps
+
+### 1. Parity Check (non-blocking)
+Spawn \`parity-checker\` agent. Show drift report — informational only. Skip with \`--skip-parity\`.
+
+### 2. Sync Tokens
+Extract variables via \`mcp__claude_ai_Figma__get_variable_defs\`. Compare with \`globals.css\`. Update if changed.
+
+### 3. Extract Design Context
+Use \`mcp__claude_ai_Figma__get_design_context\` + \`get_screenshot\` to capture the component structure.
+
+### 4. Generate Component
+Create hi-fi React component (TypeScript) in \`src/components/\`.
+
+**HITL gate:** Show generated file. "Looks good? Proceed to build? (y/N)"
+
+### 5. Link to Figma (Code Connect)
+Spawn \`code-connect\` agent for the new component only. HITL gate inside the agent before sending.
+
+### 6. Verify Build
+\`\`\`bash
+npm run build
+\`\`\`
+Stop and fix if it fails.
+
+### 7. Commit
+\`\`\`bash
+git add src/components/[Name].tsx src/app/globals.css
+git commit -m "Add [Name] from Figma design [nodeId]"
+\`\`\`
+Skip with \`--no-commit\`.
+
+### 8. Deploy Preview
+Run \`npx vercel\` for preview. Capture URL. Skip with \`--skip-deploy\`.
+
+### 9. Post to Figma
+Spawn \`deploy-feedback\` agent with Vercel URL + Figma node URL. Skip with \`--skip-figma\`.
+
+## Options
+- \`--skip-deploy\` — stop after commit
+- \`--skip-figma\` — deploy but don't post to Figma
+- \`--skip-parity\` — skip initial parity check
+- \`--tokens-only\` — only sync tokens
+- \`--no-commit\` — don't auto-commit`,
+  },
+  {
+    command: "/contract-query",
+    name: "Query Contract",
+    description: "Query the design system contract for token or component rationale. Returns Hermes-authored prose and frontmatter for a given token name, CSS variable, or component slug.",
+    file: "~/.claude/skills/contract-query/SKILL.md",
+    triggersAgent: "Hermes",
+    category: "tools",
+    group: "utilities",
+    mcp: { required: [] },
+    promptContent: `---
+name: contract-query
+description: Query the design system contract for token or component rationale.
+argument-hint: <token-name-or-component-slug>
+---
+
+# Query Design System Contract: $ARGUMENTS
+
+## Steps
+
+### Step 1 — Parse the query
+Extract from $ARGUMENTS. Strip leading \`--\` (e.g. \`--color-primary\` → \`color-primary\`).
+
+### Step 2 — Search contract files
+List all MDX files in \`contract/tokens/\` and \`contract/components/\`. For each:
+1. Check if filename (without \`.mdx\`) matches the query (exact or substring)
+2. Check the \`token:\` or \`component:\` frontmatter field
+
+### Step 3 — Display the result
+
+For a token contract:
+\`\`\`
+Token: <fm.token>
+Status: <fm.status>  Collection: <fm.collection>
+Value (code): <fm.value>  Value (Figma): <fm.figma-value>
+
+Rationale:
+<prose content>
+\`\`\`
+
+### Step 4 — Handle no match
+List all available slugs and say: "No contract found for '<query>'. Available contracts listed above."
+
+## Notes
+- No MCP or external service calls — reads local MDX files only.
+- If a token isn't in the contract, run \`npm run generate-contracts\` to populate it.`,
+  },
 ];
 
 // ── HITL tasks (pending human review) ────────────────────────────────────────

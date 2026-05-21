@@ -87,6 +87,10 @@ export const SKILL_DEPENDENCIES: Record<SkillCommand, SkillDependency[]> = {
   '/growth-audit': [{ command: '/init-experiment', type: 'suggests', reason: 'Works best when experiments have been initialized' }],
   '/write-variants': [{ command: '/init-experiment', type: 'requires', reason: 'Needs an experiment contract to write variants for' }],
   '/close-experiment': [{ command: '/growth-audit', type: 'suggests', reason: 'Evidence should be audited before closing' }],
+  '/figma-push': [],
+  '/style-match': [],
+  '/design-to-code': [{ command: '/figma', type: 'suggests', reason: 'Figma context improves component generation' }],
+  '/contract-query': [],
 };
 
 // Get chain by ID
