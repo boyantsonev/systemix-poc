@@ -485,7 +485,7 @@ function NodeInfoPanel({ nodeId, onClose }: { nodeId: string; onClose: () => voi
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export function SystemGraph() {
+export function SystemGraph({ dimNodeIds }: { dimNodeIds?: Set<string> } = {}) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme !== "light";
@@ -509,16 +509,19 @@ export function SystemGraph() {
       ...node,
       data: {
         ...node.data,
-        dimmed: selectedId !== null && node.id !== selectedId && !adjacentIds.has(node.id),
+        dimmed:
+          (dimNodeIds?.has(node.id) ?? false) ||
+          (selectedId !== null && node.id !== selectedId && !adjacentIds.has(node.id)),
       },
     })),
-    [selectedId, adjacentIds]
+    [selectedId, adjacentIds, dimNodeIds]
   );
 
   const edges = useMemo(() =>
     BASE_EDGES.map(edge => {
       const active = edge.source === selectedId || edge.target === selectedId;
-      const faded  = selectedId !== null && !active;
+      const configFaded = !!dimNodeIds && (dimNodeIds.has(edge.source) || dimNodeIds.has(edge.target));
+      const faded  = (selectedId !== null && !active) || (selectedId === null && configFaded);
       return {
         ...edge,
         style: {
@@ -528,7 +531,7 @@ export function SystemGraph() {
         },
       };
     }),
-    [selectedId]
+    [selectedId, dimNodeIds]
   );
 
   return (
