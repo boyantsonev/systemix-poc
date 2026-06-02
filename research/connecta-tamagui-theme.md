@@ -1,5 +1,7 @@
 # Connecta Base Theme — Tamagui Plan
 
+> **Update 2026-06-02:** the Wisprflow values here were *inferred*. Exact tokens are now confirmed in **`wisprflow-tokens.md`** (real lavender = Dawn `#f0d7ff`, cream = Lumen `#ffffeb` — the earlier `#A89CFF`/`#FAF7F2` guesses were wrong). The merge is re-derived in **`connecta-ds-revamp.md`** and tracked as revamp tasks R1–R5 (#18–#22). Treat those two docs as the source of truth; this file is the original plan.
+
 > Merges `wisprflow-brand.md` (aesthetic target) with `connecta-current-state.md` (current token system) into a single, buildable Tamagui base theme with light + dark support. This is the foundation every Connecta component inherits.
 > Status: proposed. Last updated 2026-06-02.
 
