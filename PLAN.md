@@ -90,10 +90,10 @@ The cross-platform product (web + native via Tamagui/Expo): agents, flows, educa
 **Phase 0 — Systemix v-next planning** ✅ **DESIGN locked (ADR-006..009)**: the `npx systemix init` contract is decided — a 4-question topology wizard (Surfaces · Signals · Autonomy · Self-improvement) → `systemix.config.yaml`, embodied in `docs/feature/systemix-v2/prototypes/`. ✅ **CLI re-shaped to project-scoped instance**: install path (`init.js`, `add.js`) writes skills to `.claude/skills/` + `init` writes `systemix.config.yaml` + `contract/meta/`; read path (`list.js`, `doctor.js`, `update.js`, `commands/sync.js`) prefers project skills, falls back to global. Verified end-to-end in isolated temp dirs (global `~/.claude/skills` untouched).
 
 **Phase 1 — Connecta Design System** *(after the `init.js` re-shape)*:
-1. Confirm Wisprflow hex values via one DevTools session → locks the theme palette.
-2. Scaffold `connecta-design-system`; run `npx systemix init` to install the embedded instance.
-3. Implement the Tamagui base theme from `research/connecta-tamagui-theme.md` (light/dark).
-4. Stand up the `sync-docs` loop → `/docs` as the living styleguide; publish `@connecta/design-system`.
+1. ✅ Confirm Wisprflow hex values via one DevTools session → locks the theme palette.
+2. ✅ Scaffold `connecta-design-system`; run `npx systemix init` to install the embedded instance.
+3. ✅ Implement the Tamagui base theme from `research/connecta-tamagui-theme.md` (light/dark). **connecta-design-system PR #1 merged 2026-06-02.**
+4. 🔄 Stand up the `sync-docs` loop → `/docs` as the living styleguide; publish `@connecta/design-system`. **PR #2 (feat/provider-docs-mvp) open:** TamaguiProvider wired, /docs route with Foundations/Components/Themes sections, 4 MVP Tamagui components (Button, AIMessage, PersonaSwitcher, LessonCard), `lib/data/docs.ts` registry stub. Remaining: merge PR #2, full sync-docs skill integration, publish setup (tsup + exports).
 
 **Phase 2 — Landing** *(consumes the DS)*:
 5. Fork `denitsa9006/connecta` → Turborepo app monorepo; build `apps/landing` on the DS.

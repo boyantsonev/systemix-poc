@@ -1,6 +1,8 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: { root: path.resolve(".") },
   async redirects() {
     return [
       { source: "/contract",                           destination: "/design-system",                   permanent: false },
