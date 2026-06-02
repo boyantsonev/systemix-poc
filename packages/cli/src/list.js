@@ -3,7 +3,12 @@ const path = require("path");
 const os = require("os");
 const { listAvailable } = require("./add");
 
-const SKILLS_DIR = path.join(os.homedir(), ".claude", "skills");
+// Prefer this repo's project-scoped skills (.claude/skills/); fall back to global. ADR-008.
+const PROJECT_SKILLS = path.join(process.cwd(), ".claude", "skills");
+const SKILLS_DIR = fs.existsSync(PROJECT_SKILLS)
+  ? PROJECT_SKILLS
+  : path.join(os.homedir(), ".claude", "skills");
+const SKILLS_LABEL = SKILLS_DIR === PROJECT_SKILLS ? ".claude/skills" : "~/.claude/skills";
 
 function list() {
   const available = listAvailable();
@@ -29,7 +34,7 @@ function list() {
     console.log("  (none)\n");
   } else {
     for (const skill of installed) {
-      console.log(`  /%-16s ~/.claude/skills/${skill}/`.replace("%", skill));
+      console.log(`  /%-16s ${SKILLS_LABEL}/${skill}/`.replace("%", skill));
     }
     console.log();
   }

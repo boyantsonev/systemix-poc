@@ -13,6 +13,7 @@ const { tokens } = require("../src/commands/tokens");
 const { watch } = require("../src/commands/watch");
 const { socialSignal } = require("../src/commands/social-signal");
 const { evidence } = require("../src/commands/evidence");
+const { config } = require("../src/commands/config");
 
 const [, , command, ...args] = process.argv;
 
@@ -21,6 +22,8 @@ const HELP = `
 
   Usage:
     npx systemix init                    Interactive setup wizard (run once per project)
+    npx systemix init --reconfigure      Re-run the wizard, overwrite systemix.config.yaml
+    npx systemix config show             Print the active instance topology
     npx systemix workflow add <name>     Install a workflow to ~/.claude/skills/
     npx systemix workflow list           List available workflows
     npx systemix add <name>              Alias for: workflow add
@@ -66,7 +69,10 @@ const HELP = `
 async function main() {
   switch (command) {
     case "init":
-      await init();
+      await init({ reconfigure: args.includes("--reconfigure") });
+      break;
+    case "config":
+      await config(args);
       break;
     case "add":
       await add(args[0]);

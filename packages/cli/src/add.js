@@ -1,10 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const os = require("os");
 const readline = require("readline");
 
 const PIPELINES_DIR = path.join(__dirname, "..", "pipelines");
-const SKILLS_DIR = path.join(os.homedir(), ".claude", "skills");
+// Install project-scoped into this repo's instance (.claude/skills/), not globally. ADR-008.
+const SKILLS_DIR = path.join(process.cwd(), ".claude", "skills");
 
 const {
   detectClients,
@@ -204,10 +204,10 @@ async function add(workflowName) {
     const src = path.join(skillsSource, skill);
     const dest = path.join(SKILLS_DIR, skill);
     copyDir(src, dest);
-    console.log(`  ✓ ${skill.padEnd(16)} → ~/.claude/skills/${skill}/`);
+    console.log(`  ✓ ${skill.padEnd(16)} → .claude/skills/${skill}/`);
   }
 
-  console.log(`\n✓ Workflow installed. Start Claude Code and run:\n`);
+  console.log(`\n✓ Workflow installed into this repo. Claude Code picks it up here. Run:\n`);
   console.log(`  ${manifest.startWith}\n`);
 
   if (manifest.requires) {
