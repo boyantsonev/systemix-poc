@@ -3,7 +3,7 @@
 # This file is the canonical JTBD reference for all product decisions.
 # Changes require a changelog entry. Do not modify without updating changelog below.
 
-version: "1.1.0"
+version: "1.2.0"
 created: "2026-05-05"
 feature_ref: "agentic-loop-thesis"
 
@@ -133,8 +133,9 @@ jobs:
   # (no ODI scoring) until they pass a DISCUSS/DIVERGE wave.
   - id: "JOB-002"
     name: "install-into-foreign-repo"
-    status: "candidate-unvalidated"
-    confidence: "low"
+    status: "validated-conditional"
+    confidence: "medium"
+    validation_note: "Proven in Connecta engagement (2026-06-02): npx systemix init deployed into connecta-design-system (Next.js 15 + Tamagui, not a Systemix-native stack). Instance runs locally and in CI without framework lock-in. Single design partner — formal G1 requires 5+ interviews."
     abstraction_level: "physical"
     feature_ref: "systemix-v2"
     source: "docs/feature/systemix-v2/discover/connecta-learnings.md (L1, L8)"
@@ -151,8 +152,9 @@ jobs:
 
   - id: "JOB-003"
     name: "versioned-design-system-package"
-    status: "candidate-unvalidated"
-    confidence: "low"
+    status: "validated-conditional"
+    confidence: "medium"
+    validation_note: "Proven in Connecta engagement (2026-06-02): @connecta/design-system built with tsup (ESM + CJS + .d.ts), exports map configured, npm pack verified 18 kB. Ready for apps/landing and apps/platform to consume. Single design partner."
     abstraction_level: "physical"
     feature_ref: "systemix-v2"
     source: "connecta-learnings.md (L2, L5)"
@@ -167,8 +169,9 @@ jobs:
 
   - id: "JOB-004"
     name: "reskin-via-layered-token-overrides"
-    status: "candidate-unvalidated"
-    confidence: "low"
+    status: "validated-conditional"
+    confidence: "medium"
+    validation_note: "Proven in Connecta engagement (2026-06-02): merged Wisprflow × Connecta brand via theme/tokens.ts + theme/themes.ts without touching components. TamaguiProvider + createTamagui wires both light + dark. Components use semantic tokens ($primary, $background, etc.) — token layer is the only change point for re-skinning."
     abstraction_level: "physical"
     feature_ref: "systemix-v2"
     source: "connecta-learnings.md (L3)"
@@ -213,8 +216,9 @@ jobs:
 
   - id: "JOB-007"
     name: "owned-self-updating-docs"
-    status: "candidate-unvalidated"
-    confidence: "low"
+    status: "validated-conditional"
+    confidence: "medium"
+    validation_note: "Proven in Connecta engagement (2026-06-02): /docs route live in connecta-design-system with Foundations/Components/Themes sections. lib/data/docs.ts registry (16 components, status, tokens, coverageScore, k12Safety) conforms to the sync-docs skill schema — the loop can auto-update it. Full sync-docs skill integration is next."
     abstraction_level: "physical"
     feature_ref: "systemix-v2"
     source: "connecta-learnings.md (L2, L3)"
@@ -239,3 +243,9 @@ changelog:
     feature_ref: "systemix-v2"
     summary: "Added JOB-002..JOB-007 (embedded-distribution jobs) derived from the v-next DISCOVER wave's connecta-learnings (L1–L8): install-into-foreign-repo, versioned-design-system-package, reskin-via-layered-token-overrides, bind-evidence-loop-compliantly, keep-engine-generic, owned-self-updating-docs. Lighter schema than JOB-001 (no ODI scoring), reflecting their candidate status."
     gate: "NOT validated — derived from a single design partner, zero customer interviews. status=candidate-unvalidated until a DISCUSS/DIVERGE wave promotes them."
+  - version: "1.2.0"
+    date: "2026-06-02"
+    author: "Connecta engagement build (Boyan)"
+    feature_ref: "systemix-v2"
+    summary: "Promoted JOB-002, JOB-003, JOB-004, JOB-007 to validated-conditional based on the Connecta design-system build: npx systemix init into a foreign repo (JOB-002), @connecta/design-system published via tsup (JOB-003), Wisprflow×Connecta brand merged via tokens-only reskin (JOB-004), /docs living styleguide live with sync-docs-compatible registry (JOB-007). JOB-005 and JOB-006 remain candidate-unvalidated (PostHog EU + platform build not yet started)."
+    gate: "G1 conditional — single design partner. Formal G1 requires 5+ customer interviews."

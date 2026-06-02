@@ -436,7 +436,7 @@ claude
       <SetupStep id="dev-step-6" number={6} icon={<Puzzle size={14} />} title="Install the Skills">
         <p>
           Skills are markdown prompt files stored in{" "}
-          <CodeInline>~/.claude/skills/[name]/SKILL.md</CodeInline>. Claude Code loads them on
+          <CodeInline>.claude/skills/[name]/SKILL.md</CodeInline>. Claude Code loads them on
           startup as <CodeInline>/name</CodeInline> slash commands. Copy each prompt from the{" "}
           <a href="/skills" className="text-violet-400 underline underline-offset-2 hover:text-violet-300">
             Skills page
@@ -446,26 +446,26 @@ claude
         <CodeBlock
           label="terminal"
           code={`# Create the skills directory
-mkdir -p ~/.claude/skills
+mkdir -p .claude/skills
 
 # Workflow skills (5-step figma-to-code flow):
-mkdir -p ~/.claude/skills/figma      # /figma     — extract design context + tokens
-mkdir -p ~/.claude/skills/tokens     # /tokens    — sync Figma variables → globals.css
-mkdir -p ~/.claude/skills/component  # /component — generate React component + stories
-mkdir -p ~/.claude/skills/storybook  # /storybook — verify + fix Storybook stories
-mkdir -p ~/.claude/skills/deploy     # /deploy    — build + deploy to Vercel
+mkdir -p .claude/skills/figma      # /figma     — extract design context + tokens
+mkdir -p .claude/skills/tokens     # /tokens    — sync Figma variables → globals.css
+mkdir -p .claude/skills/component  # /component — generate React component + stories
+mkdir -p .claude/skills/storybook  # /storybook — verify + fix Storybook stories
+mkdir -p .claude/skills/deploy     # /deploy    — build + deploy to Vercel
 
 # Tool skills (on-demand utilities):
-mkdir -p ~/.claude/skills/sync-to-figma    # /sync-to-figma     — push tokens → Figma variables
-mkdir -p ~/.claude/skills/drift-report     # /drift-report      — audit codebase for token drift
-mkdir -p ~/.claude/skills/apply-theme      # /apply-theme       — generate client theme override
-mkdir -p ~/.claude/skills/figma-inspect    # /figma-inspect     — inspect any Figma node
-mkdir -p ~/.claude/skills/figma-push       # /figma-push        — screenshot URL → Figma frame
-mkdir -p ~/.claude/skills/sync             # /sync              — full bidirectional sync
-mkdir -p ~/.claude/skills/design-to-code   # /design-to-code    — end-to-end workflow
-mkdir -p ~/.claude/skills/connect          # /connect           — link components to Figma
-mkdir -p ~/.claude/skills/check-parity     # /check-parity      — detect design-code drift
-mkdir -p ~/.claude/skills/deploy-annotate  # /deploy-annotate   — post deploy URL to Figma
+mkdir -p .claude/skills/sync-to-figma    # /sync-to-figma     — push tokens → Figma variables
+mkdir -p .claude/skills/drift-report     # /drift-report      — audit codebase for token drift
+mkdir -p .claude/skills/apply-theme      # /apply-theme       — generate client theme override
+mkdir -p .claude/skills/figma-inspect    # /figma-inspect     — inspect any Figma node
+mkdir -p .claude/skills/figma-push       # /figma-push        — screenshot URL → Figma frame
+mkdir -p .claude/skills/sync             # /sync              — full bidirectional sync
+mkdir -p .claude/skills/design-to-code   # /design-to-code    — end-to-end workflow
+mkdir -p .claude/skills/connect          # /connect           — link components to Figma
+mkdir -p .claude/skills/check-parity     # /check-parity      — detect design-code drift
+mkdir -p .claude/skills/deploy-annotate  # /deploy-annotate   — post deploy URL to Figma
 
 # Restart Claude Code, then type / to see all skills in autocomplete`}
         />
