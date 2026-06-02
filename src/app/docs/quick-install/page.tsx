@@ -133,7 +133,7 @@ Hypothesis: framing for ops will lift conversion.`}</OutputBlock>
             <CodeBlock>npx systemix workflow add hypothesis-validation</CodeBlock>
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-3">
               Installs 4 Claude Code slash commands to{" "}
-              <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">~/.claude/skills/</code>:{" "}
+              <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">.claude/skills/</code>:{" "}
               <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/init-experiment</code>,{" "}
               <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/growth-audit</code>,{" "}
               <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/write-variants</code>, and{" "}

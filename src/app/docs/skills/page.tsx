@@ -145,7 +145,7 @@ export default function SkillsPage() {
       </h1>
       <p className="text-[16px] text-muted-foreground leading-relaxed mb-3">
         {pipelineSkills.length} Claude Code slash commands. Each is a markdown prompt file installed to{" "}
-        <code className="font-mono text-[14px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">~/.claude/skills/</code>.
+        <code className="font-mono text-[14px] bg-muted/60 px-1.5 py-0.5 rounded text-foreground">.claude/skills/</code>.
       </p>
       <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
         Start with the hypothesis-validation workflow — it covers the full founder loop from writing an experiment to closing it with evidence. Install with{" "}
