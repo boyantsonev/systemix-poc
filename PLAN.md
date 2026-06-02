@@ -74,7 +74,7 @@ Wisprflow-inspired marketing site; **first external user of the `hypothesis-vali
 
 ### Workstream C — Platform (`apps/platform`)
 The cross-platform product (web + native via Tamagui/Expo): agents, flows, educational AI. Consumes `@connecta/design-system`.
-- **Before build:** spawn a deeper **educational-AI components & patterns research** (seeded by `research/connecta-component-inventory.md`) to define platform component usage/patterns — explicitly including the **human↔AI / AI↔human / agent↔agent interaction + microinteraction** patterns and their rationale (decision F). *Not spawned this turn* — per plan, immediately before platform build.
+- **Before build:** deeper **educational-AI components & patterns research** — ✅ done: `research/connecta-platform-components.md` (#13). Frames decision F as three interaction axes (human↔AI / AI↔human / agent↔agent) → three protocols (AG-UI / MCP / A2A), a shared microinteraction state machine, the K-12 Trust & Safety spine, persona gating, and a 12-component v1 MVP.
 
 ---
 
@@ -138,4 +138,7 @@ The engine's evolution from central multi-tenant SaaS to **embedded-per-client**
 | `research/social-signals-options.md` | B2 — Social signals |
 | `research/connecta-component-inventory.md` | C1 — Educational/agentic component inventory |
 | `research/connecta-tamagui-theme.md` | C2 — Connecta base theme (Tamagui) |
+| `research/wisprflow-tokens.md` | Confirmed Wisprflow tokens (exact) |
+| `research/connecta-ds-revamp.md` | DS revamp plan (R1–R5) |
+| `research/connecta-platform-components.md` | C3/#13 — platform educational-AI + agentic components |
 | `research/SYNTHESIS.md` | Cross-track briefing |
