@@ -1,6 +1,6 @@
 {
   "name": "systemix",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Agentic design system ops for Claude Code — install pipelines in one command.",
   "keywords": [
     "claude-code",

@@ -3,7 +3,7 @@
 # This file is the canonical JTBD reference for all product decisions.
 # Changes require a changelog entry. Do not modify without updating changelog below.
 
-version: "1.0.0"
+version: "1.1.0"
 created: "2026-05-05"
 feature_ref: "agentic-loop-thesis"
 
@@ -127,6 +127,105 @@ jobs:
         outcome: "The next decision is higher quality because prior evidence is accessible"
         system: "Agents read verified ground truth and act correctly"
 
+  # ── Embedded-distribution jobs (systemix-v2) ──────────────────────────────
+  # Derived from the v-next DISCOVER wave (one design partner, Connecta).
+  # Candidate-unvalidated: NOT interview-validated. Lighter schema than JOB-001
+  # (no ODI scoring) until they pass a DISCUSS/DIVERGE wave.
+  - id: "JOB-002"
+    name: "install-into-foreign-repo"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    abstraction_level: "physical"
+    feature_ref: "systemix-v2"
+    source: "docs/feature/systemix-v2/discover/connecta-learnings.md (L1, L8)"
+    functional_job: >
+      When a team wants design-system automation in a repo they did not build for
+      Systemix, install a working, self-contained instance in one command —
+      without adopting a prescribed framework — so the loops run locally and in CI
+      from day one.
+    emotional_job: >
+      Feel that adopting Systemix is low-risk and reversible — it lives in my repo,
+      I own the data, and it did not force a rewrite.
+    social_job: >
+      Be seen as a team that adopts powerful tooling without taking on lock-in.
+
+  - id: "JOB-003"
+    name: "versioned-design-system-package"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    abstraction_level: "physical"
+    feature_ref: "systemix-v2"
+    source: "connecta-learnings.md (L2, L5)"
+    functional_job: >
+      Produce a versioned design-system package that multiple apps (web and native)
+      consume, so tokens and components stay in sync across every surface from one
+      source.
+    emotional_job: >
+      Trust that a change made in the design system reaches every app predictably.
+    social_job: >
+      Show stakeholders one credible source of truth for the brand in code.
+
+  - id: "JOB-004"
+    name: "reskin-via-layered-token-overrides"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    abstraction_level: "physical"
+    feature_ref: "systemix-v2"
+    source: "connecta-learnings.md (L3)"
+    functional_job: >
+      Re-skin a tenant by editing layered token overrides (primitive / semantic /
+      component) with light and dark support, without touching components.
+    emotional_job: >
+      Feel in control of brand changes without fear of breaking components.
+    social_job: >
+      Demonstrate a systematic, theme-driven brand rather than ad-hoc styling.
+
+  - id: "JOB-005"
+    name: "bind-evidence-loop-compliantly"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    abstraction_level: "physical"
+    feature_ref: "systemix-v2"
+    source: "connecta-learnings.md (L4, L7)"
+    functional_job: >
+      Bind the evidence / hypothesis loop to a per-client, region-appropriate data
+      source (e.g. PostHog EU), so experiments are measured without violating
+      compliance.
+    emotional_job: >
+      Feel safe running growth experiments on a regulated (K-12 / EU) product.
+    social_job: >
+      Be seen as both growth-driven and compliant — not forced to choose.
+
+  - id: "JOB-006"
+    name: "keep-engine-generic"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    abstraction_level: "physical"
+    feature_ref: "systemix-v2"
+    source: "connecta-learnings.md (L6)"
+    functional_job: >
+      Keep the engine generic — the client owns the domain components; Systemix
+      documents and keeps them in sync without prescribing what they must be.
+    emotional_job: >
+      Trust that the tool serves my domain rather than imposing its own opinions.
+    social_job: >
+      Present a design system that is unmistakably ours, not a vendor template.
+
+  - id: "JOB-007"
+    name: "owned-self-updating-docs"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    abstraction_level: "physical"
+    feature_ref: "systemix-v2"
+    source: "connecta-learnings.md (L2, L3)"
+    functional_job: >
+      Render an owned, self-updating docs / styleguide inside the client's package
+      that regenerates as design and code drift — not a manually maintained wiki.
+    emotional_job: >
+      Feel the design system is alive and trustworthy, kept current by the loop.
+    social_job: >
+      Show a living, evidenced design system to the team and to clients.
+
 changelog:
   - version: "1.0.0"
     date: "2026-05-05"
@@ -134,3 +233,9 @@ changelog:
     feature_ref: "agentic-loop-thesis"
     summary: "Initial SSOT bootstrap. Job extracted from DISCOVER wave artifacts (wave-decisions.md, problem-validation.md, lean-canvas.md, opportunity-tree.md). Elevated from DISCOVER JTBD (operational level) to physical level. 6 ODI outcome statements produced. ICP candidates documented with status flags."
     gate: "G1 conditional pass — all scores ESTIMATED, 5+ customer interviews required for formal G1 pass."
+  - version: "1.1.0"
+    date: "2026-06-02"
+    author: "v-next DISCOVER (Connecta design partner)"
+    feature_ref: "systemix-v2"
+    summary: "Added JOB-002..JOB-007 (embedded-distribution jobs) derived from the v-next DISCOVER wave's connecta-learnings (L1–L8): install-into-foreign-repo, versioned-design-system-package, reskin-via-layered-token-overrides, bind-evidence-loop-compliantly, keep-engine-generic, owned-self-updating-docs. Lighter schema than JOB-001 (no ODI scoring), reflecting their candidate status."
+    gate: "NOT validated — derived from a single design partner, zero customer interviews. status=candidate-unvalidated until a DISCUSS/DIVERGE wave promotes them."
