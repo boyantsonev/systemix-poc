@@ -3,7 +3,11 @@ const path = require("path");
 const os = require("os");
 const net = require("net");
 
-const SKILLS_DIR = path.join(os.homedir(), ".claude", "skills");
+// Prefer this repo's project-scoped skills (.claude/skills/); fall back to global. ADR-008.
+const PROJECT_SKILLS = path.join(process.cwd(), ".claude", "skills");
+const SKILLS_DIR = fs.existsSync(PROJECT_SKILLS)
+  ? PROJECT_SKILLS
+  : path.join(os.homedir(), ".claude", "skills");
 const CLAUDE_JSON = path.join(os.homedir(), ".claude.json");
 
 const REQUIRED_SKILLS = [

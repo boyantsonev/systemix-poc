@@ -112,12 +112,16 @@ function parseSkillFrontmatter(content) {
 }
 
 /**
- * Scan ~/.claude/skills/ for SKILL.md files and warn about any that are missing
- * a `version` field in their frontmatter.
+ * Scan the instance's skills (.claude/skills/ in the repo, else global ~/.claude/skills/)
+ * for SKILL.md files and warn about any that are missing a `version` field in frontmatter.
  */
 function checkSkillVersions() {
   const os = require("os");
-  const skillsRoot = path.join(os.homedir(), ".claude", "skills");
+  // Prefer this repo's project-scoped skills (.claude/skills/); fall back to global. ADR-008.
+  const projectSkills = path.join(process.cwd(), ".claude", "skills");
+  const skillsRoot = fs.existsSync(projectSkills)
+    ? projectSkills
+    : path.join(os.homedir(), ".claude", "skills");
   if (!fs.existsSync(skillsRoot)) return;
 
   let dirs;
