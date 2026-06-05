@@ -2,6 +2,7 @@
 
 > Living document. Tracks the venture-level architecture and the per-client engagement state.
 > Iteration 2 — updated 2026-06-02. Scope of this iteration: **plan only** (no code).
+> Iteration 3 — updated 2026-06-05. Adds the **five-surface instance app** (§8), evolves Hermes from one-shot synthesis to a scheduled maintainer + queryable assistant, makes **initial onboarding agent-driven** (in Claude Code), and adopts the **design-system-as-object** type/instance model. Decisions: **ADR-010..014**. Everything is reasoned from the **systemix-poc perspective** — the Connecta instance is a worked example owned here (`TASKS-connecta-instance.md`), not in the Connecta repo. Scope: plan + ADRs only.
 
 ---
 
@@ -126,6 +127,42 @@ The cross-platform product (web + native via Tamagui/Expo): agents, flows, educa
 ## 7. Systemix v-next (planning track) — DESIGN locked
 
 The engine's evolution from central multi-tenant SaaS to **embedded-per-client** ran as an nWave feature: `docs/feature/systemix-v2/`. The plan-to-plan is `meta-plan.md`; the wave log + founder decisions are in `wave-decisions.md`; the DESIGN is embodied by the prototypes in `prototypes/` and locked as **ADR-006..009**. The gating output — the **`npx systemix init` contract** — is decided. The one engine task before the Connecta build is the `init.js` re-shape (§5 Phase 0).
+
+---
+
+## 8. Iteration 3 — The instance app (the five local surfaces)
+
+> Decisions **ADR-010..014** (2026-06-05). This widens ADR-008's "instance ships a local force-graph viewer": the graph is now **surface #1 of a five-surface local app** that `npx systemix init` scaffolds and `systemix dev` runs. **Engine-built and generic** — every instance gets the same shell; the client supplies the content. Connecta is Design Partner #1 / first consumer — planned here as a worked example (`TASKS-connecta-instance.md`).
+
+### Type/instance model (ADR-014) — three levels, all owned in systemix-poc
+1. **Systemix's own design system + marketing UI** — dogfooded; Systemix is its own first customer, and its rendered instance *is* the marketing proof.
+2. **"Design system" as an object/type** — repo · package · host · tokens · components · docs · brand · embedded loop. The five-surface app renders *any* instance of this type.
+3. **The Connecta design system** — an **example instance** of that type (not special-cased; not owned by the Connecta repo).
+
+### Onboarding runs in the coding agent (ADR-011) — solves the bootstrap
+Initial onboarding is a **conversational `systemix init` flow inside Claude Code / Cursor**, not an in-app wizard. The agent asks the questions, **provisions the design-system instance** (creates/names its GitHub repo + package + host), and writes `systemix.config.yaml`. Only then does the app render. The in-app **Onboarding surface (#0) is the view/edit/re-run** of that config. This resolves the old C1 gate: each client instance gets its **own provisioned DS repo**, named at setup — no reuse-vs-new ambiguity.
+
+### The founding question (answered)
+*"Can Hermes answer about the skills included?"* — **Not today.** Hermes is a one-shot `/hermes` synthesis function (one contract in → one decision card out); the MCP server exposes contracts/hypotheses/workflows/HITL/events but **no skill or intent enumeration**. The capability the user wants is built by this iteration: **Onboarding seeds intent (ADR-011)**, the **Docs surface + scheduled, queryable Hermes answers it (ADR-012)**.
+
+### The five surfaces (engine deliverable; maps to existing assets)
+| # | Surface | What it is | Reuses | ADR |
+|---|---|---|---|---|
+| 0 | **Onboarding** | **Initial capture is agent-driven (Claude Code)** — skills · goals · hypotheses · audiences · **prototype medium** · **DS-instance provisioning** (repo/package name). The app surface is the **view/edit/re-run** of the captured config. | `prototypes/systemix-onboarding-v2.jsx` (→ view/edit), `systemix.config.yaml` | 011/014 |
+| 1 | **System Graph + Runtime Feed** | Force `/graph` of the topology + live activity feed; HITL cards **routed by role (DRI / IC)**. | `prototypes/systemix-graph-standalone.html`, `mcp-server` events + `hitl.ts` | 013 |
+| 2 | **Docs** | Notion/Obsidian-like MD/MDX editor over `contract/` + `docs/` (design system, design.md, rationale, hypotheses, Hermes/Systemix setup). **Hermes-maintained daily + weekly.** | `src/app/docs`, `sync-docs` skill | 012 |
+| 3 | **Workflow Atlas** | Flows · user types · design rationale in the design-system's own style. | Connecta `apps/platform` AtlasShell (reference impl → abstract into generic shell) | 010 |
+| 4 | **Prototypes** | The prototypes themselves, framed by the onboarding **medium** (device frames). | Connecta `apps/platform` PrototypeShell + DeviceFrame | 010/011 |
+
+### Hermes — from one-shot to maintainer (ADR-012)
+- **Today:** `/hermes <experiment>` → reads one contract's evidence → writes a decision card to `.systemix/queue.json`. No chat, no skill awareness.
+- **Iteration 3:** a scheduler (`systemix watch` / cron) runs Hermes **daily** (incremental docs sync) and **weekly** (deeper pass / bigger planned changes); a new MCP capability (`describe_instance` / `list_skills`) lets Hermes *and* Claude Code answer intent queries. All writes stay HITL-gated by autonomy mode.
+
+### `systemix.config.yaml` deltas (ADR-011)
+Adds an `intent` block (`goals`, `hypotheses`, `audiences`) and `prototype.medium`. The installed-skill list becomes a function of the onboarding answers.
+
+### Roadmap insert — **Phase 0.5 (engine): the instance app**
+Sits between Phase 0 (v-next planning, done) and Phase 1 (Connecta DS). The five-surface shell + `systemix dev` + the agent-driven `systemix init` + scheduled Hermes are an **engine** deliverable; Connecta consumes them. Detailed task breakdown: `TASKS.md` (engine) + `TASKS-connecta-instance.md` (the Connecta worked example, owned here). The Connecta `apps/platform` Atlas is the reference implementation harvested into the generic shell.
 
 ---
 

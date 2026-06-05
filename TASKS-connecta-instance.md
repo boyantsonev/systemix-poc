@@ -4,21 +4,23 @@
 > Engine work: `TASKS.md` · decisions: `decisions/ADR.md` ADR-010..014.
 > Format: markdown first. Convert to GitHub issues only after founder review.
 
-**Topology (ADR-009):** two Systemix instances in this engagement — a **DS instance** (the provisioned Connecta design-system repo) and a **Landing instance** (`apps/landing`, landing/gtm + PostHog-EU).
+**Topology (ADR-009):** two Systemix instances in this engagement — a **DS instance** (the **existing** `connecta-design-system` repo) and a **Landing instance** (`apps/landing`, landing/gtm + PostHog-EU).
 
-**Hard dependency:** the agent-driven `systemix init` (engine E2) + the app shell + `systemix dev` (engine E1) must exist before the Connecta instance can be provisioned and rendered. Content prep (X2–X3) can start now in parallel.
+**Already exists — update, don't provision (ADR-011/ADR-014).** `connecta-design-system` (`github.com/boyantsonev/connecta-design-system`) already has an embedded instance (`systemix.config.yaml`, `.claude/skills/` ×6, `contract/`). Connecta's path is **`systemix update`**, not fresh `init`. It is also the **canonical** `@connecta/design-system`; the near-duplicate `connecta/packages/design-system` becomes a consumer of the published package (workflow plan Phase C).
+
+**Hard dependency:** the engine app shell + `systemix dev` + `init`/`update`-scaffolds-the-app (engine E0–E1) must exist before `systemix update` delivers the five surfaces to Connecta. Until then `update` refreshes skills only. Content prep (X2–X3) can start now in parallel.
 
 ---
 
-## X0 — Provision both instances via agent-driven onboarding `[instance][onboarding]`
-Runs **in Claude Code** (ADR-011), not an in-app wizard. Depends on engine E2.
-- [ ] **X0.1** DS instance: run `systemix init` → **provision the Connecta design-system repo** (name it at setup, ADR-014), package `@connecta/design-system`, host = Tamagui/Next. Intent = keep the DS in sync + K-12 Trust & Safety spine; audiences = design + engineering; **medium = all**.
-- [ ] **X0.2** Landing instance: `systemix init` in `apps/landing` → intent = validate marketing hypotheses; audiences = marketing + product; medium = landing + responsive web; signal = **PostHog-EU**.
+## X0 — Bring both instances to the new engine version `[instance][onboarding]`
+DS instance **already exists → update**. Landing instance is **new → provision** via agent-driven onboarding (ADR-011), runs in Claude Code.
+- [ ] **X0.1** DS instance (`connecta-design-system`): **commit the in-flight brand-token rework first** (clean tree), then run **`npx systemix update`** → pulls new skills (+ app scaffold once engine E1 ships). `systemix.config.yaml` preserved (git diff clean on it); re-run `init --reconfigure` only if intent/topology answers changed. (workflow plan Phase B)
+- [ ] **X0.2** Landing instance (new): `systemix init` in `apps/landing` → intent = validate marketing hypotheses; audiences = marketing + product; medium = landing + responsive web; signal = **PostHog-EU**.
 - [ ] **X0.3** Commit both `systemix.config.yaml` files (no secrets; keys in `~/.systemix/config.json`).
 
 ## X1 — DS instance content (feeds the Docs surface) `[instance][design-system]`
-The instance documents what exists — it does not prescribe components (learning L6). The DS repo is **provisioned in X0.1**, not reused ambiguously (old C1 gate, resolved by ADR-014).
-- [ ] **X1.1** Migrate the existing Tamagui base theme (Wisprflow × Connecta, coral `#C9442F` primary, light/dark) into the provisioned DS instance.
+The instance documents what exists — it does not prescribe components (learning L6). The DS repo **already exists** (`connecta-design-system`) — update it, don't re-provision (ADR-011/014).
+- [ ] **X1.1** The Tamagui base theme (Wisprflow × Connecta, coral `#C9442F` primary, light/dark) already lives in `connecta-design-system/tamagui.config.ts` — finalize the in-flight brand-token rework (`tokens.ts`, `themes.ts`, `docs/brand-token-system.md`).
 - [ ] **X1.2** Point the Docs surface at the instance's components/tokens registry; verify `sync-docs` status renders.
 - [ ] **X1.3** Author the design rationale + `design.md` (human-authored, Hermes-maintained thereafter, ADR-012).
 

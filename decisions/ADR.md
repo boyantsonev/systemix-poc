@@ -147,3 +147,113 @@
 **Consequences:** Two Systemix instances in the Connecta engagement — one in `connecta-design-system` (design-system surfaces), one in `apps/landing` (landing/gtm surfaces) — each with its own `systemix.config.yaml`.
 
 **Review trigger:** Running two instances per engagement proves redundant in practice.
+
+---
+
+## ADR-010: The embedded instance ships a five-surface local app (engine-built, generic)
+**Date:** 2026-06-05
+**Status:** DECIDED
+**Feature:** instance-app
+
+**Decision:** `npx systemix init` scaffolds a **generic, engine-built local app** that the instance runs locally (`systemix dev`). The app has **five surfaces**:
+- **(0) Onboarding** — captures the instance's intent (ADR-011).
+- **(1) System Graph + Runtime Feed** — the force `/graph` of the instance topology, doubled with a live activity feed and role-routed HITL cards (ADR-013).
+- **(2) Docs** — a Hermes-maintained living knowledge base / editor (ADR-012).
+- **(3) Workflow Atlas** — flows, user types, and design rationale rendered in the design-system's own style.
+- **(4) Prototypes** — the prototypes themselves, framed by the medium chosen in onboarding (ADR-011).
+
+This **supersedes the "ships a local force-graph viewer" clause of ADR-008**: the force-graph is no longer the whole local surface — it is surface #1 of a larger app. The app is **client-agnostic by construction** (engine code); the client supplies the *content* (its components, tokens, workflows, prototypes), not the shell.
+
+**Rationale:** A force-graph alone cannot carry onboarding intent, living docs, workflow rationale, or prototypes — yet those are precisely what the design partner *sees* they're paying for (the legible SaaS surface, PLAN §2). The five surfaces map almost 1:1 onto assets that already exist (graph prototype, onboarding-v2 prototype, the `/docs` route + `sync-docs` loop, and Connecta's `apps/platform` React-Flow Atlas as the reference implementation) — so this is an *extension and consolidation*, not a new build. Engine-built (not per-client) keeps it a product and honors the embedded-generic model (ADR-006): every instance gets the same shell.
+
+**Alternatives considered:** Build the surfaces per-client into the consuming app (rejected — couples the engine UI to one tenant, contradicts ADR-006's embedded-generic model, and makes Connecta-specific work non-reusable for client #2); keep only the force-graph viewer (rejected — too thin to be the surface a paying design partner interacts with daily).
+
+**Consequences:** The engine takes on an **app-shell deliverable** and a new `systemix dev` command. Surfaces are themed by the instance brand config (single-brand, ADR-007-adjacent). Connecta's existing `apps/platform` Atlas becomes the **reference implementation** for surface #3, then is re-homed/abstracted into the generic shell. `gap-analysis-v2`'s "Docs UI → per-instance deliverable" is widened to "instance *app* → per-instance deliverable."
+
+**Review trigger:** A client requires a hosted (non-local) version of these surfaces as the source of truth → reopens local-first (ADR-006/007).
+
+---
+
+## ADR-011: Initial onboarding runs inside the coding agent (Claude Code / Cursor), not as an in-app wizard
+**Date:** 2026-06-05 (revised same day)
+**Status:** DECIDED
+**Feature:** instance-app · extends ADR-008 · resolves the bootstrap order
+
+**Decision:** The **initial** onboarding is a **conversational flow inside the coding agent** (Claude Code / Cursor, driven by a `systemix init` skill), **not** an in-app wizard. The agent asks the questions, **provisions the design-system instance** (including **naming/creating the client's design-system GitHub repo** — see ADR-014), and writes the result to `systemix.config.yaml` + `contract/meta/*`. Only *after* config exists does the five-surface app render. The questions extend ADR-008's topology four (Surfaces · Signals · Autonomy · Self-improvement) with:
+- the desired **skills** to install (derived from answers, not hand-listed),
+- the instance **goals**,
+- the **hypotheses to validate** (seed the hypothesis-validation loop),
+- the **team perspective(s)** served — **marketing / design / product / engineering** (the audiences of the learning/validation loop),
+- the **prototype medium** — **iOS native / Android native / cross-browser / responsive web / landing page / all of them** — which decides what the Prototypes surface (#4) renders (device frames) and what the Workflow Atlas (#3) assumes,
+- the **design-system instance provisioning** — repo name, package name, host stack (ADR-014).
+
+The in-app **Onboarding surface (#0) becomes a *view / edit / re-run*** of that captured config — not the primary capture path.
+
+**Rationale:** This resolves the bootstrap (chicken-and-egg): the five-surface app needs config to display anything, so capture must precede render. The coding agent is already where the founder works and already has the context (the repo, the components, the brand); it can *provision* (create the DS repo, install skills, scaffold) in ways an in-app form cannot. This also collapses the latent tension between ADR-008 (CLI `npx systemix init`) and the onboarding-v2 prototype (an in-app JSX wizard) — the prototype is demoted to the view/edit surface. The system must be able to *answer* "what are my skills, goals, hypotheses" — today **nothing can** (Hermes is one-shot; the MCP server has no skill/intent enumeration); agent-driven onboarding seeds exactly that.
+
+**Alternatives considered:** In-app wizard as the primary capture (rejected — can't render before config exists, and can't provision a GitHub repo / install skills / scaffold from a browser form); keep topology-only and infer intent later (rejected — leaves Docs/Graph empty at first run); a free-text brief (rejected — not machine-actionable for skill install, repo provisioning, or medium-driven rendering).
+
+**Consequences:** A `systemix init` **skill/CLI** drives the conversation and the provisioning. `systemix.config.yaml` gains an `intent` block (`goals`, `hypotheses`, `audiences`), a `prototype.medium` field, and a `design_system` block (repo, package, host — ADR-014). The onboarding-v2 prototype is re-homed as surface #0's view/edit. A new query path (ADR-012) reads this block.
+
+**Init vs update (two paths).** `init` is for a **fresh** client repo — it runs the agent conversation, provisions the design-system repo, and writes config. An **already-initialised** instance does **not** re-run `init`; it runs **`systemix update`**, which re-installs skills (and, once built, the app shell) from the new engine version while **preserving `systemix.config.yaml`** (`packages/cli/src/commands/update.js`). Re-run `init --reconfigure` only to change topology/intent answers. Today `update` refreshes skills only; the five-surface app reaches an instance after the engine builds the shell + makes `init`/`update` scaffold it (`TASKS.md` E0–E1). **Connecta is an existing instance** (`connecta-design-system`), so its path is **update**, not provision (see ADR-014, `TASKS-connecta-instance.md`).
+
+**Review trigger:** Founders ask to onboard without a coding agent (would reopen the in-app-wizard-as-capture option).
+
+---
+
+## ADR-012: The Docs surface is a Hermes-maintained living knowledge base on a daily/weekly cadence
+**Date:** 2026-06-05
+**Status:** DECIDED
+**Feature:** instance-app · evolves the Hermes role
+
+**Decision:** Surface #2 (Docs) is an **editable, Notion/Obsidian-like local MD/MDX editor** over the instance's `contract/` + `docs/` — covering the **design system, `design.md`, design rationale, hypotheses, and the Hermes + Systemix setup itself** (the setup is part of the documentation). Hermes **maintains** it on a cadence: a **daily** incremental sync and a **weekly** (or on bigger planned changes) deeper pass. Hermes therefore **evolves from a one-shot `/hermes` synthesis function into a scheduled maintainer + a queryable assistant** — it can answer "what skills / goals / hypotheses does this instance have" by reading the intent block (ADR-011) and the contracts. All Hermes writes remain **HITL-gated** per the instance autonomy mode (ADR-008 question 3).
+
+**Rationale:** This is the direct answer to the founding question of this iteration — *"can Hermes answer about the skills included?"* Today: no. The Docs surface + scheduled, queryable Hermes is where that capability lives. It builds on the existing `/docs` route + `sync-docs` skill (which already diffs components/tokens and assigns stale/drifted/missing/current behind a HITL gate); this ADR adds **editability**, a **cadence**, and a **query/answer path**. Daily/weekly matches the real change-rate of design docs — continuous real-time sync would be noisy and token-costly.
+
+**Alternatives considered:** Read-only generated docs (rejected — the user wants an editor; humans co-author rationale); continuous real-time sync (rejected — noise + token cost, no benefit over daily for design docs); keep Hermes one-shot only (rejected — cannot keep a knowledge base alive or answer queries).
+
+**Consequences:** A scheduler (`systemix watch` / cron) drives the daily + weekly Hermes runs; the editor writes back to files (local-first, ADR-007); a new MCP capability is added to enumerate/describe the instance (e.g. `describe_instance` / `list_skills`) so Claude Code *and* Hermes can answer intent queries; larger weekly diffs route through HITL.
+
+**Review trigger:** The daily/weekly cadence proves wrong in practice (docs go stale, or the queue gets noisy).
+
+---
+
+## ADR-013: The runtime feed routes HITL cards by role (DRI / IC)
+**Date:** 2026-06-05
+**Status:** DECIDED
+**Feature:** instance-app · extends the HITL model
+
+**Decision:** Surface #1 pairs the topology graph with a **live runtime activity feed** (rendered from `emit_event` / `list_events`), and HITL cards are **routed by role**: **DRI** (directly responsible individual) vs **IC** (internal contributor / builder). Each person sees the decisions they own; roles are defined in the instance config. This extends the flat `hitl_tasks` queue with an assignee/role dimension.
+
+**Rationale:** An instance serves four audiences (marketing / design / product / engineering, ADR-011). A flat queue sends every card to everyone and doesn't scale across roles — a DRI approving a direction is a different act from an IC picking up build work. The graph + event tools already exist; the feed and routing make them operational for a real team.
+
+**Alternatives considered:** A single flat HITL queue (rejected — no ownership, every card to everyone); route through an external task tracker (deferred — local-first first, ADR-007; revisit if teams want it in their existing tools).
+
+**Consequences:** The HITL task schema gains a `role` / `assignee` field; the instance config defines the DRI/IC mapping; the feed view filters by role; `hitl.ts` (`push_hitl_task` / `list_hitl_tasks` / `resolve_hitl_task`) gains the routing dimension.
+
+**Review trigger:** Teams need roles beyond DRI/IC (e.g. a separate approver vs reviewer split).
+
+---
+
+## ADR-014: "Design system" is a first-class object; Systemix's own DS and each client DS are instances
+**Date:** 2026-06-05
+**Status:** DECIDED
+**Feature:** instance-app · the type/instance model
+
+**Decision:** Adopt an explicit **three-level model**, all from the **Systemix-poc perspective** (this repo owns all of it; nothing lives in a client's main repo):
+
+1. **Systemix's own design system + UI** — a *concrete, dogfooded* design system that powers Systemix's **marketing** surface and product UI. Systemix is its own first customer.
+2. **The "design system" as an object/type** — a first-class abstraction the engine operates on: a design-system instance has a repo, a package name, a host stack, tokens, components, docs, a brand config, and an embedded Systemix loop. The five-surface app (ADR-010) renders *any* instance of this type.
+3. **The Connecta design system** — an **example instance** of that object/type (Design Partner #1). It is documented and planned **inside systemix-poc** as a worked example, not as work owned by the Connecta repo.
+
+Provisioning a client instance (ADR-011) **creates and names** the design-system repo/package as part of onboarding — it is not assumed to pre-exist. This resolves the prior open question ("reuse `packages/design-system` vs spin a separate repo"): each client instance gets its **own** provisioned design-system repo, named during setup.
+
+**Rationale:** The three levels were collapsing into one another (Systemix's UI, the generic concept, and Connecta's DS were being reasoned about interchangeably). Separating them makes the engine's job legible: build the *type* and the app that renders it; dogfood it as *Systemix's own* DS (which doubles as marketing proof); treat *Connecta* as the first external instance — an example, not a special case. It also fixes the C1 gate cleanly: provisioning, not reuse.
+
+**Alternatives considered:** Keep Connecta's DS in the Connecta repo and plan it there (rejected per founder — everything is reasoned from the systemix-poc perspective; the client instance is an *example* the engine owns the narrative for); treat Systemix's own UI as separate from the DS object (rejected — dogfooding the same type is the proof the type is real).
+
+**Consequences:** `systemix.config.yaml` gains a `design_system` block (`repo`, `package`, `host`). Systemix maintains its **own** DS instance (marketing UI = the first rendered example). The Connecta instance plan moves into systemix-poc (`TASKS-connecta-instance.md`) as a worked example. The generic five-surface app must never hardcode Connecta specifics — those are *instance content*.
+
+**Provision-new vs update-existing.** Provisioning (naming/creating the DS repo) applies to a **new** client only. Some instances **already exist** and are not re-provisioned — they take the **`systemix update`** path (ADR-011). **Connecta is one of these:** `connecta-design-system` already exists (`github.com/boyantsonev/connecta-design-system`, publishable `@connecta/design-system`, embedded instance present). So for Connecta, "provision" in earlier framing means **update the existing instance**, not create a repo. (Separately, the canonical DS is this standalone repo; the near-duplicate `connecta/packages/design-system` becomes a consumer of the published package — see the workflow plan.)
+
+**Review trigger:** A client needs a design system that doesn't fit the object shape (e.g. no repo, or a non-package distribution).

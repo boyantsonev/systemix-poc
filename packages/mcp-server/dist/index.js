@@ -12,7 +12,7 @@
  *   events   — emit_event, list_events
  *   hitl     — push_hitl_task, resolve_hitl_task, list_hitl_tasks
  *   workflow — list_workflows, get_workflow
- *   contract — contract_get_token, contract_list_drifted, contract_get_component, contract_get_quality_score
+ *   contract — contract_get_token, contract_list_drifted, contract_get_component, contract_get_quality_score, contract_get_evidence, contract_write_evidence, contract_get_hypothesis, contract_list_hypotheses, contract_write_hypothesis_result
  *
  * Usage:
  *   systemix-mcp --project-root /path/to/project
@@ -65,6 +65,11 @@ const tools = [
     contract_js_1.contractListDriftedDefinition,
     contract_js_1.contractGetComponentDefinition,
     contract_js_1.contractGetQualityScoreDefinition,
+    contract_js_1.contractGetEvidenceDefinition,
+    contract_js_1.contractWriteEvidenceDefinition,
+    contract_js_1.contractGetHypothesisDefinition,
+    contract_js_1.contractListHypothesesDefinition,
+    contract_js_1.contractWriteHypothesisResultDefinition,
 ];
 // Map tool name → handler, bound to projectRoot
 const handlers = new Map([
@@ -85,6 +90,11 @@ const handlers = new Map([
     [contract_js_1.contractListDriftedDefinition.name, (a) => (0, contract_js_1.contractListDriftedHandler)(a, PROJECT_ROOT)],
     [contract_js_1.contractGetComponentDefinition.name, (a) => (0, contract_js_1.contractGetComponentHandler)(a, PROJECT_ROOT)],
     [contract_js_1.contractGetQualityScoreDefinition.name, (_a) => (0, contract_js_1.contractGetQualityScoreHandler)({}, PROJECT_ROOT)],
+    [contract_js_1.contractGetEvidenceDefinition.name, (a) => (0, contract_js_1.contractGetEvidenceHandler)(a, PROJECT_ROOT)],
+    [contract_js_1.contractWriteEvidenceDefinition.name, (a) => (0, contract_js_1.contractWriteEvidenceHandler)(a, PROJECT_ROOT)],
+    [contract_js_1.contractGetHypothesisDefinition.name, (a) => (0, contract_js_1.contractGetHypothesisHandler)(a, PROJECT_ROOT)],
+    [contract_js_1.contractListHypothesesDefinition.name, (a) => (0, contract_js_1.contractListHypothesesHandler)(a, PROJECT_ROOT)],
+    [contract_js_1.contractWriteHypothesisResultDefinition.name, (a) => (0, contract_js_1.contractWriteHypothesisResultHandler)(a, PROJECT_ROOT)],
 ]);
 // ---------------------------------------------------------------------------
 // Server
