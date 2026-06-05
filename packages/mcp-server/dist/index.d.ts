@@ -11,7 +11,7 @@
  *   events   — emit_event, list_events
  *   hitl     — push_hitl_task, resolve_hitl_task, list_hitl_tasks
  *   workflow — list_workflows, get_workflow
- *   contract — contract_get_token, contract_list_drifted, contract_get_component, contract_get_quality_score
+ *   contract — contract_get_token, contract_list_drifted, contract_get_component, contract_get_quality_score, contract_get_evidence, contract_write_evidence, contract_get_hypothesis, contract_list_hypotheses, contract_write_hypothesis_result
  *
  * Usage:
  *   systemix-mcp --project-root /path/to/project

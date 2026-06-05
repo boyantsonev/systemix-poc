@@ -9,7 +9,9 @@ type CardType =
   | "drift-resolution"
   | "instrumentation-approval"
   | "new-token"
-  | "hypothesis-validation";
+  | "hypothesis-validation"
+  | "hermes-synthesis"
+  | "architecture-proposal";
 
 type CardStatus = "pending" | "approved" | "rejected" | "deferred";
 
@@ -43,6 +45,8 @@ const CARD_TYPE: Record<CardType, { label: string; icon: string; color: string }
   "instrumentation-approval": { label: "Instrument", icon: "▷", color: "text-blue-600 dark:text-blue-400"    },
   "new-token":                { label: "New token",  icon: "◆", color: "text-violet-600 dark:text-violet-400"  },
   "hypothesis-validation":    { label: "Hypothesis", icon: "◈", color: "text-emerald-600 dark:text-emerald-400" },
+  "hermes-synthesis":         { label: "Synthesis",  icon: "⊹", color: "text-emerald-600 dark:text-emerald-400" },
+  "architecture-proposal":    { label: "Architecture", icon: "◇", color: "text-violet-600 dark:text-violet-400" },
 };
 
 const STATUS_STYLE: Record<CardStatus, string> = {

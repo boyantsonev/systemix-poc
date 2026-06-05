@@ -13,6 +13,11 @@ result: null
 decision: null
 confidence: null
 evidence-posthog: null
+hermes-decision: promote-variant
+hermes-confidence: high
+hermes-at: 2026-05-21
+hermes-note: no-posthog-evidence — decision based on ICP-hypothesis fit only
+status: awaiting-hitl
 ---
 
 ## Why This Hypothesis
@@ -34,6 +39,18 @@ Founder framing. Emotion: action, signal, closure. The loop is the product.
 - Primary: click-through on `npx systemix init` install command or `/dashboard` link (tracked as `cta_click` PostHog event)
 - Secondary: scroll depth past the LoopDiagram section
 - Threshold: ≥20% lift on primary metric to declare winner
+
+### Hermes Synthesis — 2026-05-21
+
+**Decision:** promote-variant | **Confidence:** high | **No PostHog evidence collected yet — qualitative synthesis only.**
+
+The control variant frames Systemix in a way that does not resonate with the target ICP — pre-PMF founders running GTM experiments. Variant B's framing around hypothesis validation and closing loops directly speaks to their core pain of making product decisions without recording what they tested or why. This difference in positioning will likely drive higher engagement on the CTA.
+
+**Next action:** Update the live hero to use Variant B text, then monitor PostHog for `cta_click` lift vs. control. Collect at least 2 days of data before declaring a winner based on the ≥20% threshold.
+
+*This synthesis was produced without live PostHog evidence. Approve in the HITL queue to promote, or wait for `/evidence` data first.*
+
+---
 
 ## Decision Criteria
 

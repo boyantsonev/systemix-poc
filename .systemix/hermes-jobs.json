@@ -1,0 +1,20 @@
+{
+  "$comment": "Declarative record of the Hermes scheduled jobs. The launchd plists in scripts/launchd/ are generated from this and registered on the local machine (local-first, per ADR-006..009). Re-load after editing: scripts/launchd/install.sh",
+  "runner": "scripts/hermes-runner.mjs",
+  "model": "hermes3",
+  "endpoint": "http://localhost:11434",
+  "jobs": [
+    {
+      "label": "com.systemix.hermes.daily",
+      "mode": "daily",
+      "schedule": { "hour": 9, "minute": 0 },
+      "does": "Synthesize all contracts with status: evidence-ready into hermes-synthesis HITL cards (.systemix/queue.json). No-ops when none are ready."
+    },
+    {
+      "label": "com.systemix.hermes.weekly",
+      "mode": "weekly",
+      "schedule": { "weekday": 1, "hour": 9, "minute": 15 },
+      "does": "Synthesize project goals + contract state into ONE architecture-proposal HITL card for human review in /queue (the weekly architecture gate)."
+    }
+  ]
+}
