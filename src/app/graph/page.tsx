@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
-import { SystemGraph, GraphLegend } from "@/components/graph/SystemGraph";
+import { ForceGraph3D } from "@/components/graph/ForceGraph3D";
 
 export default function GraphPage() {
   return (
@@ -30,11 +30,7 @@ export default function GraphPage() {
       </header>
 
       <div className="flex-1 relative">
-        <SystemGraph />
-
-        <div className="absolute bottom-5 left-5 z-10">
-          <GraphLegend />
-        </div>
+        <ForceGraph3D />
       </div>
     </div>
   );

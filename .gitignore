@@ -43,6 +43,8 @@ next-env.d.ts
 
 # systemix runtime files (generated at runtime, not committed)
 .systemix/tokens.bridge.json
+.systemix/queue.json
+.systemix/logs/
 .systemix/handoffs/
 .systemix/cache/
 .systemix/runs/
