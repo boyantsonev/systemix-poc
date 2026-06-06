@@ -1,0 +1,77 @@
+---
+title: "Hermes"
+section: "The loop"
+slug: "concepts/hermes"
+status: "draft"
+last-updated: "2026-06-06"
+---
+
+# Hermes
+
+Local LLM. No API key. No cloud. Hermes runs on your machine via Ollama — any compatible model works. It reads your hypothesis contracts and PostHog signals, synthesizes the result, and outputs a decision card with a recommendation, confidence score, and rationale.
+
+---
+
+## What Hermes is
+
+Hermes defaults to the `hermes3` model running via Ollama at `localhost:11434`, but any Ollama-compatible model works. It's air-gapped — nothing leaves your machine. It has one job: reading your hypothesis contracts and PostHog experiment results, then synthesizing a decision card that tells you what to do next.
+
+Hermes is not a chatbot. You don't talk to it. It runs as part of `npx systemix watch` — a background process that monitors your PostHog experiments and hypothesis contracts, then generates a HITL card when an experiment reaches significance.
+
+---
+
+## What Hermes reads and outputs
+
+**Reads: the hypothesis contract history**
+
+Before synthesizing any result, Hermes reads the full contract: the original hypothesis, which ICP it targeted, prior experiment outcomes, and any rejected directions. This prevents re-proposing what's already been tried.
+
+**Reads: PostHog signals**
+
+Conversion rates, funnel drop-off, activation events, session data — whatever you're tracking for the hypothesis. Hermes reads the result when the experiment reaches your configured significance threshold.
+
+**Outputs: a decision card**
+
+Hermes writes a HITL card to the queue with three fields: recommendation (promote / run longer / kill), confidence score, and rationale — grounded in what the contract shows has been tried before.
+
+**Writes: evidence back to the contract**
+
+After you approve in the HITL queue, Hermes writes the decision, the data, and the date permanently to the MDX contract. The next experiment or agent starts from this known ground.
+
+---
+
+## Confidence routing
+
+Not every Hermes action goes to the HITL queue. Hermes scores its own confidence before writing:
+
+| Confidence level | Action |
+|---|---|
+| High | Writes directly to contract, no queue entry |
+| Medium | Writes contract + creates a reviewable HITL card |
+| Low | Creates HITL card only — does not write until approved |
+
+---
+
+## Running Hermes
+
+```sh
+# Install Ollama + pull hermes3
+$ brew install ollama
+$ ollama pull hermes3
+
+# Start the Systemix watcher (runs Hermes in the background)
+$ npx systemix watch
+
+# Or run a one-shot contract generation (no Ollama required)
+$ npm run generate-contracts -- --no-hermes
+```
+
+The `--no-hermes` flag generates placeholder contract files with status `missing-in-figma` — useful for bootstrapping before Ollama is set up.
+
+---
+
+## See also
+
+- [The Evidence Layer](/docs/concepts/evidence-layer) — what Hermes writes into
+- [HITL & Decision Queue](/docs/concepts/hitl) — Hermes-generated cards
+- [Architecture](/docs/architecture) — how Hermes connects to everything

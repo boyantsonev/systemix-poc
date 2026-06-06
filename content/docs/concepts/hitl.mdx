@@ -1,0 +1,83 @@
+---
+title: "HITL & Decision Queue"
+section: "The loop"
+slug: "concepts/hitl"
+status: "draft"
+last-updated: "2026-06-06"
+---
+
+# HITL & Decision Queue
+
+The HITL queue is your primary decision surface. Every running hypothesis produces a card when it has enough data. Hermes synthesizes the result, you approve in one click, and the evidence is written permanently to the contract. This is the weekly cadence that closes the loop.
+
+---
+
+## What HITL means in Systemix
+
+The HITL queue is where you make product decisions. When a hypothesis has enough PostHog data, Hermes synthesizes the result against the full contract history — prior experiments, rejected directions, original intent — and surfaces a card with a recommendation. You approve, extend, or kill it in one click.
+
+The queue persists in `.systemix/queue.json`. Cards stay until resolved. Every resolution is written back into the hypothesis contract as permanent evidence — the decision, the data, the date, and the rationale.
+
+---
+
+## Three actions on every card
+
+**Promote**
+
+The variant won. Hermes writes the result, the confidence, and the winning direction to the contract. The artifact becomes the new baseline. Future agents and experiments read this as known ground.
+
+> Landing headline variant B +38% trial signups at 84% confidence — promoted 2026-05-01
+
+**Run longer**
+
+Confidence is below threshold or the sample is too small. The card is re-queued. Hermes records that you extended the test and why — so the next review starts with that context.
+
+> Onboarding step 2 copy test — extended, 420 sessions, need 800 for 80% confidence
+
+**Kill**
+
+The hypothesis failed or isn't worth pursuing. The rejection is written to the contract permanently — preventing Hermes or any agent from re-proposing the same direction without surfacing the prior result.
+
+> GTM offer: free audit — killed. Attracted wrong ICP. Do not re-propose without reframing the audience.
+
+---
+
+## What each action writes to the contract
+
+| Action | What is written |
+|---|---|
+| Promote | Result, confidence, winning variant, and rationale. New baseline for next experiment. |
+| Run longer | Extension reason written to contract. Card re-queued. Next synthesis picks up from here. |
+| Kill | Rejection reason written permanently — prevents Hermes from re-proposing the same direction. |
+
+---
+
+## Queue mechanics
+
+```json
+// .systemix/queue.json — one entry per pending card
+{
+  "cards": [
+    {
+      "id": "card_20260501_001",
+      "type": "hypothesis",
+      "hypothesis": "landing-headline-icp-match",
+      "experiment": "hero-headline-ab",
+      "confidence": 0.84,
+      "recommendation": "promote",
+      "createdAt": "2026-05-01T09:00:00Z",
+      "status": "pending"
+    }
+  ]
+}
+```
+
+Cards are served via `GET /api/queue` and resolved via `PATCH /api/queue/:id`. The dashboard polls this endpoint.
+
+---
+
+## See also
+
+- [Hypothesis Validation Loop](/docs/concepts/hypothesis-validation) — the full cycle
+- [Hermes](/docs/concepts/hermes) — what generates the cards
+- [Dashboard](/dashboard) — where the queue lives ↗

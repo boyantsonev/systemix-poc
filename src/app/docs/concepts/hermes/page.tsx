@@ -1,98 +1,22 @@
-export default function HermesPage() {
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import matter from "gray-matter";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { mdxDocComponents } from "@/lib/mdx-doc-components";
+
+export default async function HermesPage() {
+  const raw = readFileSync(
+    join(process.cwd(), "content/docs/concepts/hermes.mdx"),
+    "utf8"
+  );
+  const { content } = matter(raw);
+
   return (
-    <article>
-      <p className="text-[13px] font-mono text-muted-foreground mb-3">Concepts</p>
-      <h1 className="text-[2rem] font-black tracking-tight leading-[1.15] mb-2">
-        Hermes
-      </h1>
-      <p className="text-[15px] text-muted-foreground leading-relaxed mb-10">
-        Local LLM. No API key. No cloud. Hermes runs on your machine via Ollama — any compatible model works. It reads your hypothesis contracts and PostHog signals, synthesizes the result, and outputs a decision card with a recommendation, confidence score, and rationale.
+    <article className="prose-custom">
+      <p className="text-[13px] font-mono text-muted-foreground mb-3">
+        Concepts
       </p>
-
-      <hr className="border-border/40 mb-8" />
-
-      <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">What Hermes is</h2>
-        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Hermes defaults to the <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">hermes3</code> model running via Ollama at <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">localhost:11434</code>, but any Ollama-compatible model works. It&apos;s air-gapped — nothing leaves your machine. It has one job: reading your hypothesis contracts and PostHog experiment results, then synthesizing a decision card that tells you what to do next.
-        </p>
-        <p className="text-[14px] text-muted-foreground leading-relaxed">
-          Hermes is not a chatbot. You don&apos;t talk to it. It runs as part of <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">npx systemix watch</code> — a background process that monitors your PostHog experiments and hypothesis contracts, then generates a HITL card when an experiment reaches significance.
-        </p>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-4">What Hermes reads and outputs</h2>
-        <div className="space-y-3">
-          {[
-            {
-              label: "Reads: the hypothesis contract history",
-              body: "Before synthesizing any result, Hermes reads the full contract: the original hypothesis, which ICP it targeted, prior experiment outcomes, and any rejected directions. This prevents re-proposing what's already been tried.",
-            },
-            {
-              label: "Reads: PostHog signals",
-              body: "Conversion rates, funnel drop-off, activation events, session data — whatever you're tracking for the hypothesis. Hermes reads the result when the experiment reaches your configured significance threshold.",
-            },
-            {
-              label: "Outputs: a decision card",
-              body: "Hermes writes a HITL card to the queue with three fields: recommendation (promote / run longer / kill), confidence score, and rationale — grounded in what the contract shows has been tried before.",
-            },
-            {
-              label: "Writes: evidence back to the contract",
-              body: "After you approve in the HITL queue, Hermes writes the decision, the data, and the date permanently to the MDX contract. The next experiment or agent starts from this known ground.",
-            },
-          ].map(({ label, body }) => (
-            <div key={label} className="border border-border/40 rounded-xl px-4 py-4">
-              <p className="text-[13px] font-semibold text-foreground mb-1">{label}</p>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">{body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Confidence routing</h2>
-        <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
-          Not every Hermes action goes to the HITL queue. Hermes scores its own confidence before writing:
-        </p>
-        <div className="grid sm:grid-cols-3 gap-px bg-border/40 rounded-xl overflow-hidden border border-border/40">
-          {[
-            { level: "High confidence", action: "Writes directly to contract, no queue entry", color: "text-emerald-400" },
-            { level: "Medium confidence", action: "Writes contract + creates a reviewable HITL card", color: "text-amber-400" },
-            { level: "Low confidence", action: "Creates HITL card only — does not write until approved", color: "text-red-400" },
-          ].map(({ level, action, color }) => (
-            <div key={level} className="bg-background px-4 py-4">
-              <p className={`text-[11px] font-mono font-bold uppercase tracking-wide mb-1.5 ${color}`}>{level}</p>
-              <p className="text-[12px] text-muted-foreground leading-relaxed">{action}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">Running Hermes</h2>
-        <pre className="text-[12px] font-mono bg-muted/40 border border-border/40 rounded-xl p-4 overflow-x-auto text-foreground/80 leading-relaxed">{`# Install Ollama + pull hermes3
-brew install ollama
-ollama pull hermes3
-
-# Start the Systemix watcher (runs Hermes in the background)
-npx systemix watch
-
-# Or run a one-shot contract generation (no Ollama required)
-npm run generate-contracts -- --no-hermes`}</pre>
-        <p className="text-[12px] font-mono text-muted-foreground/50 mt-3">
-          The <code className="text-foreground/60">--no-hermes</code> flag generates placeholder contract files with status <code className="text-foreground/60">missing-in-figma</code> — useful for bootstrapping before Ollama is set up.
-        </p>
-      </section>
-
-      <section className="mb-6">
-        <h2 className="text-[1.1rem] font-bold tracking-tight mb-3">See also</h2>
-        <div className="flex flex-col gap-1.5 text-[13px] font-mono">
-          <a href="/docs/concepts/evidence-layer" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ The Evidence Layer — what Hermes writes into</a>
-          <a href="/docs/concepts/hitl" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ HITL & Decision Queue — Hermes-generated cards</a>
-          <a href="/docs/architecture" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">→ Architecture — how Hermes connects to everything</a>
-        </div>
-      </section>
+      <MDXRemote source={content} components={mdxDocComponents} />
     </article>
   );
 }
