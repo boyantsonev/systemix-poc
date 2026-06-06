@@ -1,0 +1,56 @@
+name: Docs migration card
+description: Track migration of a single docs page from TSX to MDX
+title: "Docs: [route]"
+labels: ["docs"]
+body:
+  - type: input
+    id: route
+    attributes:
+      label: Route
+      description: The /docs/... path this card covers
+      placeholder: /docs/concepts/hermes
+    validations:
+      required: true
+
+  - type: input
+    id: source-tsx
+    attributes:
+      label: Source TSX
+      description: Current page.tsx path
+      placeholder: src/app/docs/concepts/hermes/page.tsx
+    validations:
+      required: true
+
+  - type: input
+    id: mdx-target
+    attributes:
+      label: MDX target
+      description: Target MDX file path
+      placeholder: content/docs/concepts/hermes.mdx
+    validations:
+      required: true
+
+  - type: dropdown
+    id: migration-type
+    attributes:
+      label: Migration type
+      description: Full (all prose) or Partial (interactive sections stay in TSX)
+      options:
+        - Full migration
+        - Partial migration (interactive sections stay in TSX)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Migration checklist
+      options:
+        - label: Extract prose content from page.tsx
+        - label: Write frontmatter (title, section, slug, status, last-updated)
+        - label: Replace page.tsx with thin MDX shell (readFileSync → matter → MDXRemote)
+        - label: Update docs-manifest.ts status → "review"
+        - label: Verify render at localhost:3001/docs/{route}
+        - label: Sidebar active state correct
+        - label: Code blocks and blockquotes render correctly
+        - label: Human approval — close this issue to mark "published"
