@@ -27,7 +27,9 @@ const HELP = `
     npx systemix workflow add <name>     Install a workflow to ~/.claude/skills/
     npx systemix workflow list           List available workflows
     npx systemix add <name>              Alias for: workflow add
-    npx systemix update                  Check for and apply SKILL.md updates
+    npx systemix update                  Check npm + skill-pack updates and apply
+    npx systemix update --packs-only     Only refresh external skill packs
+    npx systemix update <pack-name>      Refresh a specific skill pack
     npx systemix list                    Show installed skills and workflows
     npx systemix doctor                  Health check for all dependencies
     npx systemix sync [options]          Sync design tokens and components

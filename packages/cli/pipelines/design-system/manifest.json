@@ -12,6 +12,21 @@
     "check-parity",
     "contract-query"
   ],
+  "skill-packs": [
+    {
+      "name": "figma-console-mcp-skills",
+      "source": "github:southleft/figma-console-mcp-skills",
+      "ref": "main",
+      "skills": [
+        "figma-export-tokens",
+        "figma-import-tokens",
+        "figma-manage-variables",
+        "figma-audit-accessibility",
+        "figma-check-design-parity",
+        "figma-lint-design"
+      ]
+    }
+  ],
   "requires": {
     "mcp": [
       "Figma MCP (mcp__claude_ai_Figma__)",
