@@ -47,14 +47,18 @@ export const mdxDocComponents: MDXComponents = {
     </p>
   ),
   ul: ({ children }) => (
-    <ul className="space-y-1.5 mb-6 text-[13px] text-muted-foreground">
+    <ul className="space-y-1.5 mb-6 text-[13px] text-muted-foreground list-none pl-0">
       {children}
     </ul>
   ),
+  ol: ({ children }) => (
+    <ol className="space-y-2 mb-6 text-[13px] text-muted-foreground list-none pl-0 counter-reset-steps">
+      {children}
+    </ol>
+  ),
   li: ({ children }) => (
-    <li className="flex gap-2">
-      <span className="text-muted-foreground/30 shrink-0 mt-0.5">—</span>
-      <span className="leading-relaxed">{children}</span>
+    <li className="text-[13px] text-muted-foreground leading-relaxed">
+      {children}
     </li>
   ),
   code: ({ children }) => (
