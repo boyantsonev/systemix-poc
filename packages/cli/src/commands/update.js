@@ -5,12 +5,18 @@
  * Since skills ship with the npm package, "update" means checking
  * the installed package version vs latest on npm and re-running
  * the install step for skills that have changed.
+ *
+ * Also fetches external skill-packs declared in pipeline manifests
+ * (e.g. github:southleft/figma-console-mcp-skills).
  */
 
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const os = require('os');
+const { fetchSkillPack, parseVersion, resolveAllSkillPacks } = require('../skills-fetcher');
+
+const PIPELINES_DIR = path.join(__dirname, '../../pipelines');
 
 // Prefer this repo's project-scoped skills (.claude/skills/); fall back to global. ADR-008.
 const PROJECT_SKILLS = path.join(process.cwd(), '.claude', 'skills');
@@ -64,22 +70,35 @@ async function update(args) {
 systemix update — Check and apply SKILL.md updates
 
 Usage:
-  npx systemix update              Check for updates
-  npx systemix update --check      Check only, don't apply
-  npx systemix update --force      Re-install all skills regardless of version
+  npx systemix update                    Check npm + skill-pack updates, apply
+  npx systemix update --check            Dry run — show what would change
+  npx systemix update --force            Re-install all skills regardless of version
+  npx systemix update --packs-only       Only refresh external skill packs
+  npx systemix update <pack-name>        Refresh a specific skill pack
 
 Options:
-  --check    Report available updates without applying
-  --force    Force re-install all skills
-  --help     Show this help
+  --check        Report available updates without applying
+  --force        Force re-install all skills
+  --packs-only   Skip npm version check, only fetch skill packs
+  --help         Show this help
 `);
     return;
   }
 
   const checkOnly = args.includes('--check');
   const force = args.includes('--force');
+  const packsOnly = args.includes('--packs-only');
+  // Positional pack name: first arg that isn't a flag
+  const packFilter = args.find(a => !a.startsWith('--')) || null;
 
   console.log('Systemix Update\n');
+
+  // ── packs-only / targeted pack: skip npm check entirely ────────────────────
+  if (packsOnly || packFilter) {
+    await updateSkillPacks({ checkOnly, force, packFilter, skillsDir: SKILLS_DIR });
+    console.log('\n  Run `npx systemix doctor` to verify your setup.');
+    return;
+  }
 
   // Check installed skills
   const installed = getInstalledSkills();
@@ -100,14 +119,14 @@ Options:
   if (!latest) {
     console.log('Could not reach npm registry — running offline.');
     console.log('  Skills are up to date based on local state.');
+    // Still try skill packs (they use a separate GitHub fetch)
+    await updateSkillPacks({ checkOnly, force, packFilter: null, skillsDir: SKILLS_DIR });
     return;
   }
 
   const latestVersion = latest.version;
   console.log(`Latest systemix version: ${latestVersion}\n`);
 
-  // Compare package version — in future this would compare per-skill versions
-  // from a skills manifest bundled with the package
   const pkgPath = path.join(__dirname, '../../package.json');
   let currentVersion = '0.0.0';
   try {
@@ -116,40 +135,112 @@ Options:
 
   if (currentVersion === latestVersion && !force) {
     console.log(`Already on latest version (${currentVersion})`);
-    console.log('  All skills are up to date.\n');
-    console.log('  Run with --force to re-install all skills.');
-    return;
-  }
-
-  if (checkOnly) {
+    console.log('  Bundled skills are up to date.\n');
+  } else if (checkOnly) {
     if (currentVersion !== latestVersion) {
       console.log(`Update available: ${currentVersion} -> ${latestVersion}`);
       console.log('Run without --check to apply the update.');
     }
+  } else {
+    // Re-install bundled pipeline skills
+    const pipelineNames = [...new Set(installed.map(() => 'figma-to-code'))];
+    console.log(`Update available: ${currentVersion} -> ${latestVersion}`);
+    console.log('Re-installing skills...\n');
+    try {
+      const { add } = require('../add');
+      for (const pipeline of pipelineNames) {
+        await add(pipeline);
+      }
+      console.log('\nSkills updated successfully');
+    } catch (err) {
+      console.error('\nUpdate failed:', err.message);
+      console.error('  Try: npx systemix add figma-to-code');
+      process.exit(1);
+    }
+  }
+
+  // ── Skill-packs fetch phase (always runs for full update) ──────────────────
+  await updateSkillPacks({ checkOnly, force, packFilter: null, skillsDir: SKILLS_DIR });
+
+  console.log('\n  Run `npx systemix doctor` to verify your setup.');
+}
+
+/**
+ * Fetch skill-packs declared in pipeline manifests and write updated
+ * SKILL.md files to the project's .claude/skills/ directory.
+ */
+async function updateSkillPacks({ checkOnly, force, packFilter, skillsDir }) {
+  const allPacks = resolveAllSkillPacks(PIPELINES_DIR);
+
+  if (allPacks.size === 0) return;
+
+  const packs = packFilter
+    ? new Map([[packFilter, allPacks.get(packFilter)]].filter(([, v]) => v))
+    : allPacks;
+
+  if (packFilter && !allPacks.has(packFilter)) {
+    console.error(`\n✗ Unknown skill pack: "${packFilter}"`);
+    console.error('  Available packs:', [...allPacks.keys()].join(', '));
+    process.exit(1);
+  }
+
+  console.log(`\nSkill Packs (${packs.size}):`);
+
+  let anyFailed = false;
+  let updatedCount = 0;
+
+  for (const [packName, packConfig] of packs) {
+    console.log(`\n  ${packName} (${packConfig.source})`);
+    console.log('  Fetching...');
+
+    let fetched;
+    try {
+      fetched = await fetchSkillPack(packConfig);
+    } catch {
+      fetched = [];
+    }
+
+    if (fetched.length === 0 && packConfig.skills.length > 0) {
+      console.log('  Could not reach GitHub — skill pack update skipped. Bundled skills are current.');
+      anyFailed = true;
+      continue;
+    }
+
+    for (const { name, content, version: remoteVersion } of fetched) {
+      const skillDir = path.join(skillsDir, name);
+      const skillFile = path.join(skillDir, 'SKILL.md');
+
+      let localVersion = '0.0.0';
+      if (fs.existsSync(skillFile)) {
+        localVersion = parseVersion(fs.readFileSync(skillFile, 'utf8'));
+      }
+
+      const isNew = localVersion === '0.0.0' && !fs.existsSync(skillFile);
+      const hasUpdate = localVersion !== remoteVersion;
+      const label = isNew ? '(new)' : hasUpdate ? `${localVersion} → ${remoteVersion}` : `${localVersion} ✓`;
+      const needsWrite = force || isNew || hasUpdate;
+
+      console.log(`    ${name.padEnd(34)} ${label}`);
+
+      if (!needsWrite || checkOnly) continue;
+
+      fs.mkdirSync(skillDir, { recursive: true });
+      const tmp = skillFile + '.tmp';
+      fs.writeFileSync(tmp, content, 'utf8');
+      fs.renameSync(tmp, skillFile);
+      updatedCount++;
+    }
+  }
+
+  if (checkOnly) {
+    console.log('\n  Run without --check to apply.');
     return;
   }
 
-  // Apply update — instruct user to re-run add for each installed pipeline
-  const pipelineNames = [...new Set(installed.map(s => {
-    // Derive pipeline name from skill name (skills are grouped by pipeline)
-    // For now, assume figma-to-code is the primary pipeline
-    return 'figma-to-code';
-  }))];
-
-  console.log(`Update available: ${currentVersion} -> ${latestVersion}`);
-  console.log('Re-installing skills...\n');
-
-  try {
-    const { add } = require('../add');
-    for (const pipeline of pipelineNames) {
-      await add(pipeline);
-    }
-    console.log('\nSkills updated successfully');
-    console.log('  Run `npx systemix doctor` to verify your setup.');
-  } catch (err) {
-    console.error('\nUpdate failed:', err.message);
-    console.error('  Try: npx systemix add figma-to-code');
-    process.exit(1);
+  if (updatedCount > 0) {
+    console.log(`\n  ${updatedCount} skill(s) updated from packs.`);
+  } else if (!anyFailed) {
+    console.log('\n  All skill packs are current.');
   }
 }
 
