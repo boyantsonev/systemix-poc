@@ -131,14 +131,16 @@ export const docsManifest: DocEntry[] = [
     title: "Instance model",
     section: "The stack",
     href: "/docs/concepts/instance-model",
-    status: "missing",
+    status: "review",
+    lastUpdated: "2026-06-06",
   },
   {
     slug: "concepts/workflow-atlas",
     title: "Workflow Atlas",
     section: "The stack",
     href: "/docs/concepts/workflow-atlas",
-    status: "missing",
+    status: "review",
+    lastUpdated: "2026-06-06",
   },
 
   // ─── Reference ─────────────────────────────────────────────────────────────
@@ -165,14 +167,16 @@ export const docsManifest: DocEntry[] = [
     title: "MCP server",
     section: "Reference",
     href: "/docs/reference/mcp-server",
-    status: "missing",
+    status: "review",
+    lastUpdated: "2026-06-06",
   },
   {
     slug: "reference/posthog",
     title: "PostHog integration",
     section: "Reference",
     href: "/docs/reference/posthog",
-    status: "missing",
+    status: "review",
+    lastUpdated: "2026-06-06",
   },
   // External links — always visible in nav, no MDX file
   {
