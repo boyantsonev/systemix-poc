@@ -1,0 +1,99 @@
+---
+title: "Quick Install"
+section: "Getting Started"
+slug: "quick-install"
+status: "draft"
+last-updated: "2026-06-06"
+---
+
+# Quick Install
+
+Pull Hermes, initialize your contract directory, write your first hypothesis — the validation loop is running in under 5 minutes.
+
+---
+
+## Prerequisites
+
+- Node 18 or later
+- Ollama installed — ollama.com
+- A PostHog project (free tier works) — posthog.com
+
+## Steps
+
+### 1. Pull the Hermes model
+
+```sh
+$ ollama pull hermes3
+```
+
+Hermes is the local LLM that synthesizes your experiment results. Runs entirely on your machine via Ollama at `localhost:11434` — no API key, no cloud. Any Ollama-compatible model works.
+
+### 2. Initialize Systemix in your repo
+
+```sh
+$ npx systemix init
+```
+
+Creates `contract/hypotheses/` in your repo and writes a `systemix.config.yaml` with your PostHog project key, surfaces, and signals.
+
+### 3. Write your first hypothesis contract
+
+```sh
+$ npx systemix new hypothesis
+```
+
+Scaffolds a new MDX contract in `contract/hypotheses/`. Fill in the hypothesis, ICP, variants, and success criteria — then commit it alongside the artifact you're testing.
+
+A new contract looks like:
+
+```yaml
+---
+id: landing-headline-icp-match
+hypothesis: "Ops-role visitors convert lower because the headline
+  targets technical founders"
+icp: ops-directors-linkedin
+status: running
+variants:
+  control: "Your agents. Your source of truth."
+  variant_b: "Ship faster without the ops overhead."
+success-criteria: "+20% trial signups from LinkedIn traffic"
+decision: null
+confidence: null
+evidence-posthog: null
+last-updated: 2026-05-07
+---
+
+## Why this hypothesis
+
+PostHog shows 46% of inbound from LinkedIn are ops-role.
+Current headline is written for technical founders.
+Hypothesis: framing for ops will lift conversion.
+```
+
+### 4. Start the watcher
+
+```sh
+$ npx systemix watch
+```
+
+Hermes runs in the background. It polls PostHog for experiment results and — when your experiment reaches significance — generates a HITL card in the dashboard queue.
+
+Open the dashboard at `localhost:3000` to see the queue. When a card appears: approve, extend, or kill. The decision is written back to the contract.
+
+### 5. Install the hypothesis-validation workflow
+
+```sh
+$ npx systemix workflow add hypothesis-validation
+```
+
+Installs 4 Claude Code slash commands to `.claude/skills/`: `/init-experiment`, `/growth-audit`, `/write-variants`, and `/close-experiment`.
+
+These give Claude Code and Cursor the ability to read contracts, propose variants grounded in your ICP, and close experiments with evidence.
+
+### 6. Register the MCP server
+
+```sh
+$ npx systemix-mcp --project-root .
+```
+
+Add this as an MCP server in your Claude Code or Cursor config. Any AI agent working in your codebase can now read your hypothesis contracts — prior experiments, rejected directions, production results — before touching anything you've already tested.

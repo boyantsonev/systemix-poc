@@ -47,7 +47,8 @@ export const docsManifest: DocEntry[] = [
     title: "Quick Install",
     section: "Getting Started",
     href: "/docs/quick-install",
-    status: "draft",
+    status: "review",
+    lastUpdated: "2026-06-06",
   },
   {
     slug: "guides/setup",
