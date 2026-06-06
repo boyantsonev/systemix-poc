@@ -71,6 +71,11 @@ export const mdxDocComponents: MDXComponents = {
       {children}
     </pre>
   ),
+  blockquote: ({ children }) => (
+    <blockquote className="border-l-2 border-amber-500/40 pl-4 py-0.5 my-4 [&>p]:text-[13px] [&>p]:text-muted-foreground [&>p]:leading-relaxed [&>p]:mb-0">
+      {children}
+    </blockquote>
+  ),
   hr: () => <hr className="border-border/40 my-10" />,
   strong: ({ children }) => (
     <strong className="font-semibold text-foreground">{children}</strong>

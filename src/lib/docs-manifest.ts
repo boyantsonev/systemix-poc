@@ -55,7 +55,8 @@ export const docsManifest: DocEntry[] = [
     title: "Setup Guide",
     section: "Getting Started",
     href: "/docs/guides/setup",
-    status: "draft",
+    status: "review",
+    lastUpdated: "2026-06-06",
   },
 
   // ─── The loop ──────────────────────────────────────────────────────────────
