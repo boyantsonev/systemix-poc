@@ -213,7 +213,7 @@ export function DesignSystemMobileHeader({
     <div className="md:hidden">
       {/* Subheader strip */}
       <div className="h-10 border-b border-border/50 flex items-center justify-between px-4 bg-background">
-        <span className="text-[12px] font-semibold text-foreground">Design System</span>
+        <span className="text-[12px] font-semibold text-foreground">System</span>
         <button
           onClick={() => setOpen(true)}
           className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
@@ -229,7 +229,7 @@ export function DesignSystemMobileHeader({
       )}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-background border-r border-border/50 flex flex-col transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-11 flex items-center justify-between px-4 border-b border-border/50">
-          <span className="text-[12px] font-semibold">Design System</span>
+          <span className="text-[12px] font-semibold">System</span>
           <button onClick={() => setOpen(false)} className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors" aria-label="Close">
             <X size={14} />
           </button>
