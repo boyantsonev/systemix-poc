@@ -10,7 +10,7 @@ import { ThemeToggle } from "./ThemeToggle";
 const APP_NAV = [
   { label: "Dashboard",     href: "/dashboard"     },
   { label: "Queue",         href: "/queue"         },
-  { label: "Design System", href: "/design-system" },
+  { label: "System", href: "/design-system" },
 ];
 
 function PendingBadge() {

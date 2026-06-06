@@ -1,0 +1,80 @@
+---
+title: "MCP server"
+section: "Reference"
+slug: "reference/mcp-server"
+status: "review"
+last-updated: "2026-06-06"
+---
+
+# Systemix MCP server
+
+The `systemix-mcp` server exposes the contract layer and HITL queue to Claude Code and any MCP-compatible client. Once running, agents can read and write contracts, push HITL cards, and query the evidence store without touching the filesystem directly.
+
+## Install
+
+```sh
+$ npx systemix-mcp --project-root .
+```
+
+Run from your project root. The server reads `systemix.config.yaml` to discover the `contract/` directory and `.systemix/` state files.
+
+To start it automatically in Claude Code, add to your project's `.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "systemix": {
+      "command": "npx",
+      "args": ["systemix-mcp", "--project-root", "."]
+    }
+  }
+}
+```
+
+## Contract reads
+
+**`contract_get_token`** — fetch a token contract by slug. Returns frontmatter + body.
+
+**`contract_get_component`** — fetch a component parity contract.
+
+**`contract_get_hypothesis`** — fetch a hypothesis contract including status, variants, and any recorded result.
+
+**`contract_get_quality_score`** — compute and return the current quality score from all token and component contracts.
+
+**`contract_list_drifted`** — list all contracts where `status: "drifted"` and `resolved` is false.
+
+**`contract_list_hypotheses`** — list open hypothesis contracts (status: `running`).
+
+## Evidence
+
+**`contract_get_evidence`** — return cached evidence records for a contract (PostHog events, Figma snapshot, Vercel metrics).
+
+**`contract_write_evidence`** — append a new evidence record to a contract. Called by Hermes after each signal poll.
+
+## Hypothesis lifecycle
+
+**`contract_write_hypothesis_result`** — record a decision for a running hypothesis: winner variant, confidence level, and synthesis notes. Transitions status from `running` to `complete`.
+
+## HITL queue
+
+**`push_hitl_task`** — add a card to `.systemix/queue.json`. Accepts a title, description, severity, and optional contract slug. The `/graph` surface polls this file and renders the card.
+
+**`list_hitl_tasks`** — return all open (non-resolved) HITL cards.
+
+**`resolve_hitl_task`** — mark a card resolved with a decision string.
+
+## Events
+
+**`emit_event`** — emit a named event to the systemix event log.
+
+**`list_events`** — return recent events, optionally filtered by type.
+
+## Tokens
+
+**`get_token_bridge`** — return `.systemix/tokens.bridge.json` (hex + rgba values ready for Figma).
+
+**`diff_token_bridge`** — compare current CSS variables against the bridge file and report what has changed since the last sync.
+
+## Related
+
+The Figma MCP servers (`mcp__claude_ai_Figma__*` and `mcp__figma-console__*`) are separate from systemix-mcp. See [Figma MCPs](/docs/concepts/figma-mcps) for when to use each.

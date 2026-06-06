@@ -5,44 +5,7 @@ import { usePathname } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { SLogo } from "./SLogo";
 import { ThemeToggle } from "./ThemeToggle";
-
-const NAV: { section: string; items: { label: string; href: string; external?: boolean }[] }[] = [
-  {
-    section: "Getting Started",
-    items: [
-      { label: "Introduction",  href: "/docs/introduction"  },
-      { label: "Quick Install", href: "/docs/quick-install" },
-      { label: "Setup Guide",   href: "/docs/guides/setup"  },
-    ],
-  },
-  {
-    section: "The loop",
-    items: [
-      { label: "Hypothesis Validation",    href: "/docs/concepts/hypothesis-validation"  },
-      { label: "Hermes",                   href: "/docs/concepts/hermes"                 },
-      { label: "HITL & Decision Queue",    href: "/docs/concepts/hitl"                   },
-      { label: "Evidence Layer",           href: "/docs/concepts/evidence-layer"         },
-    ],
-  },
-  {
-    section: "The stack",
-    items: [
-      { label: "MDX contracts",            href: "/docs/concepts/contract"               },
-      { label: "Drift & Reconciliation",   href: "/docs/concepts/drift"                  },
-      { label: "Quality Score",            href: "/docs/concepts/quality-score"          },
-      { label: "Figma MCPs",               href: "/docs/concepts/figma-mcps"             },
-    ],
-  },
-  {
-    section: "Reference",
-    items: [
-      { label: "Skills library",  href: "/docs/skills",      external: false },
-      { label: "Architecture",    href: "/docs/architecture", external: false },
-      { label: "Design System",   href: "/design-system",    external: true  },
-      { label: "Dashboard",       href: "/dashboard",        external: true  },
-    ],
-  },
-];
+import { getNavSections } from "@/lib/docs-manifest";
 
 export function DocsSidebar() {
   const pathname = usePathname();
@@ -60,26 +23,30 @@ export function DocsSidebar() {
       </div>
 
       <nav className="flex-1 py-4 px-3 space-y-5">
-        {NAV.map(({ section, items }) => (
+        {getNavSections().map(({ section, items }) => (
           <div key={section}>
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 px-2 mb-1.5">
               {section}
             </p>
             <div className="space-y-0.5">
-              {items.map(({ label, href, external }) => {
+              {items.map(({ title, href, external, status }) => {
                 const active = !external && (pathname === href || pathname.startsWith(href + "/"));
+                const isMissing = status === "missing";
                 return (
                   <Link
                     key={href}
-                    href={href}
-                    onClick={() => ph.capture("docs_nav_click", { label, href, section })}
+                    href={isMissing ? "#" : href}
+                    onClick={() => !isMissing && ph.capture("docs_nav_click", { label: title, href, section })}
+                    aria-disabled={isMissing}
                     className={`flex items-center justify-between px-2 py-1.5 rounded-md text-[13px] transition-colors ${
-                      active
+                      isMissing
+                        ? "text-muted-foreground/30 cursor-default pointer-events-none"
+                        : active
                         ? "bg-muted text-foreground font-medium"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
-                    {label}
+                    {title}
                     {external && (
                       <span className="text-[10px] text-muted-foreground/30">↗</span>
                     )}

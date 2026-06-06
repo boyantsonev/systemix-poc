@@ -134,7 +134,7 @@ export default function DesignSystemOverview() {
       <div className="mb-10">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-[1.5rem] font-black tracking-tight mb-1">Design System</h1>
+            <h1 className="text-[1.5rem] font-black tracking-tight mb-1">System</h1>
             <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl">
               Token and component parity between Figma and your code. Run{" "}
               <code className="font-mono text-[12px] bg-muted/60 px-1 py-0.5 rounded text-foreground">/tokens</code>{" "}
@@ -163,7 +163,7 @@ export default function DesignSystemOverview() {
       {/* Quality Score */}
       <div className="mb-10">
         <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mb-4">
-          Design System Health
+          System Health
         </p>
         <div className="flex items-end gap-6 mb-4">
           <div>
