@@ -147,7 +147,8 @@ export const docsManifest: DocEntry[] = [
     title: "Skills library",
     section: "Reference",
     href: "/docs/skills",
-    status: "draft",
+    status: "review",
+    lastUpdated: "2026-06-06",
     partial: true,
   },
   {
@@ -155,7 +156,8 @@ export const docsManifest: DocEntry[] = [
     title: "Architecture",
     section: "Reference",
     href: "/docs/architecture",
-    status: "draft",
+    status: "review",
+    lastUpdated: "2026-06-06",
     partial: true,
   },
   {
