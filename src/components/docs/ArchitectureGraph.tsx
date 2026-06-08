@@ -17,7 +17,7 @@ export function ArchitectureGraph() {
           <GraphLegend />
         </div>
         <Link
-          href="/graph"
+          href="/config"
           target="_blank"
           rel="noopener noreferrer"
           className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border/50 bg-background/80 backdrop-blur-sm text-[11px] font-mono text-muted-foreground/60 hover:text-foreground hover:border-border transition-colors"

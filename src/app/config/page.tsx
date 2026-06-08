@@ -2,12 +2,12 @@ import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { loadInstanceConfig } from "@/lib/state/instance-config";
-import { InstanceView } from "./InstanceView";
+import { ConfigView } from "./ConfigView";
 
-// Read the local instance config at request time (server-side fs read).
+// Reads the local instance config at request time and writes it back on save.
 export const dynamic = "force-dynamic";
 
-export default function InstancePage() {
+export default function ConfigPage() {
   const cfg = loadInstanceConfig();
 
   return (
@@ -22,28 +22,28 @@ export default function InstancePage() {
             <span className="text-[11px] font-mono">systemix</span>
           </Link>
           <span className="text-muted-foreground/20 text-xs">/</span>
-          <span className="text-[11px] font-mono text-muted-foreground/40">instance</span>
+          <span className="text-[11px] font-mono text-muted-foreground/40">config</span>
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/graph"
+            href="/system"
             className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
           >
-            Architecture →
+            System →
           </Link>
           <ThemeToggle />
         </div>
       </header>
 
       {cfg ? (
-        <InstanceView cfg={cfg} />
+        <ConfigView cfg={cfg} />
       ) : (
         <div className="flex-1 flex items-center justify-center">
           <div className="max-w-md text-center px-6">
             <p className="text-sm font-mono text-foreground/80 mb-2">No instance configured</p>
             <p className="text-[12px] font-mono text-muted-foreground/60 leading-relaxed mb-4">
               This repo has no <code className="text-foreground/70">systemix.config.yaml</code>. Run the setup
-              wizard to scaffold a Systemix instance, then this page visualises its topology.
+              wizard to scaffold a Systemix instance, then this layer lets you configure it and see its topology.
             </p>
             <code className="inline-block text-[12px] font-mono px-3 py-1.5 rounded-lg border border-border/50 text-foreground/70">
               npx systemix init

@@ -112,3 +112,99 @@ export function loadInstanceConfig(projectRoot?: string): InstanceConfig | null 
     return null;
   }
 }
+
+// ── Write-back (Config layer) ──────────────────────────────────────────────────
+
+const AUTONOMY_VALUES = ["ghost", "conservative", "balanced", "aggressive"];
+const SELF_IMPROVEMENT_MODES = ["off", "audit", "active"];
+
+/** Whitelisted, validated merge of an editable patch onto the on-disk config.
+ * Only known knobs are trusted — everything else is preserved from `base`, so a
+ * malformed or hostile patch can never forge or drop fields. */
+export function applyConfigPatch(base: InstanceConfig, patch: unknown): InstanceConfig {
+  const p = (patch ?? {}) as Record<string, unknown>;
+  const clampTier = (v: unknown, fallback: number) =>
+    typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(3, Math.round(v))) : fallback;
+
+  // surfaces — keep only strings
+  const surfaces = Array.isArray(p.surfaces)
+    ? (p.surfaces.filter((s) => typeof s === "string") as string[])
+    : base.surfaces;
+
+  // signals — only the `enabled` flag of existing signals is editable
+  const signals: Record<string, InstanceSignal> = {};
+  const patchSignals = (p.signals ?? {}) as Record<string, { enabled?: unknown }>;
+  for (const [name, sig] of Object.entries(base.signals ?? {})) {
+    const next = patchSignals[name];
+    signals[name] = {
+      ...sig,
+      enabled: typeof next?.enabled === "boolean" ? next.enabled : sig.enabled,
+    };
+  }
+
+  const patchHermes = (p.hermes ?? {}) as Record<string, unknown>;
+  const autonomy =
+    typeof patchHermes.autonomy === "string" && AUTONOMY_VALUES.includes(patchHermes.autonomy)
+      ? patchHermes.autonomy
+      : base.hermes.autonomy;
+
+  const patchSelf = (p.self_improvement ?? {}) as Record<string, unknown>;
+  const mode =
+    typeof patchSelf.mode === "string" && SELF_IMPROVEMENT_MODES.includes(patchSelf.mode)
+      ? patchSelf.mode
+      : base.self_improvement.mode;
+
+  const patchTrust = (p.trust ?? {}) as Record<string, unknown>;
+
+  return {
+    ...base,
+    surfaces,
+    signals,
+    hermes: { ...base.hermes, autonomy },
+    self_improvement: { ...base.self_improvement, mode },
+    trust: {
+      orchestrator_tier: clampTier(patchTrust.orchestrator_tier, base.trust.orchestrator_tier),
+      hermes_tier: clampTier(patchTrust.hermes_tier, base.trust.hermes_tier),
+    },
+  };
+}
+
+/** Serialize back to the systemix.config.yaml subset the parser above understands. */
+export function serializeInstanceConfig(cfg: InstanceConfig): string {
+  const lines: string[] = [
+    "# systemix.config.yaml — your instance topology. Committed; contains NO secrets.",
+    "# Secrets (Figma/PostHog keys) live in ~/.systemix/config.json or env vars.",
+    "# Edit in the Config layer (/config) or re-run `npx systemix init` to regenerate.",
+    `version: ${cfg.version ?? 1}`,
+    "surfaces:",
+    ...(cfg.surfaces ?? []).map((s) => `  - ${s}`),
+    "signals:",
+  ];
+  for (const [name, sig] of Object.entries(cfg.signals ?? {})) {
+    lines.push(`  ${name}:`);
+    lines.push(`    enabled: ${!!sig.enabled}`);
+    if (sig.poll_interval_sec != null) lines.push(`    poll_interval_sec: ${sig.poll_interval_sec}`);
+  }
+  lines.push("hermes:");
+  lines.push(`  model: ${cfg.hermes.model}`);
+  lines.push(`  endpoint: ${cfg.hermes.endpoint}`);
+  lines.push(`  autonomy: ${cfg.hermes.autonomy}`);
+  lines.push("  thresholds:");
+  lines.push(`    high: ${cfg.hermes.thresholds.high}`);
+  lines.push(`    medium: ${cfg.hermes.thresholds.medium}`);
+  lines.push("self_improvement:");
+  lines.push(`  mode: ${cfg.self_improvement.mode}`);
+  if (cfg.self_improvement.meta_contract) lines.push(`  meta_contract: ${cfg.self_improvement.meta_contract}`);
+  if (cfg.self_improvement.audit_window_days != null)
+    lines.push(`  audit_window_days: ${cfg.self_improvement.audit_window_days}`);
+  lines.push("trust:");
+  lines.push(`  orchestrator_tier: ${cfg.trust.orchestrator_tier}`);
+  lines.push(`  hermes_tier: ${cfg.trust.hermes_tier}`);
+  return lines.join("\n") + "\n";
+}
+
+/** Persist an edited config to disk (server-only). */
+export function writeInstanceConfig(cfg: InstanceConfig, projectRoot?: string): void {
+  const p = path.join(projectRoot || process.cwd(), CONFIG_FILE);
+  fs.writeFileSync(p, serializeInstanceConfig(cfg), "utf8");
+}
