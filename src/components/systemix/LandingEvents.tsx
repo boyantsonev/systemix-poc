@@ -3,6 +3,7 @@
 import { usePostHog } from "posthog-js/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { siteConfig } from "@/lib/site-config";
 
 // ── Hero CTAs ─────────────────────────────────────────────────────────────────
 
@@ -12,7 +13,7 @@ export function HeroCTAs() {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
       <a
-        href="https://github.com/boyantsonev/systemix-poc"
+        href={siteConfig.githubUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => ph.capture("hero_cta_click", { cta: "github" })}
@@ -39,7 +40,7 @@ export function NavCTAs() {
   return (
     <div className="ml-auto flex items-center gap-2">
       <a
-        href="https://github.com/boyantsonev/systemix-poc"
+        href={siteConfig.githubUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => ph.capture("nav_cta_click", { cta: "github" })}
