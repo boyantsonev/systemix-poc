@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/systemix/ThemeToggle"
 import { siteConfig } from "@/lib/site-config"
 import { HeroReasoning } from "@/components/landing/HeroReasoning"
 import { SubscribeForm } from "@/components/landing/SubscribeForm"
+import { FlickeringGrid } from "@/components/ui/flickering-grid"
 
 export const metadata: Metadata = {
   title: "Systemix — The design system that learns from what you ship.",
@@ -33,7 +34,20 @@ export default function LandingPage() {
       </header>
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="min-h-screen flex items-center justify-center px-6 pt-14">
+      <section className="relative overflow-hidden min-h-screen flex items-center justify-center px-6 pt-14">
+        {/* Flickering grid — visible at edges, fades toward center */}
+        <div className="absolute inset-0 pointer-events-none">
+          <FlickeringGrid
+            color="oklch(0.5 0 0)"
+            maxOpacity={0.13}
+            flickerChance={0.06}
+            squareSize={3}
+            gridGap={9}
+            className="h-full w-full"
+          />
+          <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_50%,transparent_25%,black_75%)]" />
+          <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-background to-transparent" />
+        </div>
         <HeroReasoning />
       </section>
 
