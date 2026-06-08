@@ -4,6 +4,7 @@ import { useCompletion } from '@ai-sdk/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { ScrambleText } from '@/components/ui/scramble-text'
 import { siteConfig } from '@/lib/site-config'
 
 const SUB = "One loop. Design aligns. Engineering ships. Marketing measures. Business decides."
@@ -74,7 +75,7 @@ export function HeroReasoning() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            {SUB}
+            <ScrambleText text={SUB} duration={2} delay={0.3} />
           </motion.p>
         )}
       </AnimatePresence>
