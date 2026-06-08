@@ -23,7 +23,7 @@
 | Phase | Goal | Depends on | Can parallel? |
 |---|---|---|---|
 | **1 · Fumadocs foundation** ✅ | Shared theme + marketing `/docs` on Fumadocs | Phase 0 | — |
-| **2 · System layer on Fumadocs** | In-app living styleguide via Fumadocs | Phase 1 | — |
+| **2 · System layer on Fumadocs** ✅ | In-app living styleguide at `/system` (lean; drift-control cut) | Phase 1 | — |
 | **3 · Config layer** | Editable settings + 3D force graph + runtime feed/HITL | Phase 0 | ‖ with 1–2 |
 | **4 · Atlas layer (gated)** | Workflow catalog → inline prototype, generated catalog | Phase 2 (theme/gate) + Phase 3 (catalog source) | — |
 | **5 · Big landing redesign** | Three-layer story + real surface screenshots | Phases 2–4 (screenshots) | — |
@@ -48,18 +48,29 @@
 **Acceptance:** `/docs` renders via Fumadocs; theme matches the shadcn app in light **and** dark; every
 `docs-manifest` entry resolves; `sync-docs` coverage stays green; old loader removed.
 
-### Phase 2 · System layer on Fumadocs
+### Phase 2 · System layer on Fumadocs — ✅ DONE (lean, 2026-06-08, build-verified)
 
-1. Build a **custom Source adapter** feeding Fumadocs **programmatically** from
-   `contract/tokens|components/*` + `lib/data/docs.ts` (data-oriented, not static repo MDX).
-2. MDX + **React embeds**: token tables, live component previews, prototype frames; status badges
-   (clean / drifted / missing-in-figma), quality score.
-3. Re-skin `src/app/(app)/design-system/*` onto Fumadocs layouts; **keep** the existing data readers.
-4. **Build-time** per-client theming (CSS vars compiled from the instance DS); light/dark runtime.
+Shipped a **Fumadocs-rendered living styleguide at `/system`** over the `contract/*` records:
+1. ✅ `system` collection in `source.config.ts` (a second `defineDocs` over `contract/`, permissive
+   `catchall` schema deriving `title`) + `src/lib/system-source.ts` loader (`/system`).
+2. ✅ `src/app/system/[...slug]/page.tsx` (DocsPage) + `layout.tsx` (DocsLayout, shared theme) +
+   index; `contract/meta.json` groups Tokens / Components / Hypotheses.
+3. ✅ `src/components/system/ContractMeta.tsx` renders the per-type data header (token = swatch +
+   value + collection + status; component = parity + path + Storybook id; hypothesis = status +
+   section + decision); prose body via the shared MDX map.
+4. ✅ Repointed the System links (`/docs` meta.json, DocsRoleChooser, `docs-manifest`) → `/system`.
 
-**Acceptance:** the System layer renders tokens/components/prototypes via Fumadocs under the shared
-theme; parity with today's `design-system` pages; a build-time theme swap is demonstrable (Systemix
-default vs a sample brand).
+**Scope deliberately cut (per founder, 2026-06-08):** the **token-resolver / drift-control
+dashboard** (interactive `TokenResolveControl`, ΔE color diffs, reverse-index "used by", health-score
+overview, decisions log) is **skipped** — it was for *controlling* drift, not reading the styleguide.
+The existing `src/app/(app)/design-system/*` dashboard is **left intact but deprecated**; retire it
+once `/system` covers what's needed.
+
+**Deferred:** a `/system` search index (docs search already works); build-time per-client theming
+demo; component live previews / prototype frames.
+
+**Acceptance (met):** `/system` renders tokens/components/hypotheses via Fumadocs under the shared
+theme (light/dark); additive + non-destructive; build clean (133/133 static pages).
 
 ### Phase 3 · Config layer  *(parallelizable with 1–2)*
 

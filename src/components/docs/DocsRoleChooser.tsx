@@ -13,8 +13,8 @@ const ROLE_PATHS = [
   },
   {
     role: "Designer",
-    line: "Tokens, components, drift, and prototypes in the System layer.",
-    href: "/design-system",
+    line: "Tokens, components, and experiments in the System living styleguide.",
+    href: "/system",
     cta: "Open the System layer →",
   },
   {

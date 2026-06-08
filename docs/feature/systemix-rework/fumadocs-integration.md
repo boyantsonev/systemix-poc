@@ -4,9 +4,9 @@
 `/docs` **and** the in-app **System** layer, driven by **one** Tailwind v4 token source. Replaces the
 hand-rolled MDX docs engine and the custom React design-system pages.
 
-**Status:** 🔒 LOCKED as ADR-011. **Mount (a) marketing `/docs` — ✅ IMPLEMENTED & build-verified
-(Phase 1, 2026-06-08).** Mount (b) in-app System — pending (Phase 2). Stack: fumadocs-ui/core
-16.9.3 + fumadocs-mdx 15.0.11, Tailwind 4.3.0.
+**Status:** 🔒 LOCKED as ADR-011. **Mount (a) marketing `/docs` — ✅ IMPLEMENTED (Phase 1).**
+**Mount (b) in-app System `/system` — ✅ IMPLEMENTED (Phase 2, lean — drift-control cut).** Both
+build-verified (2026-06-08). Stack: fumadocs-ui/core 16.9.3 + fumadocs-mdx 15.0.11, Tailwind 4.3.0.
 
 ---
 
@@ -67,15 +67,19 @@ globals.css  →  @theme inline (oklch vars, Tailwind v4)   ← single source of
   Fumadocs sidebar is driven by `meta.json`.
 - Route: `src/app/docs/[[...slug]]/page.tsx` (DocsPage) + `layout.tsx` (DocsLayout + RootProvider).
 
-### (b) In-app **System** layer — **good fit, with one real cost**
+### (b) In-app **System** layer — **✅ implemented (lean) at `/system`**
 
-- Fumadocs as the living-styleguide renderer: MDX + **React embeds** (token tables, component
-  previews, prototype frames) sourced **programmatically** from `contract/tokens|components/*` and
-  `lib/data/docs.ts` via a **custom Source adapter** (the data-oriented path, not static repo MDX).
-- **The one risk (research-flagged):** Fumadocs assumes one theme per deployment, so a **per-client**
-  in-app styleguide needs custom CSS-var injection. **We defuse this with build-time theming** —
-  CSS custom properties compiled from the instance DS at `init`/build (consistent with the shell's
-  theming model in [`app-three-layers.md`](./app-three-layers.md)). No runtime injection needed.
+- A **second `defineDocs` collection** (`system`, in `source.config.ts`) over `contract/` with a
+  permissive `catchall` schema that derives `title` (contract files have none); loader in
+  `src/lib/system-source.ts` (`/system`). Route: `src/app/system/[...slug]` + `layout.tsx`.
+- Renders each token/component/hypothesis contract as a Fumadocs page: prose body via the shared MDX
+  map + a `ContractMeta` data header (swatch/value/collection/status · parity/path/Storybook ·
+  status/section/decision). Nav grouped by `contract/meta.json` (Tokens / Components / Hypotheses).
+- **Deliberately lean:** the interactive drift-control machinery (resolve controls, ΔE, reverse
+  index, health score, decisions) is **out of scope** — the existing `(app)/design-system/*`
+  dashboard is left intact but deprecated. See `build-roadmap.md` Phase 2.
+- **Per-client theming risk (research-flagged)** remains the planned mitigation: **build-time**
+  CSS custom properties compiled from the instance DS (not yet exercised; no per-client demo yet).
 
 ## Migration
 
