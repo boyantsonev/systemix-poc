@@ -137,6 +137,33 @@ function classify(name: string): { collection: string; group: string; tokenName:
   return { collection: "Semantic", group: "color", tokenName: name };
 }
 
+// Core shadcn semantic color tokens. The color loop is allow-listed to these
+// (+ sidebar-*, status-*, radius) so internal palettes (agent-*, the color-*
+// status palette, *-surface) and dimension scales (space-*, line-height-*,
+// font-size-*) do NOT leak into the Figma bridge. Scope decision: "Core only".
+const CORE_SEMANTIC = new Set([
+  "background", "foreground",
+  "card", "card-foreground",
+  "popover", "popover-foreground",
+  "primary", "primary-foreground",
+  "secondary", "secondary-foreground",
+  "muted", "muted-foreground",
+  "accent", "accent-foreground",
+  "destructive", "destructive-foreground",
+  "border", "input", "ring",
+]);
+
+/** True if a CSS var belongs in the bridge (Core-only scope). */
+function includeInBridge(name: string): boolean {
+  if (name === "radius") return true;            // Spacing & Radius
+  if (name.startsWith("status-")) return true;   // Status
+  if (name.startsWith("sidebar-")) return true;  // Semantic / sidebar
+  return CORE_SEMANTIC.has(name);                // Semantic / color (core only)
+  // Excluded here (handled elsewhere or out of scope): font-size-* (Typography
+  // pass), font families, radius scale (computed), space-*, line-height-*,
+  // agent-*, color-* palette, *-surface.
+}
+
 interface BridgeToken {
   $type: string;
   $value: string;
@@ -159,6 +186,7 @@ const bridge: Record<string, Record<string, BridgeToken>> = {};
 
 // Process light vars
 for (const [name, value] of Object.entries(lightVars)) {
+  if (!includeInBridge(name)) continue;
   const { collection, group, tokenName } = classify(name);
   const figmaColor = toFigmaColor(value);
 
@@ -192,6 +220,51 @@ for (const [name, value] of Object.entries(lightVars)) {
 
   if (!bridge[group]) bridge[group] = {};
   bridge[group][tokenName] = token;
+}
+
+// ── Typography collection ───────────────────────────────────────────────────
+// The font-size scale lives in a later :root block the color loop does not read,
+// so extract it from the full CSS. Font families come from next/font config (not
+// literal CSS values), so they are named explicitly.
+
+const allVars = extractVars(css); // every --x: y; in the file (later wins)
+for (const [name, value] of Object.entries(allVars)) {
+  if (!name.startsWith("font-size-")) continue;
+  const tokenName = name.replace("font-size-", "");
+  if (!bridge["font-size"]) bridge["font-size"] = {};
+  bridge["font-size"][tokenName] = {
+    $type: "dimension",
+    $value: value,
+    figma: { variableName: `font-size/${tokenName}`, collection: "Typography", cssVar: `--${name}`, syncStatus: "pending" },
+  };
+}
+
+// Font families — sourced from next/font config (Manrope sans, JetBrains mono).
+const FONT_FAMILIES: Record<string, string> = { sans: "Manrope", mono: "JetBrains Mono" };
+bridge["font"] = {};
+for (const [key, family] of Object.entries(FONT_FAMILIES)) {
+  bridge["font"][key] = {
+    $type: "fontFamily",
+    $value: family,
+    figma: { variableName: `font/${key}`, collection: "Typography", cssVar: `--font-${key}`, syncStatus: "pending" },
+  };
+}
+
+// ── Explicit radius scale ───────────────────────────────────────────────────
+// sm/md/lg/xl are calc() in @theme (not :root); resolve from the base radius to
+// literal values Figma can carry.
+if (bridge["radius"]?.["base"]) {
+  const basePx = parseFloat(bridge["radius"]["base"].$value) * 16; // rem → px
+  const RADIUS_STEPS: Record<string, number> = {
+    sm: basePx - 4, md: basePx - 2, lg: basePx, xl: basePx + 4,
+  };
+  for (const [step, px] of Object.entries(RADIUS_STEPS)) {
+    bridge["radius"][step] = {
+      $type: "dimension",
+      $value: `${px / 16}rem`,
+      figma: { variableName: `radius/${step}`, collection: "Spacing & Radius", cssVar: `--radius-${step}`, syncStatus: "pending" },
+    };
+  }
 }
 
 // ── Write outputs ──────────────────────────────────────────────────────────
@@ -240,6 +313,7 @@ try {
         Semantic: { modeIds: { light: null, dark: null }, variableIds: {} },
         Status: { modeIds: { light: null, dark: null }, variableIds: {} },
         "Spacing & Radius": { modeIds: { default: null }, variableIds: {} },
+        Typography: { modeIds: { default: null }, variableIds: {} },
       },
     },
   };
