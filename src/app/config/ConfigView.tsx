@@ -2,12 +2,14 @@
 
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { SystemGraph3D } from "@/components/graph/SystemGraph3D";
+import { RuntimePanel } from "./RuntimePanel";
 import {
   SIGNAL_FIGMA_NODES,
   SIGNAL_POSTHOG_NODES,
   DESIGN_SURFACE_NODES,
 } from "@/lib/data/system-graph";
 import type { InstanceConfig } from "@/lib/state/instance-config";
+import type { RuntimeState } from "@/lib/state/runtime-state";
 
 const CANONICAL_SURFACES = ["design-system", "landing", "onboarding"];
 const AUTONOMY = ["ghost", "conservative", "balanced", "aggressive"];
@@ -99,12 +101,13 @@ function Stepper({ label, value, onChange }: { label: string; value: number; onC
   );
 }
 
-export function ConfigView({ cfg }: { cfg: InstanceConfig }) {
+export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: RuntimeState }) {
   const initialRef = useRef<InstanceConfig>(cfg);
   const [draft, setDraft] = useState<InstanceConfig>(cfg);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [runtimeOpen, setRuntimeOpen] = useState(false);
 
   const dimNodeIds = useMemo(() => computeDimSet(draft), [draft]);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(initialRef.current), [draft]);
@@ -239,6 +242,26 @@ export function ConfigView({ cfg }: { cfg: InstanceConfig }) {
       <div className="flex-1 relative min-w-0">
         <SystemGraph3D dimNodeIds={dimNodeIds} />
       </div>
+
+      {/* Runtime feed + HITL */}
+      {runtimeOpen ? (
+        <RuntimePanel
+          lastUpdated={runtime.lastUpdated}
+          activeRuns={runtime.activeRuns}
+          autonomy={draft.hermes?.autonomy ?? "balanced"}
+          onCollapse={() => setRuntimeOpen(false)}
+        />
+      ) : (
+        <button
+          onClick={() => setRuntimeOpen(true)}
+          className="w-7 shrink-0 border-l border-border/30 bg-background flex items-center justify-center hover:bg-muted/40 transition-colors"
+          aria-label="Expand runtime panel"
+        >
+          <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/50 [writing-mode:vertical-rl] rotate-180">
+            Runtime
+          </span>
+        </button>
+      )}
     </div>
   );
 }

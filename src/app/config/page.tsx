@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { loadInstanceConfig } from "@/lib/state/instance-config";
+import { loadRuntimeState } from "@/lib/state/runtime-state";
 import { ConfigView } from "./ConfigView";
 
 // Reads the local instance config at request time and writes it back on save.
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default function ConfigPage() {
   const cfg = loadInstanceConfig();
+  const runtime = loadRuntimeState();
 
   return (
     <div className="w-screen h-screen overflow-hidden flex flex-col bg-background">
@@ -36,7 +38,7 @@ export default function ConfigPage() {
       </header>
 
       {cfg ? (
-        <ConfigView cfg={cfg} />
+        <ConfigView cfg={cfg} runtime={runtime} />
       ) : (
         <div className="flex-1 flex items-center justify-center">
           <div className="max-w-md text-center px-6">
