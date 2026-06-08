@@ -6,6 +6,7 @@ import { usePostHog } from "posthog-js/react";
 import { SLogo } from "./SLogo";
 import { ThemeToggle } from "./ThemeToggle";
 import { getNavSections } from "@/lib/docs-manifest";
+import { siteConfig } from "@/lib/site-config";
 
 export function DocsSidebar() {
   const pathname = usePathname();
@@ -60,7 +61,7 @@ export function DocsSidebar() {
 
       <div className="h-12 border-t border-border/50 flex items-center justify-between px-5">
         <a
-          href="https://github.com/boyantsonev/systemix"
+          href={siteConfig.githubUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[11px] text-muted-foreground/40 hover:text-muted-foreground transition-colors font-mono"
