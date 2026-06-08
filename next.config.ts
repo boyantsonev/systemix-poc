@@ -3,7 +3,11 @@ import type { NextConfig } from "next";
 import { createMDX } from "fumadocs-mdx/next";
 
 const nextConfig: NextConfig = {
-  turbopack: { root: path.resolve(".") },
+  turbopack: {
+    root: process.cwd().includes("/.claude/worktrees/")
+      ? process.cwd().split("/.claude/")[0]
+      : path.resolve("."),
+  },
   async redirects() {
     return [
       { source: "/contract",                           destination: "/design-system",                   permanent: false },
