@@ -13,13 +13,13 @@ copy/props · **NEW** = build new (spec only this round).
 
 | # | Section | Verdict | Intent / copy direction | Source / build target | PostHog event |
 |---|---|---|---|---|---|
-| 1 | **Nav** | EDIT | Add a "Surfaces" link (anchors to §6) alongside Docs/GitHub. | `LandingNav()` in `src/app/page.tsx` | `nav_click` |
+| 1 | **Nav** | EDIT | Add a "Layers" link (anchors to §7) alongside Docs/GitHub. | `LandingNav()` in `src/app/page.tsx` | `nav_click` |
 | 2 | **Hero** | EDIT | Keep headline. Broaden one subcopy line toward "a local app you install in your repo." Keep `InstallCommand` + Ollama line. | `Hero()` + `InstallCommand`/`NavCTAs` (`LandingEvents.tsx`) | `hero_view`, `install_copy` |
 | 3 | **The loop** | REUSE | The circular loop diagram + 5-step walkthrough. Unchanged. | `LoopDiagram()` / `TheLoop()` in `src/app/page.tsx` | `loop_view` |
 | 4 | **HITL preview** | REUSE | The glassmorphic decision card. Unchanged. | `HitlPreview()` | `hitl_preview_view` |
 | 5 | **Install / setup** | **NEW** | "Install in one command, then it configures the loop to your inputs." Show the flow: `init` → feed **Figma / existing repo / desired UI** → **define hypothesis** → pipeline asks the rest. Render a representative `systemix.config.yaml`. | Build new; ground in `src/lib/state/instance-config.ts`, `systemix.config.yaml`, `packages/cli/` | `setup_view` |
 | 6 | **Wears your brand** | **NEW** | "A shadcn shell themed by your design system." Primary color + font pulled from the client DS; prototypes render in your look & feel. Visual = the Connecta-themed shell (reference screenshots). | Build new; see `surfaces-brief.md` theming contract | `brand_view` |
-| 7 | **Four surfaces** | **NEW** | Four cards (Config / Graph / System / Atlas) with the canonical one-liners (`positioning.md`) + one visual each. Graph visual = the **3D force-directed graph**; Atlas visual = the ReactFlow + persona tabs + inline prototype (reference screenshots). | Build new; visuals per `surfaces-brief.md` | `surfaces_view`, `surface_card_click` |
+| 7 | **Three layers** | **NEW** | Three cards (Config / System / Atlas) with the canonical one-liners (`positioning.md`) + one visual each. Config visual = the **3D force-directed graph** + settings; System visual = the Fumadocs styleguide; Atlas visual = ReactFlow + persona tabs + inline prototype (reference screenshots). | Build new; visuals per `../systemix-rework/app-three-layers.md` | `layers_view`, `layer_card_click` |
 | 8 | **What a hypothesis can be** | EDIT | Recast the 3 example cards around the **three domains** (UI / workflows / landing value props), not three random examples. | `ExperimentTypes()` in `src/app/page.tsx` | `experiment_types_view` |
 | 9 | **The stack it connects** | EDIT | Keep the 2-col table; ensure rows = PostHog/Statsig · Ollama (Hermes) · Vercel · MCP · Figma · Social. Light copy edit. | `MagicGlue()` | `stack_view` |
 | 10 | **Who it's for** | EDIT | Recast with the **role lens**: Operator / Designer / Engineer (replaces the current "you / your agent" framing). | `UseCases()` | `audience_view` |
@@ -41,9 +41,11 @@ copy/props · **NEW** = build new (spec only this round).
 - One sentence + the themed-shell visual. Sub-line: "Atlas renders your prototypes
   in the same theme — no generic viewer."
 
-### §7 Four surfaces
-- 2×2 card grid. Each card: surface name, canonical one-liner, one visual, a
-  "Learn more →" link to the matching **Run** doc (`docs-ia.md`).
+### §7 Three layers
+- 3-card row. Each card: layer name, canonical one-liner, one visual, a
+  "Learn more →" link to the matching **Run** doc (`docs-ia.md` → `layers/*`).
+- Config card merges the old Config + Graph (settings + 3D force graph). Note Atlas
+  is **gated** behind init + DS sync (the card can show a "after your DS syncs" hint).
 
 ## Reuse map (carry forward verbatim)
 - `src/app/page.tsx`: `LoopDiagram`, `HitlPreview`, `QualityGate`,

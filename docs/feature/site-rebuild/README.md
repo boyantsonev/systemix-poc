@@ -4,10 +4,16 @@ From-scratch replan of the Systemix **marketing site** (`getsystemix.vercel.app`
 the landing page and the marketing docs, re-anchored to the corrected product
 model. **Blueprint / IA only — no code this round.**
 
+> **Concept refresh (2026-06-08):** the product model now lives in
+> [`../systemix-rework/`](../systemix-rework/) — **three layers** (Config absorbs
+> Graph), **Fumadocs** for both docs + the System layer under one theme, and a
+> Connecta retro. This README's marketing-site IA still holds; the layer model and
+> docs renderer below are updated there.
+
 ## Read in this order
 1. [`product-model.md`](./product-model.md) — **SSOT.** What Systemix is: the loop
    spine, the three hypothesis domains, install/setup, the shadcn-shell-themed-by-DS
-   principle, the four surfaces, and the System-vs-docs naming discipline.
+   principle, the three layers, and the System-vs-docs naming discipline.
 2. [`positioning.md`](./positioning.md) — message architecture: hero (kept) + the
    story stack + role lens + per-surface one-liners.
 3. [`landing-ia.md`](./landing-ia.md) — section-by-section landing blueprint with
@@ -26,7 +32,7 @@ model. **Blueprint / IA only — no code this round.**
    Systemix skills + the runbook to update Figma later (incl. the bootstrap caveat).
 
 ## Locked decisions
-- Hypothesis-loop **hero kept**; local-app / four-surface story layered beneath.
+- Hypothesis-loop **hero kept**; local-app / three-layer story layered beneath.
 - Docs IA = **journey** (Install → Configure → Run → Extend) + **role accents**.
 - Surfaces are **prototypes → spec a fresh canonical build**.
 - Output is **docs only**; no components/routes touched.
@@ -44,6 +50,17 @@ model. **Blueprint / IA only — no code this round.**
 5. **GitHub handle:** keep `boyantsonev/systemix` for now, extracted to a single
    `siteConfig.githubUrl` constant (one-line change when moving to an org).
 
+## Resolved decisions (2026-06-08 — concept refresh)
+6. **Three layers, not four** — Config absorbs the Graph (editable settings + the 3D
+   force graph in one layer); then System, then Atlas. See
+   [`../systemix-rework/app-three-layers.md`](../systemix-rework/app-three-layers.md).
+7. **Fumadocs = both mounts, one theme** — powers the marketing `/docs` **and** the
+   in-app System layer, one Tailwind v4 token source, namespaced via `cssPrefix`.
+   Replaces the hand-rolled MDX engine. See
+   [`../systemix-rework/fumadocs-integration.md`](../systemix-rework/fumadocs-integration.md).
+8. **Connecta stays design partner #1** — retro hardens `init` + the per-instance
+   template. See [`../systemix-rework/connecta-retro.md`](../systemix-rework/connecta-retro.md).
+
 **Build order:** landing rebuild first, then docs restructure, then DS token pipeline.
 
 ## Status (2026-06-06)
@@ -54,5 +71,6 @@ model. **Blueprint / IA only — no code this round.**
   upcoming **big landing redesign**.
 - ⬜ **Docs restructure** — tracked in [#30](https://github.com/boyantsonev/systemix-poc/issues/30).
 - ⬜ **DS → Figma sync** — tracked in [#31](https://github.com/boyantsonev/systemix-poc/issues/31).
-- 🔜 **Big landing redesign** — planned; current rebuild is a checkpoint.
-- ↗ **Four surfaces** — separate shadcn shell repo (out of this repo's scope).
+- 🔜 **Big landing redesign** — planned; current rebuild is a checkpoint. Recast the
+  "Four surfaces" section to **three layers** (see `../systemix-rework/`).
+- ↗ **Three layers** — separate per-instance shadcn shell repo (out of this repo's scope).

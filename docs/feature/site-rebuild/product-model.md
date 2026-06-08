@@ -8,6 +8,12 @@
 > mixing meanings. It is the product model the site must communicate — not a
 > roadmap and not an implementation spec.
 
+> **Superseded in part (2026-06-08):** the product model now lives in
+> [`../systemix-rework/`](../systemix-rework/). Two things below were updated there:
+> the four surfaces are now **three layers** (Config absorbs Graph — §4), and the
+> docs/System render via **Fumadocs** under one shared theme (§3). The loop spine,
+> install/setup, the shadcn-shell principle, and naming discipline are unchanged.
+
 ---
 
 ## 1. The spine — the learning loop
@@ -26,7 +32,7 @@ A hypothesis can be about **three kinds of value**:
 | **Landing value propositions** | "Leading with the founder-pain framing lifts hero CTR." | (the live landing the loop measures) |
 
 All three wrap around one design system. The loop is the product's reason for
-being; the four surfaces below are how you operate it.
+being; the three layers below are how you operate it.
 
 The loop itself (already the landing hero, kept): **ship → signals → Hermes
 synthesizes → decision (HITL) → written back to the contract → next ship starts
@@ -60,16 +66,21 @@ This is a product principle, not chrome: Systemix *wears your brand*. The Atlas
 prototype renderer inherits the same theme, so prototypes are shown in the real
 design system rather than a generic viewer.
 
-## 4. The four surfaces
+The in-app **System** layer and the marketing **docs** both render through
+**Fumadocs**, driven by one Tailwind v4 token source (Fumadocs namespaced via
+`cssPrefix` to avoid shadcn collisions). See
+[`../systemix-rework/fumadocs-integration.md`](../systemix-rework/fumadocs-integration.md).
 
-There are **four** surfaces, not three.
+## 4. The three layers
 
-| # | Surface | What it is |
+**Updated 2026-06-08:** the app is **three layers, not four** — Config absorbs Graph.
+Full spec: [`../systemix-rework/app-three-layers.md`](../systemix-rework/app-three-layers.md).
+
+| # | Layer | What it is |
 |---|---|---|
-| 0 | **Config** | View/edit `systemix.config.yaml` — the instance as one readable, editable file. |
-| 1 | **Graph** | The **3D force-directed graph** of the instance (`3d-force-graph`/three.js: sources → skills → agents → contracts → Hermes → tools; orbit·pan·scroll, search, zoom-to-fit, node-info panel). Carries the live **runtime feed** and **role-routed HITL** decision cards, plus the instance **overview** (goals, last updated, hypothesis, runtime status). The force graph is the centerpiece — **not** a card dashboard. |
-| 2 | **System** | The **design system** — tokens + components, an exact match from the repo, Figma-synced when needed. Where designers/builders extend & control agentic UI systems and keep workflows + UI prototypes (platform, landing, mobile — whatever) consistent. **Hermes-maintained living docs.** |
-| 3 | **Atlas** | The **workflow catalog**, per persona. ReactFlow view + persona tabs + step-type legend (Input / Agent reasoning / Router / Parallel coordinator / Tool call / HITL / Output) + workflow rows. Clicking a step opens the **prototype as an inline detail pane**, rendered in the client design system — the prototype viewer is *not* its own surface. |
+| 1 | **Config** | **Configure your instance and see it.** An **editable** settings page (skills, agents, signals, autonomy, self-improvement, trust tiers, infra → reads/writes `systemix.config.yaml`) **+ the 3D force-directed graph** of the instance (`3d-force-graph`/three.js: sources → skills → agents → contracts → Hermes → tools; 7-type taxonomy; orbit·pan·scroll, search, zoom-to-fit, node-info panel) **+ runtime feed + role-routed HITL + instance overview**. The force graph is the centerpiece — **not** a card dashboard. |
+| 2 | **System** | The **design system** — tokens + components, an exact match from the repo, Figma-synced when needed; **rendered via Fumadocs**, themed by the client DS, sharing one theme with the marketing docs. Where designers/builders extend & control agentic UI systems and keep workflows + UI prototypes consistent. **Hermes-maintained living docs.** |
+| 3 | **Atlas** | The **workflow catalog**, per persona. ReactFlow view + persona tabs + step-type legend (Input / Agent reasoning / Router / Parallel coordinator / Tool call / HITL / Output) + workflow rows. Clicking a step opens the **prototype as an inline detail pane**, rendered in the client design system. **Gated:** renders only after `init` is complete **and** a DS is created/synced. |
 
 ## 5. Naming discipline (the trap to avoid)
 
@@ -93,8 +104,9 @@ Three roles recur across landing + docs (used as accents, not hard silos):
 
 ## 7. Scope reminder
 
-This round is **blueprint / IA only — no code**. The four surfaces are spec'd as a
+This round is **blueprint / IA only — no code**. The three layers are spec'd as a
 **fresh canonical build** (current `/graph`, `/instance`, `/design-system`, the
-two graph prototypes, and the Atlas prototype only *seed* the spec). Canonical
-home of the surfaces (this Next.js app vs. a separate shadcn shell repo) is an
-open question tracked in `surfaces-brief.md`.
+two graph prototypes, and the Atlas prototype only *seed* the spec). The surfaces
+live in the per-instance app that `init` distributes (a separate shadcn shell);
+getsystemix stays marketing + docs and demos them via screenshots. Full layer spec:
+[`../systemix-rework/app-three-layers.md`](../systemix-rework/app-three-layers.md).

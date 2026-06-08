@@ -11,7 +11,7 @@ This doc fixes *what the site says and in what order*. It governs `landing-ia.md
 
 > **You shipped a hypothesis. Now close the loop.**
 
-The hypothesis-loop hero is validated and stays. The local-app / four-surface
+The hypothesis-loop hero is validated and stays. The local-app / three-layer
 story is layered **beneath** it, not in place of it.
 
 ## The story stack (order beneath the hero)
@@ -25,18 +25,18 @@ story is layered **beneath** it, not in place of it.
    rest.
 4. **It wears your brand.** A shadcn shell themed by *your* design system (primary
    color + font pulled from your DS); prototypes render in your look & feel.
-5. **Four surfaces.** Config · Graph (3D force graph + runtime feed + role-routed
-   HITL) · System (living design docs) · Atlas (workflows + inline prototype).
+5. **Three layers.** Config (editable settings + the 3D force graph + runtime feed +
+   role-routed HITL) · System (Fumadocs living design docs) · Atlas (workflows +
+   inline prototype, gated behind init + DS sync).
 6. **The loop, in depth.** The existing loop diagram + HITL preview card (reuse).
 7. **The stack it connects.** PostHog / Ollama / Vercel / MCP / Figma (reuse).
 8. **Who it's for.** The role lens — Operator (loops + HITL), Designer (System,
    tokens, drift, prototypes), Engineer (init, skills, MCP, CI).
 9. **Quality gate + CTA.** Evidence-score tiers, then the install/run CTA (reuse).
 
-## One-liners per surface (canonical — reuse verbatim in landing + docs nav)
+## One-liners per layer (canonical — reuse verbatim in landing + docs nav)
 
-- **Config** — "Your instance, as one file you can read and edit."
-- **Graph** — "Your whole system live: topology, runtime, and the HITL queue."
+- **Config** — "Your instance as one editable file, seen live as a force graph — topology, runtime, and the HITL queue."
 - **System** — "Your design system, kept current by the loop — tokens, components, prototypes."
 - **Atlas** — "Every workflow, by persona, with its prototype one click away."
 
@@ -53,8 +53,8 @@ story is layered **beneath** it, not in place of it.
 
 ## What this changes vs. today
 
-- Today the landing tells **only** layer 1 (the loop). Layers 2–5 (local app,
-  setup-to-your-inputs, wears-your-brand, four surfaces) are **new** and are the
+- Today the landing tells **only** story-step 1 (the loop). Steps 2–5 (local app,
+  setup-to-your-inputs, wears-your-brand, three layers) are **new** and are the
   point of the rebuild.
 - The hero, loop diagram, HITL card, stack table, quality gate, and CTA are
   **kept/reused**; "Who it's for" is **recast** with the role lens.
