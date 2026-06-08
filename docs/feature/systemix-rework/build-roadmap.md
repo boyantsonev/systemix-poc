@@ -66,8 +66,8 @@ overview, decisions log) is **skipped** — it was for *controlling* drift, not 
 The existing `src/app/(app)/design-system/*` dashboard is **left intact but deprecated**; retire it
 once `/system` covers what's needed.
 
-**Deferred:** a `/system` search index (docs search already works); build-time per-client theming
-demo; component live previews / prototype frames.
+**Deferred:** build-time per-client theming demo; component live previews / prototype frames.
+(✅ `/system` search wired — `/api/system-search`, scoped to the System index.)
 
 **Acceptance (met):** `/system` renders tokens/components/hypotheses via Fumadocs under the shared
 theme (light/dark); additive + non-destructive; build clean (133/133 static pages).
