@@ -87,6 +87,11 @@ The cross-platform product (web + native via Tamagui/Expo): agents, flows, educa
 
 ## 5. Roadmap (build phase — not this session)
 
+> **The Systemix-app build** (Fumadocs + the three-layer dogfood) is sequenced separately in
+> [`docs/feature/systemix-rework/build-roadmap.md`](docs/feature/systemix-rework/build-roadmap.md)
+> (locked as ADR-010..012). The phases below track the **Connecta engagement** (DS → landing →
+> platform); the two meet at the template-extraction phase.
+
 **Phase 0 — Systemix v-next planning** ✅ **DESIGN locked (ADR-006..009)**: the `npx systemix init` contract is decided — a 4-question topology wizard (Surfaces · Signals · Autonomy · Self-improvement) → `systemix.config.yaml`, embodied in `docs/feature/systemix-v2/prototypes/`. ✅ **CLI re-shaped to project-scoped instance**: install path (`init.js`, `add.js`) writes skills to `.claude/skills/` + `init` writes `systemix.config.yaml` + `contract/meta/`; read path (`list.js`, `doctor.js`, `update.js`, `commands/sync.js`) prefers project skills, falls back to global. Verified end-to-end in isolated temp dirs (global `~/.claude/skills` untouched).
 
 **Phase 1 — Connecta Design System** *(after the `init.js` re-shape)*:

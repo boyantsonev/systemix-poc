@@ -147,3 +147,56 @@
 **Consequences:** Two Systemix instances in the Connecta engagement — one in `connecta-design-system` (design-system surfaces), one in `apps/landing` (landing/gtm surfaces) — each with its own `systemix.config.yaml`.
 
 **Review trigger:** Running two instances per engagement proves redundant in practice.
+
+---
+
+## ADR-010: Three-layer per-instance app (Config absorbs Graph)
+**Date:** 2026-06-08
+**Status:** DECIDED
+**Feature:** systemix-rework · Spec: `docs/feature/systemix-rework/app-three-layers.md`
+
+**Decision:** The per-instance app is **three layers**, not four: **Config** (an editable settings view of `systemix.config.yaml` — skills, agents, signals, autonomy, self-improvement, trust tiers, infra — **plus** the 3D force-directed graph, runtime feed, and role-routed HITL), **System** (the design system, rendered via Fumadocs — see ADR-011), and **Atlas** (the per-persona workflow catalog with inline prototype, **gated** to render only after `init` is complete and a DS is created/synced). This supersedes the informal **four-surface** framing (`docs/feature/site-rebuild/`) and the earlier **five-surface** framing (Iteration 3); Config and Graph are merged.
+
+**Rationale:** Config and Graph are the same job from two angles — *understand and control your instance*. The graph **is** the configuration visualized; the settings page is the configuration edited. Merging gives one coherent control layer and matches how the instance is operated. The Atlas gate reflects that prototypes render *in the client theme*, so without a synced DS there is no meaningful Atlas (`init-flow.md` §Gates). Onboarding is agent-driven via `init` (not an in-app surface); the prototype viewer is an inline pane inside Atlas (not a surface).
+
+**Alternatives considered:** Keep four surfaces (rejected — Config and Graph are artificially split); five surfaces with separate Onboarding + Prototypes (rejected — onboarding happens in Claude Code/Cursor at `init`; prototypes are an Atlas detail pane).
+
+**Consequences:** `app-three-layers.md` is canonical. Editable config writes, the runtime feed, role-routed HITL, and 3D-graph integration are fresh-build. Existing seeds (`/instance`, `/graph`, `src/app/(app)/design-system/*`) seed but do not constrain. The marketing landing's "Four surfaces" section is recast to three layers.
+
+**Review trigger:** A layer proves to need splitting at scale (e.g. Config settings and the graph become independently navigated).
+
+---
+
+## ADR-011: Fumadocs as the shared documentation renderer — both mounts, one theme
+**Date:** 2026-06-08
+**Status:** DECIDED
+**Feature:** systemix-rework · Spec: `docs/feature/systemix-rework/fumadocs-integration.md`
+
+**Decision:** Adopt **Fumadocs** to render **both** the public marketing `/docs` **and** the in-app **System** layer, driven by **one** Tailwind v4 token source. Fumadocs is namespaced via `createPreset({ cssPrefix: 'fuma-' })` to avoid shadcn CSS-var collisions; import order `tailwindcss → fumadocs-ui/css/shadcn.css → preset.css`. This **replaces** the hand-rolled `next-mdx-remote/rsc` + `gray-matter` loader. Per-client theming for the in-app styleguide stays **build-time** CSS custom properties (light/dark mode remains runtime via `.dark`).
+
+**Rationale:** Fumadocs is App-Router-native, Tailwind v4 + shadcn compatible, MIT, low lock-in (modular core/ui/mdx, ejectable). MDX renders arbitrary React (token tables, live component previews, prototype frames), and a custom Source adapter feeds it programmatically from `contract/*` + `lib/data/docs.ts`. One renderer + one theme keeps the marketing docs and the in-app living styleguide visually consistent — the founder's "consistent design system/theme for Systemix and Fuma docs."
+
+**Alternatives considered:** Keep the hand-rolled MDX engine (rejected — reinvents nav/search/theming, no shared renderer); Storybook for the in-app styleguide (rejected — separate tool + theme, not MDX-native, weak marketing-docs story); Fumadocs for marketing docs only (rejected — the decision is explicitly one shared DS/theme across both mounts).
+
+**Consequences:** `src/lib/docs-manifest.ts` + `lib/data/docs.ts` stay the data SoT feeding Fumadocs (kept sync-docs-compatible). A custom Source adapter is needed for the System layer over `contract/*`. Migration is staged; the hand-rolled loader is deleted after parity. Build-time theming is required for the per-client embedded styleguide (the one research-flagged risk; defused by build-time, not runtime, injection).
+
+**Implementation note (2026-06-08, Phase 1):** mount (a) marketing `/docs` shipped and is build-verified. The theme bridge is **`fumadocs-ui/css/shadcn.css`** (maps `--color-fd-*` → the shadcn vars) — the v16-native mechanism, cleaner than the `cssPrefix` plugin this ADR originally described; no manual prefix needed. Required bumping `tailwindcss` 4.1.18 → 4.3.0 (Fumadocs 16 uses the `inset-s-*` logical utility added in Tailwind 4.2). Stack: fumadocs-ui/core 16.9.3, fumadocs-mdx 15.0.11. Mount (b) in-app System layer remains Phase 2.
+
+**Review trigger:** Fumadocs drops Tailwind v4 / shadcn compatibility, or build-time per-client theming proves insufficient for the embedded styleguide.
+
+---
+
+## ADR-012: Connecta retained as design partner #1; the per-instance template is shadcn-native
+**Date:** 2026-06-08
+**Status:** DECIDED
+**Feature:** systemix-rework · Retro: `docs/feature/systemix-rework/connecta-retro.md`
+
+**Decision:** **Connecta stays design partner #1.** The Systemix per-instance template is **shadcn-native**; Connecta's Tamagui code is a **worked example, not a copy source**. Pure logic (the Atlas hexagonal `catalog.ts` + `flow-layout.ts`) ports verbatim; shells/components are **re-implemented** in shadcn. The Atlas catalog is **generated** from `systemix.config.yaml` + agent defs, not hardcoded. The open question "what is Connecta / is it an SLM" becomes a **separate research track that does not gate** the Systemix engine or template.
+
+**Rationale:** Connecta validated the embedded per-instance model, the token bridge, the hexagonal catalog seam, the sync-docs pattern, and the DS-as-object — but its **Tamagui stack diverges** from Systemix's shadcn standard (`project_systemix_stack_shadcn`) with `--legacy-peer-deps`/ESM friction, and its **own product definition is unsettled**. Keep the engine generic; push Connecta specifics into the Connecta instance.
+
+**Alternatives considered:** Drop Connecta / pick a cleaner reference (rejected — Connecta is a real GDPR design partner and the worked example that proved the seams); Port Connecta's Tamagui UI into Systemix (rejected — Tamagui is Connecta-only; contradicts the shadcn standard); Pause Connecta until its definition settles (rejected — stalls the engagement; quarantine the definition question instead).
+
+**Consequences:** `connecta-retro.md` is the retro of record. Template work is shadcn; the Atlas port is logic-only. Connecta's DS path is `systemix update` (existing repo), not provision. The "what is Connecta" research is tracked separately ([[project_connecta_definition]]).
+
+**Review trigger:** Connecta's product definition lands and materially changes the loop's requirements, or a second design partner supplants Connecta as the primary reference.

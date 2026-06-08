@@ -3,10 +3,12 @@
 **Derives from:** [`product-model.md`](./product-model.md). Scope = the **marketing
 docs site** (`getsystemix.vercel.app/docs`), **not** the in-app System surface.
 
-**Engine (kept):** MDX in `content/docs/*.mdx` → `gray-matter` →
-`next-mdx-remote/rsc`; manifest-driven nav via `src/lib/docs-manifest.ts` +
-`src/components/systemix/DocsSidebar.tsx`; kept **sync-docs-compatible**
-(`.claude/skills/sync-docs.md`).
+**Engine (updated 2026-06-08):** rendered via **Fumadocs** (MDX in `content/docs/*.mdx`),
+replacing the hand-rolled `gray-matter` + `next-mdx-remote/rsc` loader. **Keep**
+`src/lib/docs-manifest.ts` as the tree/status source feeding Fumadocs, kept
+**sync-docs-compatible** (`.claude/skills/sync-docs.md`). Same Fumadocs renderer +
+shared theme powers the in-app **System** layer — see
+[`../systemix-rework/fumadocs-integration.md`](../systemix-rework/fumadocs-integration.md).
 
 Structure = **journey** top-level (Install → Configure → Run → Extend) with
 **role accents** (Operator / Designer / Engineer) as tags + an index chooser.
@@ -21,7 +23,7 @@ combine existing pages · **FRESH** = write new.
 ### Get started
 | Page | Scope | Source |
 |---|---|---|
-| `introduction` | What Systemix is — the loop spine + four surfaces, in one screen. | MIGRATE `concepts`/`introduction` (rewrite to lead with the loop + local app) |
+| `introduction` | What Systemix is — the loop spine + three layers, in one screen. | MIGRATE `concepts`/`introduction` (rewrite to lead with the loop + local app) |
 | `quick-install` | Install + Ollama in <5 min. | MIGRATE `quick-install` |
 | `first-run` | From `init` to a live loop — the happy path. | FRESH (was `guides/setup`, reframed) |
 
@@ -39,10 +41,9 @@ combine existing pages · **FRESH** = write new.
 ### Run
 | Page | Scope | Source |
 |---|---|---|
-| `surfaces/config` | The Config surface. | FRESH → links `surfaces-brief.md` |
-| `surfaces/graph` | The Graph surface (3D force graph + runtime + role-routed HITL). | FRESH (was `concepts/instance-model`, reframed) |
-| `surfaces/system` | The System surface — living styleguide (tokens/components/prototypes). | FRESH |
-| `surfaces/atlas` | The Atlas surface — workflow catalog + inline prototype. | MIGRATE `concepts/workflow-atlas` |
+| `layers/config` | The Config layer — editable settings + the 3D force graph + runtime + role-routed HITL (merges old Config + Graph). | FRESH (was `concepts/instance-model`, reframed) |
+| `layers/system` | The System layer — Fumadocs living styleguide (tokens/components/prototypes). | FRESH |
+| `layers/atlas` | The Atlas layer — workflow catalog + inline prototype; **gated** behind init + DS sync. | MIGRATE `concepts/workflow-atlas` |
 | `the-loop` | The hypothesis loop, in depth. | MIGRATE `concepts/hypothesis-validation` |
 | `theming` | Theme the shadcn shell from your DS (primary color + font). | FRESH |
 | `concepts/contract` | MDX contracts. | MIGRATE |
@@ -65,7 +66,7 @@ combine existing pages · **FRESH** = write new.
 ## Role accents
 - Docs index gets a **"Start here for…"** chooser: Operator / Designer / Engineer,
   each linking the right journey entry points (e.g. Engineer → Configure/`init`;
-  Designer → Run/`surfaces/system`; Operator → Run/`the-loop` + `surfaces/graph`).
+  Designer → Run/`layers/system`; Operator → Run/`the-loop` + `layers/config`).
 - Add an optional **`audience`** field to MDX frontmatter (additive; values:
   `operator` | `designer` | `engineer` | `all`). Rendered as a tag chip.
 

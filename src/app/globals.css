@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Fumadocs — shares the Systemix theme: shadcn.css maps --color-fd-* onto the
+   shadcn vars below (--background, --primary, --sidebar, …), so /docs and the
+   in-app System surface inherit one theme (light/dark via .dark). */
+@import "fumadocs-ui/css/shadcn.css";
+@import "fumadocs-ui/css/preset.css";
+@source "../../node_modules/fumadocs-ui/dist/**/*.js";
+
 @custom-variant dark (&:is(.dark *));
 
 /* Agent feed animations */
