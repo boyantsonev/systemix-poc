@@ -60,7 +60,9 @@ export function HeroReasoning() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.25 }}
           >
-            {completion}
+            {isDone
+              ? <ScrambleText text={completion} duration={1.5} key={completion} />
+              : completion}
           </motion.h1>
         )}
       </div>
