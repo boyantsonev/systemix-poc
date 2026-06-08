@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SLogo } from "@/components/systemix/SLogo";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { NavCTAs, InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Systemix — You shipped a hypothesis. Now close the loop.",
@@ -21,11 +22,14 @@ function LandingNav() {
         </Link>
 
         <nav className="flex items-center gap-1 ml-4">
+          <Link href="/#surfaces" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 hover:bg-muted/50">
+            Surfaces
+          </Link>
           <Link href="/docs" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 hover:bg-muted/50">
             Docs
           </Link>
           <a
-            href="https://github.com/boyantsonev/systemix"
+            href={siteConfig.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 hover:bg-muted/50"
@@ -57,7 +61,7 @@ function LandingFooter() {
         </div>
         <div className="flex items-center gap-4 text-[12px] text-muted-foreground/40 font-mono">
           <a
-            href="https://github.com/boyantsonev/systemix"
+            href={siteConfig.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-muted-foreground transition-colors"
@@ -90,7 +94,7 @@ function Hero() {
           <span className="text-muted-foreground">Now close the loop.</span>
         </h1>
         <p className="text-[17px] text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10">
-          You&apos;re building fast with AI. PostHog is tracking. But when you ship the next thing, what does your agent read? Systemix is the layer where every experiment records its own result — permanently, in your repo. The next decision starts from evidence, not memory.
+          You&apos;re building fast with AI. PostHog is tracking. But when you ship the next thing, what does your agent read? Systemix is a local app you install in your repo — one <code className="font-mono text-[15px] text-foreground/70">npx systemix init</code> — where every experiment records its own result, permanently. The next decision starts from evidence, not memory.
         </p>
 
         <div className="flex flex-col items-center gap-4">
@@ -263,25 +267,25 @@ function TheLoop() {
 function ExperimentTypes() {
   const types = [
     {
-      tag: "landing-page",
-      label: "A landing hypothesis",
-      example: "Hero framing: 'close the loop' vs 'evidence layer' — which converts the pre-PMF founder?",
+      tag: "ui",
+      label: "A UI hypothesis",
+      example: "Coral primary CTA vs the neutral one — which converts the design-engineer?",
+      signals: ["PostHog CTR", "Click heatmap", "Component variant flag"],
+      decision: "Promote coral (+28% CTR · 84% confidence)",
+    },
+    {
+      tag: "workflow",
+      label: "A workflow hypothesis",
+      example: "Route risky messages to 'rewrite' before 'send' — fewer escalations?",
+      signals: ["Step completion rate", "Escalation count", "PostHog funnel"],
+      decision: "Run longer — 9 days, need 14 for a clean signal",
+    },
+    {
+      tag: "value-prop",
+      label: "A landing value-prop",
+      example: "Hero framing: 'close the loop' vs 'evidence layer' — which lands?",
       signals: ["PostHog CTR", "Scroll depth past fold", "Install command copy"],
-      decision: "Promote variant B (+34% CTR · 82% confidence)",
-    },
-    {
-      tag: "onboarding-flow",
-      label: "An onboarding flow",
-      example: "New 3-step setup vs control — measuring 7-day activation rate",
-      signals: ["PostHog activation funnel", "Time-to-first-pull", "Drop-off step"],
-      decision: "Run longer — 11 days, need 14 for retention signal",
-    },
-    {
-      tag: "gtm-hypothesis",
-      label: "A GTM hypothesis",
-      example: "HN post drove 18 signups — which copy? Which channel drove them?",
-      signals: ["Referrer attribution", "PostHog session source", "Social signal events"],
-      decision: "Promote: 'Show HN' framing wins. Rationale written to contract.",
+      decision: "Promote: 'close the loop'. Rationale written to contract.",
     },
   ];
 
@@ -295,7 +299,7 @@ function ExperimentTypes() {
           One contract. Same loop. Whatever you ship.
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
-          One MDX file per hypothesis. Landing pages, onboarding flows, GTM bets — same format, same loop. The contract holds the question, the signals, and the decision. Your agent reads it before touching anything you&apos;ve already tested.
+          One MDX file per hypothesis. UI, workflows, landing value propositions — same format, same loop. The contract holds the question, the signals, and the decision. Your agent reads it before touching anything you&apos;ve already tested.
         </p>
 
         <div className="grid md:grid-cols-3 gap-3">
@@ -452,6 +456,151 @@ function HitlPreview() {
   );
 }
 
+// ── Install / setup ───────────────────────────────────────────────────────────
+
+function InstallSetup() {
+  const inputs = [
+    { tag: "figma", label: "Figma files", sub: "variables, components, variants" },
+    { tag: "repo", label: "Existing repo", sub: "your tokens + components, as-is" },
+    { tag: "ui", label: "Desired UI setup", sub: "what you want it to become" },
+  ];
+
+  return (
+    <section className="py-24 border-t border-border/40">
+      <div className="max-w-4xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          Setup
+        </p>
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+          Install once. It configures the loop to your repo.
+        </h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
+          <code className="font-mono text-foreground/70">npx systemix init</code> asks what it should read, you name the first hypothesis, and the agentic pipeline fills in the rest. The instance is written to one config file in your repo.
+        </p>
+
+        <div className="grid lg:grid-cols-2 gap-3">
+          {/* Inputs you feed */}
+          <div className="border border-border/40 rounded-xl px-5 py-5 bg-background flex flex-col gap-4">
+            <p className="text-[10px] font-mono text-muted-foreground/40 uppercase tracking-widest">Feed the loop</p>
+            <div className="space-y-2">
+              {inputs.map(({ tag, label, sub }) => (
+                <div key={tag} className="flex items-center gap-3">
+                  <span className="text-[10px] font-mono text-muted-foreground/50 border border-border/40 px-1.5 py-0.5 rounded shrink-0 w-[52px] text-center">{tag}</span>
+                  <span className="text-[13px] font-semibold text-foreground">{label}</span>
+                  <span className="text-[11px] font-mono text-muted-foreground/40 ml-auto">{sub}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-3 border-t border-border/30">
+              <p className="text-[10px] font-mono text-emerald-400/70 uppercase tracking-widest mb-1.5">Then: define a hypothesis</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed">
+                &ldquo;Pre-seed MVP landing tracking&rdquo; — or any UI, workflow, or value-prop test. The pipeline asks the follow-up questions it needs.
+              </p>
+            </div>
+          </div>
+
+          {/* The config it writes */}
+          <div className="border border-border/40 rounded-xl bg-muted/20 overflow-hidden">
+            <div className="px-4 py-2 border-b border-border/30 flex items-center gap-2">
+              <span className="text-[10px] font-mono text-muted-foreground/40">systemix.config.yaml</span>
+            </div>
+            <pre className="px-4 py-4 text-[11px] font-mono text-muted-foreground/80 leading-relaxed overflow-x-auto">
+{`version: 1
+surfaces: [design-system, landing]
+signals:
+  posthog: { enabled: true, poll_interval_sec: 300 }
+  figma:   { enabled: true }
+hermes:  { model: hermes3, autonomy: balanced }
+self_improvement: { mode: audit }`}
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Wears your brand ──────────────────────────────────────────────────────────
+
+function WearsYourBrand() {
+  return (
+    <section className="py-24 border-t border-border/40">
+      <div className="max-w-4xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          Themed to you
+        </p>
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+          A shadcn shell that wears your design system.
+        </h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-10 max-w-xl">
+          Systemix pulls a primary color and font straight from your design-system instance — so the whole app, and every prototype it renders, match your look and feel. Not a generic viewer.
+        </p>
+
+        <div className="grid sm:grid-cols-3 gap-3">
+          {[
+            { label: "Primary", body: "Your --primary token drives the shell — buttons, accents, the active persona tab.", swatch: "bg-foreground" },
+            { label: "Typography", body: "Your --font-sans renders the chrome. The shell reads like your product, not ours.", swatch: "bg-muted-foreground/40" },
+            { label: "Prototypes", body: "Atlas renders prototypes in the same resolved theme — what you see is your DS.", swatch: "bg-emerald-500/60" },
+          ].map(({ label, body, swatch }) => (
+            <div key={label} className="border border-border/40 rounded-xl px-4 py-4 bg-background">
+              <div className={`w-8 h-8 rounded-lg mb-3 ${swatch}`} aria-hidden />
+              <p className="text-[13px] font-bold text-foreground mb-1.5">{label}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Four surfaces ─────────────────────────────────────────────────────────────
+
+function FourSurfaces() {
+  const surfaces = [
+    { name: "Config", line: "Your instance, as one file you can read and edit.", href: "/instance" },
+    { name: "Graph", line: "Your whole system live: topology, runtime, and the HITL queue.", href: "/graph" },
+    { name: "System", line: "Your design system, kept current by the loop — tokens, components, prototypes.", href: "/design-system" },
+    { name: "Atlas", line: "Every workflow, by persona, with its prototype one click away.", href: "/docs/concepts/workflow-atlas" },
+  ];
+
+  return (
+    <section id="surfaces" className="py-24 border-t border-border/40 scroll-mt-20">
+      <div className="max-w-4xl mx-auto">
+        <p className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest mb-4">
+          Inside the app
+        </p>
+        <h2 className="text-[1.75rem] font-black tracking-tight mb-3">
+          Four surfaces. One instance.
+        </h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed mb-12 max-w-xl">
+          The init wizard turns surfaces on per your goals. Each one reads the same contracts in your repo.
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-3">
+          {surfaces.map(({ name, line, href }) => (
+            <Link
+              key={name}
+              href={href}
+              className="group border border-border/40 rounded-xl px-5 py-5 bg-background hover:border-border transition-colors flex flex-col"
+            >
+              {/* visual placeholder — replace with surface screenshot */}
+              <div className="h-24 rounded-lg border border-border/30 bg-muted/20 mb-4 flex items-center justify-center">
+                <span className="text-[10px] font-mono text-muted-foreground/30 uppercase tracking-widest">{name}</span>
+              </div>
+              <p className="text-[14px] font-bold text-foreground mb-1.5">{name}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed mb-3">{line}</p>
+              <span className="mt-auto text-[12px] font-mono text-muted-foreground/40 group-hover:text-muted-foreground transition-colors">
+                Open →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── The tools it connects ─────────────────────────────────────────────────────
 
 function MagicGlue() {
@@ -499,14 +648,19 @@ function MagicGlue() {
 function UseCases() {
   const cases = [
     {
-      audience: "You — building alone with Claude Code",
-      headline: "The next thing you ship starts from what the last thing proved.",
-      body: "You shipped something last week. PostHog has 240 sessions. You have a gut feeling it's not converting. Systemix shows you the queue card — Hermes already synthesized what the data shows. You approve. The contract records it. The next sprint starts from there, not from the gut feeling.",
+      audience: "Operator — runs the loops",
+      headline: "The queue is your cadence.",
+      body: "Hermes synthesizes every running hypothesis into a decision card. You promote, run longer, or kill it — one click. The contract records the call and the rationale. Next sprint starts from evidence, not a gut feeling.",
     },
     {
-      audience: "Your AI agent — reading before it ships",
-      headline: "Agents don't guess. They read the contract.",
-      body: "When Claude Code or Cursor touches something you've already tested, it reads the contract first — prior experiments, rejected directions, production results. No rediscovering dead-end variants six months later. No shipping what was already killed.",
+      audience: "Designer — owns the system",
+      headline: "Your design system, kept honest.",
+      body: "The System surface is a living styleguide — tokens, components, prototypes, exact from the repo and synced with Figma. Drift surfaces as a card before any test, so you measure what you designed.",
+    },
+    {
+      audience: "Engineer — wires the instance",
+      headline: "Install it, point it, walk away.",
+      body: "npx systemix init scaffolds contracts, installs skills, and registers the MCP server. Agents in Claude Code or Cursor read the contract before they ship. Runs locally and in CI — no cloud, your data stays in the repo.",
     },
   ];
 
@@ -517,10 +671,10 @@ function UseCases() {
           Who it&apos;s for
         </p>
         <h2 className="text-[1.75rem] font-black tracking-tight mb-12">
-          You and your agent. Same contract.
+          Built for the whole team. One contract.
         </h2>
 
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid sm:grid-cols-3 gap-3">
           {cases.map(({ audience, headline, body }) => (
             <div key={audience} className="border border-border/40 rounded-xl px-5 py-5 bg-background">
               <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-3">
@@ -714,11 +868,14 @@ export default function LandingPage() {
         <SectionTrack name="hero" hypothesisId="landing-hero-icp-pivot-2026-05"><Hero /></SectionTrack>
         <SectionTrack name="the-loop"><TheLoop /></SectionTrack>
         <SectionTrack name="hitl-preview" hypothesisId="landing-hitl-card-glassmorphism-2026-05"><HitlPreview /></SectionTrack>
+        <SectionTrack name="install-setup"><InstallSetup /></SectionTrack>
+        <SectionTrack name="wears-your-brand"><WearsYourBrand /></SectionTrack>
+        <SectionTrack name="four-surfaces"><FourSurfaces /></SectionTrack>
         <SectionTrack name="experiment-types"><ExperimentTypes /></SectionTrack>
         <SectionTrack name="magic-glue"><MagicGlue /></SectionTrack>
         <SectionTrack name="use-cases" hypothesisId="landing-founder-pain-framing-2026-05"><UseCases /></SectionTrack>
-        <SectionTrack name="bottom-cta"><BottomCTA /></SectionTrack>
         <SectionTrack name="storybook-callout"><StorybookCallout /></SectionTrack>
+        <SectionTrack name="bottom-cta"><BottomCTA /></SectionTrack>
       </main>
       <LandingFooter />
     </div>
