@@ -27,7 +27,7 @@ export const nav: NavSection[] = [
   {
     section: "Reference",
     items: [
-      { label: "Architecture", href: "/graph" },
+      { label: "Architecture", href: "/config" },
     ],
   },
 ];

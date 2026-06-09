@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/instance",                           destination: "/config",                          permanent: false },
+      { source: "/graph",                              destination: "/config",                          permanent: false },
       { source: "/contract",                           destination: "/design-system",                   permanent: false },
       { source: "/contract/tokens",                    destination: "/design-system",                   permanent: false },
       { source: "/contract/components",                destination: "/design-system",                   permanent: false },
