@@ -11,6 +11,8 @@
     "start": "next start",
     "lint": "eslint",
     "tokens": "tsx scripts/token-converter.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:contract": "tsx scripts/hypothesis-mdx.test.ts",
     "generate-contracts": "tsx scripts/generate-contracts.ts",
     "build:mcp": "npm run build -w packages/mcp-server",
@@ -53,6 +55,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.5"
   }
 }
