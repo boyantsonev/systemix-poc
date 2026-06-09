@@ -14,6 +14,10 @@
 # testing
 /coverage
 
+# mutation testing (Stryker — regenerated each run)
+packages/cli/reports/
+**/.stryker-tmp/
+
 # next.js
 /.next/
 /out/
