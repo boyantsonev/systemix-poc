@@ -82,10 +82,14 @@ function writeQueue(data: unknown) {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const projectSlug = searchParams.get("project") ?? null;
+  const hypothesisSlug = searchParams.get("hypothesis") ?? null;
 
   const queue = readQueue();
   if (!queue) {
-    const cards = projectSlug
+    // Demo cards carry no hypothesisId — a hypothesis-scoped query has no demo data.
+    const cards = hypothesisSlug
+      ? []
+      : projectSlug
       ? DEMO_CARDS.filter(c => !("project" in c) || c.project === projectSlug)
       : DEMO_CARDS;
     return NextResponse.json({
@@ -95,7 +99,9 @@ export async function GET(req: NextRequest) {
     });
   }
   const cards = (queue.cards ?? []).filter(
-    (c: { project?: string }) => !projectSlug || !c.project || c.project === projectSlug
+    (c: { project?: string; hypothesisId?: string }) =>
+      (!projectSlug || !c.project || c.project === projectSlug) &&
+      (!hypothesisSlug || c.hypothesisId === hypothesisSlug)
   );
   const pendingCount = cards.filter((c: { status: string }) => c.status === "pending").length;
   return NextResponse.json({ cards, pendingCount, isDemo: false });

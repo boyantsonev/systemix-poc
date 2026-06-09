@@ -5,6 +5,8 @@ import Link from "next/link";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { ContractAutoReload } from "@/components/contract/ContractAutoReload";
+import { HermesPanel } from "@/components/hypothesis/HermesPanel";
+import { HypothesisEditPanel } from "@/components/hypothesis/HypothesisEditPanel";
 
 const HYPOTHESIS_DIR = join(process.cwd(), "contract", "hypotheses");
 
@@ -102,6 +104,16 @@ export default async function HypothesisDocPage({ params }: { params: Promise<{ 
   const hasContent = content.trim().length > 0;
   const isComplete = status === "complete";
 
+  const editInitial = {
+    id,
+    section:    fm.section ?? "",
+    hypothesis: fm.hypothesis ?? "",
+    icp:        fm.icp ?? "",
+    status,
+    variants,
+    evidencePosthog: typeof fm["evidence-posthog"] === "string" ? fm["evidence-posthog"] : "",
+  };
+
   return (
     <article>
       <ContractAutoReload slug={slug} />
@@ -123,7 +135,7 @@ export default async function HypothesisDocPage({ params }: { params: Promise<{ 
           {fm.hypothesis}
         </h1>
       </div>
-      <div className="flex items-center gap-2 mb-8 flex-wrap">
+      <div className="flex items-center gap-2 mb-6 flex-wrap">
         <StatusPill status={status} />
         {fm.decision && <DecisionPill decision={fm.decision} />}
         {fm.confidence != null && (
@@ -131,6 +143,8 @@ export default async function HypothesisDocPage({ params }: { params: Promise<{ 
             {Math.round(fm.confidence * 100)}% confidence
           </span>
         )}
+        <span className="flex-1" />
+        <HypothesisEditPanel slug={slug} initial={editInitial} />
       </div>
 
       {/* Result block — only when complete */}
@@ -239,6 +253,9 @@ export default async function HypothesisDocPage({ params }: { params: Promise<{ 
           </div>
         )}
       </div>
+
+      {/* Hermes synthesis — read from the same queue the HITL panel uses */}
+      <HermesPanel hypothesisId={id} />
     </article>
   );
 }
