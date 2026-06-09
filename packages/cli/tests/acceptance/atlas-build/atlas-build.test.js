@@ -176,4 +176,146 @@ describe("Atlas build — atlas-phase-2 acceptance tests", () => {
       expect(fs.existsSync(ws.artifactPath)).toBe(true);
     }
   );
+
+  // ── AC-2: Vocab validation (open vocab — persona/surface/agent) ─────────────
+
+  it.each([
+    [
+      "persona",
+      FOUNDER_LOOP_CONTRACT.replace("persona: founder", "persona: marketer"),
+      "marketer",
+    ],
+    [
+      "surface",
+      FOUNDER_LOOP_CONTRACT.replace("surface: desktop", "surface: watch"),
+      "watch",
+    ],
+    [
+      "agent",
+      FOUNDER_LOOP_CONTRACT.replace("agent: hermes", "agent: gandalf"),
+      "gandalf",
+    ],
+  ])(
+    "AC-2: a contract with an undeclared %s is a build error naming the file and the unknown value",
+    async (_field, contract, unknownValue) => {
+      // Given a contract using a value not declared in the atlas: vocab
+      ws.writeConfig(FULL_CONFIG_ATLAS);
+      ws.writeWorkflow("bad-vocab", contract);
+
+      // When / Then — build rejects with a file-scoped error naming the bad value
+      await expect(atlasBuild.build({ projectRoot: ws.root })).rejects.toThrow(
+        new RegExp(`bad-vocab\\.mdx.*${unknownValue}`)
+      );
+    }
+  );
+
+  // ── AC-2: Closed enum validation (kind / pattern) ──────────────────────────
+
+  it.each([
+    ["pattern", FOUNDER_LOOP_CONTRACT.replace("pattern: chain", "pattern: spiral"), "spiral"],
+    [
+      "kind",
+      FOUNDER_LOOP_CONTRACT.replace("kind: input", "kind: teleport"),
+      "teleport",
+    ],
+  ])(
+    "AC-2: a contract with an invalid %s (closed enum) is a file-scoped build error",
+    async (_field, contract, badValue) => {
+      // Given a contract violating a closed enum
+      ws.writeConfig(FULL_CONFIG_ATLAS);
+      ws.writeWorkflow("bad-enum", contract);
+
+      // When / Then
+      await expect(atlasBuild.build({ projectRoot: ws.root })).rejects.toThrow(
+        new RegExp(`bad-enum\\.mdx.*${badValue}`)
+      );
+    }
+  );
+
+  // ── AC-4: Empty state ───────────────────────────────────────────────────────
+
+  it(
+    // Given a config with NO atlas: block (but contracts exist)
+    // When build runs
+    // Then the catalog is empty and no artifact crash occurs
+    "AC-4: absent atlas: block → empty catalog, no crash",
+    async () => {
+      // Given
+      ws.writeConfig(CONFIG_NO_ATLAS);
+      ws.writeWorkflow("founder-loop", FOUNDER_LOOP_CONTRACT);
+
+      // When
+      const { catalog } = await atlasBuild.build({ projectRoot: ws.root });
+
+      // Then
+      expect(catalog.all()).toEqual([]);
+      expect(catalog.byPersona("founder")).toEqual([]);
+      expect(catalog.byId("founder-loop")).toBeUndefined();
+      expect(fs.existsSync(ws.artifactPath)).toBe(true);
+    }
+  );
+
+  it(
+    // Given an atlas: block but NO contract files
+    // When build runs
+    // Then the catalog is empty and the artifact is still written
+    "AC-4: atlas: block present but no contracts → empty catalog, no crash",
+    async () => {
+      // Given — config has atlas vocab, but contract/workflows/ is empty
+      ws.writeConfig(FULL_CONFIG_ATLAS);
+
+      // When
+      const { catalog } = await atlasBuild.build({ projectRoot: ws.root });
+
+      // Then
+      expect(catalog.all()).toEqual([]);
+      expect(fs.existsSync(ws.artifactPath)).toBe(true);
+    }
+  );
+
+  // ── AC-5: Malformed contract — file-scoped error, others unaffected ─────────
+
+  it(
+    // Given one contract is missing a required field while a sibling is valid
+    // When build runs
+    // Then build fails with a file-scoped error naming the broken file
+    "AC-5: a contract missing a required field fails the build with a file-scoped error",
+    async () => {
+      // Given — a valid sibling and a broken contract (no `title`)
+      ws.writeConfig(FULL_CONFIG_ATLAS);
+      ws.writeWorkflow("founder-loop", FOUNDER_LOOP_CONTRACT);
+      ws.writeWorkflow(
+        "broken",
+        FOUNDER_LOOP_CONTRACT.replace("title: The loop\n", "")
+      );
+
+      // When / Then — the error names the offending file and the missing field
+      await expect(atlasBuild.build({ projectRoot: ws.root })).rejects.toThrow(
+        /broken\.mdx.*title/
+      );
+    }
+  );
+
+  // ── AC-6: Idempotent ────────────────────────────────────────────────────────
+
+  it(
+    // Given the same inputs
+    // When build runs twice
+    // Then the emitted artifact is byte-identical
+    "AC-6: two builds with no input change produce a byte-identical artifact",
+    async () => {
+      // Given
+      ws.writeConfig(FULL_CONFIG_ATLAS);
+      ws.writeWorkflow("founder-loop", FOUNDER_LOOP_CONTRACT);
+
+      // When
+      await atlasBuild.build({ projectRoot: ws.root });
+      const first = ws.readArtifact();
+      await atlasBuild.build({ projectRoot: ws.root });
+      const second = ws.readArtifact();
+
+      // Then
+      expect(second).toBe(first);
+    }
+  );
 });

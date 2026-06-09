@@ -142,7 +142,10 @@ function parseContract(file, content, vocab) {
     steps: data.steps.map((s) => normaliseStep(file, s, vocab)),
     edges: data.edges.map((e) => normaliseEdge(file, e)),
   };
-  return workflow;
+  // `order` is a build-time sort hint, NOT part of the Workflow domain object —
+  // it never reaches the catalog artifact. Absent → sort last (Infinity), then by id.
+  const order = typeof data.order === "number" ? data.order : Number.POSITIVE_INFINITY;
+  return { order, ...workflow };
 }
 
 // ── Catalog ───────────────────────────────────────────────────────────────────
@@ -185,10 +188,17 @@ async function build(opts = {}) {
   // 3. Empty state: no atlas: vocab OR no contracts → empty catalog, no crash.
   let workflows = [];
   if (vocab && files.length > 0) {
-    workflows = files.map((f) => {
+    const parsed = files.map((f) => {
       const content = fs.readFileSync(path.join(workflowsDir, f), "utf8");
       return parseContract(f, content, vocab);
     });
+    // Deterministic catalog order: by the explicit `order` frontmatter field,
+    // then by id as a stable tiebreak. File read order is already alphabetical,
+    // so the result is idempotent regardless of filesystem enumeration order.
+    workflows = parsed
+      .map(({ order, ...workflow }) => ({ order, workflow }))
+      .sort((a, b) => a.order - b.order || a.workflow.id.localeCompare(b.workflow.id))
+      .map((entry) => entry.workflow);
   }
 
   // 4. Emit the artifact (stable serialization → idempotent).

@@ -1,0 +1,28 @@
+---
+id: engineer-deploy
+order: 8
+persona: engineer
+title: "Deploy & annotate"
+pattern: chain
+surface: desktop
+problem: "Deploy a design-system update to production and annotate the Figma frame with the preview, with parity gated before promotion."
+steps:
+  - { id: build, label: Build update, kind: input, note: Stage the change, screen: /config }
+  - { id: preview, label: Preview deploy, kind: tool, agent: ship, note: Vercel preview, screen: /config }
+  - { id: check, label: Parity check, kind: agent, agent: scout, note: Verify the preview, screen: /queue }
+  - { id: approve, label: Approve, kind: human, note: Gate the promotion, screen: /queue }
+  - { id: promote, label: Promote, kind: tool, agent: ship, note: Ship to production, screen: /config }
+  - { id: annotate, label: Annotate Figma, kind: tool, agent: echo, note: Pin the preview URL, screen: /system }
+  - { id: done, label: Deployed, kind: output, note: "Live & annotated", screen: /config }
+edges:
+  - { from: build, to: preview }
+  - { from: preview, to: check }
+  - { from: check, to: approve }
+  - { from: approve, to: promote }
+  - { from: promote, to: annotate }
+  - { from: annotate, to: done }
+---
+
+# Deploy & annotate
+
+Deploy a design-system update to production and annotate the Figma frame with the preview, with parity gated before promotion.

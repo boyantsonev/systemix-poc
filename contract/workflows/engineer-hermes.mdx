@@ -1,0 +1,32 @@
+---
+id: engineer-hermes
+order: 6
+persona: engineer
+title: Hermes synthesis pass
+pattern: orchestration
+surface: desktop
+problem: "Run a synthesis pass over every running hypothesis. The orchestrator delegates UI, workflow, and landing domains, then merges the results."
+steps:
+  - { id: trigger, label: Trigger run, kind: input, note: Scheduled or manual, screen: /queue }
+  - { id: read, label: Read contracts, kind: tool, note: Load running hypotheses, screen: /design-system/hypotheses }
+  - { id: orchestrate, label: Orchestrate, kind: agent, agent: orchestrator, note: "Decompose & delegate", screen: /queue }
+  - { id: evalui, label: Eval · UI, kind: agent, agent: hermes, note: UI hypotheses, screen: /system }
+  - { id: evalwf, label: Eval · Workflow, kind: agent, agent: hermes, note: Workflow hypotheses, screen: /design-system }
+  - { id: evalland, label: Eval · Landing, kind: agent, agent: hermes, note: Landing value-props, screen: / }
+  - { id: synthesize, label: Synthesize, kind: agent, agent: hermes, note: Merge into decisions, screen: /queue }
+  - { id: cards, label: Queue cards, kind: output, note: HITL decisions queued, screen: /queue }
+edges:
+  - { from: trigger, to: read }
+  - { from: read, to: orchestrate }
+  - { from: orchestrate, to: evalui }
+  - { from: orchestrate, to: evalwf }
+  - { from: orchestrate, to: evalland }
+  - { from: evalui, to: synthesize }
+  - { from: evalwf, to: synthesize }
+  - { from: evalland, to: synthesize }
+  - { from: synthesize, to: cards }
+---
+
+# Hermes synthesis pass
+
+Run a synthesis pass over every running hypothesis. The orchestrator delegates UI, workflow, and landing domains, then merges the results.

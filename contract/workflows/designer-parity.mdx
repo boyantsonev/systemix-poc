@@ -1,0 +1,26 @@
+---
+id: designer-parity
+order: 5
+persona: designer
+title: Parity check
+pattern: routing
+surface: desktop
+problem: "Is the design system in sync, or has drift crept in? Scan, then route each finding by severity."
+steps:
+  - { id: trigger, label: Run parity, kind: input, note: Kick off a check, screen: /design-system }
+  - { id: scan, label: Scan, kind: tool, agent: scout, note: Compare code ↔ Figma, screen: /design-system/tokens }
+  - { id: route, label: Route severity, kind: router, note: Clean · drifted · missing, screen: /queue }
+  - { id: pass, label: Pass, kind: output, note: Clean → no action, screen: /system }
+  - { id: fix, label: Queue fix, kind: human, note: Drifted → resolve, screen: /queue }
+  - { id: create, label: Create contract, kind: agent, agent: echo, note: Missing → author it, screen: /system }
+edges:
+  - { from: trigger, to: scan }
+  - { from: scan, to: route }
+  - { from: route, to: pass, label: clean }
+  - { from: route, to: fix, label: drifted }
+  - { from: route, to: create, label: missing }
+---
+
+# Parity check
+
+Is the design system in sync, or has drift crept in? Scan, then route each finding by severity.

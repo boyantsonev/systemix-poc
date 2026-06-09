@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "eslint",
     "tokens": "tsx scripts/token-converter.ts",
+    "atlas": "node packages/cli/bin/cli.js atlas build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:contract": "tsx scripts/hypothesis-mdx.test.ts",
