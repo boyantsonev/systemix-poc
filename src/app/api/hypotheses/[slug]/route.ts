@@ -56,9 +56,9 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ slug: str
     // object written by a prior decision) with an empty form field — skip it.
     if (key === "evidence-posthog" && (value === "" || value === null)) continue;
     if (value === null || value === "") {
-      fm = setTopLevelField(fm, key, "null");
+      fm = setTopLevelField(fm, key, `${key}: null`);
     } else {
-      fm = setTopLevelField(fm, key, yamlStr(String(value)));
+      fm = setTopLevelField(fm, key, `${key}: ${yamlStr(String(value))}`);
     }
   }
 

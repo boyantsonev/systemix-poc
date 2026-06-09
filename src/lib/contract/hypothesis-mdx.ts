@@ -61,14 +61,16 @@ function escapeRe(s: string): string {
 }
 
 /**
- * Replace (or append) a top-level scalar field within the frontmatter block.
- * Collapses an existing nested block (e.g. a populated `evidence-posthog:`) to a
- * single line, so editing never leaves orphaned indented children.
+ * Replace (or append) a top-level frontmatter field, collapsing any indented
+ * continuation lines that belong to it — so re-writing a nested block (e.g. a
+ * populated `evidence-posthog:`) overwrites it instead of orphaning old keys.
+ * `replacement` is the FULL text including the key line. A function replacer is
+ * used so `$` sequences inside the replacement are treated literally.
  */
-export function setTopLevelField(fmBlock: string, key: string, value: string): string {
+export function setTopLevelField(fmBlock: string, key: string, replacement: string): string {
   const re = new RegExp(`^${escapeRe(key)}:.*(?:\\n[ \\t]+.*)*`, "m");
-  const line = `${key}: ${value}`;
-  return re.test(fmBlock) ? fmBlock.replace(re, line) : `${fmBlock.replace(/\s*$/, "")}\n${line}`;
+  if (re.test(fmBlock)) return fmBlock.replace(re, () => replacement);
+  return `${fmBlock.replace(/\s*$/, "")}\n${replacement}`;
 }
 
 /** Replace the whole `variants:` block with a fresh one (variants must stay a block). */
@@ -78,8 +80,64 @@ export function setVariantsBlock(fmBlock: string, variants: Record<string, strin
     ...Object.entries(variants).map(([k, v]) => `  ${varKey(k)}: ${yamlStr(v)}`),
   ].join("\n");
   const re = /^variants:[ \t]*\n(?:[ \t]+.*\n?)*/m;
-  if (re.test(fmBlock)) return fmBlock.replace(re, block + "\n");
+  // function replacer so `$` in a variant value isn't treated as a backreference
+  if (re.test(fmBlock)) return fmBlock.replace(re, () => block + "\n");
   return `${fmBlock.replace(/\s*$/, "")}\n${block}`;
+}
+
+export interface HypothesisDecisionInput {
+  decision: "promote" | "kill";
+  /** ISO date (YYYY-MM-DD) the evidence was fetched / decision recorded. */
+  now: string;
+  /** Statistical confidence in [0,1]; 0 means a manual decision. */
+  confidence: number;
+  /** Where the evidence came from (e.g. "dashboard", "posthog"). */
+  source: string;
+  /** Hermes synthesis / human note recorded in the Production Evidence section. */
+  context: string;
+}
+
+/**
+ * Apply a promote/kill decision to a hypothesis contract's MDX, returning the
+ * updated file contents (null if the frontmatter can't be parsed). Pure transform
+ * (no fs) so it can be unit-tested and imported by the queue route handler.
+ *
+ * Re-running for the same hypothesis overwrites cleanly: the `evidence-posthog`
+ * block is collapsed via {@link setTopLevelField} rather than leaving duplicate
+ * nested keys behind (which would make gray-matter throw "duplicated mapping key").
+ */
+export function applyHypothesisDecisionToMdx(
+  raw: string,
+  input: HypothesisDecisionInput,
+): string | null {
+  const split = splitFrontmatter(raw);
+  if (!split) return null;
+
+  let fm = split.fm;
+  const { decision, now, confidence: conf, source, context } = input;
+
+  fm = setTopLevelField(fm, "result", `result: "${decision}"`);
+  fm = setTopLevelField(fm, "decision", `decision: "${decision}"`);
+  fm = setTopLevelField(fm, "confidence", `confidence: ${conf}`);
+  fm = setTopLevelField(fm, "status", `status: complete`);
+  fm = setTopLevelField(
+    fm,
+    "evidence-posthog",
+    `evidence-posthog:\n  fetched_at: "${now}"\n  source: "${source}"\n  confidence: ${conf}`,
+  );
+
+  const evidenceSection = [
+    "",
+    "## Production Evidence",
+    "",
+    context,
+    "",
+    `Decision: **${decision}**. Confidence: ${conf > 0 ? Math.round(conf * 100) + "%" : "manual"}. Recorded: ${now}.`,
+    "",
+  ].join("\n");
+
+  const bodyWithoutEvidence = split.body.replace(/\n## Production Evidence[\s\S]*$/, "").trimEnd();
+  return `---\n${fm}\n---\n\n${bodyWithoutEvidence}\n${evidenceSection}`;
 }
 
 export interface HypothesisInput {
