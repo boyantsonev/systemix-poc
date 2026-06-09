@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "eslint",
     "tokens": "tsx scripts/token-converter.ts",
+    "test:contract": "tsx scripts/hypothesis-mdx.test.ts",
     "generate-contracts": "tsx scripts/generate-contracts.ts",
     "build:mcp": "npm run build -w packages/mcp-server",
     "smoke": "node scripts/smoke-test.js",

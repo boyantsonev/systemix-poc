@@ -11,6 +11,7 @@ const APP_NAV = [
   { label: "Dashboard",     href: "/dashboard"     },
   { label: "Queue",         href: "/queue"         },
   { label: "System", href: "/design-system" },
+  { label: "Atlas",         href: "/atlas"         },
 ];
 
 function PendingBadge() {

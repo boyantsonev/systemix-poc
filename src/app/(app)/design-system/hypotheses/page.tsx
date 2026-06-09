@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 import matter from "gray-matter";
+import { HypothesisCreateButton } from "@/components/hypothesis/HypothesisCreateButton";
 
 const HYPOTHESIS_DIR = join(process.cwd(), "contract", "hypotheses");
 
@@ -79,7 +80,12 @@ export default function HypothesesPage() {
   return (
     <article>
       <p className="text-[13px] font-mono text-muted-foreground mb-3">Design System</p>
-      <h1 className="text-[2rem] font-black tracking-tight leading-[1.15] mb-4">Hypotheses</h1>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <h1 className="text-[2rem] font-black tracking-tight leading-[1.15]">Hypotheses</h1>
+        <div className="pt-1.5">
+          <HypothesisCreateButton />
+        </div>
+      </div>
       <p className="text-[16px] text-muted-foreground leading-relaxed mb-2">
         {hypotheses.length} hypothesis contract{hypotheses.length !== 1 ? "s" : ""} — every test, variant, and decision written by Hermes.
       </p>
