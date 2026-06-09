@@ -30,3 +30,34 @@ self_improvement:
 trust:
   orchestrator_tier: 0   # Ghost Mode at init — never executes autonomously without config
   hermes_tier: 0
+atlas:
+  # Instance vocabulary for the Workflow Atlas (contract/workflows/*.mdx).
+  # personas = tab order; agents = step owners; surfaces = prototype frames.
+  # persona/agent/surface in a workflow contract MUST be declared here.
+  personas:
+    - founder
+    - designer
+    - engineer
+  agents:
+    hermes:
+      label: Hermes
+    orchestrator:
+      label: Orchestrator
+    scout:
+      label: Scout
+    flux:
+      label: Flux
+    ada:
+      label: Ada
+    echo:
+      label: Echo
+    prism:
+      label: Prism
+    sage:
+      label: Sage
+    ship:
+      label: Ship
+  surfaces:
+    - phone
+    - tablet
+    - desktop
