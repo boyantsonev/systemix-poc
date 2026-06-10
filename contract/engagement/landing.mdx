@@ -1,0 +1,24 @@
+---
+type: engagement
+id: landing
+surface: landing
+window_days: 30
+status: tracking
+evidence-posthog: null
+last-synced: null
+---
+
+# Landing engagement
+
+Ongoing engagement snapshot for the marketing landing (`/`), synced from PostHog.
+Not a hypothesis — a standing record of the funnel: unique visitors, the
+`section_viewed` funnel, and the `npx systemix init` install-command conversion.
+
+`systemix evidence engagement pull` writes the latest numbers into the
+`evidence-posthog` block above and appends a dated entry below. A human reviews
+the queued card and acknowledges it (or flags it for an experiment), which adds
+an acknowledgement to the log.
+
+## Engagement Log
+
+_No snapshots yet — run `npx systemix evidence engagement pull`._
