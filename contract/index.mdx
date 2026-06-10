@@ -12,6 +12,8 @@ The living agreement between this team and the engine: the brief we gave it, the
 goals it must accomplish and validate, and everything it has learned. This page
 is public and read-only — you are looking at the real instance, not a demo copy.
 
+<NowStrip />
+
 ## Brief
 
 This instance is Systemix running on its own contract. The team is one founder;
@@ -27,8 +29,11 @@ ship starts from evidence.
 
 ## Autonomy
 
-Current tier: **ghost** (trust 0). Every write the engine wants to make arrives
-as a proposal in the decision queue; nothing lands without a human approve.
+Current execution tier: **trust 0 — ghost**. Every write the engine wants to
+make arrives as a proposal in the decision queue; nothing lands without a human
+approve. Within that gate, `hermes.autonomy: balanced` (the strip above renders
+the live values) governs how Hermes routes by confidence — high-confidence
+synthesis is queued as a recommendation, low-confidence as a question.
 
 | What the engine may write | ghost (today) | balanced | high |
 |---|---|---|---|
@@ -57,9 +62,12 @@ entry lands when the first experiment closes.
 
 ## Decision log
 
-Resolved queue decisions live in the [decision archive](/design-system/decisions).
-Each decision will gain a permalink page pairing the proposal with the evidence
-that was on the table when it was made.
+Every write the engine makes starts as a decision. The full ledger — every
+resolved decision with its own permalink — lives at
+[/contract/decisions](/contract/decisions); pending items appear below and in
+the [ops view](/config).
+
+<PendingDecisions />
 
 ## Records
 

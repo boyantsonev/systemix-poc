@@ -107,7 +107,9 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [runtimeOpen, setRuntimeOpen] = useState(false);
+  // Open by default: /config is the global ops view — the decision queue and
+  // runtime feed absorbed from the retired /queue page must be visible on land.
+  const [runtimeOpen, setRuntimeOpen] = useState(true);
 
   const dimNodeIds = useMemo(() => computeDimSet(draft), [draft]);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(initialRef.current), [draft]);

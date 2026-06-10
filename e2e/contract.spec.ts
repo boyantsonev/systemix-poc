@@ -36,4 +36,20 @@ test.describe("Contract surface", () => {
     await page.goto("/system/tokens/primary");
     await expect(page).toHaveURL(/\/contract\/tokens\/primary/);
   });
+
+  test("/design-system redirects to /contract", async ({ page }) => {
+    await page.goto("/design-system");
+    await expect(page).toHaveURL(/\/contract$/);
+  });
+
+  test("the decisions ledger renders, real data only", async ({ page }) => {
+    await page.goto("/contract/decisions");
+    await expect(page.getByRole("heading", { name: "Decisions" })).toBeVisible();
+    await expect(page.getByText("never shows sample data")).toBeVisible();
+  });
+
+  test("a goal page scopes its decision queue (empty until real cards exist)", async ({ page }) => {
+    await page.goto("/contract/goals/landing-validation");
+    await expect(page.getByText("Queue is clear", { exact: false })).toBeVisible();
+  });
 });

@@ -12,6 +12,8 @@ import { DocsRoleChooser } from "@/components/docs/DocsRoleChooser";
 import { GoalsIndex } from "@/components/contract/GoalsIndex";
 import { GoalHypotheses } from "@/components/contract/GoalHypotheses";
 import { RecordsIndex } from "@/components/contract/RecordsIndex";
+import { NowStrip } from "@/components/contract/NowStrip";
+import { PendingDecisions } from "@/components/contract/PendingDecisions";
 
 // Component registry for all docs MDX. Fumadocs defaults (Cards, Code blocks,
 // headings, etc.) merged with the Systemix domain components used inside the
@@ -31,6 +33,8 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     GoalsIndex,
     GoalHypotheses,
     RecordsIndex,
+    NowStrip,
+    PendingDecisions,
     ...components,
   };
 }

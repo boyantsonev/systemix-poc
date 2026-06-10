@@ -14,7 +14,14 @@ export default function ContractLayout({ children }: { children: ReactNode }) {
       theme={{ enabled: false }}
       search={{ options: { api: "/api/system-search" } }}
     >
-      <FumaDocsLayout tree={contractSource.pageTree} nav={{ title: "systemix contract" }}>
+      <FumaDocsLayout
+        tree={contractSource.pageTree}
+        nav={{ title: "systemix contract" }}
+        links={[
+          { text: "Config", url: "/config" },
+          { text: "Atlas", url: "/atlas" },
+        ]}
+      >
         {children}
       </FumaDocsLayout>
     </RootProvider>

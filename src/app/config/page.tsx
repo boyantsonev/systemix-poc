@@ -33,6 +33,12 @@ export default function ConfigPage() {
           >
             Contract →
           </Link>
+          <Link
+            href="/atlas"
+            className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+          >
+            Atlas →
+          </Link>
           <ThemeToggle />
         </div>
       </header>
