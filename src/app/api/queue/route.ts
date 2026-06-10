@@ -131,7 +131,44 @@ type HypothesisCard = {
   resolution?: unknown;
 };
 
+type WorkflowDraftCard = {
+  id: string;
+  type: string;
+  status: string;
+  workflowId?: string;
+  draftPath?: string;
+  resolvedAt?: string;
+  resolution?: unknown;
+};
+
 const HYPOTHESES_DIR = path.join(process.cwd(), "contract", "hypotheses");
+const WORKFLOWS_DIR = path.join(process.cwd(), "contract", "workflows");
+
+function applyWorkflowDraft(
+  card: WorkflowDraftCard,
+  action: string,
+): { ok: boolean; error?: string } {
+  if (!card.draftPath || !card.workflowId) {
+    return { ok: false, error: "Missing draftPath or workflowId on card" };
+  }
+  const draftAbs = path.join(process.cwd(), card.draftPath);
+  if (!fs.existsSync(draftAbs)) {
+    return { ok: false, error: `Draft not found: ${card.draftPath}` };
+  }
+
+  if (action === "approved") {
+    const finalPath = path.join(WORKFLOWS_DIR, `${card.workflowId}.mdx`);
+    fs.mkdirSync(WORKFLOWS_DIR, { recursive: true });
+    fs.renameSync(draftAbs, finalPath);
+    // Re-run atlas build so the catalog reflects the new contract
+    void import("../../../../packages/cli/src/commands/atlas.js")
+      .then(({ build }) => build({}))
+      .catch(() => {});
+  } else if (action === "rejected") {
+    fs.unlinkSync(draftAbs);
+  }
+  return { ok: true };
+}
 
 function applyHypothesisDecision(
   card: HypothesisCard,
@@ -228,6 +265,14 @@ export async function PATCH(req: NextRequest) {
   const card = (queue.cards as InstrumentationCard[]).find(c => c.id === id);
   if (!card) {
     return NextResponse.json({ error: "Card not found" }, { status: 404 });
+  }
+
+  // For workflow draft review: move/delete the draft MDX and rebuild catalog
+  if (card.type === "workflow-draft-review" && (action === "approved" || action === "rejected")) {
+    const result = applyWorkflowDraft(card as WorkflowDraftCard, action);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error ?? "Workflow draft action failed" }, { status: 500 });
+    }
   }
 
   // For instrumentation approvals, write the code before updating the card

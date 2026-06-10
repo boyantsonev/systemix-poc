@@ -235,8 +235,25 @@ async function atlas(args) {
     }
     return;
   }
+  if (sub === "scan") {
+    try {
+      const { scan } = require("./atlas.scan");
+      const { drafts, skills, routes } = await scan({});
+      if (drafts.length === 0) {
+        console.log("\n  ✓ atlas scan — no new drafts (all skills already have contracts or pending cards)\n");
+      } else {
+        console.log(`\n  ✓ atlas scan — ${skills} skill(s) · ${routes} route(s) → ${drafts.length} draft(s) queued\n`);
+        for (const id of drafts) console.log(`      ${id}`);
+        console.log("\n  Review and approve drafts at /queue\n");
+      }
+    } catch (err) {
+      console.error(`\n  ✗ atlas scan failed — ${err.message}\n`);
+      process.exit(1);
+    }
+    return;
+  }
   console.error(`\n  Unknown atlas subcommand: ${sub}\n`);
-  console.log("  Usage: npx systemix atlas build\n");
+  console.log("  Usage: npx systemix atlas build | scan\n");
   process.exit(1);
 }
 

@@ -761,6 +761,45 @@
           "to": "done"
         }
       ]
+    },
+    {
+      "id": "scan-sync-docs",
+      "persona": "designer",
+      "title": "Keep the product docs in sync with the codebase. Run this at",
+      "pattern": "chain",
+      "surface": "desktop",
+      "problem": "Keep the product docs in sync with the codebase. Run this at the start of a docs session or whenever you suspect docs have drifted from implementation.",
+      "steps": [
+        {
+          "id": "trigger",
+          "label": "Trigger",
+          "kind": "input",
+          "note": "Invoke /sync-docs"
+        },
+        {
+          "id": "process",
+          "label": "Process",
+          "kind": "agent",
+          "note": "Keep the product docs in sync with the codebase. Run this at the start of a docs",
+          "agent": "scout"
+        },
+        {
+          "id": "output",
+          "label": "Done",
+          "kind": "output",
+          "note": "Skill complete"
+        }
+      ],
+      "edges": [
+        {
+          "from": "trigger",
+          "to": "process"
+        },
+        {
+          "from": "process",
+          "to": "output"
+        }
+      ]
     }
   ]
 }

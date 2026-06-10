@@ -1,0 +1,22 @@
+---
+id: scan-tokens
+persona: designer
+title: "Extract and sync design tokens from Figma to CSS variables"
+pattern: chain
+surface: desktop
+problem: "Extract and sync design tokens from Figma to CSS variables"
+steps:
+  - { id: trigger, label: Trigger, kind: input, note: "Invoke /tokens" }
+  - { id: process, label: Process, kind: agent, note: "Extract and sync design tokens from Figma to CSS variables", agent: flux }
+  - { id: output, label: Done, kind: output, note: "Skill complete" }
+edges:
+  - { from: trigger, to: process }
+  - { from: process, to: output }
+---
+
+# Extract and sync design tokens from Figma to CSS variables
+
+Extract and sync design tokens from Figma to CSS variables
+
+> Auto-drafted by `npx systemix atlas scan` from skill `/tokens`.
+> Review steps, edges, and labels before approving — then approve in the queue to publish.

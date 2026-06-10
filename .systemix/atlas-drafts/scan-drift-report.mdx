@@ -1,0 +1,22 @@
+---
+id: scan-drift-report
+persona: designer
+title: "Audit the codebase for design-code drift — hardcoded colors,"
+pattern: chain
+surface: desktop
+problem: "Audit the codebase for design-code drift — hardcoded colors, spacing, and type scales that should reference tokens. Produces a structured report with severity levels."
+steps:
+  - { id: trigger, label: Trigger, kind: input, note: "Invoke /drift-report" }
+  - { id: process, label: Process, kind: agent, note: "Audit the codebase for design-code drift — hardcoded colors, spacing, and type s", agent: scout }
+  - { id: output, label: Done, kind: output, note: "Skill complete" }
+edges:
+  - { from: trigger, to: process }
+  - { from: process, to: output }
+---
+
+# Audit the codebase for design-code drift — hardcoded colors,
+
+Audit the codebase for design-code drift — hardcoded colors, spacing, and type scales that should reference tokens. Produces a structured report with severity levels.
+
+> Auto-drafted by `npx systemix atlas scan` from skill `/drift-report`.
+> Review steps, edges, and labels before approving — then approve in the queue to publish.

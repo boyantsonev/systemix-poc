@@ -1,0 +1,22 @@
+---
+id: scan-check-parity
+persona: designer
+title: "Detect drift between Figma design tokens/components and the "
+pattern: chain
+surface: desktop
+problem: "Detect drift between Figma design tokens/components and the codebase. Shows a full parity report with token diffs, unlinked components, and designer comments."
+steps:
+  - { id: trigger, label: Trigger, kind: input, note: "Invoke /check-parity" }
+  - { id: process, label: Process, kind: agent, note: "Detect drift between Figma design tokens/components and the codebase. Shows a fu", agent: scout }
+  - { id: output, label: Done, kind: output, note: "Skill complete" }
+edges:
+  - { from: trigger, to: process }
+  - { from: process, to: output }
+---
+
+# Detect drift between Figma design tokens/components and the 
+
+Detect drift between Figma design tokens/components and the codebase. Shows a full parity report with token diffs, unlinked components, and designer comments.
+
+> Auto-drafted by `npx systemix atlas scan` from skill `/check-parity`.
+> Review steps, edges, and labels before approving — then approve in the queue to publish.
