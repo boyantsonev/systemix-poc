@@ -9,6 +9,9 @@ import { WorkflowBeam } from "@/components/docs/WorkflowBeam";
 import { SkillsBrowser } from "@/components/docs/SkillsBrowser";
 import { ArchitectureGraph } from "@/components/docs/ArchitectureGraph";
 import { DocsRoleChooser } from "@/components/docs/DocsRoleChooser";
+import { GoalsIndex } from "@/components/contract/GoalsIndex";
+import { GoalHypotheses } from "@/components/contract/GoalHypotheses";
+import { RecordsIndex } from "@/components/contract/RecordsIndex";
 
 // Component registry for all docs MDX. Fumadocs defaults (Cards, Code blocks,
 // headings, etc.) merged with the Systemix domain components used inside the
@@ -25,6 +28,9 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     SkillsBrowser,
     ArchitectureGraph,
     DocsRoleChooser,
+    GoalsIndex,
+    GoalHypotheses,
+    RecordsIndex,
     ...components,
   };
 }

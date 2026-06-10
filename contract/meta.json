@@ -1,4 +1,16 @@
 {
   "title": "Contract",
-  "pages": ["hypotheses", "tokens", "components"]
+  "pages": [
+    "index",
+    "---Goals---",
+    "goals/landing-validation",
+    "goals/design-system",
+    "goals/founder-loop-experience",
+    "goals/brand-adoption",
+    "goals/self-improvement",
+    "---Records---",
+    "tokens",
+    "components",
+    "workflows"
+  ]
 }

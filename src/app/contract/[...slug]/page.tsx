@@ -29,7 +29,8 @@ export default async function Page(props: {
 }
 
 export function generateStaticParams() {
-  return contractSource.generateParams();
+  // The root index.mdx (slug: []) is served by ../page.tsx, not this catch-all.
+  return contractSource.generateParams().filter((p) => p.slug.length > 0);
 }
 
 export async function generateMetadata(props: {
