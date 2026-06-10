@@ -1,0 +1,24 @@
+---
+id: designer-component
+order: 4
+persona: designer
+title: Component generation
+pattern: chain
+surface: desktop
+problem: "Generate a production React component + story from a Figma node, reviewed before it ships into the system."
+steps:
+  - { id: select, label: Select Figma node, kind: input, note: Pick the component, screen: /design-system/components }
+  - { id: extract, label: Extract context, kind: tool, agent: ada, note: Pull design context, screen: /design-system/components }
+  - { id: generate, label: Generate code, kind: agent, agent: ada, note: Component + Storybook story, screen: /design-system/components }
+  - { id: review, label: Review, kind: human, note: Approve the generated code, screen: /queue }
+  - { id: ship, label: Ship, kind: output, agent: ship, note: Lands in the system, screen: /system }
+edges:
+  - { from: select, to: extract }
+  - { from: extract, to: generate }
+  - { from: generate, to: review }
+  - { from: review, to: ship }
+---
+
+# Component generation
+
+Generate a production React component + story from a Figma node, reviewed before it ships into the system.

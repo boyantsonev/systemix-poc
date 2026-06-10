@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom",
+    "config": {
+      "testEnvironment": "node",
+      "testMatch": ["**/tests/acceptance/hermes-skill-update/**/*.test.js"]
+    }
+  },
+  "mutate": ["src/commands/skill-update.js"],
+  "coverageAnalysis": "off",
+  "reporters": ["clear-text", "progress", "html"],
+  "htmlReporter": { "fileName": "reports/mutation/skill-update.html" },
+  "thresholds": { "high": 80, "low": 70, "break": 0 }
+}

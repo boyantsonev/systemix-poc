@@ -1,0 +1,24 @@
+---
+id: founder-init
+order: 1
+persona: founder
+title: Init an instance
+pattern: chain
+surface: desktop
+problem: "Install Systemix into a repo and stand up the first experiment. Config renders immediately; System comes online once the design system syncs."
+steps:
+  - { id: install, label: npx systemix init, kind: input, note: Scaffold into the repo, screen: /docs }
+  - { id: point, label: Point at sources, kind: tool, note: Figma · existing code · desired UI, screen: /docs }
+  - { id: first, label: First hypothesis, kind: human, note: Define what to test, screen: /design-system/hypotheses }
+  - { id: config, label: Config renders, kind: tool, note: The instance topology, screen: /config }
+  - { id: ready, label: System ready, kind: output, note: Living styleguide is live, screen: /system }
+edges:
+  - { from: install, to: point }
+  - { from: point, to: first }
+  - { from: first, to: config }
+  - { from: config, to: ready }
+---
+
+# Init an instance
+
+Install Systemix into a repo and stand up the first experiment. Config renders immediately; System comes online once the design system syncs.

@@ -1,0 +1,29 @@
+---
+id: founder-landing
+order: 2
+persona: founder
+title: Landing value-prop test
+pattern: routing
+surface: desktop
+problem: "Which value framing converts? Route the hypothesis by ICP, ship both, measure, and let Hermes weigh the evidence."
+steps:
+  - { id: hypothesis, label: Framing hypothesis, kind: input, note: A landing value-prop claim, screen: /design-system/hypotheses }
+  - { id: route, label: Route by ICP, kind: router, note: Founder vs designer, screen: / }
+  - { id: founderframe, label: Founder framing, kind: agent, agent: hermes, note: Lead with founder pain, screen: / }
+  - { id: designerframe, label: Designer framing, kind: agent, agent: hermes, note: Lead with drift correctness, screen: / }
+  - { id: measure, label: Measure CTR, kind: tool, note: PostHog per variant, screen: /queue }
+  - { id: evaluate, label: Hermes evaluates, kind: agent, agent: hermes, note: Weigh the evidence, screen: /queue }
+  - { id: decision, label: Promote winner, kind: output, note: Winning framing ships, screen: /design-system/hypotheses }
+edges:
+  - { from: hypothesis, to: route }
+  - { from: route, to: founderframe, label: founder }
+  - { from: route, to: designerframe, label: designer }
+  - { from: founderframe, to: measure }
+  - { from: designerframe, to: measure }
+  - { from: measure, to: evaluate }
+  - { from: evaluate, to: decision }
+---
+
+# Landing value-prop test
+
+Which value framing converts? Route the hypothesis by ICP, ship both, measure, and let Hermes weigh the evidence.

@@ -14,6 +14,7 @@ const { watch } = require("../src/commands/watch");
 const { socialSignal } = require("../src/commands/social-signal");
 const { evidence } = require("../src/commands/evidence");
 const { config } = require("../src/commands/config");
+const { atlas } = require("../src/commands/atlas");
 
 const [, , command, ...args] = process.argv;
 
@@ -40,6 +41,7 @@ const HELP = `
     npx systemix social-signal           Log social post metrics into PostHog + hypothesis contract
     npx systemix token-guard [sub]       Manage TokenGuard (status|reset|remove)
     npx systemix evidence [pull|close]   Pull PostHog data + Hermes synthesis → queue
+    npx systemix atlas build             Generate the Atlas catalog from contract/workflows/*.mdx
 
   Workflows (install with: npx systemix workflow add <name>):
     design-system                        Product A — Figma↔code token sync (6 skills)
@@ -75,6 +77,9 @@ async function main() {
       break;
     case "config":
       await config(args);
+      break;
+    case "atlas":
+      await atlas(args);
       break;
     case "add":
       await add(args[0]);

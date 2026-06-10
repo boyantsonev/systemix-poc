@@ -1,0 +1,26 @@
+---
+id: designer-ds-sync
+order: 3
+persona: designer
+title: Design-system sync
+pattern: chain
+surface: desktop
+problem: "Edit tokens in globals.css and keep Figma variables in lockstep, with any drift surfaced for review."
+steps:
+  - { id: edit, label: Edit token, kind: input, note: Change an oklch value, screen: /design-system/tokens }
+  - { id: convert, label: Convert, kind: tool, agent: flux, note: npm run tokens → bridge.json, screen: /design-system/tokens }
+  - { id: sync, label: Sync to Figma, kind: tool, agent: flux, note: Push variables, screen: /config }
+  - { id: drift, label: Drift check, kind: agent, agent: scout, note: Detect code ↔ Figma drift, screen: /queue }
+  - { id: approve, label: Resolve, kind: human, note: Approve the resolution, screen: /queue }
+  - { id: vars, label: Variables updated, kind: output, note: Figma reflects the code, screen: /system }
+edges:
+  - { from: edit, to: convert }
+  - { from: convert, to: sync }
+  - { from: sync, to: drift }
+  - { from: drift, to: approve }
+  - { from: approve, to: vars }
+---
+
+# Design-system sync
+
+Edit tokens in globals.css and keep Figma variables in lockstep, with any drift surfaced for review.
