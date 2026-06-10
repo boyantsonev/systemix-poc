@@ -12,8 +12,7 @@ const skillUpdate = require("./skill-update");
 const fs = require("fs");
 const path = require("path");
 
-const OLLAMA_URL = process.env.OLLAMA_URL ?? "http://localhost:11434/api/chat";
-const MODEL = process.env.HERMES_MODEL ?? "hermes3";
+const hermes = require("../hermes-client");
 const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
 const HYPOTHESES_DIR = path.join(process.cwd(), "contract", "hypotheses");
 
@@ -265,23 +264,8 @@ Rules:
   const userPrompt = `Hypothesis contract:\n${JSON.stringify(hypothesisData, null, 2)}\n\nPostHog data:\n${JSON.stringify(posthogData, null, 2)}\n\nSynthesize now:`;
 
   try {
-    const res = await fetch(OLLAMA_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        stream: false,
-        options: { temperature: 0.1, num_predict: 512 },
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user",   content: userPrompt },
-        ],
-      }),
-    });
-    if (!res.ok) throw new Error(`Ollama ${res.status}`);
-    const json = await res.json();
-    const raw = (json.message?.content ?? "{}").trim();
-    // Strip possible markdown fences
+    const raw = await hermes.chat(SYSTEM, userPrompt, { temperature: 0.1, maxTokens: 512 });
+    if (!raw) throw new Error("No response from LLM");
     const cleaned = raw.replace(/^```json?\n?/, "").replace(/\n?```$/, "");
     return JSON.parse(cleaned);
   } catch (err) {

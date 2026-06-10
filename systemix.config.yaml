@@ -22,6 +22,7 @@ signals:
 hermes:
   model: hermes3
   endpoint: http://localhost:11434
+  fallback_model: claude-haiku-4-5-20251001  # used when Ollama is unreachable; needs ANTHROPIC_API_KEY
   autonomy: balanced
   thresholds:
     high: 0.85

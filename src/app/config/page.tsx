@@ -11,6 +11,8 @@ export const dynamic = "force-dynamic";
 export default function ConfigPage() {
   const cfg = loadInstanceConfig();
   const runtime = loadRuntimeState();
+  const readonlyFs = !!process.env.VERCEL;
+  const posthogConfigured = !!process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
   return (
     <div className="w-screen h-screen overflow-hidden flex flex-col bg-background">
@@ -38,7 +40,7 @@ export default function ConfigPage() {
       </header>
 
       {cfg ? (
-        <ConfigView cfg={cfg} runtime={runtime} />
+        <ConfigView cfg={cfg} runtime={runtime} readonlyFs={readonlyFs} posthogConfigured={posthogConfigured} />
       ) : (
         <div className="flex-1 flex items-center justify-center">
           <div className="max-w-md text-center px-6">
