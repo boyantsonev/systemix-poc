@@ -29,6 +29,7 @@ packages/cli/reports/
 
 # production
 /build
+packages/**/dist
 
 # misc
 .DS_Store
