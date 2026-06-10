@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom",
+    "config": {
+      "testEnvironment": "node",
+      "testMatch": ["**/tests/acceptance/evidence-engagement/**/*.test.js"]
+    }
+  },
+  "mutate": [
+    "src/commands/evidence.js:99-243",
+    "src/commands/evidence.js:494-637"
+  ],
+  "coverageAnalysis": "off",
+  "reporters": ["clear-text", "progress", "html"],
+  "htmlReporter": { "fileName": "reports/mutation/evidence-engagement.html" },
+  "thresholds": { "high": 80, "low": 70, "break": 0 }
+}

@@ -10,6 +10,9 @@ signals:
   posthog:
     enabled: true
     poll_interval_sec: 300
+    region: eu                              # data residency (Connecta K-12 story)
+    host: https://eu.posthog.com            # server API host for evidence queries
+    ingest_host: https://eu.i.posthog.com   # browser capture host (NEXT_PUBLIC_POSTHOG_HOST)
   vercel:
     enabled: true
   figma:
