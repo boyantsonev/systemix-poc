@@ -1,4 +1,4 @@
-import { systemSource } from "@/lib/system-source";
+import { contractSource } from "@/lib/contract-source";
 import {
   DocsPage,
   DocsBody,
@@ -12,7 +12,7 @@ export default async function Page(props: {
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await props.params;
-  const page = systemSource.getPage(slug);
+  const page = contractSource.getPage(slug);
   if (!page) notFound();
 
   const MDX = page.data.body;
@@ -29,14 +29,14 @@ export default async function Page(props: {
 }
 
 export function generateStaticParams() {
-  return systemSource.generateParams();
+  return contractSource.generateParams();
 }
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await props.params;
-  const page = systemSource.getPage(slug);
+  const page = contractSource.getPage(slug);
   if (!page) notFound();
   return { title: page.data.title };
 }

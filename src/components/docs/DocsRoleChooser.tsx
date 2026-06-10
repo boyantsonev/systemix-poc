@@ -13,9 +13,9 @@ const ROLE_PATHS = [
   },
   {
     role: "Designer",
-    line: "Tokens, components, and experiments in the System living styleguide.",
-    href: "/system",
-    cta: "Open the System layer →",
+    line: "Hypotheses, tokens, and components — the records of the living Contract.",
+    href: "/contract",
+    cta: "Open the Contract →",
   },
   {
     role: "Engineer",

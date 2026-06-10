@@ -84,9 +84,9 @@ Each phase is one PR, independently shippable, e2e-verified (Playwright suite ex
 
 | Phase | Work | Verify |
 |---|---|---|
-| **A — Rename & flip** (mechanical) | Re-root `/system` → `/contract`; flip `/contract` + `/design-system` redirects; new `meta.json` (flat for now); update `/docs` nav links | `npm run build` exit 0; e2e smoke green; every old URL redirects |
+| **A — Rename & flip** (mechanical) | Re-root `/system` → `/contract` (routes, loader, scoped search); drop the legacy `/contract` → `/design-system` redirects (next.config + page) so `/contract` is real; add `/system/:path*` → `/contract/:path*` redirects; `meta.json` title "Contract" (flat, hypotheses first); update `/docs` nav links + manifest + role chooser + `/config` header link; add Contract to the app top bar (the `/design-system` hub keeps its nav item until C) | `npm run build` exit 0; e2e green incl. new `e2e/contract.spec.ts` (index + record render; `/system` and deep links redirect) |
 | **B — Hierarchy** | Write `contract/index.mdx` (brief + memory seeded from closed experiments); 4–5 `goals/*.mdx` authored with pre-registered **Done means / Kill if** blocks (copy templates: [research §3.2](./research-zero-base.md)); add `goal:` to all 6 hypotheses; nav by goal | every hypothesis reachable under exactly one goal (parity script); build green |
-| **C — Embedded agent UI + ledger** | `goal`/`subject` on queue items; `<NowStrip/>`, `<VerdictStrip/>`, `<PendingDecisions/>`, `<EvidencePanel/>`, `<GoalActivity/>` embeds; **`/contract/decisions` ledger pages** (proposal + frozen evidence + MDX diff); retire `/dashboard` + `/design-system` from nav; `/config` ops view absorbs `/queue`; remove `mock-projects.ts` data from any surviving surface | e2e: approve from a contract page mutates `queue.json`; old queue flow preserved in `/config`; no mock data rendered anywhere |
+| **C — Embedded agent UI + ledger** | `goal`/`subject` on queue items; `<NowStrip/>`, `<VerdictStrip/>`, `<PendingDecisions/>`, `<EvidencePanel/>`, `<GoalActivity/>` embeds; **`/contract/decisions` ledger pages** (proposal + frozen evidence + MDX diff); retire `/dashboard` + `/design-system` from nav (and redirect them to `/config` / `/contract`); `/config` ops view absorbs `/queue`; remove `mock-projects.ts` data from any surviving surface | e2e: approve from a contract page mutates `queue.json`; old queue flow preserved in `/config`; no mock data rendered anywhere |
 | **D — Memory + write matrix** | `/close-experiment` writes provenance-bearing memory entries (confidence · review-by · used-by); root contract's `## Autonomy` clause renders the matrix + **track record** from the queue archive; matrix enforced in skills/CLI (ghost tier may never write directly — add a test) | dry-run close-experiment produces a valid entry; ghost-tier write attempt is rejected in tests; track-record numbers reconcile with `queue.json` |
 | **E — Marketing alignment** | `/docs` intro gets the ladder; `concepts/contract.mdx` rewrite; landing "Surfaces" copy reads Config / Contract / Atlas | build + `e2e/landing.spec.ts` green |
 
@@ -101,6 +101,9 @@ biggest UX change; D makes the autonomy story real; E closes the loop publicly.
   pages *sit* changes.
 - **`lib/data/docs.ts` / `sync-docs`**: keeps feeding the Records pages.
 - **Velocity-gap experiment**: keeps running; Phase B just files it under the flagship goal.
+- **Landing `/system` link**: the Surfaces card still points at `/system` and rides the redirect —
+  deliberately untouched in Phase A because the landing is the live velocity-gap experiment page;
+  its copy changes in Phase E (ideally after `/close-experiment`).
 
 ## Risks
 

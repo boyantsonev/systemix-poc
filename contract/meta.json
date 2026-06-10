@@ -1,4 +1,4 @@
 {
-  "title": "System",
-  "pages": ["tokens", "components", "hypotheses"]
+  "title": "Contract",
+  "pages": ["hypotheses", "tokens", "components"]
 }

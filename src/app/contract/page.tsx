@@ -1,23 +1,24 @@
 import Link from "next/link";
 import { DocsPage, DocsBody, DocsTitle } from "fumadocs-ui/page";
-import { systemSource } from "@/lib/system-source";
+import { contractSource } from "@/lib/contract-source";
 
 const CATEGORIES = [
+  { key: "hypotheses", title: "Hypotheses", blurb: "Experiments and the evidence that closed them." },
   { key: "tokens", title: "Tokens", blurb: "Colors, spacing, radius — matched against the repo." },
   { key: "components", title: "Components", blurb: "Component contracts with parity + drift status." },
-  { key: "hypotheses", title: "Hypotheses", blurb: "Experiments and the evidence that closed them." },
 ];
 
-export default function SystemIndex() {
-  const pages = systemSource.getPages();
+export default function ContractIndex() {
+  const pages = contractSource.getPages();
 
   return (
     <DocsPage>
-      <DocsTitle>Living styleguide</DocsTitle>
+      <DocsTitle>The Contract</DocsTitle>
       <DocsBody>
         <p className="text-fd-muted-foreground">
-          Tokens, components, and experiments kept in sync with the repo by the
-          loop. Pick a category, or browse from the sidebar.
+          The living agreement between this team and the engine — the records the
+          loop reads, validates, and writes back. Pick a category, or browse from
+          the sidebar.
         </p>
 
         <div className="not-prose mt-8 space-y-6">

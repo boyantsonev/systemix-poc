@@ -169,18 +169,18 @@ export const docsManifest: DocEntry[] = [
   // App surfaces (external routes)
   {
     slug: "",
-    title: "System (living styleguide)",
+    title: "Contract (living agreement)",
     section: "Run",
-    href: "/system",
+    href: "/contract",
     status: "published",
     audience: "designer",
     external: true,
   },
   {
     slug: "",
-    title: "Dashboard",
+    title: "Config",
     section: "Run",
-    href: "/dashboard",
+    href: "/config",
     status: "published",
     audience: "operator",
     external: true,

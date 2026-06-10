@@ -12,10 +12,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/instance",                           destination: "/config",                          permanent: false },
       { source: "/graph",                              destination: "/config",                          permanent: false },
-      { source: "/contract",                           destination: "/design-system",                   permanent: false },
-      { source: "/contract/tokens",                    destination: "/design-system",                   permanent: false },
-      { source: "/contract/components",                destination: "/design-system",                   permanent: false },
-      { source: "/contract/:slug",                     destination: "/design-system",                   permanent: false },
+      { source: "/system",                             destination: "/contract",                        permanent: false },
+      { source: "/system/:path*",                      destination: "/contract/:path*",                 permanent: false },
       { source: "/docs/concepts/memory-layer",         destination: "/docs/concepts/evidence-layer",    permanent: true  },
     ];
   },
