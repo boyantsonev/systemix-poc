@@ -197,3 +197,35 @@ test("engagement close --flag records flagged-for-experiment", async () => {
   await evidence(["engagement", "close", "--flag"]);
   expect(readRecord()).toMatch(/flagged-for-experiment _\(cli\)_/);
 });
+
+// ── evidence check ────────────────────────────────────────────────────────────
+
+test("check reports missing creds without pinging", async () => {
+  delete process.env.POSTHOG_API_KEY;
+  delete process.env.POSTHOG_PROJECT_ID;
+  const logs = [];
+  jest.spyOn(console, "log").mockImplementation((...a) => logs.push(a.join(" ")));
+  const { evidence } = freshModule();
+  await evidence(["check"]);
+  console.log.mockRestore();
+  const out = logs.join("\n");
+  expect(out).toMatch(/POSTHOG_API_KEY.*missing/);
+  expect(global.fetch).not.toHaveBeenCalled();
+});
+
+test("check pings PostHog and reports the 24h pageview count", async () => {
+  process.env.POSTHOG_API_KEY = "phx_test";
+  process.env.POSTHOG_PROJECT_ID = "123";
+  process.env.POSTHOG_HOST = "https://eu.posthog.com";
+  global.fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ results: [[42]] }) });
+  const logs = [];
+  jest.spyOn(console, "log").mockImplementation((...a) => logs.push(a.join(" ")));
+  const { evidence } = freshModule();
+  await evidence(["check"]);
+  console.log.mockRestore();
+  expect(global.fetch).toHaveBeenCalledWith(
+    "https://eu.posthog.com/api/projects/123/query",
+    expect.objectContaining({ method: "POST" }),
+  );
+  expect(logs.join("\n")).toMatch(/42 \$pageview/);
+});

@@ -586,6 +586,55 @@ async function engagement(args) {
   return engagementPull(sub === "pull" ? args.slice(1) : args);
 }
 
+// ── check subcommand — is PostHog wired + collecting? ─────────────────────────
+
+async function check() {
+  const apiKey    = process.env.POSTHOG_API_KEY;
+  const projectId = process.env.POSTHOG_PROJECT_ID;
+  const host      = (process.env.POSTHOG_HOST ?? "https://eu.posthog.com").replace(/\/$/, "");
+  const mark = (b) => (b ? "✓" : "✗");
+
+  console.log("\n  systemix evidence check\n");
+  console.log(`     ${mark(!!apiKey)} POSTHOG_API_KEY       ${apiKey ? "set" : "missing"}`);
+  console.log(`     ${mark(!!projectId)} POSTHOG_PROJECT_ID    ${projectId ? `= ${projectId}` : "missing"}`);
+  console.log(`     ✓ POSTHOG_HOST         = ${host}`);
+
+  if (!apiKey || !projectId) {
+    console.log("\n  Set POSTHOG_API_KEY + POSTHOG_PROJECT_ID — see docs/feature/posthog-loop/setup.md\n");
+    return;
+  }
+
+  process.stdout.write("\n     pinging PostHog... ");
+  try {
+    const resp = await fetch(`${host}/api/projects/${projectId}/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        query: {
+          kind: "HogQLQuery",
+          query: "SELECT count() FROM events WHERE event = '$pageview' AND timestamp >= now() - toIntervalDay(1)",
+        },
+      }),
+    });
+    if (!resp.ok) {
+      console.log(`✗ HTTP ${resp.status}`);
+      console.log("\n  Connection failed — check the host, project id, and key.\n");
+      return;
+    }
+    const rows = (await resp.json()).results ?? [];
+    const count = rows[0]?.[0] ?? 0;
+    console.log("✓ connected");
+    console.log(`     ${count > 0 ? "✓" : "·"} ${count} $pageview event(s) in the last 24h`);
+    console.log(
+      count > 0
+        ? "\n  Capture is live. Run: npx systemix evidence engagement pull\n"
+        : "\n  Connected, but no pageviews yet — confirm NEXT_PUBLIC_POSTHOG_KEY is set in Vercel and deployed.\n",
+    );
+  } catch (err) {
+    console.log(`✗ ${err.message}\n`);
+  }
+}
+
 // ── Main export ───────────────────────────────────────────────────────────────
 
 async function evidence(args) {
@@ -596,6 +645,7 @@ async function evidence(args) {
     case "pull":       return pull(rest);
     case "close":      return close(rest);
     case "engagement": return engagement(rest);
+    case "check":      return check();
     default:
       console.log(`
   systemix evidence — evidence loop commands
@@ -607,6 +657,7 @@ async function evidence(args) {
     evidence close <id> --decision <d>   Close: promote | iterate | kill
     evidence engagement pull [--days N]  Sync landing funnel → engagement record + HITL card
     evidence engagement close [--flag]   Acknowledge (or --flag for experiment) the latest snapshot
+    evidence check                       Verify PostHog creds + whether events are arriving
 
   Examples:
     npx systemix evidence pull

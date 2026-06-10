@@ -4,6 +4,7 @@ import { usePostHog } from "posthog-js/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/lib/site-config";
+import { useVariant } from "@/lib/useVariant";
 
 // ── Hero CTAs ─────────────────────────────────────────────────────────────────
 
@@ -63,13 +64,15 @@ export function NavCTAs() {
 
 export function InstallCommand() {
   const ph = usePostHog();
+  // A/B seam: create a `landing-hero` multivariate flag in PostHog to split this.
+  const variant = useVariant("landing-hero");
   const [copied, setCopied] = useState(false);
   const cmd = "npx systemix init";
 
   function copy() {
     navigator.clipboard.writeText(cmd).then(() => {
       setCopied(true);
-      ph.capture("install_command_copied");
+      ph.capture("install_command_copied", { location: "hero", variant });
       setTimeout(() => setCopied(false), 2000);
     });
   }
