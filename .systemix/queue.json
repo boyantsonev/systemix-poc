@@ -1,0 +1,122 @@
+{
+  "cards": [
+    {
+      "id": "scan-scan-sync-docs-1781091778863",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-sync-docs",
+      "draftPath": ".systemix/atlas-drafts/scan-sync-docs.mdx",
+      "skill": "sync-docs",
+      "title": "Keep the product docs in sync with the codebase. Run this at",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /sync-docs. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "approved",
+      "resolvedAt": "2026-06-10T11:45:34.265Z",
+      "resolution": {
+        "action": "approved",
+        "note": null,
+        "resolvedBy": "dashboard"
+      }
+    },
+    {
+      "id": "scan-scan-check-parity-1781091778863",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-check-parity",
+      "draftPath": ".systemix/atlas-drafts/scan-check-parity.mdx",
+      "skill": "check-parity",
+      "title": "Detect drift between Figma design tokens/components and the ",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /check-parity. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    },
+    {
+      "id": "scan-scan-contract-query-1781091778863",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-contract-query",
+      "draftPath": ".systemix/atlas-drafts/scan-contract-query.mdx",
+      "skill": "contract-query",
+      "title": "Query the design system contract for token or component rati",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /contract-query. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    },
+    {
+      "id": "scan-scan-drift-report-1781091778864",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-drift-report",
+      "draftPath": ".systemix/atlas-drafts/scan-drift-report.mdx",
+      "skill": "drift-report",
+      "title": "Audit the codebase for design-code drift — hardcoded colors,",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /drift-report. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    },
+    {
+      "id": "scan-scan-figma-1781091778864",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-figma",
+      "draftPath": ".systemix/atlas-drafts/scan-figma.mdx",
+      "skill": "figma",
+      "title": "Extract design context and screenshot from a Figma URL",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /figma. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    },
+    {
+      "id": "scan-scan-sync-to-figma-1781091778864",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-sync-to-figma",
+      "draftPath": ".systemix/atlas-drafts/scan-sync-to-figma.mdx",
+      "skill": "sync-to-figma",
+      "title": "Push CSS custom property values from the codebase back to Fi",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /sync-to-figma. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    },
+    {
+      "id": "scan-scan-tokens-1781091778864",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-tokens",
+      "draftPath": ".systemix/atlas-drafts/scan-tokens.mdx",
+      "skill": "tokens",
+      "title": "Extract and sync design tokens from Figma to CSS variables",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /tokens. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    },
+    {
+      "id": "scan-scan-connect-1781091778864",
+      "type": "workflow-draft-review",
+      "workflowId": "scan-connect",
+      "draftPath": ".systemix/atlas-drafts/scan-connect.mdx",
+      "skill": "connect",
+      "title": "Link Figma components to codebase React components bidirecti",
+      "persona": "designer",
+      "pattern": "chain",
+      "stepCount": 3,
+      "context": "Auto-drafted from skill /connect. Pattern: chain, 3 steps.",
+      "requestedAt": "2026-06-10T11:42:58.861Z",
+      "status": "pending"
+    }
+  ]
+}

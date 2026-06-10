@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { WorkflowDraftCard } from "@/components/queue/WorkflowDraftCard";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -9,7 +10,8 @@ type CardType =
   | "drift-resolution"
   | "instrumentation-approval"
   | "new-token"
-  | "hypothesis-validation";
+  | "hypothesis-validation"
+  | "workflow-draft-review";
 
 type CardStatus = "pending" | "approved" | "rejected" | "deferred";
 
@@ -43,6 +45,7 @@ const CARD_TYPE: Record<CardType, { label: string; icon: string; color: string }
   "instrumentation-approval": { label: "Instrument", icon: "▷", color: "text-blue-600 dark:text-blue-400"    },
   "new-token":                { label: "New token",  icon: "◆", color: "text-violet-600 dark:text-violet-400"  },
   "hypothesis-validation":    { label: "Hypothesis", icon: "◈", color: "text-emerald-600 dark:text-emerald-400" },
+  "workflow-draft-review":    { label: "Workflow draft", icon: "◧", color: "text-sky-600 dark:text-sky-400" },
 };
 
 const STATUS_STYLE: Record<CardStatus, string> = {
@@ -318,9 +321,9 @@ export function HitlQueue({ projectSlug, className }: { projectSlug?: string; cl
   if (loading) return null;
 
   function renderCard(c: QueueCard) {
-    return c.type === "hypothesis-validation"
-      ? <HypothesisCard key={c.id} card={c} onAction={handleAction} />
-      : <StandardCard   key={c.id} card={c} onAction={handleAction} />;
+    if (c.type === "hypothesis-validation") return <HypothesisCard key={c.id} card={c} onAction={handleAction} />;
+    if (c.type === "workflow-draft-review") return <WorkflowDraftCard key={c.id} card={c as never} onAction={handleAction} />;
+    return <StandardCard key={c.id} card={c} onAction={handleAction} />;
   }
 
   return (

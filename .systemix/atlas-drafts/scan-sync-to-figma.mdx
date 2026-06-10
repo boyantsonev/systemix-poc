@@ -1,0 +1,22 @@
+---
+id: scan-sync-to-figma
+persona: designer
+title: "Push CSS custom property values from the codebase back to Fi"
+pattern: chain
+surface: desktop
+problem: "Push CSS custom property values from the codebase back to Figma variables. Reverse of /tokens. Use when you've made code-side token changes that should be reflected in Figma."
+steps:
+  - { id: trigger, label: Trigger, kind: input, note: "Invoke /sync-to-figma" }
+  - { id: process, label: Process, kind: agent, note: "Push CSS custom property values from the codebase back to Figma variables. Rever", agent: flux }
+  - { id: output, label: Done, kind: output, note: "Skill complete" }
+edges:
+  - { from: trigger, to: process }
+  - { from: process, to: output }
+---
+
+# Push CSS custom property values from the codebase back to Fi
+
+Push CSS custom property values from the codebase back to Figma variables. Reverse of /tokens. Use when you've made code-side token changes that should be reflected in Figma.
+
+> Auto-drafted by `npx systemix atlas scan` from skill `/sync-to-figma`.
+> Review steps, edges, and labels before approving — then approve in the queue to publish.

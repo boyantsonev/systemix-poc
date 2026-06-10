@@ -1,0 +1,22 @@
+---
+id: scan-contract-query
+persona: designer
+title: "Query the design system contract for token or component rati"
+pattern: chain
+surface: desktop
+problem: "Query the design system contract for token or component rationale. Returns Hermes-authored prose and frontmatter for a given token name, CSS variable, or component slug. Use when an agent or developer needs a sourced answer about a design decision without hallucinating."
+steps:
+  - { id: trigger, label: Trigger, kind: input, note: "Invoke /contract-query" }
+  - { id: process, label: Process, kind: agent, note: "Query the design system contract for token or component rationale. Returns Herme", agent: hermes }
+  - { id: output, label: Done, kind: output, note: "Skill complete" }
+edges:
+  - { from: trigger, to: process }
+  - { from: process, to: output }
+---
+
+# Query the design system contract for token or component rati
+
+Query the design system contract for token or component rationale. Returns Hermes-authored prose and frontmatter for a given token name, CSS variable, or component slug. Use when an agent or developer needs a sourced answer about a design decision without hallucinating.
+
+> Auto-drafted by `npx systemix atlas scan` from skill `/contract-query`.
+> Review steps, edges, and labels before approving — then approve in the queue to publish.
