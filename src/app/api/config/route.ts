@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { loadInstanceConfig, applyConfigPatch, writeInstanceConfig } from "@/lib/state/instance-config";
 
+export async function GET() {
+  const cfg = loadInstanceConfig();
+  if (!cfg) return NextResponse.json({ ok: false, error: "No systemix.config.yaml found." }, { status: 404 });
+  return NextResponse.json({ ok: true, config: cfg });
+}
+
 // Persist Config-layer edits to systemix.config.yaml. Single-tenant, local dev tool:
 // the patch is whitelist-merged onto the on-disk config before writing.
 export async function POST(req: Request) {
