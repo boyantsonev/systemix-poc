@@ -4,6 +4,13 @@ import { loadInstanceConfig, applyConfigPatch, writeInstanceConfig } from "@/lib
 // Persist Config-layer edits to systemix.config.yaml. Single-tenant, local dev tool:
 // the patch is whitelist-merged onto the on-disk config before writing.
 export async function POST(req: Request) {
+  if (process.env.VERCEL) {
+    return NextResponse.json(
+      { ok: false, error: "Config saves require a local dev environment — edit systemix.config.yaml directly." },
+      { status: 501 },
+    );
+  }
+
   const base = loadInstanceConfig();
   if (!base) {
     return NextResponse.json({ ok: false, error: "No systemix.config.yaml to update." }, { status: 404 });

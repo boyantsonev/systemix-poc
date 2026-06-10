@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { SystemGraph3D } from "@/components/graph/SystemGraph3D";
 import { RuntimePanel } from "./RuntimePanel";
 import {
@@ -32,14 +32,15 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function Toggle({ on, onClick, label }: { on: boolean; onClick: () => void; label: string }) {
+function Toggle({ on, onClick, label, warning }: { on: boolean; onClick: () => void; label: string; warning?: string }) {
   return (
     <button
       onClick={onClick}
       className="flex items-center justify-between w-full gap-3 py-1.5 border-b border-border/30 last:border-0 group"
     >
-      <span className="text-[11px] font-mono text-muted-foreground/70 group-hover:text-foreground transition-colors">
+      <span className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground/70 group-hover:text-foreground transition-colors">
         {label}
+        {warning && <span className="text-amber-500/80">⚠ {warning}</span>}
       </span>
       <span
         className="relative w-7 h-4 rounded-full shrink-0 transition-colors"
@@ -101,13 +102,26 @@ function Stepper({ label, value, onChange }: { label: string; value: number; onC
   );
 }
 
-export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: RuntimeState }) {
+const STORAGE_KEY = "systemix.config";
+
+export function ConfigView({ cfg, runtime, readonlyFs, posthogConfigured }: { cfg: InstanceConfig; runtime: RuntimeState; readonlyFs?: boolean; posthogConfigured?: boolean }) {
   const initialRef = useRef<InstanceConfig>(cfg);
   const [draft, setDraft] = useState<InstanceConfig>(cfg);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runtimeOpen, setRuntimeOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const saved = JSON.parse(stored) as InstanceConfig;
+        setDraft(saved);
+        initialRef.current = saved;
+      }
+    } catch {}
+  }, []);
 
   const dimNodeIds = useMemo(() => computeDimSet(draft), [draft]);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(initialRef.current), [draft]);
@@ -136,15 +150,24 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
     setSaving(true);
     setError(null);
     try {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(draft)); } catch {}
+
       const res = await fetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(draft),
       });
       const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "Save failed");
-      initialRef.current = json.config;
-      setDraft(json.config);
+
+      if (res.status === 501) {
+        // Read-only env (Vercel) — localStorage write above is the persistent store
+        initialRef.current = draft;
+      } else {
+        if (!json.ok) throw new Error(json.error || "Save failed");
+        initialRef.current = json.config;
+        setDraft(json.config);
+      }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (e) {
@@ -189,6 +212,7 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
                   label={sig.poll_interval_sec ? `${name} · poll ${sig.poll_interval_sec}s` : name}
                   on={!!sig.enabled}
                   onClick={() => toggleSignal(name)}
+                  warning={name === "posthog" && posthogConfigured === false ? "key missing" : undefined}
                 />
               ))}
             </div>
@@ -218,8 +242,13 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
           </Section>
 
           <p className="text-[10px] font-mono text-muted-foreground/40 leading-relaxed">
-            Toggling a surface or signal dims its nodes in the graph live. Saving writes{" "}
-            <code className="text-foreground/60">systemix.config.yaml</code>.
+            {readonlyFs ? (
+              <>Changes are saved in this browser. To persist across devices, commit{" "}
+              <code className="text-foreground/60">systemix.config.yaml</code>.</>
+            ) : (
+              <>Toggling a surface or signal dims its nodes in the graph live. Saving writes{" "}
+              <code className="text-foreground/60">systemix.config.yaml</code>.</>
+            )}
           </p>
         </div>
 

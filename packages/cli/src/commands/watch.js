@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const { evidence } = require("./evidence");
+const hermes = require("../hermes-client");
 
 // culori is a workspace dep — resolve from the monorepo root
 let _culori = null;
@@ -332,18 +333,11 @@ Date: ${new Date().toISOString().slice(0, 10)}`;
 
   let prose;
   try {
-    const res = await fetch("http://localhost:11434/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "hermes3", prompt, stream: false }),
-      signal: AbortSignal.timeout(20_000),
-    });
-    if (!res.ok) return;
-    const json = await res.json();
-    prose = json.response?.trim();
+    prose = await hermes.generate(prompt, { timeout: 20_000 });
   } catch {
-    return; // Ollama unavailable — non-fatal
+    return; // LLM unavailable — non-fatal
   }
+  if (!prose) return;
 
   if (!prose || prose.length < 10) return;
 
@@ -494,17 +488,9 @@ async function synthesizeWithHermes(projectRoot, componentName, evidence) {
   const prompt = buildSynthesisPrompt(componentName, contractText, evidence);
   let raw;
   try {
-    const res = await fetch("http://localhost:11434/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "hermes3", prompt, stream: false }),
-      signal: AbortSignal.timeout(30_000),
-    });
-    if (!res.ok) { console.warn(`  [hermes] Ollama error: ${res.status}`); return; }
-    const json = await res.json();
-    raw = json.response?.trim();
-  } catch (err) {
-    console.log(`  [hermes] Ollama unavailable — skipping synthesis for ${componentName}.`);
+    raw = await hermes.generate(prompt, { timeout: 30_000 });
+  } catch {
+    console.log(`  [hermes] LLM unavailable — skipping synthesis for ${componentName}.`);
     return;
   }
 

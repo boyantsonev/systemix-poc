@@ -19,6 +19,7 @@ export interface InstanceConfig {
   hermes: {
     model: string;
     endpoint: string;
+    fallback_model?: string;
     autonomy: string;
     thresholds: { high: number; medium: number };
   };
