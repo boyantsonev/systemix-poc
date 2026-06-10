@@ -1,0 +1,60 @@
+name: Systemix Evidence Sync
+
+# Closes the learning loop on a schedule: pull landing engagement from PostHog,
+# write the snapshot + HITL card, and open a PR for a human to review.
+# Requires repo secrets: POSTHOG_API_KEY, POSTHOG_PROJECT_ID, POSTHOG_HOST.
+# Also needs: Settings → Actions → General → "Allow GitHub Actions to create
+# and approve pull requests" (for the create-pull-request step).
+# Without the secrets the run still works — it writes a "configure-posthog" card.
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # daily, 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Lookback window (days)"
+        required: false
+        default: "30"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Pull landing engagement from PostHog
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: node packages/cli/bin/cli.js evidence engagement pull --days "${{ github.event.inputs.days || '30' }}"
+
+      - name: Open PR with the snapshot
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: systemix/evidence-sync
+          base: main
+          title: "chore(evidence): landing engagement snapshot"
+          commit-message: "chore(evidence): sync landing engagement from PostHog"
+          body: |
+            Automated landing-engagement snapshot from PostHog (EU).
+
+            Review the funnel and acknowledge the queued card at `/queue`,
+            or merge this PR to record the snapshot in the repo.
+          # Scope the commit to just these two files — the repo checks node_modules
+          # into git, so npm ci churns them; add-paths keeps the PR clean.
+          add-paths: |
+            contract/engagement/landing.mdx
+            .systemix/queue.json

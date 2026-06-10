@@ -162,6 +162,30 @@ function applyHypothesisDecision(
   return { ok: true };
 }
 
+// Engagement snapshots write to a standalone engagement record (NOT the
+// hypotheses dir): every resolution appends an entry to its ## Engagement Log.
+function applyEngagementAck(
+  card: { recordPath?: string },
+  action: string,
+  note?: string | null,
+): { ok: boolean; error?: string } {
+  const rel = card.recordPath ?? path.join("contract", "engagement", "landing.mdx");
+  const filePath = path.join(process.cwd(), rel);
+  if (!fs.existsSync(filePath)) return { ok: false, error: `Engagement record not found: ${rel}` };
+  const verb =
+    action === "approved" ? "acknowledged"
+    : action === "deferred" ? "flagged-for-experiment"
+    : "dismissed";
+  const now = new Date().toISOString().slice(0, 10);
+  const line = `- **${now}** ${verb}${note ? ` — ${note}` : ""} _(dashboard)_`;
+  const raw = fs.readFileSync(filePath, "utf8");
+  const updated = `${raw.replace(/\s+$/, "")}\n${line}\n`;
+  const tmp = filePath + ".tmp";
+  fs.writeFileSync(tmp, updated, "utf8");
+  fs.renameSync(tmp, filePath);
+  return { ok: true };
+}
+
 function applyInstrumentation(card: InstrumentationCard): { ok: boolean; error?: string } {
   if (!card.filePath) return { ok: false, error: "No filePath on card" };
   const absPath = path.join(process.cwd(), card.filePath);
@@ -250,6 +274,14 @@ export async function PATCH(req: NextRequest) {
       void import("../../../../packages/cli/src/commands/skill-update.js")
         .then(({ update }) => update((card as HypothesisCard).hypothesisId!, decision, card))
         .catch(() => {});
+    }
+  }
+
+  // Engagement snapshots: every resolution appends to the engagement log.
+  if (card.type === "engagement-snapshot") {
+    const result = applyEngagementAck(card as { recordPath?: string }, action, note);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error ?? "Engagement write-back failed" }, { status: 500 });
     }
   }
 
