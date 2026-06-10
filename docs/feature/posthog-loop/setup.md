@@ -57,6 +57,10 @@ POSTHOG_HOST         = https://eu.posthog.com
 ```
 (Optional: copy the same three into a local `.env.local` if you want to run `systemix evidence pull` by hand.)
 
+Also enable **Settings → Actions → General → Workflow permissions → "Allow GitHub Actions to
+create and approve pull requests"** — the scheduled sync (`.github/workflows/systemix-evidence.yml`)
+opens a PR with each snapshot.
+
 ### 5. Tell Claude when done
 Claude verifies end-to-end: confirms events are arriving, runs the engagement pull, and shows
 a HITL card landing in `/queue`.
