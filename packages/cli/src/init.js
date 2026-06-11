@@ -115,7 +115,7 @@ function scaffoldContracts(projectRoot, includeHypothesisExample, includeMeta) {
 }
 
 // Build systemix.config.yaml — the instance topology (committed; no secrets). See ADR-008.
-function buildConfigYaml({ surfaces, signals, autonomy, siMode }) {
+function buildConfigYaml({ surfaces, signals, autonomy, hermesTier = 0, siMode }) {
   const L = [];
   L.push("# systemix.config.yaml — your instance topology. Committed; contains NO secrets.");
   L.push("# Secrets (Figma/PostHog keys) live in ~/.systemix/config.json or env vars.");
@@ -149,7 +149,7 @@ function buildConfigYaml({ surfaces, signals, autonomy, siMode }) {
   }
   L.push("trust:");
   L.push("  orchestrator_tier: 0   # Ghost Mode at init — never executes autonomously without config");
-  L.push("  hermes_tier: 0");
+  L.push(`  hermes_tier: ${hermesTier}   # the autonomy dial: 0 ghost · 1 assisted · 2 autonomous`);
   return L.join("\n") + "\n";
 }
 
@@ -223,13 +223,14 @@ async function init(opts = {}) {
 
   console.log();
 
-  // ── Q3/4: Autonomy — how much does Hermes decide alone? ───────────────────
-  console.log("  (3/4) Autonomy — how much should Hermes decide on its own?\n");
-  console.log("    (1) conservative  every decision → HITL queue");
-  console.log("    (2) balanced      high-confidence writes directly; else queue a card [default]");
-  console.log("    (3) progressive   writes unless confidence is low\n");
-  const autAns = (await ask("  Choice [2]: ")).trim() || "2";
-  const autonomy = { "1": "conservative", "2": "balanced", "3": "progressive" }[autAns] || "balanced";
+  // ── Q3/4: Autonomy — one dial, three levels (keyed on the trust tier) ──────
+  console.log("  (3/4) Autonomy — how much should the engine do on its own?\n");
+  console.log("    (1) ghost        proposes everything → you approve every write [default, safest]");
+  console.log("    (2) assisted     writes low-risk changes; proposes the rest");
+  console.log("    (3) autonomous   writes most changes; still proposes goals\n");
+  const autAns = (await ask("  Choice [1]: ")).trim() || "1";
+  const [autonomy, hermesTier] =
+    { "1": ["ghost", 0], "2": ["assisted", 1], "3": ["autonomous", 2] }[autAns] || ["ghost", 0];
   console.log();
 
   // ── Q4/4: Self-improvement — should Systemix tune itself? ──────────────────
@@ -284,7 +285,7 @@ async function init(opts = {}) {
   if (fs.existsSync(configYamlPath) && !opts.reconfigure) {
     console.log("  -  systemix.config.yaml exists — left as-is (re-run with --reconfigure to overwrite)");
   } else {
-    fs.writeFileSync(configYamlPath, buildConfigYaml({ surfaces, signals, autonomy, siMode }), "utf8");
+    fs.writeFileSync(configYamlPath, buildConfigYaml({ surfaces, signals, autonomy, hermesTier, siMode }), "utf8");
     console.log(`  ✓  systemix.config.yaml${opts.reconfigure ? " (reconfigured)" : ""}`);
   }
 

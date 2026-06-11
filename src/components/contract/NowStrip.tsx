@@ -33,9 +33,6 @@ export function NowStrip() {
         <span className="inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-foreground">
           {d.autonomy ?? "—"}
         </span>
-        {d.trust ? (
-          <span className="text-muted-foreground/50">trust {d.trust.hermes_tier ?? 0}</span>
-        ) : null}
       </span>
 
       <span className="flex items-center gap-2.5">

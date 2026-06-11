@@ -22,7 +22,7 @@ signals:
 hermes:
   model: hermes3
   endpoint: http://localhost:11434
-  autonomy: balanced
+  autonomy: ghost
   thresholds:
     high: 0.85
     medium: 0.55

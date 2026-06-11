@@ -11,9 +11,9 @@ import {
 } from "@/lib/data/system-graph";
 import type { InstanceConfig } from "@/lib/state/instance-config";
 import type { RuntimeState } from "@/lib/state/runtime-state";
+import { TIER_LABELS, tierLabel, tierFromLabel } from "@/lib/contract/write-policy";
 
 const CANONICAL_SURFACES = ["design-system", "landing", "onboarding"];
-const AUTONOMY = ["ghost", "conservative", "balanced", "aggressive"];
 const SELF_MODES = ["off", "audit", "active"];
 
 function computeDimSet(cfg: InstanceConfig): Set<string> {
@@ -193,7 +193,7 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
             <div className="grid grid-cols-3 gap-2">
               <Stat label="surfaces" value={String(draft.surfaces?.length ?? 0)} />
               <Stat label="signals" value={`${signalsOn}/${Object.keys(draft.signals ?? {}).length}`} />
-              <Stat label="autonomy" value={draft.hermes?.autonomy ?? "—"} />
+              <Stat label="autonomy" value={tierLabel(draft.trust?.hermes_tier ?? 0)} />
             </div>
           </div>
 
@@ -218,12 +218,22 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
             </div>
           </Section>
 
-          <Section title="Hermes autonomy">
+          <Section title="Autonomy">
             <Segmented
-              value={draft.hermes?.autonomy ?? "balanced"}
-              options={AUTONOMY}
-              onChange={(autonomy) => setDraft((d) => ({ ...d, hermes: { ...d.hermes, autonomy } }))}
+              value={tierLabel(draft.trust?.hermes_tier ?? 0)}
+              options={[...TIER_LABELS]}
+              onChange={(label) =>
+                setDraft((d) => ({
+                  ...d,
+                  // One dial: the level sets the trust tier, and the word mirrors it.
+                  trust: { ...d.trust, hermes_tier: tierFromLabel(label) },
+                  hermes: { ...d.hermes, autonomy: label },
+                }))
+              }
             />
+            <p className="mt-2 text-[10px] font-mono text-muted-foreground/40 leading-relaxed">
+              ghost proposes everything · assisted writes low-risk · autonomous writes most (never goals).
+            </p>
           </Section>
 
           <Section title="Self-improvement">
@@ -234,10 +244,9 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
             />
           </Section>
 
-          <Section title="Trust tiers">
+          <Section title="Orchestrator trust">
             <div className="flex flex-col">
               <Stepper label="orchestrator" value={draft.trust?.orchestrator_tier ?? 0} onChange={(v) => setTier("orchestrator_tier", v)} />
-              <Stepper label="hermes" value={draft.trust?.hermes_tier ?? 0} onChange={(v) => setTier("hermes_tier", v)} />
             </div>
           </Section>
 
@@ -280,7 +289,7 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
         <RuntimePanel
           lastUpdated={runtime.lastUpdated}
           activeRuns={runtime.activeRuns}
-          autonomy={draft.hermes?.autonomy ?? "balanced"}
+          autonomy={tierLabel(draft.trust?.hermes_tier ?? 0)}
           onCollapse={() => setRuntimeOpen(false)}
         />
       ) : (
