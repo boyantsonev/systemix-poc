@@ -28,6 +28,18 @@ const nextConfig: NextConfig = {
       { source: "/docs/concepts/memory-layer",         destination: "/docs/concepts/evidence-layer",    permanent: true  },
     ];
   },
+  // PostHog ingestion is reverse-proxied through our own origin (/ingest) so that
+  // ad/tracker blockers — which blocklist *.posthog.com and silently drop every
+  // `/e/` capture — can't see it. The browser only talks to getsystemix.vercel.app;
+  // Vercel's edge forwards to PostHog EU server-side (defeats DNS-level blockers too).
+  // Paired with `api_host: "/ingest"` in PostHogProvider.
+  skipTrailingSlashRedirect: true,
+  async rewrites() {
+    return [
+      { source: "/ingest/static/:path*", destination: "https://eu-assets.i.posthog.com/static/:path*" },
+      { source: "/ingest/:path*",        destination: "https://eu.i.posthog.com/:path*" },
+    ];
+  },
 };
 
 const withMDX = createMDX();

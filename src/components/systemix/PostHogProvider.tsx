@@ -21,7 +21,11 @@ function PageViewTracker() {
 
 if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+    // Same-origin reverse proxy (see next.config rewrites → PostHog EU) so ad/tracker
+    // blockers can't drop event capture. NEXT_PUBLIC_POSTHOG_HOST is no longer the
+    // ingest host — the proxy is hardcoded to EU; the var stays as the ui_host fallback.
+    api_host: "/ingest",
+    ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://eu.posthog.com",
     capture_pageview: false, // we handle it manually above
     capture_pageleave: true,
     person_profiles: "identified_only",
