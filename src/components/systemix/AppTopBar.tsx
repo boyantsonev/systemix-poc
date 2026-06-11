@@ -8,10 +8,9 @@ import { SLogo } from "./SLogo";
 import { ThemeToggle } from "./ThemeToggle";
 
 const APP_NAV = [
-  { label: "Dashboard",     href: "/dashboard"     },
-  { label: "Queue",         href: "/queue"         },
-  { label: "System", href: "/design-system" },
-  { label: "Atlas",         href: "/atlas"         },
+  { label: "Config",   href: "/config"   },
+  { label: "Contract", href: "/contract" },
+  { label: "Atlas",    href: "/atlas"    },
 ];
 
 function PendingBadge() {
@@ -69,7 +68,7 @@ export function AppTopBar() {
                 }`}
               >
                 {label}
-                {href === "/queue" && <PendingBadge />}
+                {href === "/config" && <PendingBadge />}
               </Link>
             );
           })}
@@ -137,7 +136,7 @@ export function AppTopBar() {
                     }`}
                   >
                     {label}
-                    {href === "/queue" && <PendingBadge />}
+                    {href === "/config" && <PendingBadge />}
                   </Link>
                 );
               })}

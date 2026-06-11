@@ -72,7 +72,7 @@ export function ContractMeta({ data }: { data: ContractData }) {
         {data["storybook-story"] ? <Mono>{data["storybook-story"]}</Mono> : null}
       </>
     );
-  } else if (data.hypothesis || data.id) {
+  } else if ((data.hypothesis || data.id) && (data.status || data.section || data.decision)) {
     row = (
       <>
         {data.status ? <Badge label={data.status} /> : null}

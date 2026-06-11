@@ -1,0 +1,76 @@
+---
+type: contract
+title: The Contract
+instance: systemix-demo
+icp: pre-pmf-founder
+autonomy: ghost
+created: 2026-06-10
+updated: 2026-06-10
+---
+
+The living agreement between this team and the engine: the brief we gave it, the
+goals it must accomplish and validate, and everything it has learned. This page
+is public and read-only — you are looking at the real instance, not a demo copy.
+
+<NowStrip />
+
+## Brief
+
+This instance is Systemix running on its own contract. The team is one founder;
+the primary ICP is the **pre-PMF founder** who ships daily with agents (decided
+2026-05-07, superseding the earlier design-engineer framing). The engine's job:
+pursue the goals below, ship variants, read the signals, synthesize evidence
+with Hermes, route decisions through the queue, and write what it learns back
+into this document.
+
+The design system is not the product here — it is one of the goals. The loop is
+the product: ship → signals → synthesis → decision → written back → the next
+ship starts from evidence.
+
+## Autonomy
+
+Current execution tier: **trust 0 — ghost**. Every write the engine wants to
+make arrives as a proposal in the decision queue; nothing lands without a human
+approve. Within that gate, `hermes.autonomy: balanced` (the strip above renders
+the live values) governs how Hermes routes by confidence — high-confidence
+synthesis is queued as a recommendation, low-confidence as a question.
+
+| What the engine may write | ghost (today) | balanced | high |
+|---|---|---|---|
+| Evidence fields on hypotheses | propose | auto-write | auto-write |
+| New hypothesis drafts | propose | draft + propose run | auto-create within budget |
+| Memory entries | propose | propose | auto-append (provenance required) |
+| The brief | propose | propose | propose |
+| Goals | propose | propose | propose |
+
+The covenant: **humans give goals.** At no tier does the engine self-assign
+one. Raising the tier is itself a decision that lands in the queue.
+
+## Goals
+
+<GoalsIndex />
+
+## Memory
+
+Memory is written only from closed experiments — every entry must cite the
+experiment that earned it, with a confidence and a review-by date.
+
+*No entries yet.* Six hypotheses are registered under
+[the landing goal](/contract/goals/landing-validation); none has closed —
+signal wiring (PostHog) is pending, so no evidence has been read. The first
+entry lands when the first experiment closes.
+
+## Decision log
+
+Every write the engine makes starts as a decision. The full ledger — every
+resolved decision with its own permalink — lives at
+[/contract/decisions](/contract/decisions); pending items appear below and in
+the [ops view](/config).
+
+<PendingDecisions />
+
+## Records
+
+What the engine maintains while pursuing the goals — the appendix, not the story.
+
+<RecordsIndex />

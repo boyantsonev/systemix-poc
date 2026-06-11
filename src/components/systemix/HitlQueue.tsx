@@ -389,14 +389,30 @@ function StandardCard({
 
 // ── Queue panel ───────────────────────────────────────────────────────────────
 
-export function HitlQueue({ projectSlug, className }: { projectSlug?: string; className?: string }) {
+export function HitlQueue({
+  projectSlug,
+  goal,
+  hypothesis,
+  title,
+  className,
+}: {
+  projectSlug?: string;
+  goal?: string;
+  hypothesis?: string;
+  title?: string;
+  className?: string;
+}) {
   const [cards, setCards] = useState<QueueCard[]>([]);
   const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const url = projectSlug ? `/api/queue?project=${projectSlug}` : "/api/queue";
-    fetch(url)
+    const params = new URLSearchParams();
+    if (projectSlug) params.set("project", projectSlug);
+    if (goal) params.set("goal", goal);
+    if (hypothesis) params.set("hypothesis", hypothesis);
+    const qs = params.toString();
+    fetch(qs ? `/api/queue?${qs}` : "/api/queue")
       .then(r => r.json())
       .then(data => {
         setCards(data.cards ?? []);
@@ -404,7 +420,7 @@ export function HitlQueue({ projectSlug, className }: { projectSlug?: string; cl
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [projectSlug]);
+  }, [projectSlug, goal, hypothesis]);
 
   const handleAction = useCallback(async (id: string, action: CardStatus) => {
     setCards(prev => prev.map(c => c.id === id ? { ...c, status: action } : c));
@@ -432,7 +448,7 @@ export function HitlQueue({ projectSlug, className }: { projectSlug?: string; cl
     <div className={className ?? "max-w-2xl mt-8 md:mt-10"}>
       <div className="flex items-baseline gap-3 mb-3">
         <h2 className="text-[11px] font-black tracking-widest uppercase text-muted-foreground/70">
-          Hermes Queue
+          {title ?? "Hermes Queue"}
         </h2>
         {isDemo && (
           <span className="text-[11px] font-mono text-muted-foreground/50">demo</span>

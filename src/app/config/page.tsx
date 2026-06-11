@@ -28,10 +28,16 @@ export default function ConfigPage() {
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/system"
+            href="/contract"
             className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
           >
-            System →
+            Contract →
+          </Link>
+          <Link
+            href="/atlas"
+            className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+          >
+            Atlas →
           </Link>
           <ThemeToggle />
         </div>

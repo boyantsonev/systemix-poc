@@ -1,0 +1,53 @@
+---
+type: goal
+id: landing-validation
+title: Build & validate the landing
+order: 0
+given: "Build a landing page based on the velocity-gap thesis and prove it converts pre-PMF founders."
+goal-type: surface
+icp: pre-pmf-founder
+status: active
+success-criteria: "A landing variant validated: ≥20% relative lift on install_command_copied over control at ≥0.85 confidence, decision written back."
+kill-if: "Two consecutive hypothesis cycles with no variant reaching a 5% lift over control → escalate a repositioning proposal (thesis or ICP, not copy)."
+records:
+  - workflows/founder-landing
+created: 2026-06-10
+updated: 2026-06-10
+---
+
+**Done means:** a landing variant validated — at least a 20% relative lift on
+`install_command_copied` (the primary CTA event) over control, at 0.85
+confidence or better, with the decision and rationale written back to this
+contract.
+
+**Kill if:** two consecutive hypothesis cycles close with no variant reaching
+even a 5% lift over control. That would mean the problem is the thesis or the
+ICP, not the copy — escalate a repositioning proposal instead of testing a
+fourth headline.
+
+*Criteria registered 2026-06-10, before any evidence arrived — PostHog signal
+wiring is still pending, so nothing measured has been read yet. The goalposts
+are on record before the data.*
+
+## Why this goal
+
+The velocity-gap thesis: founders now ship 10× faster with agents, but learning
+is still manual and a quarter behind, so speed doesn't compound. The landing
+must prove this framing converts the people who feel that gap — pre-PMF
+founders shipping daily — before it becomes the company's lead story.
+
+## State of play
+
+Six hypotheses predate this goal contract — the goal was implicit; this
+document makes it explicit. One is live in production (the velocity-gap hero,
+`variant_b`). The five earlier ones are stale-running: their sections were
+superseded by the shipped redesign and they need triage (close or archive) once
+signal wiring lands.
+
+## Hypotheses
+
+<GoalHypotheses goal="landing-validation" />
+
+## Decisions
+
+<PendingDecisions goal="landing-validation" />

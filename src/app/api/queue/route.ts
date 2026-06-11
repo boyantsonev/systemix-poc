@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { applyHypothesisDecisionToMdx } from "@/lib/contract/hypothesis-mdx";
+import { hypothesisGoalMap } from "@/lib/contract/goal-map";
 
 export const dynamic = "force-dynamic";
 
@@ -84,11 +85,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const projectSlug = searchParams.get("project") ?? null;
   const hypothesisSlug = searchParams.get("hypothesis") ?? null;
+  const goalSlug = searchParams.get("goal") ?? null;
 
   const queue = readQueue();
   if (!queue) {
-    // Demo cards carry no hypothesisId — a hypothesis-scoped query has no demo data.
-    const cards = hypothesisSlug
+    // Demo cards carry no hypothesisId or goal — a contract-scoped query has
+    // no demo data (the proof surface must never render unlabeled samples).
+    const cards = hypothesisSlug || goalSlug
       ? []
       : projectSlug
       ? DEMO_CARDS.filter(c => !("project" in c) || c.project === projectSlug)
@@ -99,10 +102,16 @@ export async function GET(req: NextRequest) {
       isDemo: true,
     });
   }
+  // Cards may carry an explicit goal; cards that only carry a hypothesisId are
+  // scoped through the hypothesis frontmatter's goal: backlink.
+  const goalMap = goalSlug ? hypothesisGoalMap() : {};
   const cards = (queue.cards ?? []).filter(
-    (c: { project?: string; hypothesisId?: string }) =>
+    (c: { project?: string; hypothesisId?: string; goal?: string }) =>
       (!projectSlug || !c.project || c.project === projectSlug) &&
-      (!hypothesisSlug || c.hypothesisId === hypothesisSlug)
+      (!hypothesisSlug || c.hypothesisId === hypothesisSlug) &&
+      (!goalSlug ||
+        c.goal === goalSlug ||
+        (!!c.hypothesisId && goalMap[c.hypothesisId] === goalSlug))
   );
   const pendingCount = cards.filter((c: { status: string }) => c.status === "pending").length;
   return NextResponse.json({ cards, pendingCount, isDemo: false });
