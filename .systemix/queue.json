@@ -1,0 +1,36 @@
+{
+  "cards": [
+    {
+      "id": "engagement-landing-1781176841325",
+      "type": "engagement-snapshot",
+      "recordPath": "contract/engagement/landing.mdx",
+      "surface": "landing",
+      "hypothesis": "Landing engagement — 0 visitors, 0 installs",
+      "metric": "install conversion",
+      "baselineRate": null,
+      "variantRate": null,
+      "sessions": 0,
+      "confidenceLevel": 0,
+      "context": "Over 30d: 0 unique visitors, 0 pageviews, 0 ran the install command (n/a conversion). CTAs — hero 0, nav 0. Top sections: none.",
+      "proposal": "no-traffic-yet",
+      "_posthogData": {
+        "surface": "landing",
+        "period_days": 30,
+        "fetched_at": "2026-06-11",
+        "unique_visitors": 0,
+        "pageviews": 0,
+        "install_copies": 0,
+        "install_persons": 0,
+        "install_conversion": null,
+        "cta_clicks": {
+          "hero": 0,
+          "nav": 0
+        },
+        "sections": [],
+        "source": "live"
+      },
+      "requestedAt": "2026-06-11T11:20:41.325Z",
+      "status": "pending"
+    }
+  ]
+}
