@@ -8,7 +8,7 @@ import { SLogo } from "./SLogo";
 import { ThemeToggle } from "./ThemeToggle";
 
 const APP_NAV = [
-  { label: "Config",   href: "/config"   },
+  { label: "Home",     href: "/config"   },
   { label: "Contract", href: "/contract" },
   { label: "Atlas",    href: "/atlas"    },
 ];

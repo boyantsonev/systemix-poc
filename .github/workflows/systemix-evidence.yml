@@ -51,7 +51,7 @@ jobs:
           body: |
             Automated landing-engagement snapshot from PostHog (EU).
 
-            Review the funnel and acknowledge the queued card at `/queue`,
+            Review the funnel and acknowledge the queued card on Home (`/config`),
             or merge this PR to record the snapshot in the repo.
           # Scope the commit to just these two files — the repo checks node_modules
           # into git, so npm ci churns them; add-paths keeps the PR clean.

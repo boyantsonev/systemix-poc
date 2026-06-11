@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Settings, X } from "lucide-react";
 import { SystemGraph3D } from "@/components/graph/SystemGraph3D";
 import { RuntimePanel } from "./RuntimePanel";
 import {
@@ -107,9 +108,11 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Open by default: /config is the global ops view — the decision queue and
-  // runtime feed absorbed from the retired /queue page must be visible on land.
+  // Open by default: /config is Home — the decision queue and runtime feed
+  // absorbed from the retired /queue page must be visible on land.
   const [runtimeOpen, setRuntimeOpen] = useState(true);
+  // Home shows graph + feed; the config editor lives behind the gear.
+  const [configOpen, setConfigOpen] = useState(false);
 
   const dimNodeIds = useMemo(() => computeDimSet(draft), [draft]);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(initialRef.current), [draft]);
@@ -160,8 +163,27 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
 
   return (
     <div className="flex-1 flex min-h-0">
-      {/* Editable config */}
-      <aside className="w-80 shrink-0 border-r border-border/30 overflow-y-auto bg-background flex flex-col">
+      {/* Instance settings — slide-over opened from the gear */}
+      {configOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40" onClick={() => setConfigOpen(false)} />
+      )}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-80 border-r border-border/30 overflow-y-auto bg-background flex flex-col transition-transform duration-200 ${
+          configOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="h-11 shrink-0 flex items-center justify-between px-4 border-b border-border/30">
+          <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/40">
+            Instance settings
+          </span>
+          <button
+            onClick={() => setConfigOpen(false)}
+            className="p-1 -m-1 text-muted-foreground/50 hover:text-foreground transition-colors"
+            aria-label="Close settings"
+          >
+            <X size={13} />
+          </button>
+        </div>
         <div className="p-4 flex-1">
           {/* Overview */}
           <div className="mb-5 pb-4 border-b border-border/30">
@@ -242,6 +264,14 @@ export function ConfigView({ cfg, runtime }: { cfg: InstanceConfig; runtime: Run
 
       {/* 3D topology */}
       <div className="flex-1 relative min-w-0">
+        <button
+          onClick={() => setConfigOpen(true)}
+          className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border/50 bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Instance settings"
+        >
+          <Settings size={13} />
+          <span className="text-[10px] font-mono uppercase tracking-widest">Settings</span>
+        </button>
         <SystemGraph3D dimNodeIds={dimNodeIds} />
       </div>
 

@@ -18,7 +18,7 @@ export default function ContractLayout({ children }: { children: ReactNode }) {
         tree={contractSource.pageTree}
         nav={{ title: "systemix contract" }}
         links={[
-          { text: "Config", url: "/config" },
+          { text: "Home", url: "/config" },
           { text: "Atlas", url: "/atlas" },
         ]}
       >

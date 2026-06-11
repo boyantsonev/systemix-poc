@@ -88,7 +88,7 @@ export function RuntimePanel({
           <div className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/40 mb-2">
             Decision queue
           </div>
-          <HitlQueue className="w-full" />
+          <HitlQueue className="w-full" hideDemo />
         </div>
       </div>
     </aside>

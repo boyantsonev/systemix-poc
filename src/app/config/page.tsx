@@ -24,7 +24,7 @@ export default function ConfigPage() {
             <span className="text-[11px] font-mono">systemix</span>
           </Link>
           <span className="text-muted-foreground/20 text-xs">/</span>
-          <span className="text-[11px] font-mono text-muted-foreground/40">config</span>
+          <span className="text-[11px] font-mono text-muted-foreground/40">home</span>
         </div>
         <div className="flex items-center gap-4">
           <Link
@@ -51,7 +51,8 @@ export default function ConfigPage() {
             <p className="text-sm font-mono text-foreground/80 mb-2">No instance configured</p>
             <p className="text-[12px] font-mono text-muted-foreground/60 leading-relaxed mb-4">
               This repo has no <code className="text-foreground/70">systemix.config.yaml</code>. Run the setup
-              wizard to scaffold a Systemix instance, then this layer lets you configure it and see its topology.
+              wizard to scaffold a Systemix instance — then Home shows the live instance: the topology graph,
+              the runtime feed, and the decision queue.
             </p>
             <code className="inline-block text-[12px] font-mono px-3 py-1.5 rounded-lg border border-border/50 text-foreground/70">
               npx systemix init

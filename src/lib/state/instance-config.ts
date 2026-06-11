@@ -10,6 +10,9 @@ import path from "path";
 export interface InstanceSignal {
   enabled: boolean;
   poll_interval_sec?: number;
+  // Signals may carry extra scalar settings (e.g. posthog region/host); the
+  // serializer must round-trip them or a UI save silently strips the yaml.
+  [key: string]: unknown;
 }
 
 export interface InstanceConfig {
@@ -184,6 +187,13 @@ export function serializeInstanceConfig(cfg: InstanceConfig): string {
     lines.push(`  ${name}:`);
     lines.push(`    enabled: ${!!sig.enabled}`);
     if (sig.poll_interval_sec != null) lines.push(`    poll_interval_sec: ${sig.poll_interval_sec}`);
+    // Round-trip any extra scalar signal settings (e.g. posthog region/host).
+    for (const [k, v] of Object.entries(sig)) {
+      if (k === "enabled" || k === "poll_interval_sec") continue;
+      if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
+        lines.push(`    ${k}: ${v}`);
+      }
+    }
   }
   lines.push("hermes:");
   lines.push(`  model: ${cfg.hermes.model}`);
