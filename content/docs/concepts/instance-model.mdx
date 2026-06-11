@@ -3,28 +3,24 @@ title: "Instance model"
 section: "The stack"
 slug: "concepts/instance-model"
 status: "review"
-last-updated: "2026-06-06"
+last-updated: "2026-06-11"
 ---
 
 # Instance model
 
 One Systemix instance per engagement — not per repo, not per app. The entire value of Systemix is a single unified context loop where marketing, business, design, and engineering read from the same evidence base.
 
-## One instance, four surfaces
+## One instance, three surfaces
 
-A Systemix instance exposes four surfaces inside your project:
+A Systemix instance exposes three surfaces inside your project:
 
-**Config** — `/config`
+**Home** — `/config`
 
-View and edit `systemix.config.yaml`. Defines which surfaces are active, which signals are wired in (PostHog, Figma, Vercel, Storybook), and how autonomous Hermes is allowed to be.
+View and edit `systemix.config.yaml`. Defines which surfaces are active, which signals are wired in (PostHog, Figma, Vercel), and the autonomy tier (ghost / assisted / autonomous). Also hosts the HITL queue and runtime feed.
 
-**Graph** — `/graph`
+**Contract** — `/contract`
 
-Force-graph of the instance topology. Shows a live runtime feed and routes HITL cards to the right role. The graph is your control tower — the one view that tells you what Hermes is doing right now.
-
-**System** — `/system`
-
-Living contract library. Token contracts, component parity reports, hypothesis results — all Hermes-maintained, human-verified. The source of truth for what your design system currently is, not what you intended it to be.
+The canonical record your agents read from. Goals decompose into hypotheses; hypotheses close with PostHog evidence; memory accumulates per decision. Every write carries provenance. Hermes proposes — you approve. Ghost tier at init: nothing writes autonomously until you raise the trust tier.
 
 **Atlas** — `/atlas`
 
@@ -37,19 +33,38 @@ Agentic workflow catalog organized by persona. Each persona tab shows the workfl
 surfaces:
   - design-system
   - landing
-  - gtm
-  - product
+  - onboarding
 
 signals:
-  - posthog-eu
-  - figma
-  - vercel
-  - storybook
+  posthog:
+    enabled: true
+    poll_interval_sec: 300
+  vercel:
+    enabled: true
+  figma:
+    enabled: true
 
-autonomy: balanced   # conservative | balanced | aggressive
+hermes:
+  autonomy: ghost   # ghost | assisted | autonomous
+  thresholds:
+    high: 0.85
+    medium: 0.55
+
+trust:
+  hermes_tier: 0   # 0=ghost · 1=assisted · 2=autonomous
 ```
 
-`surfaces` determines which Hermes loops are active and what the local app renders. A landing A/B test and a DS token drift both write to `contract/` and surface in the same HITL queue — under different sections, but one queue.
+`surfaces` determines which Hermes loops are active. A landing A/B test and a DS token drift both write to `contract/` and surface in the same HITL queue — under different sections, but one queue.
+
+**Autonomy levels:**
+
+| Tier | Label | Behaviour |
+|------|-------|-----------|
+| 0 | ghost | Proposes every action — nothing writes without approval |
+| 1 | assisted | Writes low-risk records directly; proposes goals, briefs, hypotheses |
+| 2 | autonomous | Writes most artifacts automatically; still proposes goals and briefs per covenant |
+
+Goals and briefs are never auto-written at any tier — that is the covenant.
 
 ## Contract directory
 
@@ -57,16 +72,18 @@ autonomy: balanced   # conservative | balanced | aggressive
 engagement-root/
 ├── systemix.config.yaml
 ├── contract/
-│   ├── tokens/*.mdx          ← token contracts (drift, clean, missing-in-figma)
-│   ├── components/*.mdx      ← component parity contracts
-│   ├── hypotheses/*.mdx      ← A/B experiments for any surface
-│   └── workflows/*.mdx       ← Atlas workflow contracts
+│   ├── index.mdx             ← root: brief + goals index + memory
+│   ├── goals/*.mdx           ← goal contracts (landing-validation, etc.)
+│   ├── hypotheses/*.mdx      ← A/B experiments, each linked to a goal
+│   ├── tokens/*.mdx          ← token drift records
+│   ├── components/*.mdx      ← component parity records
+│   └── meta/                 ← self-improvement contracts (when enabled)
 └── .systemix/
     ├── queue.json            ← HITL queue, one per instance
-    └── sync-log.json         ← last sync timestamp per signal
+    └── systemix.json         ← Figma file key + variable IDs
 ```
 
-All surfaces share one `contract/` directory and one HITL queue. That's the point — a DS token drift and a landing page experiment land in the same queue so whoever is on HITL duty sees the full picture.
+All surfaces share one `contract/` directory and one HITL queue. A DS token drift and a landing page experiment land in the same queue — whoever is on HITL duty sees the full picture.
 
 ## ADR-009 superseded
 
