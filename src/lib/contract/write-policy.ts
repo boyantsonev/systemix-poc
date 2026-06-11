@@ -26,10 +26,28 @@ const AUTO_AT: Record<Artifact, number> = {
   goal: Infinity, // the covenant — humans give goals
 };
 
-export function tierBand(tier: number): "ghost" | "balanced" | "high" {
+// One dial, three levels (founder decision 2026-06-11). The trust tier is the
+// dial; these are its words, used identically in the wizard, the Config panel,
+// and the contract. ghost = proposes everything; assisted = writes low-risk,
+// proposes the rest; autonomous = writes most, still proposes goals + brief.
+export const TIER_LABELS = ["ghost", "assisted", "autonomous"] as const;
+export type TierLabel = (typeof TIER_LABELS)[number];
+
+export function tierBand(tier: number): TierLabel {
   if (tier <= 0) return "ghost";
-  if (tier === 1) return "balanced";
-  return "high";
+  if (tier === 1) return "assisted";
+  return "autonomous";
+}
+
+/** The level word for a trust tier (clamped to the three levels). */
+export function tierLabel(tier: number): TierLabel {
+  return TIER_LABELS[Math.max(0, Math.min(2, tier))];
+}
+
+/** The trust tier for a level word (0 if unknown). */
+export function tierFromLabel(label: string): number {
+  const i = TIER_LABELS.indexOf(label as TierLabel);
+  return i === -1 ? 0 : i;
 }
 
 /** What the engine may do with `artifact` at trust `tier`, absent a human. */
@@ -77,6 +95,6 @@ export const MATRIX_ROWS = MATRIX_ARTIFACTS.map(({ artifact, label }) => ({
   artifact,
   label,
   ghost: mayWrite(0, artifact),
-  balanced: mayWrite(1, artifact),
-  high: mayWrite(2, artifact),
+  assisted: mayWrite(1, artifact),
+  autonomous: mayWrite(2, artifact),
 }));

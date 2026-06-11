@@ -129,7 +129,8 @@ export function loadInstanceConfig(projectRoot?: string): InstanceConfig | null 
 
 // ── Write-back (Config layer) ──────────────────────────────────────────────────
 
-const AUTONOMY_VALUES = ["ghost", "conservative", "balanced", "aggressive"];
+// One dial, three levels (mirrors the trust tier — see lib/contract/write-policy).
+const AUTONOMY_VALUES = ["ghost", "assisted", "autonomous"];
 const SELF_IMPROVEMENT_MODES = ["off", "audit", "active"];
 
 /** Whitelisted, validated merge of an editable patch onto the on-disk config.
@@ -178,7 +179,8 @@ export function applyConfigPatch(base: InstanceConfig, patch: unknown): Instance
     self_improvement: { ...base.self_improvement, mode },
     trust: {
       orchestrator_tier: clampTier(patchTrust.orchestrator_tier, base.trust.orchestrator_tier),
-      hermes_tier: clampTier(patchTrust.hermes_tier, base.trust.hermes_tier),
+      // The autonomy dial has three levels (0 ghost · 1 assisted · 2 autonomous).
+      hermes_tier: Math.min(2, clampTier(patchTrust.hermes_tier, base.trust.hermes_tier)),
     },
     // atlas vocab is not editable in the Config UI — carry it from base untouched
     // so a save can never forge or drop it (same footgun class as PR #53's signals).

@@ -4,6 +4,8 @@ import {
   assertWriteAllowed,
   WritePolicyError,
   tierBand,
+  tierLabel,
+  tierFromLabel,
   MATRIX_ROWS,
 } from "./write-policy";
 
@@ -39,11 +41,21 @@ describe("write-policy matrix", () => {
     }
   });
 
-  it("tierBand maps 0→ghost, 1→balanced, 2+→high", () => {
+  it("tierBand maps 0→ghost, 1→assisted, 2+→autonomous", () => {
     expect(tierBand(0)).toBe("ghost");
-    expect(tierBand(1)).toBe("balanced");
-    expect(tierBand(2)).toBe("high");
-    expect(tierBand(3)).toBe("high");
+    expect(tierBand(1)).toBe("assisted");
+    expect(tierBand(2)).toBe("autonomous");
+    expect(tierBand(3)).toBe("autonomous");
+  });
+
+  it("tierLabel and tierFromLabel round-trip the three levels", () => {
+    expect(tierLabel(0)).toBe("ghost");
+    expect(tierLabel(1)).toBe("assisted");
+    expect(tierLabel(2)).toBe("autonomous");
+    expect(tierLabel(3)).toBe("autonomous"); // clamped
+    expect(tierFromLabel("assisted")).toBe(1);
+    expect(tierFromLabel("autonomous")).toBe(2);
+    expect(tierFromLabel("nonsense")).toBe(0); // safe default
   });
 });
 
@@ -79,8 +91,8 @@ describe("assertWriteAllowed", () => {
 describe("MATRIX_ROWS (the rows the AutonomyClause renders)", () => {
   it("derives from the same policy the guards enforce", () => {
     const memory = MATRIX_ROWS.find((r) => r.artifact === "memory")!;
-    expect(memory).toMatchObject({ ghost: "propose", balanced: "propose", high: "auto" });
+    expect(memory).toMatchObject({ ghost: "propose", assisted: "propose", autonomous: "auto" });
     const goal = MATRIX_ROWS.find((r) => r.artifact === "goal")!;
-    expect(goal).toMatchObject({ ghost: "propose", balanced: "propose", high: "propose" });
+    expect(goal).toMatchObject({ ghost: "propose", assisted: "propose", autonomous: "propose" });
   });
 });

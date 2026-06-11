@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadInstanceConfig } from "@/lib/state/instance-config";
 import { readQueueCards } from "@/lib/queue-store";
-import { MATRIX_ROWS } from "@/lib/contract/write-policy";
+import { MATRIX_ROWS, tierLabel } from "@/lib/contract/write-policy";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +41,8 @@ export async function GET() {
   }));
 
   return NextResponse.json({
-    autonomy: cfg?.hermes?.autonomy ?? null,
+    // The level word is derived from the trust tier — one dial, one source.
+    autonomy: tierLabel(cfg?.trust?.hermes_tier ?? 0),
     trust: cfg?.trust ?? null,
     currentTier: cfg?.trust?.hermes_tier ?? 0,
     matrix: MATRIX_ROWS,

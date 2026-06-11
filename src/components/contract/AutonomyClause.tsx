@@ -6,8 +6,8 @@ type Row = {
   artifact: string;
   label: string;
   ghost: "auto" | "propose";
-  balanced: "auto" | "propose";
-  high: "auto" | "propose";
+  assisted: "auto" | "propose";
+  autonomous: "auto" | "propose";
 };
 
 type Instance = {
@@ -22,12 +22,12 @@ type Instance = {
   };
 };
 
-const BANDS = ["ghost", "balanced", "high"] as const;
+const BANDS = ["ghost", "assisted", "autonomous"] as const;
 
 function bandOfTier(tier: number): (typeof BANDS)[number] {
   if (tier <= 0) return "ghost";
-  if (tier === 1) return "balanced";
-  return "high";
+  if (tier === 1) return "assisted";
+  return "autonomous";
 }
 
 function Cell({ value, active }: { value: string; active: boolean }) {
@@ -89,8 +89,8 @@ export function AutonomyClause() {
               <tr key={row.artifact} className="border-b border-border/40 last:border-0">
                 <td className="px-3 py-1.5 text-[12px] text-muted-foreground">{row.label}</td>
                 <Cell value={row.ghost} active={band === "ghost"} />
-                <Cell value={row.balanced} active={band === "balanced"} />
-                <Cell value={row.high} active={band === "high"} />
+                <Cell value={row.assisted} active={band === "assisted"} />
+                <Cell value={row.autonomous} active={band === "autonomous"} />
               </tr>
             ))}
           </tbody>
