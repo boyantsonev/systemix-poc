@@ -1,10 +1,17 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   parseInstanceConfig,
   applyConfigPatch,
   serializeInstanceConfig,
   type InstanceConfig,
 } from "./instance-config";
+
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const realConfigYaml = () =>
+  readFileSync(path.join(REPO_ROOT, "systemix.config.yaml"), "utf8");
 
 // PR #48 added extra scalar keys to signals (posthog region/host/ingest_host).
 // The serializer used to write only enabled/poll_interval_sec, so one "Save
@@ -56,5 +63,52 @@ describe("instance-config signal round-trip", () => {
     expect(reparsed.signals.posthog.host).toBe("https://eu.posthog.com");
     expect(reparsed.signals.posthog.ingest_host).toBe("https://eu.i.posthog.com");
     expect(reparsed.signals.vercel.enabled).toBe(false);
+  });
+});
+
+// serializeInstanceConfig used to emit only the 6 known top-level sections, so a
+// "Save config" silently DROPPED the whole `atlas:` block (personas/agents/surfaces)
+// that `npx systemix atlas build` and the /atlas surface depend on. Same footgun
+// class as the signal-keys bug above (PR #53), but for an entire top-level block.
+// Gate: parse the real config → patch (normal UI save) → serialize → re-parse →
+// the atlas vocabulary survives intact.
+describe("instance-config atlas round-trip", () => {
+  it("a UI save preserves the top-level atlas: block (personas/agents/surfaces)", () => {
+    const base = parseInstanceConfig(realConfigYaml()) as unknown as InstanceConfig;
+
+    // Guard the guard: the real config must actually carry an atlas block, else
+    // this test would pass vacuously.
+    expect(base.atlas?.personas).toEqual(["founder", "designer", "engineer"]);
+    expect(Object.keys(base.atlas?.agents ?? {})).toContain("hermes");
+    expect(base.atlas?.surfaces).toEqual(["phone", "tablet", "desktop"]);
+
+    // Simulate a normal Config-layer save: toggle one signal, touch nothing else.
+    const patched = applyConfigPatch(base, { signals: { social: { enabled: true } } });
+    const reparsed = parseInstanceConfig(
+      serializeInstanceConfig(patched),
+    ) as unknown as InstanceConfig;
+
+    // The whole atlas vocabulary survives the round-trip, structure-for-structure.
+    expect(reparsed.atlas).toEqual(base.atlas);
+    expect(reparsed.atlas?.personas).toEqual(base.atlas?.personas);
+    expect(reparsed.atlas?.agents).toEqual(base.atlas?.agents);
+    expect(reparsed.atlas?.surfaces).toEqual(base.atlas?.surfaces);
+
+    // ...and the actual edit landed.
+    expect(reparsed.signals.social.enabled).toBe(true);
+  });
+
+  it("a signal-only save leaves self_improvement.mode untouched (audit stays audit)", () => {
+    const base = parseInstanceConfig(realConfigYaml()) as unknown as InstanceConfig;
+    expect(base.self_improvement.mode).toBe("audit");
+
+    // Patch omits self_improvement entirely — mode must NOT default/flip to active.
+    const patched = applyConfigPatch(base, { signals: { social: { enabled: true } } });
+    expect(patched.self_improvement.mode).toBe("audit");
+
+    const reparsed = parseInstanceConfig(
+      serializeInstanceConfig(patched),
+    ) as unknown as InstanceConfig;
+    expect(reparsed.self_improvement.mode).toBe("audit");
   });
 });

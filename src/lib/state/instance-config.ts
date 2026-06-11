@@ -15,6 +15,14 @@ export interface InstanceSignal {
   [key: string]: unknown;
 }
 
+/** Instance vocabulary for the Workflow Atlas (consumed by `npx systemix atlas build`
+ * and the /atlas surface). Not editable in the Config UI — round-tripped verbatim. */
+export interface InstanceAtlas {
+  personas?: string[];
+  agents?: Record<string, { label: string }>;
+  surfaces?: string[];
+}
+
 export interface InstanceConfig {
   version: number;
   surfaces: string[];
@@ -27,6 +35,9 @@ export interface InstanceConfig {
   };
   self_improvement: { mode: string; meta_contract?: string; audit_window_days?: number };
   trust: { orchestrator_tier: number; hermes_tier: number };
+  // Top-level blocks not modelled as typed knobs above (e.g. atlas) must still
+  // survive a Config-layer save; serializeInstanceConfig round-trips atlas verbatim.
+  atlas?: InstanceAtlas;
 }
 
 const CONFIG_FILE = "systemix.config.yaml";
@@ -169,7 +180,34 @@ export function applyConfigPatch(base: InstanceConfig, patch: unknown): Instance
       orchestrator_tier: clampTier(patchTrust.orchestrator_tier, base.trust.orchestrator_tier),
       hermes_tier: clampTier(patchTrust.hermes_tier, base.trust.hermes_tier),
     },
+    // atlas vocab is not editable in the Config UI — carry it from base untouched
+    // so a save can never forge or drop it (same footgun class as PR #53's signals).
+    atlas: base.atlas,
   };
+}
+
+/** Emit a parsed YAML subtree — nested maps, scalar sequences, and scalars — at
+ * `indent` spaces. Mirrors what parseInstanceConfig understands, so blocks not
+ * modelled as typed fields (e.g. `atlas:`) round-trip through a save verbatim
+ * instead of being silently dropped. */
+function serializeNode(value: unknown, indent: number): string[] {
+  const pad = " ".repeat(indent);
+  if (Array.isArray(value)) {
+    return value.map((item) => `${pad}- ${item}`);
+  }
+  if (value && typeof value === "object") {
+    const out: string[] = [];
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (v !== null && typeof v === "object") {
+        out.push(`${pad}${k}:`);
+        out.push(...serializeNode(v, indent + 2));
+      } else {
+        out.push(`${pad}${k}: ${v}`);
+      }
+    }
+    return out;
+  }
+  return [];
 }
 
 /** Serialize back to the systemix.config.yaml subset the parser above understands. */
@@ -210,6 +248,10 @@ export function serializeInstanceConfig(cfg: InstanceConfig): string {
   lines.push("trust:");
   lines.push(`  orchestrator_tier: ${cfg.trust.orchestrator_tier}`);
   lines.push(`  hermes_tier: ${cfg.trust.hermes_tier}`);
+  if (cfg.atlas && typeof cfg.atlas === "object") {
+    lines.push("atlas:");
+    lines.push(...serializeNode(cfg.atlas, 2));
+  }
   return lines.join("\n") + "\n";
 }
 
