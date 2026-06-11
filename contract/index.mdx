@@ -35,16 +35,15 @@ approve. Within that gate, `hermes.autonomy: balanced` (the strip above renders
 the live values) governs how Hermes routes by confidence — high-confidence
 synthesis is queued as a recommendation, low-confidence as a question.
 
-| What the engine may write | ghost (today) | balanced | high |
-|---|---|---|---|
-| Evidence fields on hypotheses | propose | auto-write | auto-write |
-| New hypothesis drafts | propose | draft + propose run | auto-create within budget |
-| Memory entries | propose | propose | auto-append (provenance required) |
-| The brief | propose | propose | propose |
-| Goals | propose | propose | propose |
+The matrix below is what the code enforces, not a description of it — the write
+sites consult the same policy, and the row highlighted is the current tier. The
+track record is the receipts: every decision a human has resolved, by outcome.
+
+<AutonomyClause />
 
 The covenant: **humans give goals.** At no tier does the engine self-assign
-one. Raising the tier is itself a decision that lands in the queue.
+one — goals and the brief are *propose* in every column. Raising the tier is
+itself a decision that lands in the queue.
 
 ## Goals
 
@@ -52,8 +51,10 @@ one. Raising the tier is itself a decision that lands in the queue.
 
 ## Memory
 
-Memory is written only from closed experiments — every entry must cite the
-experiment that earned it, with a confidence and a review-by date.
+Memory is written only from closed experiments — every entry cites the
+experiment that earned it, with a confidence and a review-by date. Entries are
+appended here when a hypothesis decision is approved in the queue; nothing is
+hand-written.
 
 *No entries yet.* Six hypotheses are registered under
 [the landing goal](/contract/goals/landing-validation); none has closed —

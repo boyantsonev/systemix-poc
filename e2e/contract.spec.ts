@@ -42,6 +42,14 @@ test.describe("Contract surface", () => {
     await expect(page).toHaveURL(/\/contract$/);
   });
 
+  test("the root contract renders the live autonomy clause (matrix + track record)", async ({ page }) => {
+    await page.goto("/contract");
+    await expect(page.getByText("The engine may write")).toBeVisible();
+    await expect(page.getByText("Track record").first()).toBeVisible();
+    // The covenant row label is unique to the matrix.
+    await expect(page.getByText("Record status (drift, parity)")).toBeVisible();
+  });
+
   test("the decisions ledger renders, real data only", async ({ page }) => {
     await page.goto("/contract/decisions");
     await expect(page.getByRole("heading", { name: "Decisions" })).toBeVisible();
