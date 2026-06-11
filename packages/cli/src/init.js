@@ -162,7 +162,11 @@ function buildConfigYaml({ surfaces, signals, autonomy, siMode }) {
 async function init(opts = {}) {
   const projectRoot = process.cwd();
   const systemixDir = path.join(projectRoot, ".systemix");
-  const { ask, close } = createPrompt();
+  // --defaults answers every prompt with its default ("" → default/skip
+  // everywhere) — used by CI and the onboarding acceptance test.
+  const { ask, close } = opts.defaults
+    ? { ask: async () => "", close() {} }
+    : createPrompt();
 
   console.log("\n  systemix init — 2-minute setup\n");
 
@@ -321,7 +325,7 @@ async function init(opts = {}) {
   }
   console.log(`    config                systemix.config.yaml (your topology)`);
   console.log(`    watcher (Hermes)      npx systemix watch`);
-  console.log(`    dashboard             http://localhost:3001/design-system`);
+  console.log(`    home                  http://localhost:3001/config`);
   console.log();
   console.log("  Commit .claude/skills/ + systemix.config.yaml so the instance is reproducible in CI.");
   console.log("  Run `npx systemix doctor` to verify all dependencies.\n");

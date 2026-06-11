@@ -15,7 +15,7 @@ test.describe("Landing (velocity-gap)", () => {
   test("surfaces section shows Config · System · Atlas", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByText(/Three surfaces/)).toBeVisible();
-    await expect(page.getByRole("link", { name: "Open config →" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open Home →" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Open the system →" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Open Atlas →" })).toBeVisible();
   });

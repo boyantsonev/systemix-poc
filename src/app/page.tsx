@@ -351,7 +351,7 @@ function Surfaces() {
       name: "Config",
       tagline: "Configure your instance.",
       body: "Your instance, editable. systemix.config.yaml rendered as a live 3D graph of components, tokens, contracts, and the signals tied to them — plus the runtime feed and the HITL queue. Local-first; nothing leaves your machine.",
-      cta: { label: "Open config →", href: "/config" },
+      cta: { label: "Open Home →", href: "/config" },
     },
     {
       kind: "system" as const,

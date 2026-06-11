@@ -63,6 +63,7 @@ const HELP = `
     npx systemix workflow add design-system
     npx systemix workflow add hypothesis-validation
     npx systemix init
+    npx systemix init --defaults
     npx systemix sync --dry-run
     npx systemix sync --incremental --budget 20000
     npx systemix watch
@@ -73,7 +74,10 @@ const HELP = `
 async function main() {
   switch (command) {
     case "init":
-      await init({ reconfigure: args.includes("--reconfigure") });
+      await init({
+        reconfigure: args.includes("--reconfigure"),
+        defaults: args.includes("--defaults"),
+      });
       break;
     case "config":
       await config(args);

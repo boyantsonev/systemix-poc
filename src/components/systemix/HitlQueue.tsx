@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -69,6 +70,19 @@ function fmtPct(rate: number): string {
   return (rate * 100).toFixed(1) + "%";
 }
 
+// Read-only embeds (contract pages) show where to act instead of action buttons —
+// decisions are taken on Home only (docs/feature/contract-rework, founder call).
+function DecideOnHome() {
+  return (
+    <Link
+      href="/config"
+      className="inline-block pl-5 text-[11px] font-mono text-muted-foreground/60 hover:text-foreground transition-colors"
+    >
+      Decide on Home →
+    </Link>
+  );
+}
+
 // ── Hypothesis card ───────────────────────────────────────────────────────────
 
 function HypothesisCard({
@@ -76,7 +90,7 @@ function HypothesisCard({
   onAction,
 }: {
   card: QueueCard;
-  onAction: (id: string, action: CardStatus) => void;
+  onAction?: (id: string, action: CardStatus) => void;
 }) {
   const isPending = card.status === "pending";
   const delta = card.variantRate != null && card.baselineRate != null
@@ -167,6 +181,7 @@ function HypothesisCard({
 
         {/* Actions */}
         {isPending ? (
+          onAction ? (
           <div className="pl-5 flex items-center gap-1.5">
             <button
               onClick={() => onAction(card.id, "approved")}
@@ -187,6 +202,9 @@ function HypothesisCard({
               Discard
             </button>
           </div>
+          ) : (
+            <DecideOnHome />
+          )
         ) : card.status === "approved" ? (
           <p className="pl-5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400/70">
             ✓ evidence written to contract
@@ -208,7 +226,7 @@ function EngagementCard({
   onAction,
 }: {
   card: QueueCard;
-  onAction: (id: string, action: CardStatus) => void;
+  onAction?: (id: string, action: CardStatus) => void;
 }) {
   const isPending = card.status === "pending";
   return (
@@ -271,6 +289,7 @@ function EngagementCard({
         )}
 
         {isPending ? (
+          onAction ? (
           <div className="pl-5 flex items-center gap-1.5">
             <button
               onClick={() => onAction(card.id, "approved")}
@@ -291,6 +310,9 @@ function EngagementCard({
               Dismiss
             </button>
           </div>
+          ) : (
+            <DecideOnHome />
+          )
         ) : card.status === "approved" ? (
           <p className="pl-5 text-[11px] font-mono text-cyan-700 dark:text-cyan-400/70">✓ acknowledged in the engagement log</p>
         ) : card.status === "deferred" ? (
@@ -308,7 +330,7 @@ function StandardCard({
   onAction,
 }: {
   card: QueueCard;
-  onAction: (id: string, action: CardStatus) => void;
+  onAction?: (id: string, action: CardStatus) => void;
 }) {
   const cfg = CARD_TYPE[card.type] ?? CARD_TYPE["new-token"];
   const isPending = card.status === "pending";
@@ -360,7 +382,8 @@ function StandardCard({
           </div>
         )}
 
-        {isPending && (
+        {isPending ? (
+          onAction ? (
           <div className="pl-5 flex items-center gap-1.5">
             <button
               onClick={() => onAction(card.id, "approved")}
@@ -381,7 +404,10 @@ function StandardCard({
               Defer
             </button>
           </div>
-        )}
+          ) : (
+            <DecideOnHome />
+          )
+        ) : null}
       </div>
     </div>
   );
@@ -395,12 +421,18 @@ export function HitlQueue({
   hypothesis,
   title,
   className,
+  hideDemo,
+  readOnly,
 }: {
   projectSlug?: string;
   goal?: string;
   hypothesis?: string;
   title?: string;
   className?: string;
+  /** Home feed: never show the labeled demo fallback — real cards only. */
+  hideDemo?: boolean;
+  /** Contract embeds: show cards + history, but decisions are taken on Home. */
+  readOnly?: boolean;
 }) {
   const [cards, setCards] = useState<QueueCard[]>([]);
   const [isDemo, setIsDemo] = useState(false);
@@ -415,12 +447,18 @@ export function HitlQueue({
     fetch(qs ? `/api/queue?${qs}` : "/api/queue")
       .then(r => r.json())
       .then(data => {
-        setCards(data.cards ?? []);
-        setIsDemo(data.isDemo ?? false);
+        const demo = data.isDemo ?? false;
+        if (hideDemo && demo) {
+          setCards([]);
+          setIsDemo(false);
+        } else {
+          setCards(data.cards ?? []);
+          setIsDemo(demo);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [projectSlug, goal, hypothesis]);
+  }, [projectSlug, goal, hypothesis, hideDemo]);
 
   const handleAction = useCallback(async (id: string, action: CardStatus) => {
     setCards(prev => prev.map(c => c.id === id ? { ...c, status: action } : c));
@@ -439,9 +477,10 @@ export function HitlQueue({
   if (loading) return null;
 
   function renderCard(c: QueueCard) {
-    if (c.type === "hypothesis-validation") return <HypothesisCard key={c.id} card={c} onAction={handleAction} />;
-    if (c.type === "engagement-snapshot")  return <EngagementCard  key={c.id} card={c} onAction={handleAction} />;
-    return <StandardCard key={c.id} card={c} onAction={handleAction} />;
+    const act = readOnly ? undefined : handleAction;
+    if (c.type === "hypothesis-validation") return <HypothesisCard key={c.id} card={c} onAction={act} />;
+    if (c.type === "engagement-snapshot")  return <EngagementCard  key={c.id} card={c} onAction={act} />;
+    return <StandardCard key={c.id} card={c} onAction={act} />;
   }
 
   return (
@@ -466,7 +505,9 @@ export function HitlQueue({
       ) : (
         <div className="rounded-lg border border-dashed border-border/50 px-5 py-4">
           <p className="text-[12px] font-mono text-muted-foreground/60">
-            Queue is clear — Hermes has no pending decisions.
+            {hideDemo
+              ? "No pending decisions — cards arrive from scheduled evidence runs."
+              : "Queue is clear — Hermes has no pending decisions."}
           </p>
         </div>
       )}
