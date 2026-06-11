@@ -82,7 +82,7 @@ Component contracts go to `contract/components/`. Each file follows the same fro
 $ npm run dev
 ```
 
-Open `/design-system` in the browser. The MDX Indexer reads all contract files at build time and computes your quality score — the clean / drifted / unresolved split is shown at the top.
+Open `/contract` in the browser. The MDX Indexer reads all contract files at build time and computes your quality score — the clean / drifted / unresolved split is shown at the top.
 
 > Checkpoint: you should see a quality score. If it's below 80, that's expected — you haven't resolved any conflicts yet.
 
@@ -102,7 +102,7 @@ The watch process does three things: watches `globals.css` for token changes, po
 
 ### 6. Resolve token drift
 
-Click any drifted token in `/design-system` to go to its detail page. It shows side-by-side colour swatches, the ΔE perceptual distance, and an inline resolve control.
+Click any drifted token in `/contract` to go to its detail page. It shows side-by-side colour swatches, the ΔE perceptual distance, and an inline resolve control.
 
 - `code-wins` — Your CSS value is right — Figma should be updated
 - `figma-wins` — The Figma variable is right — code should be updated

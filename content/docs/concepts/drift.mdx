@@ -54,7 +54,7 @@ String comparison misses the point for colour tokens. `oklch(0.45 0.18 250)` and
 
 ## Resolving drift
 
-Open `/design-system` to see all drifted tokens. Click any token to go to its detail page — it shows side-by-side colour swatches, the ΔE value, and an inline resolve control. Choose **code wins** or **Figma wins**. The decision is written back to the MDX frontmatter (`resolve-decision`, `resolved: true`) and the quality score updates on the next load.
+Open `/contract` to see all drifted tokens. Click any token to go to its detail page — it shows side-by-side colour swatches, the ΔE value, and an inline resolve control. Choose **code wins** or **Figma wins**. The decision is written back to the MDX frontmatter (`resolve-decision`, `resolved: true`) and the quality score updates on the next load.
 
 In non-interactive mode (CI or automated runs), Hermes writes a `.pending.json` sidecar file when it encounters a conflict it cannot auto-resolve. The CLI reads the sidecar and presents a Y/N prompt. Set `HITL_AUTO_APPROVE=1` to skip the prompt in CI.
 

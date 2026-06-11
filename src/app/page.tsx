@@ -296,7 +296,7 @@ function TheLoop() {
 
 // Lightweight CSS mock frames — representative previews, not screenshots.
 // Real captures of the live surfaces are a follow-up.
-function SurfacePreview({ kind }: { kind: "config" | "atlas" | "system" }) {
+function SurfacePreview({ kind }: { kind: "config" | "atlas" | "contract" }) {
   const frame = "relative h-40 rounded-lg border border-border/40 bg-muted/10 overflow-hidden";
   if (kind === "config") {
     return (
@@ -334,8 +334,8 @@ function SurfacePreview({ kind }: { kind: "config" | "atlas" | "system" }) {
         <div className="h-1.5 w-5/6 rounded bg-muted-foreground/15" />
         <div className="h-1.5 w-4/6 rounded bg-muted-foreground/15" />
         <div className="flex gap-1.5 pt-1">
-          <span className="text-[7px] font-mono text-emerald-400/70 border border-emerald-500/30 rounded px-1">current</span>
-          <span className="text-[7px] font-mono text-amber-400/70 border border-amber-500/30 rounded px-1">drifted</span>
+          <span className="text-[7px] font-mono text-emerald-400/70 border border-emerald-500/30 rounded px-1">running</span>
+          <span className="text-[7px] font-mono text-amber-400/70 border border-amber-500/30 rounded px-1">evidence</span>
         </div>
         <div className="h-1.5 w-3/6 rounded bg-muted-foreground/15" />
       </div>
@@ -354,12 +354,12 @@ function Surfaces() {
       cta: { label: "Open Home →", href: "/config" },
     },
     {
-      kind: "system" as const,
-      route: "/system",
-      name: "System",
-      tagline: "The record that updates itself.",
-      body: "Your self-updating styleguide. Hermes keeps tokens, components, and hypotheses current and tags each with a status — current, drifted, stale. The most legible surface: agent-readable, always live.",
-      cta: { label: "Open the system →", href: "/system" },
+      kind: "contract" as const,
+      route: "/contract",
+      name: "Contract",
+      tagline: "Goals, hypotheses, evidence — one living document.",
+      body: "The canonical record your agents read from. Goals decompose into hypotheses; hypotheses close with PostHog evidence; memory accumulates per decision. Every write carries provenance. Hermes proposes — you approve.",
+      cta: { label: "Open the contract →", href: "/contract" },
     },
     {
       kind: "atlas" as const,
@@ -609,8 +609,8 @@ function StorybookCallout() {
               <p className="text-[11px] font-mono text-muted-foreground/50 uppercase tracking-widest mb-2">Drift detection — supporting layer</p>
               <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Before any test result can be trusted, the component has to be in a known state. Systemix tracks Figma↔code token drift and surfaces it as a HITL card — so you know whether you measured what you designed, not a drifted variant.{" "}
-                <Link href="/design-system" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline underline-offset-2">
-                  Design System health →
+                <Link href="/contract" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline underline-offset-2">
+                  Contract →
                 </Link>
               </p>
             </div>
