@@ -5,13 +5,9 @@ const path = require("path");
 const os = require("os");
 const readline = require("readline");
 
-const {
-  detectClients,
-  registerServer,
-} = require("./installers/mcp-server-registrar");
+const mcpRegistrar = require("./installers/mcp-server-registrar");
 
-const PIPELINES_DIR  = path.join(__dirname, "..", "pipelines");
-const USER_CONFIG    = path.join(os.homedir(), ".systemix", "config.json");
+const PIPELINES_DIR = path.join(__dirname, "..", "pipelines");
 // Skills install project-scoped (.claude/skills/ in the client repo), not globally.
 // The instance is self-contained and CI-reproducible. See ADR-008.
 const projectSkillsDirFor = (root) => path.join(root, ".claude", "skills");
@@ -160,13 +156,13 @@ function buildConfigYaml({ surfaces, signals, autonomy, siMode }) {
 // ── main ──────────────────────────────────────────────────────────────────────
 
 async function init(opts = {}) {
-  const projectRoot = process.cwd();
+  const projectRoot = opts.projectRoot ?? process.cwd();
   const systemixDir = path.join(projectRoot, ".systemix");
-  // --defaults answers every prompt with its default ("" → default/skip
-  // everywhere) — used by CI and the onboarding acceptance test.
-  const { ask, close } = opts.defaults
-    ? { ask: async () => "", close() {} }
-    : createPrompt();
+  const { ask, close } = opts.prompt
+    ?? (opts.defaults ? { ask: async () => "", close() {} } : createPrompt());
+  const detectClients = opts.detectClients ?? mcpRegistrar.detectClients;
+  const registerServer = opts.registerServer ?? mcpRegistrar.registerServer;
+  const userConfigPath = path.join(opts.homeDir ?? os.homedir(), ".systemix", "config.json");
 
   console.log("\n  systemix init — 2-minute setup\n");
 
@@ -302,13 +298,13 @@ async function init(opts = {}) {
     fs.writeFileSync(sxPath, JSON.stringify(sx, null, 2) + "\n", "utf8");
   }
 
-  const userConfigDir = path.join(os.homedir(), ".systemix");
+  const userConfigDir = path.dirname(userConfigPath);
   fs.mkdirSync(userConfigDir, { recursive: true });
   let cfg = {};
-  if (fs.existsSync(USER_CONFIG)) { try { cfg = JSON.parse(fs.readFileSync(USER_CONFIG, "utf8")); } catch {} }
+  if (fs.existsSync(userConfigPath)) { try { cfg = JSON.parse(fs.readFileSync(userConfigPath, "utf8")); } catch {} }
   if (figmaToken)  cfg.figmaToken  = figmaToken;
   if (posthogKey)  cfg.posthogKey  = posthogKey;
-  fs.writeFileSync(USER_CONFIG, JSON.stringify(cfg, null, 2) + "\n", "utf8");
+  fs.writeFileSync(userConfigPath, JSON.stringify(cfg, null, 2) + "\n", "utf8");
 
   // ── Done ──────────────────────────────────────────────────────────────────
   console.log("\n  Instance ready. Skills live in this repo's .claude/skills/ —");
