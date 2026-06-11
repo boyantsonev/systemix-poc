@@ -153,6 +153,66 @@ describe("PATCH /api/queue", () => {
   });
 });
 
+describe("PATCH /api/queue — memory write-back (Phase D)", () => {
+  function seedIndex() {
+    fs.writeFileSync(
+      path.join(tmp, "contract", "index.mdx"),
+      [
+        "---", "type: contract", "title: The Contract", "---", "",
+        "## Memory", "",
+        "Memory is written only from closed experiments.", "",
+        "*No entries yet.* The first entry lands when an experiment closes.", "",
+        "## Decision log", "", "x", "",
+      ].join("\n"),
+      "utf8",
+    );
+  }
+
+  it("approving a hypothesis decision appends a provenance entry to ## Memory", async () => {
+    seedIndex();
+    seedHypothesis("velocity-gap", "landing-validation");
+    seedQueue([
+      {
+        id: "hyp-1",
+        type: "hypothesis-validation",
+        status: "pending",
+        hypothesisId: "velocity-gap",
+        hypothesis: "Reframing the hero around the velocity gap converts founders",
+        context: "Variant B +38% on install_command_copied.",
+        confidenceLevel: 0.82,
+        requestedAt: "2026-06-01T00:00:00.000Z",
+      },
+    ]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "hyp-1", action: "approved" }));
+    expect(res.status).toBe(200);
+
+    const idx = fs.readFileSync(path.join(tmp, "contract", "index.mdx"), "utf8");
+    expect(idx).toContain("from [velocity-gap]");
+    expect(idx).toContain("decision: promote");
+    expect(idx).toContain("confidence 0.82");
+    expect(idx).not.toContain("No entries yet");
+    expect(idx).toContain("## Decision log"); // section below survives
+  });
+
+  it("does not fail the decision when no contract index exists", async () => {
+    seedHypothesis("velocity-gap", "landing-validation");
+    seedQueue([
+      {
+        id: "hyp-2",
+        type: "hypothesis-validation",
+        status: "pending",
+        hypothesisId: "velocity-gap",
+        context: "x",
+        requestedAt: "2026-06-01T00:00:00.000Z",
+      },
+    ]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "hyp-2", action: "approved" }));
+    expect(res.status).toBe(200); // memory write is best-effort
+  });
+});
+
 describe("PATCH /api/queue — engagement-snapshot", () => {
   it("acknowledge appends to the engagement log and resolves the card", async () => {
     seedQueue([engagementCard()]);

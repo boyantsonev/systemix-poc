@@ -3,6 +3,13 @@ import fs from "fs";
 import path from "path";
 import { applyHypothesisDecisionToMdx } from "@/lib/contract/hypothesis-mdx";
 import { hypothesisGoalMap } from "@/lib/contract/goal-map";
+import {
+  appendMemoryEntry,
+  titleFromHypothesis,
+  addDays,
+} from "@/lib/contract/memory-mdx";
+import { assertWriteAllowed } from "@/lib/contract/write-policy";
+import { loadInstanceConfig } from "@/lib/state/instance-config";
 
 export const dynamic = "force-dynamic";
 
@@ -171,6 +178,37 @@ function applyHypothesisDecision(
   return { ok: true };
 }
 
+// When a hypothesis decision is approved, record what was learned in the root
+// contract's ## Memory — provenance-bearing, newest first. This is the human
+// executing their decision (the card was the proposal), so it is permitted at
+// every tier; the write-policy guard documents + enforces the covenant for any
+// future non-human path. Non-fatal: a missing index never fails the decision.
+const INDEX_PATH = path.join(process.cwd(), "contract", "index.mdx");
+
+function applyMemoryFromDecision(
+  card: HypothesisCard & { hypothesis?: string; confidence?: number },
+  decision: "promote" | "kill",
+): void {
+  if (!card.hypothesisId || !fs.existsSync(INDEX_PATH)) return;
+  const tier = loadInstanceConfig()?.trust?.hermes_tier ?? 0;
+  assertWriteAllowed({ tier, artifact: "memory", humanApproved: true });
+
+  const now = card._posthogData?.fetched_at ?? new Date().toISOString().slice(0, 10);
+  const updated = appendMemoryEntry(fs.readFileSync(INDEX_PATH, "utf8"), {
+    date: now,
+    title: titleFromHypothesis(card.hypothesis, card.hypothesisId),
+    experimentId: card.hypothesisId,
+    decision,
+    confidence: card.confidenceLevel ?? card.confidence ?? null,
+    summary: card.context ?? "",
+    reviewBy: addDays(now, 90),
+  });
+  if (updated === null) return;
+  const tmp = INDEX_PATH + ".tmp";
+  fs.writeFileSync(tmp, updated, "utf8");
+  fs.renameSync(tmp, INDEX_PATH);
+}
+
 // Engagement snapshots write to a standalone engagement record (NOT the
 // hypotheses dir): every resolution appends an entry to its ## Engagement Log.
 function applyEngagementAck(
@@ -278,6 +316,12 @@ export async function PATCH(req: NextRequest) {
       const result = applyHypothesisDecision(card as HypothesisCard, decision);
       if (!result.ok) {
         return NextResponse.json({ error: result.error ?? "Evidence write-back failed" }, { status: 500 });
+      }
+      // Record the learning in ## Memory — non-fatal if it can't be written.
+      try {
+        applyMemoryFromDecision(card as HypothesisCard, decision);
+      } catch {
+        /* memory write is best-effort; the decision still stands */
       }
       // Fire-and-forget: skill update after confirmed contract write
       void import("../../../../packages/cli/src/commands/skill-update.js")
