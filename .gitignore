@@ -30,6 +30,10 @@ packages/cli/reports/
 # production
 /build
 
+# package build output (regenerated: mcp-server via `prepare`/tsc, figma-plugin via `npm run build`)
+packages/mcp-server/dist/
+packages/figma-plugin/dist/
+
 # misc
 .DS_Store
 *.pem
