@@ -1,35 +1,68 @@
 {
   "cards": [
     {
-      "id": "engagement-landing-1781176841325",
+      "id": "engagement-landing-1781344480200",
       "type": "engagement-snapshot",
       "recordPath": "contract/engagement/landing.mdx",
       "surface": "landing",
-      "hypothesis": "Landing engagement — 0 visitors, 0 installs",
+      "hypothesis": "Landing engagement — 2 visitors, 1 install",
       "metric": "install conversion",
-      "baselineRate": null,
+      "baselineRate": 0.5,
       "variantRate": null,
-      "sessions": 0,
-      "confidenceLevel": 0,
-      "context": "Over 30d: 0 unique visitors, 0 pageviews, 0 ran the install command (n/a conversion). CTAs — hero 0, nav 0. Top sections: none.",
-      "proposal": "no-traffic-yet",
+      "sessions": 2,
+      "confidenceLevel": 0.2,
+      "context": "Over 30d: 2 unique visitors, 6 pageviews, 1 ran the install command (50% conversion). CTAs — hero 0, nav 0. Top sections: hero, the-gap, magic-glue.",
+      "proposal": "keep-collecting (sample below 100 visitors)",
       "_posthogData": {
         "surface": "landing",
         "period_days": 30,
-        "fetched_at": "2026-06-11",
-        "unique_visitors": 0,
-        "pageviews": 0,
-        "install_copies": 0,
-        "install_persons": 0,
-        "install_conversion": null,
+        "fetched_at": "2026-06-13",
+        "unique_visitors": 2,
+        "pageviews": 6,
+        "install_copies": 2,
+        "install_persons": 1,
+        "install_conversion": 0.5,
         "cta_clicks": {
           "hero": 0,
           "nav": 0
         },
-        "sections": [],
+        "sections": [
+          {
+            "section": "hero",
+            "views": 3
+          },
+          {
+            "section": "the-gap",
+            "views": 3
+          },
+          {
+            "section": "magic-glue",
+            "views": 2
+          },
+          {
+            "section": "the-loop",
+            "views": 1
+          },
+          {
+            "section": "surfaces",
+            "views": 1
+          },
+          {
+            "section": "hitl-preview",
+            "views": 1
+          },
+          {
+            "section": "bottom-cta",
+            "views": 1
+          },
+          {
+            "section": "storybook-callout",
+            "views": 1
+          }
+        ],
         "source": "live"
       },
-      "requestedAt": "2026-06-11T11:20:41.325Z",
+      "requestedAt": "2026-06-13T09:54:40.200Z",
       "status": "pending"
     }
   ]
