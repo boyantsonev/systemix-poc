@@ -12,9 +12,10 @@
  *
  * AC coverage:
  *   AC-WS  Walking skeleton — both surfaces, skip all credentials — all dirs, YAML, gitignore, MCP snippet
- *   AC-01a Surface selection: design-system only — exactly 8 skill dirs, no hypothesis dirs
- *   AC-01b Surface selection: hypothesis-validation only — exactly 6 skill dirs, no design-system dirs
- *   AC-01c Surfaces YAML: hypothesis-validation choice writes [landing, onboarding], not [hypothesis-validation]
+ *   AC-01a Design choice: scaffold → loop + design-system skills, design/ scaffolded
+ *   AC-01b Design choice: none → loop skills only, no design-system skills, no design/
+ *   AC-01c Surfaces YAML: loop-only writes [landing, onboarding], not [design-system]
+ *   AC-01d Design choice: existing → design.source set, no design/, design skills installed
  *   AC-02a Figma key: full figma.com/design URL extracts file key, writes project-context.json
  *   AC-02b Figma key: bare key accepted without re-prompting
  *   AC-02c Figma key: invalid input loops then Enter skips — no project-context.json created
@@ -175,7 +176,7 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given
       const prompt = makePrompt([
-        "",  // Q1: surface — Enter = "3" = both
+        "",  // Q1: design — Enter = "1" = scaffold
         "",  // Q2: Figma URL — Enter = skip
         "",  // Q3: Figma PAT — Enter = skip
         "",  // Q4: PostHog key — Enter = skip
@@ -256,21 +257,23 @@ describe("systemix init — acceptance tests", () => {
     }
   );
 
-  // ── AC-01a: Surface selection — design-system only ────────────────────────
+  // ── AC-01a: Design choice — scaffold installs the loop AND design ─────────
 
   it(
-    // Given the user selects surface "1" (design-system only) and skips all credentials
+    // Given the user picks design "1" (scaffold) and skips all credentials
     // When init completes
-    // Then exactly the 8 design-system skill dirs are installed, no hypothesis dirs
-    "AC-01a (surface selection): design-system only — exactly 8 skill dirs, no hypothesis dirs",
+    // Then BOTH the loop skills and the design-system skills are installed,
+    //      and a fresh design/ substrate is scaffolded
+    "AC-01a (design=scaffold): installs the loop + design-system skills and scaffolds design/",
     async () => {
       // Given
       const prompt = makePrompt([
-        "1",  // Q1: design-system only
-        "",   // Q2: Figma URL — skip
-        "",   // Q3: Figma PAT — skip
-        "",   // Q5: autonomy — balanced
-        "",   // Q6: SI — audit
+        "1",  // Q1: design — scaffold
+        "",   // Figma URL — skip
+        "",   // Figma PAT — skip
+        "",   // PostHog key — skip
+        "",   // autonomy — default
+        "",   // self-improvement — default
       ]);
 
       // When
@@ -282,33 +285,32 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — exactly the 8 design-system skills exist
+      // Then — the loop is always installed AND the design-system skills are present
       const installed = ws.installedSkills();
-      for (const skill of DESIGN_SYSTEM_SKILLS) {
+      for (const skill of [...HYPOTHESIS_VALIDATION_SKILLS, ...DESIGN_SYSTEM_SKILLS]) {
         expect(installed).toContain(skill);
       }
 
-      // Then — no hypothesis-validation skills installed
-      for (const skill of HYPOTHESIS_VALIDATION_SKILLS) {
-        expect(installed).not.toContain(skill);
-      }
+      // Then — a fresh design/ substrate was scaffolded, and config points at it
+      expect(ws.exists("design", "DESIGN.md")).toBe(true);
+      expect(ws.read("systemix.config.yaml")).toContain("source: design");
     }
   );
 
-  // ── AC-01b: Surface selection — hypothesis-validation only ────────────────
+  // ── AC-01b: Design choice — none installs the loop only ───────────────────
 
   it(
-    // Given the user selects surface "2" (hypothesis-validation only) and skips PostHog key
+    // Given the user picks design "3" (none / loop only) and skips the PostHog key
     // When init completes
-    // Then exactly the 6 hypothesis-validation skill dirs are installed, no design-system dirs
-    "AC-01b (surface selection): hypothesis-validation only — exactly 6 skill dirs, no design-system dirs",
+    // Then only the loop skills are installed, no design-system skills, and no design/
+    "AC-01b (design=none): installs the loop only — no design-system skills, no design/",
     async () => {
       // Given
       const prompt = makePrompt([
-        "2",  // Q1: hypothesis-validation only
-        "",   // Q4: PostHog key — skip
-        "",   // Q5: autonomy — balanced
-        "",   // Q6: SI — audit
+        "3",  // Q1: design — none (loop only)
+        "",   // PostHog key — skip
+        "",   // autonomy — default
+        "",   // self-improvement — default
       ]);
 
       // When
@@ -320,33 +322,36 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — exactly the 6 hypothesis-validation skills exist
+      // Then — the loop skills exist; no design-system skills
       const installed = ws.installedSkills();
       for (const skill of HYPOTHESIS_VALIDATION_SKILLS) {
         expect(installed).toContain(skill);
       }
-
-      // Then — no design-system skills installed
       for (const skill of DESIGN_SYSTEM_SKILLS) {
         expect(installed).not.toContain(skill);
       }
+
+      // Then — the loop is scaffolded, but there is no design/ substrate
+      expect(ws.exists("experiments", "LEARNINGS.md")).toBe(true);
+      expect(ws.exists("design")).toBe(false);
+      expect(ws.read("systemix.config.yaml")).toContain("source: none");
     }
   );
 
-  // ── AC-01c: Surfaces YAML — hypothesis-validation choice writes [landing, onboarding] ──
+  // ── AC-01c: Surfaces YAML — the loop's surfaces are always present ─────────
 
   it(
-    // Given the user selects surface "2" (hypothesis-validation only)
+    // Given the user picks design "3" (none / loop only)
     // When init writes systemix.config.yaml
-    // Then the surfaces list contains "landing" and "onboarding", not "hypothesis-validation"
-    "AC-01c (surfaces YAML): hypothesis-validation choice writes [landing, onboarding] in YAML, not [hypothesis-validation]",
+    // Then the surfaces list contains the loop surfaces and not "design-system"
+    "AC-01c (surfaces YAML): loop-only writes [landing, onboarding] and not [design-system]",
     async () => {
       // Given
       const prompt = makePrompt([
-        "2",  // Q1: hypothesis-validation only
-        "",   // Q4: PostHog key — skip
-        "",   // Q5: autonomy — balanced
-        "",   // Q6: SI — audit
+        "3",  // Q1: design — none
+        "",   // PostHog key — skip
+        "",   // autonomy — default
+        "",   // self-improvement — default
       ]);
 
       // When
@@ -362,7 +367,49 @@ describe("systemix init — acceptance tests", () => {
       const yaml = ws.read("systemix.config.yaml");
       expect(yaml).toContain("- landing");
       expect(yaml).toContain("- onboarding");
-      expect(yaml).not.toContain("- hypothesis-validation");
+      expect(yaml).not.toContain("- design-system");
+    }
+  );
+
+  // ── AC-01d: Design choice — existing points at a BYO design system ─────────
+
+  it(
+    // Given the user picks design "2" (existing) and provides a path
+    // When init completes
+    // Then design.source is set to that path, no design/ is scaffolded, and the
+    //      design-system skills are still installed (they operate on the source)
+    "AC-01d (design=existing): sets design.source, installs design skills, scaffolds no design/",
+    async () => {
+      // Given
+      const prompt = makePrompt([
+        "2",          // Q1: design — existing
+        "../my-ds",   // existing design system path
+        "",           // Figma URL — skip
+        "",           // Figma PAT — skip
+        "",           // PostHog key — skip
+        "",           // autonomy — default
+        "",           // self-improvement — default
+      ]);
+
+      // When
+      await init({
+        projectRoot:    ws.projectRoot,
+        homeDir:        ws.homeDir,
+        prompt,
+        detectClients:  noClients,
+        registerServer: noopRegister,
+      });
+
+      // Then — design.source points at the existing DS; no local design/ was scaffolded
+      expect(ws.read("systemix.config.yaml")).toContain("source: ../my-ds");
+      expect(ws.exists("design")).toBe(false);
+
+      // Then — design-system skills installed alongside the loop (they read the source)
+      const installed = ws.installedSkills();
+      expect(installed).toContain("drift-report");
+      for (const skill of HYPOTHESIS_VALIDATION_SKILLS) {
+        expect(installed).toContain(skill);
+      }
     }
   );
 
@@ -376,11 +423,12 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given
       const prompt = makePrompt([
-        "1",                                                           // Q1: design-system only
-        "https://www.figma.com/design/h1m7dfFILe1wGSfxwQ6U02/MyDS",  // Q2: full Figma URL
-        "",                                                            // Q3: PAT — skip
-        "",                                                            // Q5: autonomy — balanced
-        "",                                                            // Q6: SI — audit
+        "1",                                                           // Q1: design — scaffold
+        "https://www.figma.com/design/h1m7dfFILe1wGSfxwQ6U02/MyDS",  // Figma URL
+        "",                                                            // Figma PAT — skip
+        "",                                                            // PostHog key — skip
+        "",                                                            // autonomy — default
+        "",                                                            // self-improvement — default
       ]);
 
       // When
@@ -414,11 +462,12 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given
       const prompt = makePrompt([
-        "1",                      // Q1: design-system only
-        "h1m7dfFILe1wGSfxwQ6U02", // Q2: bare key
-        "",                       // Q3: PAT — skip
-        "",                       // Q5: autonomy — balanced
-        "",                       // Q6: SI — audit
+        "1",                      // Q1: design — scaffold
+        "h1m7dfFILe1wGSfxwQ6U02", // Figma bare key
+        "",                       // Figma PAT — skip
+        "",                       // PostHog key — skip
+        "",                       // autonomy — default
+        "",                       // self-improvement — default
       ]);
 
       // When
@@ -447,12 +496,13 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given — first answer is an invalid non-Figma URL; second is Enter (skip)
       const prompt = makePrompt([
-        "1",                             // Q1: design-system only
-        "https://www.notion.so/mypage",  // Q2a: invalid URL — should trigger re-prompt
-        "",                              // Q2b: Enter to skip after invalid
-        "",                              // Q3: PAT — skip
-        "",                              // Q5: autonomy — balanced
-        "",                              // Q6: SI — audit
+        "1",                             // Q1: design — scaffold
+        "https://www.notion.so/mypage",  // Figma URL — invalid, triggers re-prompt
+        "",                              // Figma URL — Enter to skip after invalid
+        "",                              // Figma PAT — skip
+        "",                              // PostHog key — skip
+        "",                              // autonomy — default
+        "",                              // self-improvement — default
       ]);
 
       // When
@@ -804,11 +854,12 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given
       const prompt = makePrompt([
-        "1",  // design-system only
+        "1",  // Q1: design — scaffold
         "",   // Figma URL — skip
-        "",   // PAT — skip
-        "",   // autonomy — balanced
-        "",   // SI — audit
+        "",   // Figma PAT — skip
+        "",   // PostHog key — skip
+        "",   // autonomy — default
+        "",   // self-improvement — default
       ]);
 
       // When
@@ -836,11 +887,12 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given
       const prompt = makePrompt([
-        "1",                      // design-system only
+        "1",                      // Q1: design — scaffold
         "h1m7dfFILe1wGSfxwQ6U02", // Figma key
-        "",                       // PAT — skip
-        "",                       // autonomy — balanced
-        "",                       // SI — audit
+        "",                       // Figma PAT — skip
+        "",                       // PostHog key — skip
+        "",                       // autonomy — default
+        "",                       // self-improvement — default
       ]);
 
       // When
@@ -874,11 +926,12 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       // Given
       const prompt = makePrompt([
-        "1",                      // design-system only
+        "1",                      // Q1: design — scaffold
         "h1m7dfFILe1wGSfxwQ6U02", // Figma key
-        "",                       // PAT — skip
-        "",                       // autonomy — balanced
-        "",                       // SI — audit
+        "",                       // Figma PAT — skip
+        "",                       // PostHog key — skip
+        "",                       // autonomy — default
+        "",                       // self-improvement — default
       ]);
 
       // When
