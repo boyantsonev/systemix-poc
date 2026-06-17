@@ -18,13 +18,13 @@ Cross-reference running hypothesis experiments with production evidence from Pos
 
 ### Step 1 — Load running experiments
 
-Call MCP tool `contract_list_hypotheses` with `status: "running"`. If `$ARGUMENTS` is provided, filter to that specific experiment ID instead.
+List `design/decisions/*.mdx` and keep the ones whose frontmatter has `status: running` — file-first, no MCP required. If `$ARGUMENTS` is provided, read only that experiment ID instead.
 
 If no running experiments are found, report: "No running experiments. Use `/init-experiment` to create one." and stop.
 
 ### Step 2 — Load PostHog evidence per experiment
 
-For each running experiment, call `contract_get_evidence` with the experiment's `section` field (maps to the component that owns the section). If no component matches, note it as "no evidence source mapped".
+For each running experiment, read its `posthog-event` / `metric` fields and fetch the latest data via the PostHog MCP (segment by the `variant` property). If `posthog-event` is null, note it as "not yet instrumented — run /measure".
 
 Summarise per experiment:
 - Total renders in last 30 days

@@ -1,26 +1,22 @@
 {
   "name": "hypothesis-validation",
   "displayName": "Hypothesis Validation",
-  "description": "Product B workflow: create experiments, audit PostHog evidence, write variants, close loops. Hermes writes results back to contract/hypotheses/.",
-  "version": "0.1.0",
+  "description": "The validation loop: create an experiment, build + measure a prototype (PostHog), audit the evidence, and close the loop — the decision + learning is written back to design/DESIGN.md. File-first; engine = Claude Code.",
+  "version": "0.2.0",
   "author": "systemix",
   "skills": [
-    "hypothesis",
-    "measure",
-    "experiment",
-    "evidence",
-    "hermes",
     "init-experiment",
-    "growth-audit",
     "write-variants",
-    "close-experiment"
+    "measure",
+    "growth-audit",
+    "close-experiment",
+    "hermes"
   ],
   "requires": {
     "mcp": [
-      "Systemix MCP (npx systemix-mcp --project-root .)",
-      "PostHog API key in POSTHOG_API_KEY environment variable"
+      "PostHog API key in POSTHOG_API_KEY environment variable (for /measure and evidence)"
     ],
-    "tools": ["Claude Code ≥ 1.0", "Ollama with hermes3 model (for autonomous write mode)"]
+    "tools": ["Claude Code"]
   },
   "startWith": "/init-experiment <experiment-id>",
   "cliVersion": "1.1.0"

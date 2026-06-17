@@ -18,7 +18,7 @@ Generate variant copy proposals calibrated to the hypothesis ICP and section. Op
 
 ### Step 1 — Load the hypothesis
 
-Call MCP tool `contract_get_hypothesis` with the ID from `$ARGUMENTS`.
+Read `design/decisions/<id>.mdx` (the `<id>` from `$ARGUMENTS`) directly — file-first, no MCP required.
 
 If not found, ask the user for the experiment ID and retry.
 

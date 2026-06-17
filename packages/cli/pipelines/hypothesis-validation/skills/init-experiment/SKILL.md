@@ -50,15 +50,18 @@ section: <section>
 hypothesis: "<hypothesis statement>"
 icp: <icp>
 status: running
+metric: <primary metric, e.g. cta-click-rate>
 created: <today YYYY-MM-DD>
 variants:
   control: "<control text>"
   variant_b: "<variant b text>"
+posthog-event: null
 result: null
 decision: null
 confidence: null
 evidence-posthog: null
 evidence-social: null
+review-by: null
 ---
 
 ## Why This Hypothesis
