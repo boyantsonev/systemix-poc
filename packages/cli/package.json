@@ -24,7 +24,8 @@
   "files": [
     "bin",
     "src",
-    "pipelines"
+    "pipelines",
+    "templates"
   ],
   "engines": {
     "node": ">=18"

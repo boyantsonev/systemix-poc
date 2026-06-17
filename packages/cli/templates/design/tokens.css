@@ -1,0 +1,30 @@
+/* design/tokens.css — the canonical token values (code-first source of truth).
+   The app imports THIS; everything else references these custom properties.
+   Derived formats (e.g. a Figma bridge) are regenerated from here, never edited. */
+
+:root {
+  /* color — semantic */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --border: oklch(0.922 0 0);
+
+  /* radius */
+  --radius: 0.625rem;
+
+  /* spacing base unit — the scale is multiples of this */
+  --space-base: 0.25rem;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --border: oklch(0.269 0 0);
+}

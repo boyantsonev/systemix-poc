@@ -1,0 +1,37 @@
+---
+type: guardrails
+updated: 2026-01-01
+---
+
+# Design Guardrails
+
+The rules the drift check enforces and the engine reasons about. Keep them
+specific and checkable. When drift keeps violating a rule, the engine proposes a
+tighter guardrail here as a HITL card — guardrails are never self-modified silently.
+
+## Tokens
+
+- All color, spacing, radius, and type values reference tokens in
+  `design/tokens.css`. No raw hex (`#rrggbb`), no raw `rgb()/hsl()`, no magic
+  pixel values in component code.
+- New tokens are added to `design/tokens.css` first, then referenced — never
+  inlined "just this once".
+
+## Spacing & layout
+
+- Spacing uses the token scale (multiples of `--space-base`). No arbitrary px gaps.
+- Prefer layout primitives over one-off margins.
+
+## Type
+
+- Font sizes, weights, and line-heights come from the type tokens. No ad-hoc sizes.
+
+## Accessibility
+
+- Text/background pairs meet WCAG AA contrast (4.5:1 body, 3:1 large text).
+- Interactive targets are at least 44×44px; every control has an accessible name.
+
+## Components
+
+- A component variant is added only with a stated reason (link the decision in
+  `design/decisions/`). Unused variants are pruned.

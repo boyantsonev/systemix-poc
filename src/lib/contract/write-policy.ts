@@ -7,6 +7,8 @@ export type Artifact =
   | "evidence" // result/confidence/evidence-posthog fields on a hypothesis
   | "hypothesis" // a hypothesis contract (create/edit)
   | "memory" // a memory entry on the root contract
+  | "skill" // a vendored skill (.claude/skills/*/SKILL.md) — self-improvement target
+  | "guardrail" // a design guardrail (design/guardrails.mdx) — self-improvement target
   | "brief" // the contract brief
   | "goal" // a goal contract
   | "record"; // record status fields (drift, parity)
@@ -22,6 +24,8 @@ const AUTO_AT: Record<Artifact, number> = {
   evidence: 1, // ghost proposes; balanced+ auto-writes evidence
   hypothesis: 2, // ghost/balanced propose; high auto-creates
   memory: 2, // ghost/balanced propose; high auto-appends
+  skill: Infinity, // self-modification is always proposed — HITL even in autonomous (audit-window bounded)
+  guardrail: Infinity, // self-modification is always proposed — HITL even in autonomous
   brief: Infinity, // always proposed
   goal: Infinity, // the covenant — humans give goals
 };
@@ -86,6 +90,8 @@ export const MATRIX_ARTIFACTS: { artifact: Artifact; label: string }[] = [
   { artifact: "evidence", label: "Evidence fields on hypotheses" },
   { artifact: "hypothesis", label: "Hypothesis contracts (create/edit)" },
   { artifact: "memory", label: "Memory entries" },
+  { artifact: "skill", label: "Skills (self-improvement)" },
+  { artifact: "guardrail", label: "Design guardrails (self-improvement)" },
   { artifact: "goal", label: "Goals" },
   { artifact: "brief", label: "The brief" },
   { artifact: "record", label: "Record status (drift, parity)" },

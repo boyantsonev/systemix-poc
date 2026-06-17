@@ -206,13 +206,15 @@ describe("systemix init — acceptance tests", () => {
         expect(installed).toContain(skill);
       }
 
-      // Then — contract/ subdirectories exist
-      expect(ws.exists("contract", "tokens")).toBe(true);
-      expect(ws.exists("contract", "components")).toBe(true);
-      expect(ws.exists("contract", "hypotheses")).toBe(true);
+      // Then — the design/ folder is scaffolded (the design-system-as-object)
+      expect(ws.exists("design", "DESIGN.md")).toBe(true);
+      expect(ws.exists("design", "guardrails.mdx")).toBe(true);
+      expect(ws.exists("design", "tokens.css")).toBe(true);
+      expect(ws.exists("design", "decisions")).toBe(true);
+      expect(ws.exists("design", "goals")).toBe(true);
 
-      // Then — contract/meta/ exists because siMode=audit (not off)
-      expect(ws.exists("contract", "meta")).toBe(true);
+      // Then — design/meta/ exists because siMode=audit (not off)
+      expect(ws.exists("design", "meta")).toBe(true);
 
       // Then — systemix.config.yaml exists and contains trust tier config
       expect(ws.exists("systemix.config.yaml")).toBe(true);
@@ -478,7 +480,7 @@ describe("systemix init — acceptance tests", () => {
         detectClients:  noClients,
         registerServer: noopRegister,
       });
-      expect(ws.read("systemix.config.yaml")).toContain("autonomy: conservative");
+      expect(ws.read("systemix.config.yaml")).toContain("autonomy: ghost");
 
       // When — second run: balanced autonomy, no reconfigure flag
       const secondPrompt = makePrompt(["", "", "", "", "2", ""]);
@@ -491,7 +493,7 @@ describe("systemix init — acceptance tests", () => {
       });
 
       // Then — still conservative (second run did not overwrite)
-      expect(ws.read("systemix.config.yaml")).toContain("autonomy: conservative");
+      expect(ws.read("systemix.config.yaml")).toContain("autonomy: ghost");
     }
   );
 
@@ -512,7 +514,7 @@ describe("systemix init — acceptance tests", () => {
         detectClients:  noClients,
         registerServer: noopRegister,
       });
-      expect(ws.read("systemix.config.yaml")).toContain("autonomy: conservative");
+      expect(ws.read("systemix.config.yaml")).toContain("autonomy: ghost");
 
       // When — second run: reconfigure = true, balanced autonomy
       const secondPrompt = makePrompt(["", "", "", "", "2", ""]);
@@ -526,7 +528,7 @@ describe("systemix init — acceptance tests", () => {
       });
 
       // Then — overwritten with balanced
-      expect(ws.read("systemix.config.yaml")).toContain("autonomy: balanced");
+      expect(ws.read("systemix.config.yaml")).toContain("autonomy: assisted");
     }
   );
 
@@ -657,7 +659,7 @@ describe("systemix init — acceptance tests", () => {
       const yaml = ws.read("systemix.config.yaml");
       expect(yaml).toContain("orchestrator_tier: 0");
       expect(yaml).toContain("hermes_tier: 0");
-      expect(yaml).toContain("autonomy: conservative");
+      expect(yaml).toContain("autonomy: ghost");
     }
   );
 
@@ -685,7 +687,7 @@ describe("systemix init — acceptance tests", () => {
       const yaml = ws.read("systemix.config.yaml");
       expect(yaml).toContain("orchestrator_tier: 0");
       expect(yaml).toContain("hermes_tier: 0");
-      expect(yaml).toContain("autonomy: progressive");
+      expect(yaml).toContain("autonomy: autonomous");
     }
   );
 
@@ -709,8 +711,8 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — contract/meta/ was not created
-      expect(ws.exists("contract", "meta")).toBe(false);
+      // Then — design/meta/ was not created
+      expect(ws.exists("design", "meta")).toBe(false);
 
       // Then — YAML has no meta_contract line but does have mode: off
       const yaml = ws.read("systemix.config.yaml");
@@ -739,12 +741,12 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — contract/meta/ was created
-      expect(ws.exists("contract", "meta")).toBe(true);
+      // Then — design/meta/ was created
+      expect(ws.exists("design", "meta")).toBe(true);
 
       // Then — YAML contains the meta_contract path
       const yaml = ws.read("systemix.config.yaml");
-      expect(yaml).toContain("meta_contract: contract/meta/hermes-accuracy.mdx");
+      expect(yaml).toContain("meta_contract: design/meta/hermes-accuracy.mdx");
     }
   );
 

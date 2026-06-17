@@ -41,6 +41,13 @@ describe("write-policy matrix", () => {
     }
   });
 
+  it("self-modification (skills + guardrails) is never autonomous, at any tier", () => {
+    for (const tier of [0, 1, 2, 3, 99]) {
+      expect(mayWrite(tier, "skill")).toBe("propose");
+      expect(mayWrite(tier, "guardrail")).toBe("propose");
+    }
+  });
+
   it("tierBand maps 0→ghost, 1→assisted, 2+→autonomous", () => {
     expect(tierBand(0)).toBe("ghost");
     expect(tierBand(1)).toBe("assisted");
@@ -85,6 +92,21 @@ describe("assertWriteAllowed", () => {
     expect(() =>
       assertWriteAllowed({ tier: 3, artifact: "goal", humanApproved: false }),
     ).toThrow(WritePolicyError);
+  });
+
+  it("self-modification (skill/guardrail) is rejected autonomously even at the highest tier", () => {
+    expect(() =>
+      assertWriteAllowed({ tier: 3, artifact: "skill", humanApproved: false }),
+    ).toThrow(WritePolicyError);
+    expect(() =>
+      assertWriteAllowed({ tier: 99, artifact: "guardrail", humanApproved: false }),
+    ).toThrow(WritePolicyError);
+  });
+
+  it("a human-approved self-modification is allowed (HITL is the gate)", () => {
+    expect(() =>
+      assertWriteAllowed({ tier: 0, artifact: "skill", humanApproved: true }),
+    ).not.toThrow();
   });
 });
 

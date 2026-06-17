@@ -6,8 +6,10 @@ const os = require("os");
 const readline = require("readline");
 
 const mcpRegistrar = require("./installers/mcp-server-registrar");
+const layout = require("./lib/layout");
 
 const PIPELINES_DIR = path.join(__dirname, "..", "pipelines");
+const TEMPLATES_DIR = path.join(__dirname, "..", "templates");
 // Skills install project-scoped (.claude/skills/ in the client repo), not globally.
 // The instance is self-contained and CI-reproducible. See ADR-008.
 const projectSkillsDirFor = (root) => path.join(root, ".claude", "skills");
@@ -74,43 +76,16 @@ function installPipeline(name, skillsDir) {
   }
 }
 
-function scaffoldContracts(projectRoot, includeHypothesisExample, includeMeta) {
-  const dirs = ["contract/tokens", "contract/components", "contract/hypotheses"];
-  if (includeMeta) dirs.push("contract/meta");
-  for (const d of dirs) {
-    fs.mkdirSync(path.join(projectRoot, d), { recursive: true });
-    console.log(`  ✓  ${d}/`);
-  }
+function scaffoldDesign(projectRoot, includeMeta) {
+  // Vendor the design/ template (the design-system-as-object): DESIGN.md,
+  // guardrails.mdx, tokens.css, decisions/, goals/, .state/. The authored
+  // contract lives under design/; runtime state stays in .systemix/ for now.
+  copyDir(path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).dir);
+  console.log(`  ✓  ${layout.rel.dir}/  (DESIGN.md, guardrails.mdx, tokens.css, decisions/, goals/)`);
 
-  if (includeHypothesisExample) {
-    const examplePath = path.join(projectRoot, "contract", "hypotheses", "example-hypothesis.mdx");
-    if (!fs.existsSync(examplePath)) {
-      const today = new Date().toISOString().slice(0, 10);
-      const content = [
-        "---",
-        "type: hypothesis",
-        `id: "example-hypothesis"`,
-        `section: "onboarding"`,
-        `hypothesis: "Replace this with your experiment hypothesis"`,
-        "icp: null",
-        "status: running",
-        `created: "${today}"`,
-        "variants:",
-        `  control: "Current experience"`,
-        `  treatment: "Proposed change"`,
-        "result: null",
-        "decision: null",
-        "confidence: null",
-        "evidence-posthog: null",
-        "---",
-        "",
-        "Add your experiment rationale here. What change are you testing,",
-        "who are you testing it with, and what metric will tell you it worked?",
-        "",
-      ].join("\n");
-      fs.writeFileSync(examplePath, content, "utf8");
-      console.log("  ✓  contract/hypotheses/example-hypothesis.mdx (starter)");
-    }
+  if (includeMeta) {
+    fs.mkdirSync(layout.abs(projectRoot).meta, { recursive: true });
+    console.log(`  ✓  ${layout.rel.meta}/`);
   }
 }
 
@@ -144,12 +119,12 @@ function buildConfigYaml({ surfaces, signals, autonomy, hermesTier = 0, siMode }
   L.push("self_improvement:");
   L.push(`  mode: ${siMode}`);
   if (siMode !== "off") {
-    L.push("  meta_contract: contract/meta/hermes-accuracy.mdx");
+    L.push(`  meta_contract: ${layout.rel.metaContract}`);
     L.push("  audit_window_days: 90");
   }
   L.push("trust:");
   L.push("  orchestrator_tier: 0   # Ghost Mode at init — never executes autonomously without config");
-  L.push(`  hermes_tier: ${hermesTier}   # the autonomy dial: 0 ghost · 1 assisted · 2 autonomous`);
+  L.push("  hermes_tier: 0   # ghost-at-init — every instance starts safe; raising the dial is a queued decision (the covenant)");
   return L.join("\n") + "\n";
 }
 
@@ -250,9 +225,9 @@ async function init(opts = {}) {
   if (doHypo)    installPipeline("hypothesis-validation", projectSkillsDir);
   console.log();
 
-  // ── Contract scaffold ─────────────────────────────────────────────────────
-  console.log("  Setting up contract/ directories...\n");
-  scaffoldContracts(projectRoot, doHypo, siMode !== "off");
+  // ── Design system scaffold ────────────────────────────────────────────────
+  console.log("  Setting up the design/ folder...\n");
+  scaffoldDesign(projectRoot, siMode !== "off");
   console.log();
 
   // ── Register MCP server ───────────────────────────────────────────────────
@@ -321,10 +296,9 @@ async function init(opts = {}) {
     console.log(`    hypothesis-validation /init-experiment <experiment-id>`);
   }
   console.log(`    config                systemix.config.yaml (your topology)`);
-  console.log(`    watcher (Hermes)      npx systemix watch`);
-  console.log(`    home                  http://localhost:3001/config`);
+  console.log(`    your design system    design/DESIGN.md (the source of truth)`);
   console.log();
-  console.log("  Commit .claude/skills/ + systemix.config.yaml so the instance is reproducible in CI.");
+  console.log("  Commit design/ + .claude/skills/ + systemix.config.yaml so the instance is reproducible in CI.");
   console.log("  Run `npx systemix doctor` to verify all dependencies.\n");
 }
 
