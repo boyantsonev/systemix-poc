@@ -1,7 +1,7 @@
 {
   "name": "hypothesis-validation",
   "displayName": "Hypothesis Validation",
-  "description": "The validation loop: create an experiment, build + measure a prototype (PostHog), audit the evidence, and close the loop — the decision + learning is written back to design/DESIGN.md. File-first; engine = Claude Code.",
+  "description": "The validation loop: create an experiment, build + measure a prototype (PostHog), audit the evidence, and close the loop — the decision + learning is written back to experiments/LEARNINGS.md. File-first; engine = Claude Code.",
   "version": "0.2.0",
   "author": "systemix",
   "skills": [

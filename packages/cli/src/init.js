@@ -102,17 +102,22 @@ function installPipeline(name, skillsDir) {
   }
 }
 
-function scaffoldDesign(projectRoot, includeMeta) {
-  // Vendor the design/ template (the design-system-as-object): DESIGN.md,
-  // guardrails.mdx, tokens.css, decisions/, goals/, .state/. The authored
-  // contract lives under design/; runtime state stays in .systemix/ for now.
-  copyDir(path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).dir);
-  console.log(`  ✓  ${layout.rel.dir}/  (DESIGN.md, guardrails.mdx, tokens.css, decisions/, goals/)`);
+function scaffoldExperiments(projectRoot, includeMeta) {
+  // Vendor the loop (the core): experiments/<id>.mdx, LEARNINGS.md (the synthesized
+  // memory close-experiment writes to), and goals/. General — not design-bound.
+  copyDir(path.join(TEMPLATES_DIR, "experiments"), layout.abs(projectRoot).experiments);
+  console.log(`  ✓  ${layout.rel.experiments}/  (the loop: <id>.mdx, LEARNINGS.md, goals/)`);
 
   if (includeMeta) {
     fs.mkdirSync(layout.abs(projectRoot).meta, { recursive: true });
-    console.log(`  ✓  ${layout.rel.meta}/`);
+    console.log(`  ✓  ${layout.rel.meta}/  (self-improvement audit)`);
   }
+}
+
+function scaffoldDesign(projectRoot) {
+  // Vendor the design/ substrate (optional): DESIGN.md, guardrails.mdx, tokens.css.
+  copyDir(path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).design);
+  console.log(`  ✓  ${layout.rel.design}/  (DESIGN.md, guardrails.mdx, tokens.css)`);
 }
 
 // Build systemix.config.yaml — the instance topology (committed; no secrets). See ADR-008.
@@ -251,9 +256,10 @@ async function init(opts = {}) {
   if (doHypo)    installPipeline("hypothesis-validation", projectSkillsDir);
   console.log();
 
-  // ── Design system scaffold ────────────────────────────────────────────────
-  console.log("  Setting up the design/ folder...\n");
-  scaffoldDesign(projectRoot, siMode !== "off");
+  // ── Scaffold the loop (the core) + the design substrate ───────────────────
+  console.log("  Setting up experiments/ (the loop) + design/ ...\n");
+  scaffoldExperiments(projectRoot, siMode !== "off");
+  scaffoldDesign(projectRoot);
   console.log();
 
   // ── Register MCP server ───────────────────────────────────────────────────
@@ -324,9 +330,10 @@ async function init(opts = {}) {
     console.log(`    hypothesis-validation /init-experiment <experiment-id>`);
   }
   console.log(`    config                systemix.config.yaml (your topology)`);
-  console.log(`    your design system    design/DESIGN.md (the source of truth)`);
+  console.log(`    the loop              experiments/ — LEARNINGS.md is the synthesized memory`);
+  console.log(`    design substrate      design/DESIGN.md (optional; tokens + guardrails)`);
   console.log();
-  console.log("  Commit design/ + .claude/skills/ + systemix.config.yaml so the instance is reproducible in CI.");
+  console.log("  Commit experiments/ + design/ + .claude/skills/ + systemix.config.yaml so the instance is reproducible in CI.");
   console.log("  Run `npx systemix doctor` to verify all dependencies.\n");
 }
 

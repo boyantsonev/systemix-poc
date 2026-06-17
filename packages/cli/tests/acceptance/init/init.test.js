@@ -207,15 +207,20 @@ describe("systemix init — acceptance tests", () => {
         expect(installed).toContain(skill);
       }
 
-      // Then — the design/ folder is scaffolded (the design-system-as-object)
+      // Then — the experiments/ loop is scaffolded (the core)
+      expect(ws.exists("experiments", "_example.mdx")).toBe(true);
+      expect(ws.exists("experiments", "LEARNINGS.md")).toBe(true);
+      expect(ws.exists("experiments", "goals")).toBe(true);
+
+      // Then — the design/ substrate is scaffolded; loop dirs are NOT under design/
       expect(ws.exists("design", "DESIGN.md")).toBe(true);
       expect(ws.exists("design", "guardrails.mdx")).toBe(true);
       expect(ws.exists("design", "tokens.css")).toBe(true);
-      expect(ws.exists("design", "decisions")).toBe(true);
-      expect(ws.exists("design", "goals")).toBe(true);
+      expect(ws.exists("design", "decisions")).toBe(false);  // moved → experiments/
+      expect(ws.exists("design", "goals")).toBe(false);      // moved → experiments/goals/
 
-      // Then — design/meta/ exists because siMode=audit (not off)
-      expect(ws.exists("design", "meta")).toBe(true);
+      // Then — experiments/meta/ exists because siMode=audit (not off)
+      expect(ws.exists("experiments", "meta")).toBe(true);
 
       // Then — systemix.config.yaml exists and contains trust tier config
       expect(ws.exists("systemix.config.yaml")).toBe(true);
@@ -712,8 +717,8 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — design/meta/ was not created
-      expect(ws.exists("design", "meta")).toBe(false);
+      // Then — experiments/meta/ was not created
+      expect(ws.exists("experiments", "meta")).toBe(false);
 
       // Then — YAML has no meta_contract line but does have mode: off
       const yaml = ws.read("systemix.config.yaml");
@@ -742,12 +747,12 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — design/meta/ was created
-      expect(ws.exists("design", "meta")).toBe(true);
+      // Then — experiments/meta/ was created
+      expect(ws.exists("experiments", "meta")).toBe(true);
 
       // Then — YAML contains the meta_contract path
       const yaml = ws.read("systemix.config.yaml");
-      expect(yaml).toContain("meta_contract: design/meta/hermes-accuracy.mdx");
+      expect(yaml).toContain("meta_contract: experiments/meta/hermes-accuracy.mdx");
     }
   );
 

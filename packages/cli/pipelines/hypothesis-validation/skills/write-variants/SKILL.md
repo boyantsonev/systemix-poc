@@ -18,7 +18,7 @@ Generate variant copy proposals calibrated to the hypothesis ICP and section. Op
 
 ### Step 1 — Load the hypothesis
 
-Read `design/decisions/<id>.mdx` (the `<id>` from `$ARGUMENTS`) directly — file-first, no MCP required.
+Read `experiments/<id>.mdx` (the `<id>` from `$ARGUMENTS`) directly — file-first, no MCP required.
 
 If not found, ask the user for the experiment ID and retry.
 
@@ -74,7 +74,7 @@ After writing, instruct the user:
 
 ### Step 6 — Update the contract
 
-Update `design/decisions/<id>.mdx` to add the new variant under `variants:`:
+Update `experiments/<id>.mdx` to add the new variant under `variants:`:
 ```yaml
   variant_c: "<new copy>"
 ```

@@ -16,7 +16,7 @@ Triggers Hermes (local Ollama LLM) to read an experiment contract, synthesize th
 ## Steps
 
 1. **Resolve the target contract(s)**:
-   - Named experiment: read `design/decisions/[name].mdx`
+   - Named experiment: read `experiments/[name].mdx`
    - `all`: find all contracts with `status: evidence-ready`
 
 2. **Check Ollama is running**:
@@ -59,7 +59,7 @@ Triggers Hermes (local Ollama LLM) to read an experiment contract, synthesize th
    [Hermes rationale prose]
    ```
 
-7. **Queue the HITL card**: Write to `design/.state/queue.json`.
+7. **Queue the HITL card**: Write to `.systemix/queue.json`.
 
 8. **Report**: Synthesis written, HITL card queued. Check Dashboard → Queue to approve.
 
