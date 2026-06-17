@@ -31,6 +31,8 @@
  *   AC-08a Skip flow: skipping Figma key leaves no project-context.json and no systemix.json
  *   AC-08b Skip flow: providing a Figma key writes both project-context.json and systemix.json figma block
  *   AC-08c Skip flow: skipping PAT means no figmaToken in ~/.systemix/config.json
+ *   AC-09a CLAUDE.md: loop orchestrator scaffolded at root when none exists
+ *   AC-09b CLAUDE.md: existing file preserved, Systemix block appended once (idempotent)
  */
 
 const fs   = require("fs");
@@ -888,6 +890,71 @@ describe("systemix init — acceptance tests", () => {
       expect(ws.homeExists(".systemix", "config.json")).toBe(true);
       const cfg = JSON.parse(ws.readHome(".systemix", "config.json"));
       expect(cfg).not.toHaveProperty("figmaToken");
+    }
+  );
+
+  // ── AC-09a: CLAUDE.md — orchestrator scaffolded when absent ────────────────
+
+  it(
+    // Given a clean project root with no CLAUDE.md
+    // When init runs
+    // Then a root CLAUDE.md is created with the Systemix loop block + a design/ pointer
+    "AC-09a (CLAUDE.md): scaffolds the loop orchestrator at root when none exists",
+    async () => {
+      const prompt = makePrompt(["", "", "", "", "", ""]);
+      await init({
+        projectRoot:    ws.projectRoot,
+        homeDir:        ws.homeDir,
+        prompt,
+        detectClients:  noClients,
+        registerServer: noopRegister,
+      });
+
+      expect(ws.exists("CLAUDE.md")).toBe(true);
+      const md = ws.read("CLAUDE.md");
+      expect(md).toContain("<!-- systemix:start -->");
+      expect(md).toContain("<!-- systemix:end -->");
+      expect(md).toContain("design/DESIGN.md");
+    }
+  );
+
+  // ── AC-09b: CLAUDE.md — existing file preserved, block appended once ────────
+
+  it(
+    // Given the repo already has its own CLAUDE.md
+    // When init runs twice
+    // Then the client's content is preserved, the Systemix block is appended,
+    // and a re-run does not duplicate the block (idempotent)
+    "AC-09b (CLAUDE.md): preserves an existing CLAUDE.md and appends the Systemix block once (idempotent)",
+    async () => {
+      fs.writeFileSync(ws.file("CLAUDE.md"), "# My Project\n\nClient instructions.\n", "utf8");
+
+      const firstPrompt = makePrompt(["", "", "", "", "", ""]);
+      await init({
+        projectRoot:    ws.projectRoot,
+        homeDir:        ws.homeDir,
+        prompt:         firstPrompt,
+        detectClients:  noClients,
+        registerServer: noopRegister,
+      });
+
+      let md = ws.read("CLAUDE.md");
+      expect(md).toContain("# My Project");            // client content preserved
+      expect(md).toContain("Client instructions.");
+      expect(md).toContain("<!-- systemix:start -->"); // Systemix block appended
+
+      // Re-run — idempotent: the block appears exactly once
+      const secondPrompt = makePrompt(["", "", "", "", "", ""]);
+      await init({
+        projectRoot:    ws.projectRoot,
+        homeDir:        ws.homeDir,
+        prompt:         secondPrompt,
+        detectClients:  noClients,
+        registerServer: noopRegister,
+      });
+
+      md = ws.read("CLAUDE.md");
+      expect(md.match(/<!-- systemix:start -->/g)).toHaveLength(1);
     }
   );
 });

@@ -58,6 +58,32 @@ function ensureGitignore(projectRoot) {
   fs.writeFileSync(p, text, "utf8");
 }
 
+const CLAUDE_MD_START = "<!-- systemix:start -->";
+const CLAUDE_MD_END   = "<!-- systemix:end -->";
+
+// Vendor the loop orchestrator into the repo's root CLAUDE.md (what Claude Code
+// auto-loads). Idempotent and non-clobbering: a managed marker block is appended
+// once; any existing client CLAUDE.md content is preserved above it.
+function ensureClaudeMd(projectRoot) {
+  const p = path.join(projectRoot, "CLAUDE.md");
+  const body = fs.readFileSync(path.join(TEMPLATES_DIR, "CLAUDE.md"), "utf8").trim();
+  const block = `${CLAUDE_MD_START}\n${body}\n${CLAUDE_MD_END}\n`;
+
+  if (!fs.existsSync(p)) {
+    fs.writeFileSync(p, block, "utf8");
+    console.log("  ✓  CLAUDE.md (Systemix loop orchestrator)");
+    return;
+  }
+  const text = fs.readFileSync(p, "utf8");
+  if (text.includes(CLAUDE_MD_START)) {
+    console.log("  -  CLAUDE.md — Systemix block present, left as-is");
+    return;
+  }
+  const sep = text.length && !text.endsWith("\n") ? "\n\n" : "\n";
+  fs.writeFileSync(p, text + sep + block, "utf8");
+  console.log("  ✓  CLAUDE.md — appended Systemix loop block (your content preserved)");
+}
+
 function installPipeline(name, skillsDir) {
   const dir = path.join(PIPELINES_DIR, name);
   if (!fs.existsSync(dir)) {
@@ -249,6 +275,8 @@ async function init(opts = {}) {
   // ── .gitignore ────────────────────────────────────────────────────────────
   ensureGitignore(projectRoot);
   console.log("  ✓  .gitignore updated");
+
+  ensureClaudeMd(projectRoot);
 
   // ── Write config files ────────────────────────────────────────────────────
   close();

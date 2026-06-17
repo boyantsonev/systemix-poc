@@ -1,107 +1,55 @@
 # Systemix — Claude Code Briefing
 
 ## Session Start (always do this)
-On every new session or after `/clear`: read `~/.claude/projects/-Users-boyan/memory/MEMORY.md` and any linked memory files, then confirm: "Memory loaded. Systemix context ready."
+On every new session or after `/clear`: read `~/.claude/projects/-Users-boyan-projects-systemix-poc/memory/MEMORY.md` and the linked memory files, then confirm: "Memory loaded. Systemix context ready."
 
 ## What This Is
-A design-code sync pipeline. Keeps a Next.js design system in sync with Figma bidirectionally using Claude Code skills (slash commands) and MCP servers. Live at **https://systemix-alpha.vercel.app**
+Systemix is **the evidence / self-training layer for a design system**. A builder sets up a context-based design system, builds prototypes, measures them (PostHog), validates assumptions — and the reasons + decisions are written back into the living design system, on a schedule, in Claude Code. The loop is the product; **this repo runs on its own contract (it is the demo of itself)**. Live: https://systemix-alpha.vercel.app
 
-## Current Status (as of 2026-03-29)
-- Canvas built and deployed at systemix-alpha.vercel.app
-- Token pipeline built — 31 tokens pre-converted to hex/rgba in `.systemix/tokens.bridge.json`
-- Skills fixed and in sync — 12 skill definitions in `pipeline.ts` match disk SKILL.md files
-- Figma file created: **"Systemix — Token Bridge"** (`h1m7dfFILe1wGSfxwQ6U02`)
-- Next: push tokens to Figma (`/sync-to-figma`), then capture `/pipeline` page (`/figma-push`)
+**Direction: out of alpha → public release.** The approved architecture is the **v5 plan** at `~/.claude/plans/help-me-plan-and-golden-seahorse.md` (and memory `project_public_release`). Read those before non-trivial work.
+
+## Current Status (2026-06-17)
+Public-release groundwork (Phase 0) in progress:
+- ✅ `write-policy` self-modification safety rail (skill/guardrail writes = always HITL)
+- ✅ `design/` instance template (`packages/cli/templates/design/`) — the spine
+- ✅ Hermes re-pointed Ollama → deterministic (engine = Claude Code)
+- ✅ `npx systemix init` scaffolds `design/` + a per-instance `CLAUDE.md`, ghost-at-init
+- ⬜ migrate the POC's own runtime-state readers (MCP/app) off `.systemix/` into `design/.state/`
+- Next: the validation loop (build-first), code-first drift + claude-design-sync, the scheduled routine, distribution + fumadocs docs.
+
+## Model (v5)
+- **Unit of evidence = the prototype/idea**, NOT components. No usage telemetry.
+- **`design/` = the design-system-as-object** (what `init` vendors): `DESIGN.md` (source of truth) · `guardrails.mdx` · `tokens.css` · `decisions/` · `goals/` · `.state/`. Skills live in `.claude/skills/`; the root `CLAUDE.md` links them.
+- **Code-first**: tokens are canonical in CSS. **Figma is optional/deferred** (a design-engineer adapter), not the spine.
+- **Engine = Claude Code.** A local LLM (Ollama) is NOT a dependency.
+- **Autonomy dial**: ghost / assisted / autonomous; instances start at **ghost**; self-modification (skills + guardrails) is always HITL, even autonomous.
+- **Packaging**: free kit → paid scheduled loop → team.
 
 ## Key Files
 | File | Purpose |
 |---|---|
-| `src/app/globals.css` | Source of truth — oklch CSS variables |
-| `.systemix/tokens.bridge.json` | 31 tokens pre-converted to hex + rgba for Figma (31 tokens, 3 collections) |
-| `.systemix/systemix.json` | Manifest — fileKey, modeIds, variableIds written back after each sync |
-| `scripts/token-converter.ts` | Converts globals.css → tokens.bridge.json (`npm run tokens`) |
-| `src/lib/data/pipeline.ts` | All 15 skill definitions with prompts |
-| `src/components/pipeline/PipelineBeam.tsx` | Hero diagram: Figma ↔ skill nodes ↔ Codebase with MCP badges |
+| `packages/cli/` | the `systemix` CLI — `init` vendors the instance (the product) |
+| `packages/cli/templates/design/` | the `design/` spine template `init` copies into a repo |
+| `packages/cli/templates/CLAUDE.md` | the per-instance loop orchestrator `init` writes to a repo root |
+| `packages/cli/src/lib/layout.js` | single source of truth for the `design/` layout |
+| `packages/mcp-server/` | the file-backed MCP (`contract_*`, hitl, events) |
+| `src/app/globals.css` | the POC's own token source of truth (oklch) |
+| `contract/` + `.systemix/` | the POC's own live contract + runtime state (it dogfoods itself; migrating to `design/`) |
+| `src/lib/contract/` | contract MDX parsing, memory write-back, `write-policy` (autonomy) |
+| `scripts/token-converter.ts` | globals.css → tokens.bridge.json (`npm run tokens`) |
 
-## Figma File
-- **File:** Systemix — Token Bridge
-- **Key:** `h1m7dfFILe1wGSfxwQ6U02`
-- **URL:** https://www.figma.com/design/h1m7dfFILe1wGSfxwQ6U02
-- **Variables status:** not yet pushed (systemix.json has nulls for modeIds/variableIds)
-
-## Token Collections (ready to push)
-| Collection | Modes | Count |
-|---|---|---|
-| `Semantic` | Light + Dark | 26 COLOR (color/*, sidebar/*) |
-| `Status` | Light + Dark | 4 COLOR (synced, drifted, stale, new) |
-| `Spacing & Radius` | Default | 1 FLOAT (radius/base = 8px) |
+## The loop (skills)
+Core: `/init-experiment` → `/write-variants` → `/measure` → `/close-experiment` (captures the decision into the contract Memory) · `/growth-audit` + `/hermes` (synthesize evidence; propose skill/guardrail improvements as HITL) · `/drift-report` (code-first drift). The Figma skills (`/figma`, `/tokens`, `/sync-to-figma`, …) are the **optional** design-engineer adapter.
 
 ## MCP Servers
-
-Full guide with decision rules: `docs/figma-mcp-guide.md`
-
-| Server | Prefix | Purpose | Needs |
-|---|---|---|---|
-| Official Figma MCP | `mcp__claude_ai_Figma__*` | Read design context, get vars, Code Connect, framework code gen | Figma OAuth |
-| Figma Console MCP (Southleft) | `mcp__figma-console__*` | Write variables/nodes, batch token ops, design system health, real-time events | FIGMA_ACCESS_TOKEN + Figma Desktop open |
-| Figma Desktop Bridge | `mcp__figma-desktop__*` | Local-only bridge (used by `/figma-inspect`) | Figma Desktop on port 3845 |
-| GitHub | `mcp__github__*` | Repo operations | token in ~/.claude.json |
-| Vercel | `mcp__claude_ai_Vercel__*` | Deploy, logs | Vercel OAuth |
-
-**Decision rule — which Figma MCP to call:**
-- **Reading from Figma → use Official** (`mcp__claude_ai_Figma__*`). No Desktop required.
-- **Writing to Figma → use Console** (`mcp__figma-console__*`). Requires Figma Desktop open.
-- **Code Connect → Official only** (`get_code_connect_map`, `send_code_connect_mappings`).
-- **Batch variable ops → Console only** (`figma_batch_create_variables`, `figma_batch_update_variables`).
-- **Both on the same skill** = bidirectional (/sync, /design-to-code): read with Official, write with Console.
-
-## Skills Architecture
-
-**Pipeline skills** (15 skill definitions in `src/lib/data/pipeline.ts`):
-
-| Skill | Command | MCP |
-|---|---|---|
-| Extract from Figma | `/figma` | `mcp__claude_ai_Figma__*` (REST, read) |
-| Sync Tokens | `/tokens` | `mcp__claude_ai_Figma__get_variable_defs` |
-| Generate Component | `/component` | `mcp__claude_ai_Figma__*` (REST, read) |
-| Read & Verify Stories | `/storybook` | file-based + Official Figma MCP |
-| Build & Deploy | `/deploy` | `mcp__claude_ai_Vercel__*` |
-| Sync Tokens to Figma | `/sync-to-figma` | `mcp__figma-console__*` (via token-writer agent) |
-| Push to Figma | `/figma-push` | `mcp__claude_ai_Figma_Console__figma_set_image_fill` |
-| Inspect Figma Node | `/figma-inspect` | `mcp__figma-desktop__*` (preferred) / REST fallback |
-| Full Sync | `/sync` | Both REST + Console MCPs |
-| Full Pipeline | `/design-to-code` | Both REST + Console MCPs |
-| Drift Report | `/drift-report` | `mcp__claude_ai_Figma__get_variable_defs` |
-| Apply Theme | `/apply-theme` | `mcp__claude_ai_Figma__get_variable_defs` |
-| Link Components | `/connect` | `mcp__claude_ai_Figma__*` (Code Connect) |
-| Check Parity | `/check-parity` | `mcp__claude_ai_Figma__*` (REST, read) |
-| Annotate Deploy | `/deploy-annotate` | Vercel MCP + `mcp__claude_ai_Figma__*` |
-
-**Read operations** use Official Figma REST MCP (`mcp__claude_ai_Figma__*`) — no Desktop required.
-**Write operations** use Figma Console MCP bridge (`mcp__figma-console__*`) — requires Figma Desktop on port 3845.
-
-## TokenGuard
-Token optimization layer for Figma MCP workflows. Full plan: `docs/token-intelligence.md`
-- Phase 8 (Foundation): pre-fetch, cache, node map, session handoff — BAST-71 to BAST-75
-- Phase 9 (CLI/Beta): --dry-run estimator, scope flags, dashboard, scheduler, profiler — BAST-76 to BAST-80
-- Phase 10 (Distribution): MCP proxy, auto-register, GitHub Action, npx install — BAST-81 to BAST-85
-
-### TokenGuard CLI
-- `npx systemix add token-guard` — install TokenGuard
-- `npx systemix token-guard status` — verify setup
-- `npx systemix sync --dry-run` — estimate token cost
-- `npx systemix sync --budget 30000 --incremental` — safe CI mode
-- `npx systemix token-profile ./src` — scan for inefficiency patterns
-- `npx systemix schedule run --when auto` — schedule off-peak run
+- **GitHub** (`mcp__github__*`), **Vercel**, **PostHog** — active.
+- **Systemix MCP** (`packages/mcp-server`) — the file-backed contract/HITL protocol.
+- **Figma** (Official read / Console write / Desktop bridge) — **optional/deferred** under code-first v5. See `docs/figma-mcp-guide.md` only if using the design-engineer adapter.
 
 ## Dev
-- App runs on **localhost:3001** (`npm run dev`)
-- Deploy: `vercel --prod --yes` from project root
-- Token regen: `npm run tokens` (runs `npx tsx scripts/token-converter.ts`)
+- App: `npm run dev` (**localhost:3001**)
+- CLI tests: `npm --prefix packages/cli test` (Jest) · app tests: `npm test` (Vitest)
+- Deploy: `vercel --prod --yes` · Token regen: `npm run tokens`
 
-## Capture Plan (localhost → Figma)
-1. `/sync-to-figma` pushes bridge.json → Figma Variables, writes variableIds to systemix.json
-2. `/figma-push http://localhost:3001/pipeline`:
-   - Screenshots the page and places it as an image fill on a Figma frame
-   - Use `/figma-push [url] [figma-url?node-id=...]` to target a specific frame
-3. Update loop: change CSS → `npm run tokens` → `/sync-to-figma` → all bound nodes update
+## Deferred (out of v1, see the plan's "OUT of scope")
+TokenGuard / mcp-proxy, the `github-action` package, the `figma-plugin`, and the Next.js control-plane app (→ Team tier).
