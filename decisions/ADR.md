@@ -306,3 +306,45 @@
 **Consequences:** Revised build order: **`/systemix next` → Cowork HITL card → manual signals connector**. `/systemix next` reads state and proposes (writes nothing but a suggestion); `/systemix rigor` writes the relevant `systemix.config.yaml` keys.
 
 **Review trigger:** The buddy's next-step suggestions are routinely overridden → revisit the planner heuristics.
+
+---
+
+## ADR-019: v5 release reconciliation — Claude-default engine (Ollama deferred) + DESIGN.md as the single contract carrier
+**Date:** 2026-06-17
+**Status:** DECIDED
+**Feature:** systemix-public-release (v5)
+**Amends:** ADR-013 (Hermes engine), ADR-015 (memory architecture)
+
+**Decision:** The merged v5 public-release work (Phases 0–2) resolves two points left open by ADR-013/015:
+
+1. **Engine — Claude is the default and the only engine shipped in v1; Ollama is deferred, not dropped.**
+Hermes stays a *role* (synthesis/propose node), engine-selectable via `hermes.engine`. v1 ships `claude` only
+and carries no Ollama dependency: the decision-logging path (`close-experiment` / `skill-update`) is now
+deterministic and needs no LLM, and the reasoning path runs as a Claude skill. ADR-013's `hermes.engine:
+ollama` air-gapped mode is preserved as a **roadmap item** (privacy/enterprise tier + unattended `systemix
+watch` token economics), to revisit at **Phase 3** / Team tier — intentionally out of the v1 critical path.
+
+2. **Memory — `design/DESIGN.md` is the single contract carrier (Google design.md-compatible); contracts
+remain the structure.** v5 unifies what ADR-015 separated: the contract root *is* `design/DESIGN.md` — the
+one file an agent reads first (brief · autonomy · goals · a capped Memory ledger · decision log · records
+index) — with `design/decisions/*.mdx` as the per-unit contract leaves. This keeps ADR-015's core principle
+(contracts/decisions are the source-of-record; no mega memory dump — the ledger is capped, old entries
+archive out) while removing the **dual-source-of-truth hazard** of a separate interop file (the v5
+context-architecture review's #1 risk). Google design.md interop is satisfied *by* DESIGN.md's frontmatter,
+not a second file. Narrative/strategic memory stays in `PLAN.md` + `PROJECT_SUMMARY.md` (repo-level).
+
+**Rationale:** v5 is the later, reviewed, merged direction (engineer / AI-context-architect / Claude-Code
+panel). Both reconciliations keep the valuable intent of 013/015 (the air-gapped differentiator;
+contracts-as-source, no mega-file) while choosing the simpler shipping path (Claude-only v1; one carrier).
+
+**Alternatives considered:** Re-admit Ollama in v1 (rejected — setup tax fights the easy-setup moat; defer
+with the seam preserved). Keep DESIGN.md interop-only + a separate `contract/index.mdx` root (rejected —
+dual source of truth, the review's top context risk). Drop Ollama permanently (rejected — air-gapped is a
+real Connecta/enterprise differentiator).
+
+**Consequences:** `hermes.engine` remains a config key (v1: `claude`). Ollama air-gapped mode is a tracked
+roadmap item, not deleted. `design/DESIGN.md` is the documented source of truth; ADR-015's "DESIGN.md =
+interop only" is amended. ADR-014 and ADR-016/017/018 stand (compatible; they feed Phase 3/4).
+
+**Review trigger:** A partner requires air-gapped operation by default (→ promote Ollama mode), or a local
+model reaches Claude-parity for synthesis.
