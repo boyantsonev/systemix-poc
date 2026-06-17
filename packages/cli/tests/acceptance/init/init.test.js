@@ -12,7 +12,7 @@
  *
  * AC coverage:
  *   AC-WS  Walking skeleton — both surfaces, skip all credentials — all dirs, YAML, gitignore, MCP snippet
- *   AC-01a Surface selection: design-system only — exactly 6 skill dirs, no hypothesis dirs
+ *   AC-01a Surface selection: design-system only — exactly 7 skill dirs, no hypothesis dirs
  *   AC-01b Surface selection: hypothesis-validation only — exactly 6 skill dirs, no design-system dirs
  *   AC-01c Surfaces YAML: hypothesis-validation choice writes [landing, onboarding], not [hypothesis-validation]
  *   AC-02a Figma key: full figma.com/design URL extracts file key, writes project-context.json
@@ -132,6 +132,7 @@ const noopRegister = () => {};
 // ── Skill sets (verified against manifest.json on disk) ───────────────────────
 
 const DESIGN_SYSTEM_SKILLS = [
+  "claude-design-sync",
   "figma",
   "tokens",
   "sync-to-figma",
@@ -168,7 +169,7 @@ describe("systemix init — acceptance tests", () => {
   it(
     // Given a clean project root with no prior Systemix config
     // When init is run with both surfaces, no credentials, and no MCP clients detected
-    // Then all 12 skill dirs, design/ folder, YAML, gitignore, and home config are created correctly
+    // Then all 13 skill dirs, design/ folder, YAML, gitignore, and home config are created correctly
     "AC-WS (walking skeleton): both surfaces, skip all credentials — skill dirs, design/ folder, trust tier 0, gitignore, and MCP fallback snippet all correct",
     async () => {
       // Given
@@ -199,7 +200,7 @@ describe("systemix init — acceptance tests", () => {
         console.log = origLog;
       }
 
-      // Then — all 12 skill dirs exist under .claude/skills/
+      // Then — all 13 skill dirs exist under .claude/skills/
       const installed = ws.installedSkills();
       for (const skill of [...DESIGN_SYSTEM_SKILLS, ...HYPOTHESIS_VALIDATION_SKILLS]) {
         expect(installed).toContain(skill);
@@ -254,8 +255,8 @@ describe("systemix init — acceptance tests", () => {
   it(
     // Given the user selects surface "1" (design-system only) and skips all credentials
     // When init completes
-    // Then exactly the 6 design-system skill dirs are installed, no hypothesis dirs
-    "AC-01a (surface selection): design-system only — exactly 6 skill dirs, no hypothesis dirs",
+    // Then exactly the 7 design-system skill dirs are installed, no hypothesis dirs
+    "AC-01a (surface selection): design-system only — exactly 7 skill dirs, no hypothesis dirs",
     async () => {
       // Given
       const prompt = makePrompt([
@@ -275,7 +276,7 @@ describe("systemix init — acceptance tests", () => {
         registerServer: noopRegister,
       });
 
-      // Then — exactly the 6 design-system skills exist
+      // Then — exactly the 7 design-system skills exist
       const installed = ws.installedSkills();
       for (const skill of DESIGN_SYSTEM_SKILLS) {
         expect(installed).toContain(skill);

@@ -1,16 +1,17 @@
 {
   "name": "design-system",
   "displayName": "Design System Sync",
-  "description": "Product A workflow: extract Figma tokens, sync bidirectionally, detect drift, and query the contract. The focused 6-skill set for teams maintaining Figma↔code parity.",
-  "version": "0.1.0",
+  "description": "Code-first design system: sync a Claude Design system into design/tokens.css (claude-design-sync), audit code-only drift against design/guardrails.mdx, and query the contract. Figma sync is an OPTIONAL adapter (figma/tokens/sync-to-figma/check-parity).",
+  "version": "0.2.0",
   "author": "systemix",
   "skills": [
+    "claude-design-sync",
+    "drift-report",
+    "contract-query",
     "figma",
     "tokens",
     "sync-to-figma",
-    "drift-report",
-    "check-parity",
-    "contract-query"
+    "check-parity"
   ],
   "skill-packs": [
     {
@@ -29,12 +30,12 @@
   ],
   "requires": {
     "mcp": [
-      "Figma MCP (mcp__claude_ai_Figma__)",
-      "Figma Console MCP (mcp__figma-console__ or mcp__claude_ai_Figma_Console__) — for /sync-to-figma",
-      "Systemix MCP (npx systemix-mcp --project-root .) — for /contract-query"
+      "The code-first core (claude-design-sync, drift-report) needs no MCP",
+      "Figma MCP + Figma Console MCP — OPTIONAL, only for the Figma adapter (figma/tokens/sync-to-figma/check-parity)",
+      "Systemix MCP — OPTIONAL, for /contract-query"
     ],
-    "tools": ["Claude Code ≥ 1.0", "Figma Desktop on port 3845 (for write-back skills)"]
+    "tools": ["Claude Code"]
   },
-  "startWith": "/figma [your-figma-url]",
+  "startWith": "/claude-design-sync <claude-design-link>  (or /figma <url> for the optional Figma adapter)",
   "cliVersion": "1.1.0"
 }

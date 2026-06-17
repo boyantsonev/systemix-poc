@@ -1,32 +1,40 @@
 ---
 name: drift-report
-description: Audit the codebase for design-code drift — hardcoded colors, spacing, and type scales that should reference tokens. Produces a structured report with severity levels.
-argument-hint: [path or figma-url]
+description: Code-only audit for design-code drift — hardcoded colors, spacing, and type values that should reference the tokens in design/tokens.css, checked against the rules in design/guardrails.mdx. No Figma required. Produces a structured report with severity levels.
+argument-hint: [path]
 ---
 
-# /drift-report — Design Drift Audit
+# /drift-report — Design Drift Audit (code-first)
 
 Audit for design-code drift: $ARGUMENTS
 
 ## Usage
 ```
-/drift-report                        # audit full component library
+/drift-report                        # audit the whole repo
 /drift-report src/components/ui/     # scope to a directory
-/drift-report [figma-url]            # also compare Figma values vs token file
 ```
 
 ## Steps
-1. Scan for hardcoded values: hex colors (#3B82F6), px spacing (mt-[24px]), font sizes (text-[14px])
-2. Cross-reference with token files — flag values that have a token equivalent
-3. If Figma URL provided: call `mcp__claude_ai_Figma__get_variable_defs`, diff against CSS token file
-4. Generate report with Critical (token exists, not used) and Warning (no token match) categories
-5. Suggest exact edits to fix each critical finding
+1. **Load the design system** — read the canonical tokens from `design/tokens.css`
+   (the `:root` / `.dark` custom properties) and the rules from `design/guardrails.mdx`.
+2. **Scan the code** ($ARGUMENTS, else the repo) for hardcoded values the guardrails
+   forbid: hex colors (`#3B82F6`), raw `rgb()/hsl()`, px spacing (`mt-[24px]`), and
+   font sizes (`text-[14px]`).
+3. **Cross-reference** each hardcoded value against `design/tokens.css`:
+   - **Critical** — a token with that value exists; the code should reference it instead.
+   - **Warning** — no token matches; either add a token to `design/tokens.css` or confirm it's intentional.
+4. **Apply the guardrails** in `design/guardrails.mdx` (no raw hex/px, spacing on the scale, type from tokens, etc.).
+5. **Suggest the exact edit** for each Critical finding (the token reference to use).
 
 ## Output format
 ```
 # Design-Code Drift Report
-- Components audited: X
-- With drift: Y
-- Total instances: Z
-| File | Line | Hardcoded | Should Use |
+- Files audited: X · with drift: Y · total instances: Z
+| File | Line | Hardcoded | Should use (token) | Severity |
 ```
+
+## Notes
+- **Code-only**: no Figma, no design tool. The source of truth is `design/tokens.css`.
+- Run it as a CI gate (the scheduled routine runs it) — failing on new Critical drift keeps code true to the design system.
+- Autonomy: reconciling drift is a `record` artifact (auto at every tier); proposing a NEW token or a tighter guardrail is a separate, always-HITL path (`/hermes`).
+- Pushing the repo's tokens *out* to a design tool is the optional Figma adapter, not this skill.
