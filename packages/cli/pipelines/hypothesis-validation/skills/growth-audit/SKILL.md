@@ -1,6 +1,6 @@
 ---
 name: growth-audit
-description: Audit running hypothesis experiments against PostHog evidence. Reads contract/hypotheses/ for running experiments, fetches cached evidence from component contracts, and produces a prioritized decision brief. Use weekly to close the evidence loop.
+description: Audit running hypothesis experiments against PostHog evidence. Reads design/decisions/ for running experiments, fetches cached evidence from component contracts, and produces a prioritized decision brief. Use weekly to close the evidence loop.
 disable-model-invocation: false
 argument-hint: [experiment-id]
 version: "0.1.0"

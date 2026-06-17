@@ -19,7 +19,7 @@ Creates (or updates) an MDX contract for an experiment. The contract is the sing
    - Experiment name (slug) — used as the contract filename
    - Optional: hypothesis statement in quotes
 
-2. **Check if a contract already exists** at `contract/experiments/[name].mdx`. If it does, read it and show the current state before asking what to update.
+2. **Check if a contract already exists** at `design/decisions/[name].mdx`. If it does, read it and show the current state before asking what to update.
 
 3. **Ask the user if not provided**:
    - What component or page is this experiment on?
@@ -60,10 +60,10 @@ last-updated: [today]
 ```
 
 5. **Report**:
-   - Contract written at: `contract/experiments/[name].mdx`
+   - Contract written at: `design/decisions/[name].mdx`
    - Next step: run `/measure [component]` to add PostHog instrumentation
 
 ## Notes
-- Contracts live in `contract/experiments/` by default
+- Contracts live in `design/decisions/` by default
 - The frontmatter is machine-readable — Hermes and the MCP server read it
 - The prose body is human-readable — write it so a future agent understands what was tested and why

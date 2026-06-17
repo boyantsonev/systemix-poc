@@ -15,7 +15,7 @@ Wires a PostHog feature flag into a component to serve the experiment variant. U
 
 ## Steps
 
-1. **Read the experiment contract** from `contract/experiments/[name].mdx`.
+1. **Read the experiment contract** from `design/decisions/[name].mdx`.
 
 2. **Confirm the variants**: Show the variants from the contract. Ask if any changes before proceeding.
 

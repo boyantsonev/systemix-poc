@@ -17,7 +17,7 @@ Instruments a component to capture the signals your hypothesis needs. Reads the 
 
 1. **Resolve the component** from $ARGUMENTS. If not found, ask the user.
 
-2. **Read the experiment contract**: Check `contract/experiments/` for a contract that references this component. Read the `posthog-event` and `metric` fields.
+2. **Read the experiment contract**: Check `design/decisions/` for a contract that references this component. Read the `posthog-event` and `metric` fields.
 
 3. **Read the component**: Understand its structure, existing events, and interaction points.
 

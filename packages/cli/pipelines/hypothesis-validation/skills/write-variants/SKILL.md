@@ -74,7 +74,7 @@ After writing, instruct the user:
 
 ### Step 6 — Update the contract
 
-Update `contract/hypotheses/<id>.mdx` to add the new variant under `variants:`:
+Update `design/decisions/<id>.mdx` to add the new variant under `variants:`:
 ```yaml
   variant_c: "<new copy>"
 ```

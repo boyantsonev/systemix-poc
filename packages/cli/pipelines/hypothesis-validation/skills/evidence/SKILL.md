@@ -15,7 +15,7 @@ Reads PostHog experiment results and writes the outcome back into the MDX contra
 
 ## Steps
 
-1. **Read the experiment contract** from `contract/experiments/[name].mdx`.
+1. **Read the experiment contract** from `design/decisions/[name].mdx`.
 
 2. **Collect evidence** — two modes:
    a. **Manual input**: Use `--sessions`, `--control`, `--variant`, `--confidence` if provided.
@@ -43,7 +43,7 @@ Reads PostHog experiment results and writes the outcome back into the MDX contra
    across 1,240 sessions. Consistent across all scroll depths.
    ```
 
-6. **Queue a HITL card**: Add an entry to `.systemix/queue.json` for Hermes synthesis.
+6. **Queue a HITL card**: Add an entry to `design/.state/queue.json` for Hermes synthesis.
 
 7. **Report**: Contract updated, HITL card queued. Next: run `/hermes [name]` or check the Dashboard → Queue.
 
