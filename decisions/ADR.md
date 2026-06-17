@@ -200,3 +200,109 @@
 **Consequences:** `connecta-retro.md` is the retro of record. Template work is shadcn; the Atlas port is logic-only. Connecta's DS path is `systemix update` (existing repo), not provision. The "what is Connecta" research is tracked separately ([[project_connecta_definition]]).
 
 **Review trigger:** Connecta's product definition lands and materially changes the loop's requirements, or a second design partner supplants Connecta as the primary reference.
+
+---
+
+## ADR-013: Hermes is engine-selectable (Claude default in Cowork, Ollama for air-gapped)
+**Date:** 2026-06-13
+**Status:** DECIDED
+**Feature:** systemix-rework / cowork-operating-layer
+
+**Decision:** Hermes is a **role (the synthesis/decision node), not a model**. Its engine is selectable via a new `hermes.engine` key in `systemix.config.yaml`: **`claude`** (default when the instance is operated inside Claude Cowork / Claude Code) or **`ollama`** (local `hermes3` for air-gapped use and unattended `systemix watch` runs). The interface is unchanged regardless of engine: read the hypothesis MDX contract + signals → write a decision card to `.systemix/queue.json` → write evidence back to the contract. Confidence routing and the Trust Tier (ADR-008) are engine-independent.
+
+**Rationale:** The system is already structured around the contract→card→evidence interface, and the docs already state "any Ollama-compatible model works" — so the model was never load-bearing. Claude gives the best synthesis quality and is already present when operating in Cowork (no install, no extra token spend on a separate local model setup). Ollama stays as the genuine air-gapped differentiator (nothing leaves the machine — the local-first/Fortress privacy story) and as the unattended-daemon engine that doesn't consume Claude session tokens.
+
+**Alternatives considered:** Keep Ollama-only (rejected — forces an install and caps quality for users already in Cowork); Replace Hermes with Claude entirely (rejected — loses the air-gapped mode, which is a real differentiator and a compliance story for partners like Connecta); Auto-detect engine without a config key (rejected — engine choice has privacy implications and must be explicit).
+
+**Consequences:** `systemix.config.yaml` gains `hermes.engine`. The `/hermes` skill and `systemix watch` branch on the engine: `claude` runs the synthesis as a Cowork scheduled task / Claude Code routine; `ollama` keeps the existing `localhost:11434` path. `model`/`endpoint` keys remain but apply only when `engine: ollama`.
+
+**Review trigger:** A local model reaches parity with Claude for synthesis, or a partner requires air-gapped operation by default.
+
+---
+
+## ADR-014: No agent personas — skills and agents are named by function
+**Date:** 2026-06-13
+**Status:** DECIDED
+**Feature:** systemix-rework
+
+**Decision:** Drop the agent personas (Ada, Flux, Scout, Prism, Echo, Sage, Ship and any others). Agents and skills are referred to by their **descriptive function or command** — e.g. "the token-sync skill (`/tokens`)", "the drift detector (`/drift-report`)", "the synthesis node (Hermes/`/hermes`)". `AGENT_DISPLAY_MAP` and persona labels are removed from the UI/data layer. Hermes is retained as a name because it denotes a *role* (the synthesis node), not a persona mascot.
+
+**Rationale:** The personas add a memorization tax and are misleading — "Scout" or "Prism" carry no information about what the agent does, so every reader must learn a second naming layer on top of the commands that already name the work. Function-named skills are self-documenting and match how the commands are actually invoked.
+
+**Alternatives considered:** Keep personas for branding/marketing color (rejected — the cost is borne by every operator daily; marketing can name the *product*, not each internal node); Rename personas to clearer mascots (rejected — still a second naming layer over self-evident command names).
+
+**Consequences:** `AGENT_DISPLAY_MAP` and persona color tokens (`--agent-*`) are removed or repurposed. Docs, the graph view, and the runtime feed label nodes by command/function. `pipeline.ts` `triggersAgent` persona strings are migrated to function names (Hermes excepted as a role).
+
+**Review trigger:** A clear product-level reason to brand individual nodes emerges (unlikely).
+
+---
+
+## ADR-015: Narrative memory lives in PLAN.md + PROJECT_SUMMARY.md; contracts remain the loop's source-of-record
+**Date:** 2026-06-13
+**Status:** DECIDED
+**Feature:** systemix-rework
+
+**Decision:** There is **no single mega `design.md` memory file**. Memory is distributed by concern: **`systemix.config.yaml`** (instance topology, YAML), **`contract/**/*.mdx`** (the per-unit living memory of the loop — frontmatter state + prose evidence/history, the source-of-record), **`DESIGN.md`** (Google design.md visual-identity interop only), **`.systemix/*.json`** (queue + machine caches), and **narrative/strategic memory in `PLAN.md` + `PROJECT_SUMMARY.md`** (with an optional top-level `design.md` as a human fast-load index *if* one is ever needed — it points at the contracts, it does not replace them).
+
+**Rationale:** The `experiments/design-md/RESULTS.md` probe confirmed "the file is the contract" at the *per-artifact* level, and the loop needs per-hypothesis contracts that accrete evidence independently and are read as structured frontmatter by Hermes/MCP. Collapsing everything into one file would break that granularity, the tool interop (Google design.md `export`), and the committed-config-vs-secrets separation. `PLAN.md` already serves as the living strategic tracker; `PROJECT_SUMMARY.md` is the 500-word fast-load (project-intelligence pattern).
+
+**Alternatives considered:** One `design.md` as the single memory (rejected — collides with the existing `DESIGN.md` visual-identity format by name, and breaks per-hypothesis granularity and MCP frontmatter reads); No narrative file at all, contracts only (rejected — loses the human strategic thread and fast-load index).
+
+**Consequences:** Keep maintaining `PLAN.md`; create `PROJECT_SUMMARY.md` when a fast-load index is first needed. Any prior framing that proposed a single `design.md` memory is superseded by this ADR.
+
+**Review trigger:** Contract sprawl makes a generated top-level index necessary → introduce a generated `design.md` (not hand-maintained).
+
+---
+
+## ADR-016: Cowork-first operating cockpit; localhost app reserved for heavy/visual surfaces
+**Date:** 2026-06-13
+**Status:** DECIDED
+**Feature:** cowork-operating-layer
+
+**Decision:** The **day-to-day operating cockpit is Claude Cowork live-artifacts** — the HITL queue cards, impact glance, docs snapshot, and a 2D graph — driven by scheduled tasks. The **localhost three-layer app (ADR-010) is reserved for the heavy/visual surfaces**: the 3D force graph (Config), the Fumadocs living styleguide (System), and the Atlas workflow catalog. Both read the **same local files** (`systemix.config.yaml`, `contract/*`, `.systemix/*`). **Driver seat:** Cowork is primary; **Claude Code** is used for scaffolding, token extraction, and unattended `systemix watch` runs. The localhost app's own Config-layer HITL/feed remains available when the app is open, but is not the daily driver.
+
+**Rationale:** Instance #1 is build-for-one with a content/lead-gen goal; the lightest daily friction wins — approving a decision card should not require running a dev server. Heavy rendering (three.js, Fumadocs) still justifies the local app, but that is an occasional surface, not the cockpit. This resolves the one tension the canon left open between this thread's "operate from Cowork" instinct and the local-first three-layer app.
+
+**Alternatives considered:** Localhost-app-first (rejected — running `npm run dev` to approve a card is friction for a solo operator); Co-equal both surfaces (rejected — two cockpits to build and keep in parity for one user).
+
+**Consequences:** The **Cowork HITL artifact + a scheduled task become first-class build targets** (the first node — see build order). The localhost app stays the home of the 3D graph, styleguide, and Atlas. `/systemix publish` serves sharing/marketing. If the loop is operated via Cowork, Hermes runs with `engine: claude` (ADR-013) inside the scheduled task.
+
+**Review trigger:** A team of more than 1–3 needs a shared, always-on cockpit → revisit the localhost/hosted control plane (ADR-006).
+
+---
+
+## ADR-017: Repo-as-product; GitHub stars/forks as a product traction signal
+**Date:** 2026-06-13
+**Status:** DECIDED
+**Feature:** distribution / cowork-operating-layer · Analysis: `docs/nwave-vs-systemix.md`
+
+**Decision:** Systemix's primary surface is a **public, MIT-licensed GitHub repo + `npx systemix` CLI + deep in-repo docs**, fronted by a **thin marketing landing**. **GitHub stars / forks / issues** are tracked as a **product-level** traction signal alongside PostHog. The hosted app stays demoted to the optional control plane (ADR-006). Model borrowed from nWave (the repo is product + magnet + dogfood, run by ~2 people at 499★).
+
+**Rationale:** Lowest-surface distribution for a 1–3 person team; the repo is simultaneously the deliverable, the proof, and the lead magnet, and it matches Cowork-first + local-first (ADR-007, ADR-016). nWave empirically validates the model.
+
+**Boundary:** This product-traction signal is **distinct from the LinkedIn public-research practice** (`content/linkedin/PLAN.md` §0/§8), which deliberately tracks **only human replies/DMs** and runs no metrics. Do **not** convert that practice into star-chasing — stars are a product signal, replies are the practice's signal.
+
+**Alternatives considered:** Lead with the hosted app (rejected — ADR-005/006 already demoted it); private repo + sales-led (rejected — forecloses the magnet/social-proof that makes the model work for a tiny team).
+
+**Consequences:** Prioritize public-repo readiness (README, MIT, `npx systemix` clean first-run, docs as depth). A `social-signal`/stars connector becomes a signal source for the loop. Landing stays thin.
+
+**Review trigger:** A hosted product becomes the primary distribution channel.
+
+---
+
+## ADR-018: `/systemix next` concierge + `/systemix rigor` profiles (nWave borrows)
+**Date:** 2026-06-13
+**Status:** DECIDED
+**Feature:** cowork-operating-layer · Analysis: `docs/nwave-vs-systemix.md`
+
+**Decision:** Adopt two commands modeled on nWave's highest-leverage UX:
+- **`/systemix next`** — a **zero-config concierge** (cf. `/nw-buddy`) that reads the instance (`systemix.config.yaml` + `contract/*` + `.systemix/queue.json`) and returns the concrete next step. This is the planner/"operator" node we kept circling, productized as a question. **It is the first node to build.**
+- **`/systemix rigor`** — **profiles** (lean / standard / thorough) that fold autonomy + Hermes engine (Claude/Ollama, ADR-013) + Trust Tier (ADR-008) + model choice into one command, to scale cost/quality to stakes (cf. `/nw-rigor`).
+
+**Rationale:** `/nw-buddy` and `/nw-rigor` are the two patterns that make nWave usable day-one; both map cleanly onto Systemix's existing loop, config, and trust model. The buddy gives the loop an orienting front door with a proven shape; rigor-as-a-command beats hand-editing YAML.
+
+**Alternatives considered:** Build the Cowork HITL card first (rejected as *first* — the buddy orients the whole loop and is the higher-leverage borrow; the HITL card is the next step after it); keep static autonomy config only (rejected — `/systemix rigor` is clearer and discoverable).
+
+**Consequences:** Revised build order: **`/systemix next` → Cowork HITL card → manual signals connector**. `/systemix next` reads state and proposes (writes nothing but a suggestion); `/systemix rigor` writes the relevant `systemix.config.yaml` keys.
+
+**Review trigger:** The buddy's next-step suggestions are routinely overridden → revisit the planner heuristics.
