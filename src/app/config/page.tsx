@@ -34,10 +34,10 @@ export default function ConfigPage() {
             Contract →
           </Link>
           <Link
-            href="/atlas"
+            href="/experiments"
             className="text-[11px] font-mono text-muted-foreground/40 hover:text-muted-foreground transition-colors"
           >
-            Atlas →
+            Experiments →
           </Link>
           <ThemeToggle />
         </div>

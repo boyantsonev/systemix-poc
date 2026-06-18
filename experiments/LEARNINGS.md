@@ -15,6 +15,4 @@ Memory is written only from closed experiments — every entry cites the experim
 that earned it, with a confidence and a review-by date. Entries are appended when a
 decision is approved; nothing is hand-written.
 
-*No entries yet.* Six experiments are registered under the landing goal; none has
-closed — signal wiring (PostHog) is pending. The first entry lands when the first
-experiment closes.
+*No entries yet.* The first entry lands when the first experiment closes.

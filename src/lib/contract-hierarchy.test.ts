@@ -3,8 +3,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Loop parity gate: every experiment must link to exactly one existing goal via
-// `goal:`. The loop lives in experiments/ (v6); the contract root stays in contract/.
+// Loop parity gate: IF the instance has experiments/goals, every experiment must
+// link to exactly one existing goal via `goal:`. A fresh (blank-slate) instance
+// has neither — valid, so the gate degrades to vacuous truth.
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXPERIMENTS = path.join(ROOT, "experiments");
 const CONTRACT = path.join(ROOT, "contract");
@@ -18,23 +19,22 @@ function field(block: string, key: string): string | undefined {
 }
 
 function mdxFiles(dir: string): string[] {
-  return readdirSync(dir)
-    .filter((f) => f.endsWith(".mdx"))
-    .map((f) => path.join(dir, f));
+  try {
+    return readdirSync(dir).filter((f) => f.endsWith(".mdx")).map((f) => path.join(dir, f));
+  } catch {
+    return []; // dir absent on a blank-slate instance
+  }
 }
 
 describe("loop hierarchy", () => {
   const goalIds = mdxFiles(path.join(EXPERIMENTS, "goals")).map((f) => field(frontmatter(f), "id"));
 
   it("every goal file declares an id", () => {
-    expect(goalIds.length).toBeGreaterThan(0);
     for (const id of goalIds) expect(id).toBeTruthy();
   });
 
   it("every experiment links to exactly one existing goal", () => {
-    const files = mdxFiles(EXPERIMENTS);
-    expect(files.length).toBeGreaterThan(0);
-    for (const file of files) {
+    for (const file of mdxFiles(EXPERIMENTS)) {
       const goal = field(frontmatter(file), "goal");
       expect(goal, `${path.basename(file)} is missing a goal: field`).toBeTruthy();
       expect(goalIds, `${path.basename(file)} links to unknown goal "${goal}"`).toContain(goal);
