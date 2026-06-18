@@ -58,14 +58,20 @@ function createExperiment(root, id, fields = {}) {
     type: "experiment",
     id,
     section: fields.section ?? "landing",
-    hypothesis: fields.hypothesis ?? "Replace with the assumption you are testing.",
     icp: fields.icp ?? null,
+    jtbd: fields.jtbd ?? null,
+    hypothesis: fields.hypothesis ?? "Replace with the assumption you are testing.",
+    given: fields.given ?? null,
+    conclusion: fields.conclusion ?? null,
     status: "running",
     metric: fields.metric ?? null,
     variants: {
       control: fields.control ?? "Current experience",
       variant_b: fields.variant_b ?? "The proposed change",
     },
+    // The AI workflow this experiment tests: { steps: [{id,kind,label,note,agent?}], edges: [{from,to}] }.
+    // Optional — rendered as the experiment's flow (given → steps → conclusion). null until authored.
+    workflow: fields.workflow ?? null,
     "posthog-event": null,
     result: null,
     decision: null,
@@ -75,7 +81,7 @@ function createExperiment(root, id, fields = {}) {
     created: fields.created ?? isoDay(fields.now ?? new Date()),
     "review-by": null,
   };
-  const body = `\n# ${id}\n\n${fields.rationale ?? "Why this hypothesis — fill in the assumption, the ICP, and the metric that tells you it worked."}\n`;
+  const body = `\n# ${id}\n\n${fields.rationale ?? "Why this hypothesis — the ICP + job-to-be-done, the given (prompt/context), the AI workflow you are testing, the conclusion (win-state), and the metric that proves it."}\n`;
   fs.writeFileSync(file, matter.stringify(body, data), "utf8");
   return file;
 }

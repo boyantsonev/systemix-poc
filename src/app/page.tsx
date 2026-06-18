@@ -361,14 +361,6 @@ function Surfaces() {
       body: "The canonical record your agents read from. Goals decompose into hypotheses; hypotheses close with PostHog evidence; memory accumulates per decision. Every write carries provenance. Hermes proposes — you approve.",
       cta: { label: "Open the contract →", href: "/contract" },
     },
-    {
-      kind: "atlas" as const,
-      route: "/atlas",
-      name: "Atlas",
-      tagline: "Map your product's agentic workflows.",
-      body: "A persona-filtered map of the agentic workflows your product runs — each typed by pattern (chain, routing, parallel, orchestration), each step click-through to its prototype. Generated per instance from your own contracts.",
-      cta: { label: "Open Atlas →", href: "/atlas" },
-    },
   ];
 
   return (
@@ -669,7 +661,7 @@ function QualityGate() {
 function BottomCTA() {
   const steps = [
     { n: "1", label: "Run Hermes locally",          cmd: "ollama pull hermes3",       comment: "any Ollama model — no API key" },
-    { n: "2", label: "Init your first hypothesis",  cmd: "npx systemix init",         comment: "creates contract/hypotheses/ in your repo" },
+    { n: "2", label: "Init your first hypothesis",  cmd: "npx systemix init",         comment: "creates experiments/ in your repo" },
     { n: "3", label: "Watch the loop",              cmd: "npx systemix watch",        comment: "Hermes polls, queue fills, evidence writes back" },
   ];
 

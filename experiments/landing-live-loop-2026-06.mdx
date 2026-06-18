@@ -1,0 +1,80 @@
+---
+type: experiment
+id: landing-live-loop-2026-06
+section: landing
+icp: pre-pmf-founder
+jtbd: "know whether an idea is worth a sprint before building it"
+goal: consultancy-leads
+hypothesis: "Seeing Systemix's own loop running live — real experiments rendered as their AI workflows — converts the daily-shipping founder to a consultancy conversation, earlier than a feature pitch or a hands-on trial."
+given: "a pre-PMF founder lands on Systemix with a half-formed idea and an agent-heavy stack"
+conclusion: "founders who see the live, dogfooded loop book a call at a meaningfully higher rate than those who only get the feature pitch"
+status: running
+metric: book-a-call-rate
+variants:
+  control: "a feature-list pitch of what Systemix does"
+  variant_b: "the live, dogfooded loop — the /experiments surface showing real experiments as their AI workflows"
+workflow:
+  steps:
+    - id: idea
+      kind: input
+      label: "a raw idea"
+      note: given
+    - id: frame
+      kind: agent
+      label: "frame the hypothesis"
+      note: ICP · JTBD · metric
+      agent: hermes
+    - id: build
+      kind: tool
+      label: "build the variant"
+      note: prototype
+    - id: measure
+      kind: tool
+      label: "measure"
+      note: PostHog event
+    - id: decide
+      kind: human
+      label: "decide"
+      note: HITL card
+    - id: learn
+      kind: agent
+      label: "write the learning"
+      note: LEARNINGS.md
+      agent: hermes
+  edges:
+    - from: idea
+      to: frame
+    - from: frame
+      to: build
+    - from: build
+      to: measure
+    - from: measure
+      to: decide
+    - from: decide
+      to: learn
+posthog-event: null
+result: null
+decision: null
+confidence: null
+evidence-posthog: null
+evidence-social: null
+created: 2026-06-18
+review-by: null
+---
+
+## Why this hypothesis
+The ICP is the pre-PMF founder who ships daily with agents — they don't need another feature list, they need proof that fast shipping can compound into learning. The bet, decided with the founder: the **conversion moment is just seeing** Systemix's own loop running live — real experiments rendered as their AI workflows — not closing a loop themselves. The live dogfood *is* the pitch, and it doubles as the lead magnet for consultancy.
+
+## Given
+A pre-PMF founder lands on Systemix with a half-formed idea and an agent-heavy stack.
+
+## The AI workflow
+The loop the founder sees running, dogfooded: a raw idea → Hermes frames the hypothesis (ICP · JTBD · metric) → build the variant → measure (PostHog) → a human decides (HITL) → the learning is written back. The diagram above is this experiment's own workflow, rendered from its frontmatter — the experiment about the loop *is* a loop.
+
+## Conclusion
+Founders who see the live, dogfooded loop book a call at a meaningfully higher rate than those who only get the feature pitch. Signal wiring (the metric → a PostHog event) is pending — connecting a data source is a separate setup step — so this runs as a registered bet until evidence lands.
+
+## Decision criteria
+- `promote`: the live-loop variant lifts book-a-call meaningfully over the feature pitch → make it the landing.
+- `iterate`: positive but short → tighten what the founder sees first (which experiment, how much loop).
+- `kill`: no lift → seeing the loop isn't the hook; the magnet is something else (revisit the ICP or the pitch).

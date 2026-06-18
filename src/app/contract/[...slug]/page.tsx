@@ -7,9 +7,9 @@ import {
 import { notFound } from "next/navigation";
 import { getMDXComponents } from "@/mdx-components";
 import { ContractMeta, type ContractData } from "@/components/system/ContractMeta";
-import { VerdictStrip } from "@/components/contract/VerdictStrip";
-import { PendingDecisions } from "@/components/contract/PendingDecisions";
 
+// The design-system substrate styleguide (tokens / components). The loop's
+// experiments + goals render under /experiments, not here.
 export default async function Page(props: {
   params: Promise<{ slug: string[] }>;
 }) {
@@ -18,24 +18,13 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
-  const data = page.data as unknown as Record<string, unknown>;
-  const isHypothesis = data.type === "hypothesis";
 
   return (
     <DocsPage toc={page.data.toc}>
       <DocsTitle>{page.data.title}</DocsTitle>
-      {isHypothesis ? (
-        <VerdictStrip data={data} />
-      ) : (
-        <ContractMeta data={page.data as unknown as ContractData} />
-      )}
+      <ContractMeta data={page.data as unknown as ContractData} />
       <DocsBody>
         <MDX components={getMDXComponents()} />
-        {isHypothesis && data.id ? (
-          <div className="mt-10">
-            <PendingDecisions hypothesis={String(data.id)} />
-          </div>
-        ) : null}
       </DocsBody>
     </DocsPage>
   );

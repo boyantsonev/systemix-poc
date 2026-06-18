@@ -19,7 +19,7 @@ export default function ContractLayout({ children }: { children: ReactNode }) {
         nav={{ title: "systemix contract" }}
         links={[
           { text: "Home", url: "/config" },
-          { text: "Atlas", url: "/atlas" },
+          { text: "Experiments", url: "/experiments" },
         ]}
       >
         {children}

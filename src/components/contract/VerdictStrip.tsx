@@ -50,7 +50,7 @@ export function VerdictStrip({ data }: { data: Rec }) {
         ) : null}
         {goal ? (
           <Link
-            href={`/contract/goals/${goal}`}
+            href={`/experiments/goals/${goal}`}
             className="ml-auto text-[11px] font-mono text-muted-foreground/60 hover:text-foreground transition-colors"
           >
             ↳ goal: {goal}
