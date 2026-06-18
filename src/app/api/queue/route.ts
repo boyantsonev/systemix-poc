@@ -147,7 +147,7 @@ type HypothesisCard = {
   resolution?: unknown;
 };
 
-const HYPOTHESES_DIR = path.join(process.cwd(), "contract", "hypotheses");
+const HYPOTHESES_DIR = path.join(process.cwd(), "experiments");
 
 function applyHypothesisDecision(
   card: HypothesisCard,
@@ -178,23 +178,23 @@ function applyHypothesisDecision(
   return { ok: true };
 }
 
-// When a hypothesis decision is approved, record what was learned in the root
-// contract's ## Memory — provenance-bearing, newest first. This is the human
+// When a decision is approved, record what was learned in the loop's ## Memory
+// ledger (experiments/LEARNINGS.md) — provenance-bearing, newest first. This is the human
 // executing their decision (the card was the proposal), so it is permitted at
 // every tier; the write-policy guard documents + enforces the covenant for any
 // future non-human path. Non-fatal: a missing index never fails the decision.
-const INDEX_PATH = path.join(process.cwd(), "contract", "index.mdx");
+const LEARNINGS_PATH = path.join(process.cwd(), "experiments", "LEARNINGS.md");
 
 function applyMemoryFromDecision(
   card: HypothesisCard & { hypothesis?: string; confidence?: number },
   decision: "promote" | "kill",
 ): void {
-  if (!card.hypothesisId || !fs.existsSync(INDEX_PATH)) return;
+  if (!card.hypothesisId || !fs.existsSync(LEARNINGS_PATH)) return;
   const tier = loadInstanceConfig()?.trust?.hermes_tier ?? 0;
   assertWriteAllowed({ tier, artifact: "memory", humanApproved: true });
 
   const now = card._posthogData?.fetched_at ?? new Date().toISOString().slice(0, 10);
-  const updated = appendMemoryEntry(fs.readFileSync(INDEX_PATH, "utf8"), {
+  const updated = appendMemoryEntry(fs.readFileSync(LEARNINGS_PATH, "utf8"), {
     date: now,
     title: titleFromHypothesis(card.hypothesis, card.hypothesisId),
     experimentId: card.hypothesisId,
@@ -204,9 +204,9 @@ function applyMemoryFromDecision(
     reviewBy: addDays(now, 90),
   });
   if (updated === null) return;
-  const tmp = INDEX_PATH + ".tmp";
+  const tmp = LEARNINGS_PATH + ".tmp";
   fs.writeFileSync(tmp, updated, "utf8");
-  fs.renameSync(tmp, INDEX_PATH);
+  fs.renameSync(tmp, LEARNINGS_PATH);
 }
 
 // Engagement snapshots write to a standalone engagement record (NOT the

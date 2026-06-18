@@ -14,7 +14,7 @@ let originalCwd: string;
 beforeEach(() => {
   originalCwd = process.cwd();
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), "systemix-hypotheses-"));
-  fs.mkdirSync(path.join(tmp, "contract", "hypotheses"), { recursive: true });
+  fs.mkdirSync(path.join(tmp, "experiments"), { recursive: true });
   process.chdir(tmp);
   vi.resetModules();
 });
@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 function hypoFile(slug: string): string {
-  return path.join(tmp, "contract", "hypotheses", `${slug}.mdx`);
+  return path.join(tmp, "experiments", `${slug}.mdx`);
 }
 
 function jsonRequest(body: unknown): Request {
@@ -57,7 +57,7 @@ describe("POST /api/hypotheses", () => {
 
     const { data } = matter(fs.readFileSync(file, "utf8"));
     expect(data.id).toBe("sharper-headline-lifts-signups");
-    expect(data.type).toBe("hypothesis");
+    expect(data.type).toBe("experiment");
     expect(data.hypothesis).toBe("Sharper Headline Lifts Signups");
     expect(data.icp).toBe("founders");
   });

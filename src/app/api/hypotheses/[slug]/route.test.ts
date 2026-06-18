@@ -24,7 +24,7 @@ const PROSE = [
 
 const ORIGINAL = [
   "---",
-  "type: hypothesis",
+  "type: experiment",
   "id: pricing-headline-v2",
   "section: pricing",
   'hypothesis: "Original framing"',
@@ -48,7 +48,7 @@ const ORIGINAL = [
 beforeEach(() => {
   originalCwd = process.cwd();
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), "systemix-patch-"));
-  fs.mkdirSync(path.join(tmp, "contract", "hypotheses"), { recursive: true });
+  fs.mkdirSync(path.join(tmp, "experiments"), { recursive: true });
   process.chdir(tmp);
   vi.resetModules();
 });
@@ -59,7 +59,7 @@ afterEach(() => {
 });
 
 function hypoFile(slug: string): string {
-  return path.join(tmp, "contract", "hypotheses", `${slug}.mdx`);
+  return path.join(tmp, "experiments", `${slug}.mdx`);
 }
 
 function seed(slug: string, content = ORIGINAL) {

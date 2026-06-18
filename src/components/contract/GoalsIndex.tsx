@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { contractSource } from "@/lib/contract-source";
+import { experimentsSource } from "@/lib/experiments-source";
 
 // Generated goals index for the root contract page (contract/index.mdx).
+// Goals + experiments live in the loop collection (experiments/), so it reads
+// the experiments source, not the contract substrate.
 // Rendered from goal frontmatter so the list can never drift from the files —
 // the MDX must not hand-maintain it (contract-model.md: "never hand-edited").
 const TONES: Record<string, string> = {
@@ -12,8 +14,10 @@ const TONES: Record<string, string> = {
 };
 
 export function GoalsIndex() {
-  const pages = contractSource.getPages();
-  const hypotheses = pages.filter((p) => p.slugs[0] === "hypotheses");
+  const pages = experimentsSource.getPages();
+  const experiments = pages.filter(
+    (p) => (p.data as unknown as Record<string, unknown>).type === "experiment",
+  );
   const goals = pages
     .filter((p) => p.slugs[0] === "goals")
     .sort((a, b) => {
@@ -27,7 +31,7 @@ export function GoalsIndex() {
       {goals.map((g) => {
         const d = g.data as unknown as Record<string, unknown>;
         const status = String(d.status ?? "active");
-        const count = hypotheses.filter(
+        const count = experiments.filter(
           (h) => (h.data as unknown as Record<string, unknown>).goal === d.id,
         ).length;
         return (

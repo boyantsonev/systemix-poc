@@ -13,7 +13,7 @@ let originalCwd: string;
 beforeEach(() => {
   originalCwd = process.cwd();
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), "systemix-hermes-"));
-  fs.mkdirSync(path.join(tmp, "contract", "hypotheses"), { recursive: true });
+  fs.mkdirSync(path.join(tmp, "experiments"), { recursive: true });
   fs.mkdirSync(path.join(tmp, ".systemix"), { recursive: true });
   process.chdir(tmp);
   vi.resetModules();
@@ -26,7 +26,7 @@ afterEach(() => {
 
 function writeContract(slug: string, frontmatter: string, body = "Body prose.") {
   fs.writeFileSync(
-    path.join(tmp, "contract", "hypotheses", `${slug}.mdx`),
+    path.join(tmp, "experiments", `${slug}.mdx`),
     `---\n${frontmatter}\n---\n\n${body}\n`,
     "utf8",
   );
@@ -53,7 +53,7 @@ describe("POST /api/hermes/run", () => {
   it("writes a pending hypothesis-validation card to the queue and returns its id", async () => {
     writeContract(
       "pricing-headline-v2",
-      ['type: hypothesis', 'id: pricing-headline-v2', 'hypothesis: "Sharper headline lifts signups"', 'icp: founders', 'status: running', 'variants:', '  control: "A"', '  variant_b: "B"'].join("\n"),
+      ['type: experiment', 'id: pricing-headline-v2', 'hypothesis: "Sharper headline lifts signups"', 'icp: founders', 'status: running', 'variants:', '  control: "A"', '  variant_b: "B"'].join("\n"),
     );
     const POST = await loadPost();
 
@@ -78,7 +78,7 @@ describe("POST /api/hermes/run", () => {
   });
 
   it("produces a deterministic confidence for identical hypothesis text", async () => {
-    const fm = ['type: hypothesis', 'id: h-det', 'hypothesis: "Stable framing yields a stable read"', 'status: running'].join("\n");
+    const fm = ['type: experiment', 'id: h-det', 'hypothesis: "Stable framing yields a stable read"', 'status: running'].join("\n");
     writeContract("h-det", fm);
 
     const POST = await loadPost();

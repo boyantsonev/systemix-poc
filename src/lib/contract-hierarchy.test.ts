@@ -3,9 +3,11 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Phase B parity gate (docs/feature/contract-rework/ia-and-migration.md):
-// every hypothesis must link to exactly one existing goal via `goal:`.
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../contract");
+// Loop parity gate: every experiment must link to exactly one existing goal via
+// `goal:`. The loop lives in experiments/ (v6); the contract root stays in contract/.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const EXPERIMENTS = path.join(ROOT, "experiments");
+const CONTRACT = path.join(ROOT, "contract");
 
 function frontmatter(file: string): string {
   return readFileSync(file, "utf8").match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "";
@@ -16,21 +18,21 @@ function field(block: string, key: string): string | undefined {
 }
 
 function mdxFiles(dir: string): string[] {
-  return readdirSync(path.join(ROOT, dir))
+  return readdirSync(dir)
     .filter((f) => f.endsWith(".mdx"))
-    .map((f) => path.join(ROOT, dir, f));
+    .map((f) => path.join(dir, f));
 }
 
-describe("contract hierarchy", () => {
-  const goalIds = mdxFiles("goals").map((f) => field(frontmatter(f), "id"));
+describe("loop hierarchy", () => {
+  const goalIds = mdxFiles(path.join(EXPERIMENTS, "goals")).map((f) => field(frontmatter(f), "id"));
 
   it("every goal file declares an id", () => {
     expect(goalIds.length).toBeGreaterThan(0);
     for (const id of goalIds) expect(id).toBeTruthy();
   });
 
-  it("every hypothesis links to exactly one existing goal", () => {
-    const files = mdxFiles("hypotheses");
+  it("every experiment links to exactly one existing goal", () => {
+    const files = mdxFiles(EXPERIMENTS);
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) {
       const goal = field(frontmatter(file), "goal");
@@ -40,6 +42,6 @@ describe("contract hierarchy", () => {
   });
 
   it("the root contract exists", () => {
-    expect(frontmatter(path.join(ROOT, "index.mdx"))).toContain("type: contract");
+    expect(frontmatter(path.join(CONTRACT, "index.mdx"))).toContain("type: contract");
   });
 });

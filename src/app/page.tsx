@@ -669,7 +669,7 @@ function QualityGate() {
 function BottomCTA() {
   const steps = [
     { n: "1", label: "Run Hermes locally",          cmd: "ollama pull hermes3",       comment: "any Ollama model — no API key" },
-    { n: "2", label: "Init your first hypothesis",  cmd: "npx systemix init",         comment: "creates contract/hypotheses/ in your repo" },
+    { n: "2", label: "Init your first hypothesis",  cmd: "npx systemix init",         comment: "creates experiments/ in your repo" },
     { n: "3", label: "Watch the loop",              cmd: "npx systemix watch",        comment: "Hermes polls, queue fills, evidence writes back" },
   ];
 

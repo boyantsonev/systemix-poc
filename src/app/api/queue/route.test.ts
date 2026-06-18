@@ -58,14 +58,14 @@ function seedQueue(cards: unknown[]) {
   );
 }
 
-// Per-test only — the "does NOT touch the hypotheses dir" test below requires
-// contract/hypotheses to be absent by default.
+// Per-test only — the "does NOT touch the loop dir" test below requires
+// experiments/ to be absent by default.
 function seedHypothesis(id: string, goal: string) {
-  const dir = path.join(tmp, "contract", "hypotheses");
+  const dir = path.join(tmp, "experiments");
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
     path.join(dir, `${id}.mdx`),
-    `---\ntype: hypothesis\nid: ${id}\ngoal: ${goal}\nstatus: running\n---\n\nBody.\n`,
+    `---\ntype: experiment\nid: ${id}\ngoal: ${goal}\nstatus: running\n---\n\nBody.\n`,
   );
 }
 
@@ -154,11 +154,12 @@ describe("PATCH /api/queue", () => {
 });
 
 describe("PATCH /api/queue — memory write-back (Phase D)", () => {
-  function seedIndex() {
+  function seedLearnings() {
+    fs.mkdirSync(path.join(tmp, "experiments"), { recursive: true });
     fs.writeFileSync(
-      path.join(tmp, "contract", "index.mdx"),
+      path.join(tmp, "experiments", "LEARNINGS.md"),
       [
-        "---", "type: contract", "title: The Contract", "---", "",
+        "# Learnings", "",
         "## Memory", "",
         "Memory is written only from closed experiments.", "",
         "*No entries yet.* The first entry lands when an experiment closes.", "",
@@ -169,7 +170,7 @@ describe("PATCH /api/queue — memory write-back (Phase D)", () => {
   }
 
   it("approving a hypothesis decision appends a provenance entry to ## Memory", async () => {
-    seedIndex();
+    seedLearnings();
     seedHypothesis("velocity-gap", "landing-validation");
     seedQueue([
       {
@@ -187,7 +188,7 @@ describe("PATCH /api/queue — memory write-back (Phase D)", () => {
     const res = await PATCH(patchReq({ id: "hyp-1", action: "approved" }));
     expect(res.status).toBe(200);
 
-    const idx = fs.readFileSync(path.join(tmp, "contract", "index.mdx"), "utf8");
+    const idx = fs.readFileSync(path.join(tmp, "experiments", "LEARNINGS.md"), "utf8");
     expect(idx).toContain("from [velocity-gap]");
     expect(idx).toContain("decision: promote");
     expect(idx).toContain("confidence 0.82");
@@ -195,7 +196,7 @@ describe("PATCH /api/queue — memory write-back (Phase D)", () => {
     expect(idx).toContain("## Decision log"); // section below survives
   });
 
-  it("does not fail the decision when no contract index exists", async () => {
+  it("does not fail the decision when no learnings file exists", async () => {
     seedHypothesis("velocity-gap", "landing-validation");
     seedQueue([
       {
@@ -235,11 +236,11 @@ describe("PATCH /api/queue — engagement-snapshot", () => {
     expect(readRecord()).toMatch(/flagged-for-experiment _\(dashboard\)_/);
   });
 
-  it("does NOT touch the hypotheses dir (no such write)", async () => {
+  it("does NOT touch the loop dir (no such write)", async () => {
     seedQueue([engagementCard()]);
     const { PATCH } = await routes();
     await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
-    expect(fs.existsSync(path.join(tmp, "contract", "hypotheses"))).toBe(false);
+    expect(fs.existsSync(path.join(tmp, "experiments"))).toBe(false);
   });
 
   it("404s for an unknown card id", async () => {

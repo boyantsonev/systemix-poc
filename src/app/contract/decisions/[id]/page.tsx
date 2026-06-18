@@ -15,7 +15,7 @@ export default async function DecisionPage(props: { params: Promise<{ id: string
 
   const action = card.resolution?.action ?? card.status;
   const subjectHref = card.hypothesisId
-    ? `/contract/hypotheses/${card.hypothesisId}`
+    ? `/experiments/${card.hypothesisId}`
     : null;
 
   const rows: Array<[string, React.ReactNode]> = [
