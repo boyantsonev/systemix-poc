@@ -361,14 +361,6 @@ function Surfaces() {
       body: "The canonical record your agents read from. Goals decompose into hypotheses; hypotheses close with PostHog evidence; memory accumulates per decision. Every write carries provenance. Hermes proposes — you approve.",
       cta: { label: "Open the contract →", href: "/contract" },
     },
-    {
-      kind: "atlas" as const,
-      route: "/atlas",
-      name: "Atlas",
-      tagline: "Map your product's agentic workflows.",
-      body: "A persona-filtered map of the agentic workflows your product runs — each typed by pattern (chain, routing, parallel, orchestration), each step click-through to its prototype. Generated per instance from your own contracts.",
-      cta: { label: "Open Atlas →", href: "/atlas" },
-    },
   ];
 
   return (
