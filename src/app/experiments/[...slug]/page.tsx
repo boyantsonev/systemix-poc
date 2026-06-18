@@ -9,6 +9,7 @@ import { getMDXComponents } from "@/mdx-components";
 import { ContractMeta, type ContractData } from "@/components/system/ContractMeta";
 import { VerdictStrip } from "@/components/contract/VerdictStrip";
 import { PendingDecisions } from "@/components/contract/PendingDecisions";
+import { WorkflowDiagram } from "@/components/experiments/WorkflowDiagram";
 
 export default async function Page(props: {
   params: Promise<{ slug: string[] }>;
@@ -29,6 +30,18 @@ export default async function Page(props: {
       ) : (
         <ContractMeta data={page.data as unknown as ContractData} />
       )}
+      {isExperiment && data.workflow ? (
+        <WorkflowDiagram
+          workflow={
+            data.workflow as {
+              steps?: { id: string; kind: string; label: string; note?: string; agent?: string }[];
+              edges?: { from: string; to: string; label?: string }[];
+            }
+          }
+          title={String(data.hypothesis ?? page.data.title)}
+          problem={typeof data.given === "string" ? data.given : undefined}
+        />
+      ) : null}
       <DocsBody>
         <MDX components={getMDXComponents()} />
         {isExperiment && data.id ? (
