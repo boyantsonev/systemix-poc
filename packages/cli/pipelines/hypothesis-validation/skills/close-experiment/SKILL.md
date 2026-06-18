@@ -1,9 +1,9 @@
 ---
 name: close-experiment
-description: Close a running experiment — record the result + decision in design/decisions/<id>.mdx, append the learning to design/DESIGN.md (the Memory section), and queue a HITL decision card in design/.state/queue.json. File-first (engine = Claude Code); no external service required. Use when PostHog evidence is decision-ready.
+description: Close a running experiment — record the result + decision in experiments/<id>.mdx, append the learning to experiments/LEARNINGS.md (the Memory ledger), and queue a HITL decision card in .systemix/queue.json. File-first (engine = Claude Code); no external service required. Use when PostHog evidence is decision-ready.
 disable-model-invocation: false
 argument-hint: <experiment-id>
-version: "0.2.0"
+version: "0.3.0"
 last_updated: "2026-06-17"
 min_cli_version: "1.1.0"
 ---
@@ -13,14 +13,14 @@ min_cli_version: "1.1.0"
 ## Purpose
 
 Record the outcome of a running experiment and **write the learning back into the
-living design system**. This closes the loop: PostHog evidence → decision →
-`design/DESIGN.md` Memory → the next iteration starts from evidence. File-first —
-read and write `design/` directly.
+loop's memory**. This closes the loop: PostHog evidence → decision →
+`experiments/LEARNINGS.md` → the next iteration starts from evidence. File-first —
+read and write `experiments/` directly.
 
 ## Steps
 
 ### Step 1 — Load the experiment
-Read `design/decisions/<id>.mdx` (the `<id>` from `$ARGUMENTS`). Show the
+Read `experiments/<id>.mdx` (the `<id>` from `$ARGUMENTS`). Show the
 assumption/hypothesis, the variants, and the current evidence in its frontmatter.
 
 ### Step 2 — Read the evidence
@@ -42,15 +42,15 @@ latest data via the PostHog MCP. Compute:
 Ask the user to confirm: "Recommended: `<decision>`. Confirm or override?"
 
 ### Step 4 — Write the result into the experiment
-Edit the frontmatter of `design/decisions/<id>.mdx`:
+Edit the frontmatter of `experiments/<id>.mdx`:
 - `status: complete`
 - `result: "<one-line result summary>"`
 - `decision: <decision>`
 - `confidence: <0.0–1.0>`
 - `review-by: <today + 90 days, YYYY-MM-DD>`
 
-### Step 5 — Capture the learning in DESIGN.md  ← the point of the loop
-Append one bullet to the **`## Memory`** section of `design/DESIGN.md`, newest
+### Step 5 — Capture the learning in LEARNINGS.md  ← the point of the loop
+Append one bullet to the **`## Memory`** section of `experiments/LEARNINGS.md`, newest
 first (replace the `*No entries yet.*` placeholder on the first write). Use exactly
 this format so the ledger stays machine-readable:
 
@@ -61,7 +61,7 @@ this format so the ledger stays machine-readable:
 Every entry MUST cite the experiment `[<id>]` (provenance) and carry a review-by date.
 
 ### Step 6 — Queue the decision for review (HITL)
-Append a card to the `cards` array in `design/.state/queue.json` (create the file as
+Append a card to the `cards` array in `.systemix/queue.json` (create the file as
 `{ "cards": [] }` if absent; never clobber existing cards):
 
 ```json

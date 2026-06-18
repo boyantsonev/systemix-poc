@@ -102,21 +102,26 @@ function installPipeline(name, skillsDir) {
   }
 }
 
-function scaffoldDesign(projectRoot, includeMeta) {
-  // Vendor the design/ template (the design-system-as-object): DESIGN.md,
-  // guardrails.mdx, tokens.css, decisions/, goals/, .state/. The authored
-  // contract lives under design/; runtime state stays in .systemix/ for now.
-  copyDir(path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).dir);
-  console.log(`  ✓  ${layout.rel.dir}/  (DESIGN.md, guardrails.mdx, tokens.css, decisions/, goals/)`);
+function scaffoldExperiments(projectRoot, includeMeta) {
+  // Vendor the loop (the core): experiments/<id>.mdx, LEARNINGS.md (the synthesized
+  // memory close-experiment writes to), and goals/. General — not design-bound.
+  copyDir(path.join(TEMPLATES_DIR, "experiments"), layout.abs(projectRoot).experiments);
+  console.log(`  ✓  ${layout.rel.experiments}/  (the loop: <id>.mdx, LEARNINGS.md, goals/)`);
 
   if (includeMeta) {
     fs.mkdirSync(layout.abs(projectRoot).meta, { recursive: true });
-    console.log(`  ✓  ${layout.rel.meta}/`);
+    console.log(`  ✓  ${layout.rel.meta}/  (self-improvement audit)`);
   }
 }
 
+function scaffoldDesign(projectRoot) {
+  // Vendor the design/ substrate (optional): DESIGN.md, guardrails.mdx, tokens.css.
+  copyDir(path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).design);
+  console.log(`  ✓  ${layout.rel.design}/  (DESIGN.md, guardrails.mdx, tokens.css)`);
+}
+
 // Build systemix.config.yaml — the instance topology (committed; no secrets). See ADR-008.
-function buildConfigYaml({ surfaces, signals, autonomy, hermesTier = 0, siMode }) {
+function buildConfigYaml({ surfaces, designSource, signals, autonomy, hermesTier = 0, siMode }) {
   const L = [];
   L.push("# systemix.config.yaml — your instance topology. Committed; contains NO secrets.");
   L.push("# Secrets (Figma/PostHog keys) live in ~/.systemix/config.json or env vars.");
@@ -125,6 +130,8 @@ function buildConfigYaml({ surfaces, signals, autonomy, hermesTier = 0, siMode }
   L.push("surfaces:");
   for (const s of surfaces) L.push(`  - ${s}`);
   if (surfaces.length === 0) L.push("  []");
+  L.push("design:");
+  L.push(`  source: ${designSource || "none"}   # 'design' (scaffolded) · a path to an existing DS · 'none' (loop only)`);
   L.push("signals:");
   L.push("  posthog:");
   L.push(`    enabled: ${signals.posthog.enabled}`);
@@ -167,23 +174,35 @@ async function init(opts = {}) {
 
   console.log("\n  systemix init — 2-minute setup\n");
 
-  // ── Q1/4: Surfaces — what are you validating? ─────────────────────────────
-  console.log("  (1/4) Surfaces — what are you validating?\n");
-  console.log("    (1) design-system          Figma ↔ code token sync, drift detection, parity");
-  console.log("    (2) hypothesis-validation  ship → measure → learn loop (PostHog)");
-  console.log("    (3) both                   full setup [default]\n");
-  const wfAns = (await ask("  Choice [3]: ")).trim() || "3";
-  const doDesign  = wfAns === "1" || wfAns === "3";
-  const doHypo    = wfAns === "2" || wfAns === "3";
+  // ── Q1/4: Design system — the loop is always installed; design is optional ──
+  console.log("  (1/4) Design system — the validation loop is always set up.\n");
+  console.log("        How do you want the (optional) design substrate?\n");
+  console.log("    (1) scaffold   a fresh code-first design/ (DESIGN.md, tokens, guardrails) [default]");
+  console.log("    (2) existing   point at an existing design system (you'll give a path)");
+  console.log("    (3) none       loop only — no design substrate\n");
+  const dsAns = (await ask("  Choice [1]: ")).trim() || "1";
+  const designMode = { "1": "scaffold", "2": "existing", "3": "none" }[dsAns] || "scaffold";
+  const doDesign = designMode !== "none";
+  const doHypo   = true;  // the loop is the core — always installed (v6)
 
   const surfaces = [];
   if (doDesign) surfaces.push("design-system");
-  if (doHypo)   surfaces.push("landing", "onboarding");
+  surfaces.push("landing", "onboarding");  // the loop's measured surfaces
 
   console.log();
 
   // ── Q2/4: Signals — what can Hermes read? (credentials gathered here) ──────
   console.log("  (2/4) Signals — what can Hermes read?\n");
+
+  let designSource = null;
+  if (designMode === "existing") {
+    const dsRaw = await ask("  Path to your existing design system (e.g. ../my-ds or packages/ds): ");
+    designSource = dsRaw.trim() || null;
+    if (designSource) console.log(`  ✓  Design source: ${designSource}`);
+    else              console.log("  -  Skipped. Set design.source in systemix.config.yaml before using design skills.");
+  } else if (designMode === "scaffold") {
+    designSource = layout.rel.design;  // the local scaffolded substrate
+  }
 
   let fileKey = null;
   if (doDesign) {
@@ -208,7 +227,8 @@ async function init(opts = {}) {
   }
 
   let posthogKey = null;
-  if (doHypo) {
+  {
+    // the loop always measures — PostHog is relevant regardless of the design choice
     const phAns = await ask("  PostHog API key (or press Enter to skip): ");
     posthogKey = phAns.trim() || null;
     if (posthogKey) console.log("  ✓  PostHog key saved");
@@ -216,8 +236,8 @@ async function init(opts = {}) {
   }
 
   const signals = {
-    posthog: { enabled: doHypo,   poll_interval_sec: 300 },
-    vercel:  { enabled: doHypo },                 // deploy timing for measurement windows
+    posthog: { enabled: true,     poll_interval_sec: 300 },  // the loop always measures
+    vercel:  { enabled: true },                   // deploy timing for measurement windows
     figma:   { enabled: doDesign },
     social:  { enabled: false },                  // opt-in later
   };
@@ -247,13 +267,20 @@ async function init(opts = {}) {
   // ── Install skills (project-scoped) ───────────────────────────────────────
   const projectSkillsDir = projectSkillsDirFor(projectRoot);
   console.log("  Installing skills into .claude/skills/ ...\n");
-  if (doDesign)  installPipeline("design-system", projectSkillsDir);
-  if (doHypo)    installPipeline("hypothesis-validation", projectSkillsDir);
+  installPipeline("hypothesis-validation", projectSkillsDir);  // the loop — always
+  if (doDesign) installPipeline("design-system", projectSkillsDir);
   console.log();
 
-  // ── Design system scaffold ────────────────────────────────────────────────
-  console.log("  Setting up the design/ folder...\n");
-  scaffoldDesign(projectRoot, siMode !== "off");
+  // ── Scaffold the loop (always) + the design substrate (when scaffolding) ──
+  console.log("  Setting up experiments/ (the loop)...\n");
+  scaffoldExperiments(projectRoot, siMode !== "off");
+  if (designMode === "scaffold") {
+    scaffoldDesign(projectRoot);
+  } else if (designMode === "existing") {
+    console.log(`  -  design/: using your existing design system${designSource ? ` at ${designSource}` : " (set design.source later)"}`);
+  } else {
+    console.log("  -  design/: skipped (loop only)");
+  }
   console.log();
 
   // ── Register MCP server ───────────────────────────────────────────────────
@@ -288,7 +315,7 @@ async function init(opts = {}) {
   if (fs.existsSync(configYamlPath) && !opts.reconfigure) {
     console.log("  -  systemix.config.yaml exists — left as-is (re-run with --reconfigure to overwrite)");
   } else {
-    fs.writeFileSync(configYamlPath, buildConfigYaml({ surfaces, signals, autonomy, hermesTier, siMode }), "utf8");
+    fs.writeFileSync(configYamlPath, buildConfigYaml({ surfaces, designSource, signals, autonomy, hermesTier, siMode }), "utf8");
     console.log(`  ✓  systemix.config.yaml${opts.reconfigure ? " (reconfigured)" : ""}`);
   }
 
@@ -324,9 +351,12 @@ async function init(opts = {}) {
     console.log(`    hypothesis-validation /init-experiment <experiment-id>`);
   }
   console.log(`    config                systemix.config.yaml (your topology)`);
-  console.log(`    your design system    design/DESIGN.md (the source of truth)`);
+  console.log(`    the loop              experiments/ — LEARNINGS.md is the synthesized memory`);
+  if (doDesign) {
+    console.log(`    design substrate      ${designMode === "existing" ? (designSource ?? "(set design.source)") : "design/DESIGN.md"}`);
+  }
   console.log();
-  console.log("  Commit design/ + .claude/skills/ + systemix.config.yaml so the instance is reproducible in CI.");
+  console.log("  Commit experiments/ + .claude/skills/ + systemix.config.yaml (and design/ if scaffolded) so the instance is reproducible in CI.");
   console.log("  Run `npx systemix doctor` to verify all dependencies.\n");
 }
 

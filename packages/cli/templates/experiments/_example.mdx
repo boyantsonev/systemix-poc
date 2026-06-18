@@ -1,5 +1,5 @@
 ---
-type: hypothesis
+type: experiment
 id: example-experiment
 section: landing
 hypothesis: "Replace with the assumption you are testing."
@@ -21,9 +21,10 @@ review-by: null
 
 # Example experiment
 
-What change are you testing, who are you testing it with, and what metric tells
-you it worked? Write the rationale here.
+The unit of the loop is the **idea / prototype** — a hypothesis you validate with
+real data. What change are you testing, who for (`icp`), on what surface
+(`section`), and what metric tells you it worked? Write the rationale here.
 
 `/init-experiment` creates one of these · `/write-variants` builds the prototype ·
 `/measure` wires the PostHog funnel · `/close-experiment` records the result and
-appends the learning to the **Memory** section of `design/DESIGN.md`.
+appends the learning to `experiments/LEARNINGS.md`.

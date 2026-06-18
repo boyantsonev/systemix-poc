@@ -1,6 +1,6 @@
 ---
 name: init-experiment
-description: Create a new hypothesis contract in design/decisions/. Prompts for hypothesis text, ICP, section, and variant copy. Writes the MDX frontmatter and rationale stub, then registers the experiment as running. Use before writing any variant code.
+description: Create a new experiment in experiments/. Prompts for hypothesis text, ICP, section, and variant copy. Writes the MDX frontmatter and rationale stub, then registers the experiment as running. Use before writing any variant code.
 disable-model-invocation: false
 argument-hint: <experiment-id>
 version: "0.1.0"
@@ -12,7 +12,7 @@ min_cli_version: "1.1.0"
 
 ## Purpose
 
-Create a new hypothesis contract MDX file in `design/decisions/`. This is the first step in the hypothesis validation loop — you define the question, the variants, and the ICP before touching any code.
+Create a new experiment MDX file in `experiments/`. This is the first step in the validation loop — you define the question, the variants, and the ICP before touching any code.
 
 ## Steps
 
@@ -40,11 +40,11 @@ Ask the user:
 
 ### Step 4 — Write the contract file
 
-Create `design/decisions/<experiment-id>.mdx` with:
+Create `experiments/<experiment-id>.mdx` with:
 
 ```
 ---
-type: hypothesis
+type: experiment
 id: <experiment-id>
 section: <section>
 hypothesis: "<hypothesis statement>"

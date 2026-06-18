@@ -1,2 +1,0 @@
-# Runtime state lives here (machine-written): queue.json (HITL), drift.json, context.json.
-# Everything OUTSIDE .state/ is human- or engine-authored prose/values; this dir is serialized state.

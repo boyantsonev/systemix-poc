@@ -1,6 +1,6 @@
 ---
 name: growth-audit
-description: Audit running hypothesis experiments against PostHog evidence. Reads design/decisions/ for running experiments, fetches cached evidence from component contracts, and produces a prioritized decision brief. Use weekly to close the evidence loop.
+description: Audit running experiments against PostHog evidence. Reads experiments/ for running experiments, fetches cached evidence from the experiment files, and produces a prioritized decision brief. Use weekly to close the evidence loop.
 disable-model-invocation: false
 argument-hint: [experiment-id]
 version: "0.1.0"
@@ -18,7 +18,7 @@ Cross-reference running hypothesis experiments with production evidence from Pos
 
 ### Step 1 — Load running experiments
 
-List `design/decisions/*.mdx` and keep the ones whose frontmatter has `status: running` — file-first, no MCP required. If `$ARGUMENTS` is provided, read only that experiment ID instead.
+List `experiments/*.mdx` and keep the ones whose frontmatter has `status: running` — file-first, no MCP required. If `$ARGUMENTS` is provided, read only that experiment ID instead.
 
 If no running experiments are found, report: "No running experiments. Use `/init-experiment` to create one." and stop.
 

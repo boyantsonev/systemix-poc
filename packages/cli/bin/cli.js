@@ -15,6 +15,7 @@ const { socialSignal } = require("../src/commands/social-signal");
 const { evidence } = require("../src/commands/evidence");
 const { config } = require("../src/commands/config");
 const { atlas } = require("../src/commands/atlas");
+const { experiment } = require("../src/commands/experiment");
 
 const [, , command, ...args] = process.argv;
 
@@ -42,6 +43,7 @@ const HELP = `
     npx systemix token-guard [sub]       Manage TokenGuard (status|reset|remove)
     npx systemix evidence [pull|close]   Pull PostHog data + Hermes synthesis → queue
     npx systemix atlas build             Generate the Atlas catalog from contract/workflows/*.mdx
+    npx systemix experiment <sub>        Drive the loop: new|list|measure|close|learnings|audit
 
   Workflows (install with: npx systemix workflow add <name>):
     design-system                        Product A — Figma↔code token sync (6 skills)
@@ -132,6 +134,9 @@ async function main() {
       break;
     case "evidence":
       await evidence(args);
+      break;
+    case "experiment":
+      await experiment(args);
       break;
     case "help":
     case "--help":
