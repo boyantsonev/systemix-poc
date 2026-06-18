@@ -28,7 +28,8 @@ describe("vendored loop skills target the experiments/ layout (v6)", () => {
       expect(md).not.toMatch(/design\/decisions/); // the loop moved out of design/
       expect(md).not.toMatch(/design\/goals/);
       expect(md).not.toMatch(/design\/\.state/);   // runtime state moved to .systemix/
-      expect(md).not.toMatch(/contract\//);        // pre-v5 authored-contract paths
+      // systemix-init authors contract/index.mdx (the living agreement); loop skills must not touch contract/.
+      if (skill !== "systemix-init") expect(md).not.toMatch(/contract\//);
     }
   );
 

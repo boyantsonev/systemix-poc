@@ -37,6 +37,37 @@ describe("experiments/ loop — file-first ops", () => {
     expect(fm.variants.variant_b).toBeDefined();
   });
 
+  it("new persists the AI-native fields (icp, jtbd, given, conclusion) and an optional workflow DAG", () => {
+    exp.createExperiment(root, "loop-onboard-2026-06", {
+      icp: "pre-pmf-founder",
+      jtbd: "validate an idea before building it",
+      hypothesis: "An AI workflow that turns a raw idea into a measured decision converts founders",
+      given: "a one-line product idea",
+      conclusion: "a promote/iterate/kill decision backed by a metric",
+      workflow: {
+        steps: [
+          { id: "given", kind: "input", label: "the idea", note: "given" },
+          { id: "frame", kind: "agent", label: "frame the hypothesis", note: "agent", agent: "hermes" },
+          { id: "conclusion", kind: "output", label: "the decision", note: "conclusion" },
+        ],
+        edges: [
+          { from: "given", to: "frame" },
+          { from: "frame", to: "conclusion" },
+        ],
+      },
+      now: NOW,
+    });
+    const fm = readMdx(root, "loop-onboard-2026-06").data;
+    expect(fm.icp).toBe("pre-pmf-founder");
+    expect(fm.jtbd).toBe("validate an idea before building it");
+    expect(fm.given).toBe("a one-line product idea");
+    expect(fm.conclusion).toBe("a promote/iterate/kill decision backed by a metric");
+    expect(fm.workflow.steps).toHaveLength(3);
+    expect(fm.workflow.steps[0].kind).toBe("input");
+    expect(fm.workflow.steps[1].agent).toBe("hermes");
+    expect(fm.workflow.edges[0]).toEqual({ from: "given", to: "frame" });
+  });
+
   it("new throws if the experiment already exists", () => {
     exp.createExperiment(root, "dup", { now: NOW });
     expect(() => exp.createExperiment(root, "dup", { now: NOW })).toThrow(/already exists/);
