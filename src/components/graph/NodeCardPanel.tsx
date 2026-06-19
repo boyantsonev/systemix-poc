@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { useTheme } from "next-themes";
 import { TYPE_COLOR_DARK, TYPE_COLOR_LIGHT, TYPE_LABEL, type NodeType } from "@/lib/data/system-graph";
 import type { TopoNode, SourceCard } from "@/lib/state/instance-topology";
@@ -45,6 +46,24 @@ const TYPE_DESC: Record<NodeType, string> = {
   tool: "Tooling the loop runs on.",
 };
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = useCallback(() => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }, [text]);
+  return (
+    <button
+      onClick={copy}
+      className="ml-auto shrink-0 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+    >
+      {copied ? "copied" : "copy"}
+    </button>
+  );
+}
+
 function GenericBody({ node }: { node: TopoNode }) {
   const expSlug = node.type === "artifact" ? node.id.replace(/^experiment:/, "") : null;
   const desc =
@@ -55,8 +74,9 @@ function GenericBody({ node }: { node: TopoNode }) {
     <div className="flex flex-col gap-3">
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
       {node.type === "skill" && (
-        <div className="rounded-lg border bg-muted/40 p-2.5">
-          <code className=" text-sm text-foreground">{node.label}</code>
+        <div className="flex items-center gap-2 rounded-lg border bg-muted/40 p-2.5">
+          <code className="text-sm text-foreground">{node.label}</code>
+          <CopyButton text={node.label} />
         </div>
       )}
       {expSlug && (
