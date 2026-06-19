@@ -1,0 +1,49 @@
+---
+title: Slash commands
+---
+
+Six Claude Code skills ship with Systemix and are installed project-scoped to `.claude/skills/` when you run `systemix init`. Run them from Claude Code with `/skill-name`.
+
+## Core loop skills
+
+| Skill | What it does | When to run |
+|---|---|---|
+| `/systemix-init` | Wizard: authors a new experiment (ICP · JTBD · hypothesis · AI workflow · metric) | Starting a new experiment |
+| `/write-variants` | Generates variant B (and optionally C) copy or code for the current hypothesis | After authoring, before launching |
+| `/measure` | Fetches PostHog evidence and writes it into the experiment frontmatter | After the experiment has run for enough time |
+| `/close-experiment` | Writes result · decision · confidence; appends learning to LEARNINGS.md; queues HITL card | When you're ready to decide |
+| `/growth-audit` | Reviews all running experiments; surfaces ones ready to close or stalled | Weekly / before sprint planning |
+| `/hermes` | Synthesizes accumulated learnings; proposes skill or guardrail improvements as HITL cards | After several experiments have closed |
+
+## Signal skills
+
+| Skill | What it does | When to run |
+|---|---|---|
+| `/connect-signal` | Guided PostHog wiring — capture key, reverse-proxy config, GH secrets for the cron | After init, before measuring |
+
+## Three-door equivalents
+
+The same operations are available from the CLI and MCP without Claude Code:
+
+```sh
+# CLI
+systemix experiment new
+systemix experiment list
+systemix experiment measure <id>
+systemix experiment close <id>
+systemix experiment learnings
+```
+
+```
+# MCP tools (for any agent)
+experiment_new
+experiment_list
+experiment_get
+experiment_measure
+experiment_close
+experiment_learnings
+```
+
+## Self-modification
+
+`/hermes` can propose changes to skills and guardrails in `.claude/skills/`. These proposals always go through HITL — they are never applied automatically, even when the instance is configured for autonomous mode.
