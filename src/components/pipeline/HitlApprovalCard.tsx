@@ -9,6 +9,7 @@ import {
   BookOpen,
   BarChart2,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { WorkflowStep } from "@/lib/data/pipeline";
 import type { WorkflowNodeDef } from "@/lib/data/workflows";
@@ -207,7 +208,7 @@ function DriftReportContent({ payload }: { payload: Extract<HitlPayload, { type:
 
 const PAYLOAD_HEADER: Record<
   NonNullable<HitlPayload["type"]>,
-  { label: string; Icon: React.ElementType }
+  { label: string; Icon: LucideIcon }
 > = {
   "token-diff":   { label: "Token Diff Review",    Icon: GitCommit   },
   "code-review":  { label: "Component Review",      Icon: FileCode2   },

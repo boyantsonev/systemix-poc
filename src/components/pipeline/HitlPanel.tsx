@@ -13,6 +13,7 @@ import {
   Eye,
   ChevronDown,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HitlTask, HitlTaskType } from "@/lib/data/pipeline";
 import { useHitlQueue, type HitlTask as LiveHitlTask } from "@/hooks/useHitlQueue";
@@ -43,7 +44,7 @@ const PRIORITY_CONFIG = {
   low:    { label: "low",    class: "text-slate-600 bg-slate-100 border-slate-300 dark:text-slate-400 dark:bg-slate-800/40 dark:border-slate-600/20" },
 };
 
-const TYPE_CONFIG: Record<HitlTaskType | string, { Icon: React.ElementType; label: string }> = {
+const TYPE_CONFIG: Record<HitlTaskType | string, { Icon: LucideIcon; label: string }> = {
   "token-diff":       { Icon: GitCommit,  label: "Token Diff"     },
   "code-review":      { Icon: FileCode2,  label: "Code Review"    },
   "drift-report":     { Icon: BarChart2,  label: "Drift Report"   },
