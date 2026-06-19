@@ -66,24 +66,7 @@ export const TYPE_LABEL: Record<NodeType, string> = {
 // Relative node volume for `nodeVal` in the force graph.
 export const SIZE_VAL: Record<NodeSize, number> = { sm: 2, md: 4.5, lg: 10 };
 
-// ── Topology (blank slate — populated by the runtime; Phase 5) ────────────────────
-
-export const systemNodes: SystemNode[] = [];
-
-export const systemLinks: SystemLink[] = [];
-
-// ── Node metadata (detail panel) ──────────────────────────────────────────────────
-
-export interface NodeMeta {
-  desc: string;
-  docHrefs?: { label: string; href: string }[];
-  command?: string;
-}
-
-export const NODE_META: Record<string, NodeMeta> = {};
-
-// ── Config → graph mapping (which nodes belong to which instance dimension) ────────
-
-export const SIGNAL_FIGMA_NODES: string[] = [];
-export const SIGNAL_POSTHOG_NODES: string[] = [];
-export const DESIGN_SURFACE_NODES: string[] = [];
+// ── Topology data lives in src/lib/state/instance-topology.ts ─────────────────────
+// The force graph is fed its nodes/links by the topology builder (ADR-021). This
+// module keeps only the shared shape the graph + cards render against: the node /
+// link types (above), the 7-type palette, and the labels.

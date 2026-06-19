@@ -41,7 +41,7 @@ Ask the founder to walk the flow; propose a first draft (3–6 steps) and refine
 
 ### Step 4 — Measurement
 - **Metric**: the primary KPI (e.g. `cta-click-rate`, `task-completion`).
-- **PostHog event**: the event that measures it — or `null` if signal wiring isn't set up yet (that's fine; the experiment still runs and evidence lands later). If no PostHog key is configured, say so and continue — connecting a data source is a separate setup step.
+- **PostHog event**: the event that measures it — or `null` if signal wiring isn't set up yet (that's fine; the experiment still runs and evidence lands later). If no PostHog key is configured, say so and continue — connecting a data source is its own step: **`/connect-signal`** (run it when you're ready to measure).
 
 ### Step 5 — Write experiment #1
 Construct the id `<section>-<short-desc>-<YYYY-MM>`, then write `experiments/<id>.mdx`:
@@ -113,7 +113,7 @@ review-by: null
 Read the file back and confirm with the founder: id, ICP/JTBD, the workflow shape, the metric. Then:
 - `systemix experiment list` shows it (the CLI door).
 - It renders at `/experiments/<id>` as its AI workflow (given → steps → conclusion).
-- Next: build the variant, wire the metric (`/measure`), then `/growth-audit` once evidence lands.
+- Next: connect a signal (`/connect-signal`) so it can measure, build the variant, wire the metric (`/measure`), then `/growth-audit` once evidence lands.
 
 ## Notes
 - Files are the truth; the app renders them. Editing the MDX — here, via `systemix experiment`, or the `experiment_*` MCP — updates the contract.

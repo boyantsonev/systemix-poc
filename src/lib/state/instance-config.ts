@@ -127,6 +127,27 @@ export function loadInstanceConfig(projectRoot?: string): InstanceConfig | null 
   }
 }
 
+/** Live wiring status of a configured signal, derived from config + environment.
+ * `wired` is the single source of truth for "can this signal actually collect
+ * evidence": true/false where knowable (posthog, from the browser capture key),
+ * null where the app can't tell (other sources). Consumed by both /api/instance
+ * and /config so they never disagree about whether a signal is connected. */
+export interface SignalStatus {
+  id: string;
+  enabled: boolean;
+  wired: boolean | null;
+}
+
+export function signalStatus(cfg: InstanceConfig | null): SignalStatus[] {
+  return Object.entries(cfg?.signals ?? {}).map(([id, s]) => ({
+    id,
+    enabled: !!s?.enabled,
+    // posthog is the only signal whose wiring is knowable from the app env;
+    // null = wiring not verifiable from here.
+    wired: id === "posthog" ? !!process.env.NEXT_PUBLIC_POSTHOG_KEY : null,
+  }));
+}
+
 // ── Write-back (Config layer) ──────────────────────────────────────────────────
 
 // One dial, three levels (mirrors the trust tier — see lib/contract/write-policy).
