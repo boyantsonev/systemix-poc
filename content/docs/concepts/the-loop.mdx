@@ -1,0 +1,74 @@
+---
+title: The loop
+---
+
+Five Claude Code skills carry an experiment from hypothesis to written decision. You run them in order; each one reads and writes the same `experiments/<id>.mdx` file.
+
+```
+/systemix-init
+    ↓
+/write-variants
+    ↓
+/measure
+    ↓
+/close-experiment   →  experiments/LEARNINGS.md
+    ↓
+/growth-audit       (reviews all running experiments)
+```
+
+## The skills
+
+### `/systemix-init`
+
+Writes the first experiment. Asks for ICP, JTBD, hypothesis, the AI workflow (steps + edges), and the metric. Creates `experiments/<id>.mdx` and stubs `experiments/LEARNINGS.md`.
+
+Run once to bootstrap, then again any time you want to author a new experiment.
+
+### `/write-variants`
+
+Generates variant copy or code for the hypothesis. Reads the `icp`, `hypothesis`, and `given` fields; proposes a variant B (and optionally C) that tests the bet without guessing at the ICP. Writes the variant text into the frontmatter.
+
+### `/measure`
+
+Reads PostHog evidence into the experiment. Fetches the `posthog-event` funnel data, calculates significance, and writes the result into `evidence-posthog`. If PostHog is not wired, logs a warning and exits cleanly — the experiment file is unchanged.
+
+### `/close-experiment`
+
+Closes the loop. Reads the evidence, writes `result`, `decision`, and `confidence` into the frontmatter, then **appends a learning to `experiments/LEARNINGS.md`**:
+
+```md
+## Memory
+
+### 2026-06-19 | landing-live-loop-2026-06 | confidence: high
+**Decision:** ship — book-a-call rate lifted 23% in 28 days
+**Learning:** Showing the loop running on itself (self-referential demo) converts founders
+faster than a feature list. The "earned" framing matters: the verdict has to be real.
+```
+
+Also queues a HITL card in `.systemix/queue.json` for human review.
+
+### `/growth-audit`
+
+Reviews all running experiments. Surfaces ones with enough evidence to close, ones that have stalled (no evidence, no activity), and Hermes-level proposals (skill or guardrail improvements). Run weekly to keep the loop moving.
+
+## LEARNINGS.md
+
+The compounding memory. Every closed experiment appends one entry with the decision, the confidence, and the transferable insight. Future experiments — and other agents reading via MCP — start from this ledger.
+
+A `## Memory` heading anchors the entries so Claude Code skills can append atomically.
+
+## HITL
+
+Every `/close-experiment` run queues a card. The queue lives at `.systemix/queue.json`. Cards are visible in the `/config` sidebar and via `gh` — one decision per card, no forms. Hermes (`/hermes`) proposes skill and guardrail improvements but never writes them without human approval, even in autonomous mode.
+
+## The three doors
+
+The same `experiments/<id>.mdx` files are readable and writable from three entry points:
+
+| Door | How |
+|---|---|
+| Claude Code skills | `/systemix-init`, `/measure`, etc. |
+| CLI | `systemix experiment new \| list \| measure \| close \| learnings` |
+| MCP | `experiment_new`, `experiment_list`, `experiment_measure`, `experiment_close` |
+
+Any agent that speaks MCP can drive the loop — not just Claude Code.
