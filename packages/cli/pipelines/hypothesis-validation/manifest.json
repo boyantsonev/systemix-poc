@@ -6,6 +6,7 @@
   "author": "systemix",
   "skills": [
     "systemix-init",
+    "connect-signal",
     "init-experiment",
     "write-variants",
     "measure",

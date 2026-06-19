@@ -6,6 +6,7 @@ import {
   parseInstanceConfig,
   applyConfigPatch,
   serializeInstanceConfig,
+  signalStatus,
   type InstanceConfig,
 } from "./instance-config";
 
@@ -110,5 +111,33 @@ describe("instance-config atlas round-trip", () => {
       serializeInstanceConfig(patched),
     ) as unknown as InstanceConfig;
     expect(reparsed.self_improvement.mode).toBe("audit");
+  });
+});
+
+// ADR-020: signalStatus is the single source of truth for whether a signal is
+// enabled AND actually wired. /api/instance and /config both read it, so they can
+// never disagree about "no signal connected". posthog wiring is knowable from the
+// browser capture key; other sources are unknowable from the app (null).
+describe("signalStatus — honest wiring state (ADR-020)", () => {
+  const cfg = parseInstanceConfig(YAML) as unknown as InstanceConfig;
+
+  it("posthog.wired follows NEXT_PUBLIC_POSTHOG_KEY; non-posthog signals are unknowable (null)", () => {
+    const prev = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+    try {
+      delete process.env.NEXT_PUBLIC_POSTHOG_KEY;
+      const unwired = signalStatus(cfg);
+      expect(unwired.find((s) => s.id === "posthog")).toMatchObject({ enabled: true, wired: false });
+      expect(unwired.find((s) => s.id === "vercel")?.wired).toBeNull();
+
+      process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test";
+      expect(signalStatus(cfg).find((s) => s.id === "posthog")?.wired).toBe(true);
+    } finally {
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_POSTHOG_KEY;
+      else process.env.NEXT_PUBLIC_POSTHOG_KEY = prev;
+    }
+  });
+
+  it("returns [] for a null config (no instance)", () => {
+    expect(signalStatus(null)).toEqual([]);
   });
 });

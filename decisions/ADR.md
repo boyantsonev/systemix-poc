@@ -348,3 +348,96 @@ interop only" is amended. ADR-014 and ADR-016/017/018 stand (compatible; they fe
 
 **Review trigger:** A partner requires air-gapped operation by default (→ promote Ollama mode), or a local
 model reaches Claude-parity for synthesis.
+
+## ADR-020: Data setup is a first-class "connect a signal" step + an honest unconfigured state
+**Date:** 2026-06-18
+**Status:** DECIDED
+**Feature:** systemix-v7 (data-setup research thread)
+
+**Context:** An experiment authors and runs fine with no data source — but it can't *measure* until a signal
+(PostHog today) is wired. That wiring was underthought. `PostHogProvider` called
+`posthog.init(NEXT_PUBLIC_POSTHOG_KEY!, …)` unconditionally, so with no key it console-warned and silently
+no-op'd; `/config` showed a green "posthog enabled" toggle with no hint nothing was being captured; and
+`/systemix-init` Step 4 hand-waved to "a separate setup step" that did not exist. The real wiring knowledge
+(an EU project, the `phc_` capture key vs the `phx_` server key, GitHub secrets for the evidence cron, the
+same-origin reverse proxy that defeats ad-blockers) was scattered across memory and a stale reference doc
+(`content/docs/reference/posthog.mdx`, which still shows the wrong `signals: - posthog-eu` array form and
+mislabels the server key as `phc_`).
+
+**Decision:** Make data setup first-class, in three parts.
+
+1. **Honest unconfigured state.** Capture initialises only when a key is present — a missing key is a clean
+no-op, not a dishonest `init(undefined!)`. `signalStatus(cfg)` in `instance-config.ts` is the single source
+of truth for whether each signal is `enabled` and `wired`; both `/api/instance` and `/config` read it.
+`/config` shows a banner when a signal is enabled-but-unwired: experiments still author + run, they just
+gather no live evidence. **An experiment is never blocked on signal wiring.**
+
+2. **A `/connect-signal` slash-command skill** — the first-class step. Guided: pick a source (PostHog now)
+→ walk the wiring (the `phc_` capture key for the browser, the `phx_` server creds for evidence queries,
+GitHub secrets for the daily cron) → **verify with the existing `systemix evidence check`** (it already
+pings PostHog and counts pageviews) → flip `signals.<source>.enabled` on. Invokable standalone, and
+referenced from `/systemix-init` Step 4 so onboarding has a real target instead of a hand-wave. Lives in the
+`hypothesis-validation` pipeline (the loop) and is registered in its manifest.
+
+3. **A named pluggable seam (not built).** `signals.<source>` in `systemix.config.yaml` plus the source-pick
+in the skill *is* the seam; PostHog is the only adapter in v1. GA / a GA-MCP adapter slot in behind the same
+shape later. No multi-source abstraction is built now (PostHog-now, pluggable-later, per the v7 plan).
+
+**Rationale:** Slash-commands are the v7 interface, so a skill (not an in-app wizard) is the natural home,
+and it reuses the existing `evidence check` verify primitive rather than reinventing it. Honesty-first
+matches the contract's "degraded states are reported, not hidden" posture (already true in `/api/instance`).
+Deferring the multi-source abstraction follows simplicity — one real adapter, a named seam, no speculative
+ports.
+
+**Alternatives considered:** (a) An in-app "connect" wizard on `/config` — rejected; the operator's seat is
+Claude Code, and an app form would duplicate the slash-command interface. (b) A full `signal-source` port
+with PostHog/GA adapters now — rejected as premature; the config block + the skill's source-pick already
+give the seam. (c) Fold setup only into `/systemix-init` — rejected; connecting a signal happens when you're
+ready to measure, not only at init, so it must stand alone (init merely references it).
+
+**Consequences:** `PostHogProvider` is guarded (a missing key is a clean no-op). `/config` carries a wiring
+banner driven by `signalStatus`. The `hypothesis-validation` manifest gains `connect-signal`. The stale
+`content/docs/reference/posthog.mdx` is superseded by the skill as the canonical setup path and should be
+reconciled in the Phase-4 `/docs` rebuild. The multi-source abstraction (GA, custom) stays a tracked seam,
+not code.
+
+**Review trigger:** A second signal source (GA, a custom MCP) is actually requested → promote the seam to a
+real `signal-source` port/adapter pair.
+
+## ADR-021: Node-centric Home — the instance loop as live topology, with the source/evidence taxonomy as node state
+**Date:** 2026-06-18
+**Status:** DECIDED
+**Feature:** config-ux-runtime (v7)
+**Amends:** ADR-020 (data setup / "connect a signal"); folds in the v7 plan's Phase 5 (force-graph → runtime topology)
+
+**Context:** `/config` (Home) was the original force-graph surface but its topology went blank in the v7 wipe (`systemNodes = []`). Today it reads: search (top-left) · empty graph (center) · a floating amber "no signal connected" banner (top-center, from ADR-020) · `RuntimePanel` with the Hermes HITL queue on the **right**. The founder wants to rethink the UX + runtime for clarity: keep Hermes visible; put runtime + HITL on a side panel; show the 3D graph with **real data**, dimming inactive nodes but keeping them visible (for onboarding); move runtime to the **left** so the **right** is free for a card shown when a node is **selected**; and fold "no signal connected" into that card's state rather than a floating banner. Separately, ADR-020 left the data-source *abstraction* unsettled (is PostHog "the signal", a source, a connector?) and did not model **manual entry** (e.g. LinkedIn engagement via screenshots + hand-entered values) as a first-class source. This ADR resolves both — the abstraction and the surface — together, because "no signal" becoming node state *is* the abstraction made visible.
+
+**Decision:**
+
+1. **The canonical noun is `source`** — an experiment draws evidence from a **source**. PostHog is not "the signal"; it is one **adapter** of a source. "signal" (the `signals:` config key) is retained for back-compat but redefined: a *source* is the thing you connect; a *signal/reading* is a value it yields. Three source **kinds**, declared by a `type:` field on `signals.<source>`:
+   - **wired** — credential/API-backed (PostHog, GA). Setup = `/connect-signal` → `systemix evidence check`. Ongoing = automated pull.
+   - **mcp** — anything-with-MCP (the "or else"). Same automated-pull shape, MCP adapter.
+   - **manual** — no integration, no setup. The operator logs values + screenshot + explanation directly into the experiment (e.g. LinkedIn). A first-class peer, **not** a degraded fallback.
+
+2. **`/config` Home becomes node-centric, three columns:**
+   - **Left rail** — Runtime (overview + active runs) + the **Hermes HITL queue** (`RuntimePanel` relocated; was right).
+   - **Center** — the 3D graph = the **live instance loop**: nodes are the real entities (sources · skills/slash-commands · agents incl. Hermes · experiments · infra), edges are the loop (source → experiment → measure → Hermes → decide → learn). Reuses the existing 7-type taxonomy + colors.
+   - **Right** — a **polymorphic node card**, empty until a node is selected; its content is by node type (see #4).
+
+3. **Active vs inactive = live activity/data.** A node renders at full color when its live state says it's alive (a source that is wired **and** receiving; an experiment with evidence; a recently-run skill; an agent with queue activity). Everything else is **dimmed but still shown** (the existing `dimNodeIds` → 0.1-alpha mechanism), so the full topology is always legible for onboarding — the dim *is* the "no data flowing yet" signal.
+
+4. **The node card is where state + action live (per type):** source(unwired) → "No signal connected — wire it" + `/connect-signal` (this is where ADR-020's floating banner goes); source(manual) → "Log evidence" (values/screenshot/explanation); source(wired) → last sync + event volume + `evidence check`; experiment → verdict/evidence/decision; skill → what it does + run it; agent(Hermes) → its queue/recent activity; infra/concept → description.
+
+5. **Selection lifts from `SystemGraph3D` to `ConfigView`.** The graph today owns `selectedId` internally and renders `NodeInfoPanel` as a top-right overlay. Selection becomes controlled (`selectedId` + `onSelectNode` props); the right-column card (`NodeCardPanel`) renders in `ConfigView`. The graph keeps camera-fly + neighbour-highlight, driven by the controlled selection — an EXTEND, not a rewrite.
+
+6. **A topology builder** (server, file-backed) reads real instance state — `systemix.config.yaml` (sources/agents) · the pipeline manifests (installed skills) · `experiments/*.mdx` · `loadRuntimeState` (recent runs) · `/api/queue` (Hermes activity) — and emits `{ nodes, edges, activeIds }`. This is the Phase-5 core, now specified here.
+
+7. **Staged build (decision: design fully, build staged).** Slice 1: layout flip (runtime → left) + lift selection + `NodeCardPanel` + "no signal" as source-card state, **keeping the floating banner as a fallback while the graph is empty**. Slice 2: the topology builder populates the live loop; the banner retires once nodes exist. Slice 3 (follow-on): decouple `social-signal` from PostHog (manual evidence writes to the experiment directly, not through PostHog) + fix its stale `contract/hypotheses` path.
+
+**Rationale:** The instance-loop topology is the "demo of itself" (a founder sees Systemix's own loop, live), reuses the 7-type taxonomy already built, and makes node state meaningful — every node has an honest live/dim state. Folding "no signal" and "log manual evidence" into node cards makes the source taxonomy *visible and actionable* exactly where the operator is looking, instead of a global banner divorced from the entity it describes. Live-activity dimming is the most honest answer to "is the loop alive". Staging keeps momentum (ship the layout + card model first) while capturing the whole model now, and the banner-fallback removes the only blind spot (an empty graph can't show node state).
+
+**Alternatives considered:** (a) Experiment-centric graph (nodes = experiments only) — rejected; narrower, loses the instance-loop "demo of itself". (b) Keep the floating "no signal" banner permanently — rejected; node-state is clearer, but kept as a *staged fallback* until topology exists. (c) Config-enabled (not live-activity) dimming — rejected; doesn't reflect whether data is actually flowing. (d) A full multi-source `signal-source` port/adapter abstraction now — rejected as premature (ADR-020); `type:` on `signals.<source>` is the seam; wired/mcp share an adapter shape, manual needs none. (e) An in-app "connect" wizard — rejected (ADR-020); the operator's seat is Claude Code, the card just *routes* to `/connect-signal`.
+
+**Consequences:** `SystemGraph3D` gains controlled-selection props; `NodeInfoPanel` becomes a polymorphic right-column `NodeCardPanel`; `RuntimePanel` flips to a left rail (border-r); a new topology-builder module is added; `signals.<source>` gains a `type:` field (serializer must round-trip it — same footgun class as ADR-020's region/host); `social-signal` is slated to decouple from PostHog. The v7 plan's standalone **Phase 5 is absorbed** into this feature. The ADR-020 banner becomes a transitional fallback. `/measure` + the experiment schema's `evidence-posthog`/`evidence-social` split aligns with the wired/manual source kinds.
+
+**Review trigger:** the graph topology grows past ~legibility (dozens of nodes) → revisit grouping/level-of-detail; or a real second instance (a client, not the dogfood) needs the Home → validate the topology builder against a non-self instance.

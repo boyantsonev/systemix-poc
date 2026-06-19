@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadInstanceConfig } from "@/lib/state/instance-config";
+import { loadInstanceConfig, signalStatus } from "@/lib/state/instance-config";
 import { readQueueCards } from "@/lib/queue-store";
 import { MATRIX_ROWS, tierLabel } from "@/lib/contract/write-policy";
 
@@ -32,13 +32,7 @@ export async function GET() {
     deferred: resolved.filter((c) => actionOf(c) === "deferred").length,
   };
 
-  const signals = Object.entries(cfg?.signals ?? {}).map(([id, s]) => ({
-    id,
-    enabled: !!s?.enabled,
-    // posthog is the only signal whose wiring is knowable from the app env;
-    // null = wiring not verifiable from here.
-    wired: id === "posthog" ? !!process.env.NEXT_PUBLIC_POSTHOG_KEY : null,
-  }));
+  const signals = signalStatus(cfg);
 
   return NextResponse.json({
     // The level word is derived from the trust tier — one dial, one source.
