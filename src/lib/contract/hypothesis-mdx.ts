@@ -7,7 +7,7 @@ import path from "node:path";
 // (src/app/api/queue/route.ts applyHypothesisDecision) and the detail page's
 // parseVariants(). The detail page reads with gray-matter; both must agree.
 
-export const HYPOTHESES_DIR = path.join(process.cwd(), "contract", "hypotheses");
+export const HYPOTHESES_DIR = path.join(process.cwd(), "experiments");
 const FRONTMATTER_RE = /^---[\r\n]+([\s\S]*?)[\r\n]+---[\r\n]*([\s\S]*)$/;
 const VALID_SLUG = /^[a-z0-9][a-z0-9-]*$/;
 
@@ -168,7 +168,7 @@ export function buildHypothesisMdx(input: HypothesisInput, createdDate: string):
 
   const fm = [
     "---",
-    "type: hypothesis",
+    "type: experiment",
     `id: ${input.id}`,
     `section: ${slugify(input.section || "general") || "general"}`,
     `hypothesis: ${yamlStr(input.hypothesis)}`,

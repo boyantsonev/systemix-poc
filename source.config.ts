@@ -8,34 +8,36 @@ export const docs = defineDocs({
   dir: "content/docs",
 });
 
-// In-app System layer — the living styleguide over the contract/* records
-// (tokens / components / hypotheses). These files have no `title` frontmatter,
-// so derive one from the type-specific identity field. Only the fields the
-// styleguide renders are kept (others are stripped).
+// Shared permissive schema for the contract substrate + loop record collections.
+// These files are heterogeneous (nulls/numbers/nested objects) and have no `title`
+// frontmatter, so keep every field as-is (catchall) and only derive a `title`.
+const recordSchema = z
+  .object({})
+  .catchall(z.any())
+  .transform((v) => {
+    const d = v as Record<string, unknown>;
+    return {
+      ...d,
+      title:
+        (d.title as string | undefined) ??
+        (d.token as string | undefined) ??
+        (d.component as string | undefined) ??
+        (d.hypothesis as string | undefined) ??
+        (d.id as string | undefined) ??
+        "Untitled",
+    };
+  });
+
+// Design-system substrate styleguide over the contract/* records (tokens / components).
 export const system = defineDocs({
   dir: "contract",
-  docs: {
-    // Permissive: contract frontmatter is heterogeneous across record types and
-    // includes nulls/numbers/nested objects. Keep every field as-is (catchall)
-    // and only derive a `title` (these files have none). ContractMeta reads the
-    // fields it needs defensively.
-    schema: z
-      .object({})
-      .catchall(z.any())
-      .transform((v) => {
-        const d = v as Record<string, unknown>;
-        return {
-          ...d,
-          title:
-            (d.title as string | undefined) ??
-            (d.token as string | undefined) ??
-            (d.component as string | undefined) ??
-            (d.hypothesis as string | undefined) ??
-            (d.id as string | undefined) ??
-            "Untitled",
-        };
-      }),
-  },
+  docs: { schema: recordSchema },
+});
+
+// The loop (v6 core): the experiments/* records + goals/, rendered at /experiments.
+export const experiments = defineDocs({
+  dir: "experiments",
+  docs: { schema: recordSchema },
 });
 
 export default defineConfig();

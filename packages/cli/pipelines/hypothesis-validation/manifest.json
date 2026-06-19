@@ -5,6 +5,8 @@
   "version": "0.2.0",
   "author": "systemix",
   "skills": [
+    "systemix-init",
+    "connect-signal",
     "init-experiment",
     "write-variants",
     "measure",

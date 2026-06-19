@@ -30,7 +30,13 @@
         "source": "live"
       },
       "requestedAt": "2026-06-11T11:20:41.325Z",
-      "status": "pending"
+      "status": "deferred",
+      "resolvedAt": "2026-06-18T11:10:48.278Z",
+      "resolution": {
+        "action": "deferred",
+        "note": null,
+        "resolvedBy": "dashboard"
+      }
     }
   ]
 }

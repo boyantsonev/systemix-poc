@@ -3,15 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import {
-  systemNodes,
-  systemLinks,
   SIZE_VAL,
   TYPE_COLOR_DARK,
   TYPE_COLOR_LIGHT,
   TYPE_LABEL,
   type NodeType,
+  type SystemNode,
+  type SystemLink,
 } from "@/lib/data/system-graph";
-import { NodeInfoPanel } from "./NodeInfoPanel";
 
 // react-force-graph-3d has no usable React types for arbitrary props/ref; the lib
 // is loaded client-side only (it touches `window`/three at import), so it is kept
@@ -20,6 +19,8 @@ import { NodeInfoPanel } from "./NodeInfoPanel";
 type ForceGraphHandle = {
   zoomToFit: (ms?: number, px?: number) => void;
   cameraPosition: (pos: { x: number; y: number; z: number }, lookAt?: unknown, ms?: number) => void;
+  d3Force: (name: string) => { strength?: (s: number) => unknown; distance?: (d: number) => unknown } | undefined;
+  d3ReheatSimulation?: () => void;
 };
 
 const ALL_TYPES: NodeType[] = ["source", "skill", "agent", "artifact", "infra", "concept", "tool"];
@@ -34,15 +35,26 @@ function hexAlpha(hex: string, a: number): string {
 
 const linkEnd = (v: any): string => (typeof v === "object" ? v.id : v);
 
+// The 3D force graph. Topology (nodes/links) is supplied by the caller (the
+// instance-topology builder, ADR-021); selection is controlled by the parent so
+// the detail card can live in a sibling column (ConfigView's right panel).
 export function SystemGraph3D({
+  nodes,
+  links,
+  selectedId,
+  onSelectNode,
   dimNodeIds,
   className,
 }: {
+  nodes: SystemNode[];
+  links: SystemLink[];
+  selectedId: string | null;
+  onSelectNode: (id: string | null) => void;
   dimNodeIds?: Set<string>;
   className?: string;
 }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme !== "light";
+  const isDark = resolvedTheme === "dark";
   const palette = isDark ? TYPE_COLOR_DARK : TYPE_COLOR_LIGHT;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,7 +63,6 @@ export function SystemGraph3D({
   const [FG, setFG] = useState<any>(null);
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [activeTypes, setActiveTypes] = useState<Set<NodeType>>(() => new Set(ALL_TYPES));
 
@@ -77,35 +88,45 @@ export function SystemGraph3D({
     return () => ro.disconnect();
   }, []);
 
-  // Rebuilds (and re-lays-out) only when the type filter changes.
-  const graphData = useMemo(
-    () => {
-      const visible = new Set(systemNodes.filter((n) => activeTypes.has(n.type)).map((n) => n.id));
-      return {
-        nodes: systemNodes.filter((n) => visible.has(n.id)).map((n) => ({ ...n, val: SIZE_VAL[n.size] })),
-        links: systemLinks.filter((l) => visible.has(l.source) && visible.has(l.target)).map((l) => ({ ...l })),
-      };
-    },
-    [activeTypes],
-  );
+  // Rebuilds (and re-lays-out) when the topology or the type filter changes.
+  const graphData = useMemo(() => {
+    const visible = new Set(nodes.filter((n) => activeTypes.has(n.type)).map((n) => n.id));
+    return {
+      nodes: nodes.filter((n) => visible.has(n.id)).map((n) => ({ ...n, val: SIZE_VAL[n.size] })),
+      links: links.filter((l) => visible.has(l.source) && visible.has(l.target)).map((l) => ({ ...l })),
+    };
+  }, [nodes, links, activeTypes]);
+
+  // Gently widen the layout — a stronger charge set while the initial simulation
+  // is still warm (no reheat; the natural onEngineStop zoom-fits the result).
+  useEffect(() => {
+    const fg = fgRef.current;
+    if (!fg || !FG || !size || graphData.nodes.length === 0) return;
+    fg.d3Force("charge")?.strength?.(-90);
+  }, [FG, size, graphData]);
 
   const neighborIds = useMemo(() => {
     if (!selectedId) return new Set<string>();
     const s = new Set<string>();
-    systemLinks.forEach((l) => {
+    links.forEach((l) => {
       if (l.source === selectedId) s.add(l.target);
       if (l.target === selectedId) s.add(l.source);
     });
     return s;
-  }, [selectedId]);
+  }, [selectedId, links]);
 
   const searchResults = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return systemNodes
-      .filter((n) => n.label.toLowerCase().includes(q) || n.type.toLowerCase().includes(q) || (n.sub?.toLowerCase().includes(q) ?? false))
+    return nodes
+      .filter(
+        (n) =>
+          n.label.toLowerCase().includes(q) ||
+          n.type.toLowerCase().includes(q) ||
+          (n.sub?.toLowerCase().includes(q) ?? false),
+      )
       .slice(0, 6);
-  }, [query]);
+  }, [query, nodes]);
 
   // Visual accessors are plain closures (recreated each render) so selection / theme /
   // dim changes recolor without re-heating the force simulation.
@@ -113,7 +134,9 @@ export function SystemGraph3D({
 
   const nodeColor = (node: any): string => {
     const pal = palette[node.type as NodeType];
-    if (dimNodeIds?.has(node.id)) return hexAlpha(pal.stroke, 0.1);
+    // Inactive (no live data) — dimmed but still clearly visible, so the full
+    // topology reads as an onboarding map rather than disappearing (ADR-021).
+    if (dimNodeIds?.has(node.id)) return hexAlpha(pal.stroke, 0.3);
     if (selectedId) {
       if (node.id === selectedId) return pal.stroke;
       if (neighborIds.has(node.id)) return hexAlpha(pal.stroke, 0.85);
@@ -125,9 +148,11 @@ export function SystemGraph3D({
   const linkColor = (link: any): string => {
     const s = linkEnd(link.source);
     const t = linkEnd(link.target);
-    const srcType = (systemNodes.find((n) => n.id === s)?.type ?? "concept") as NodeType;
+    const srcType = (nodes.find((n) => n.id === s)?.type ?? "concept") as NodeType;
     const pal = palette[srcType];
-    const faded = (dimNodeIds && (dimNodeIds.has(s) || dimNodeIds.has(t))) || (selectedId !== null && s !== selectedId && t !== selectedId);
+    const faded =
+      (dimNodeIds && (dimNodeIds.has(s) || dimNodeIds.has(t))) ||
+      (selectedId !== null && s !== selectedId && t !== selectedId);
     return hexAlpha(pal.stroke, faded ? 0.05 : 0.4);
   };
 
@@ -139,22 +164,26 @@ export function SystemGraph3D({
   };
 
   const particleColor = (link: any): string => {
-    const srcType = (systemNodes.find((n) => n.id === linkEnd(link.source))?.type ?? "concept") as NodeType;
+    const srcType = (nodes.find((n) => n.id === linkEnd(link.source))?.type ?? "concept") as NodeType;
     return palette[srcType].stroke;
   };
 
   const flyTo = (node: any) => {
     if (node?.x == null || !fgRef.current) return;
-    const dist = 120;
+    // Keep context — frame the node + its neighbours rather than zooming onto it.
+    const dist = 260;
     const hyp = Math.hypot(node.x, node.y, node.z ?? 0) || 1;
     const ratio = 1 + dist / hyp;
     fgRef.current.cameraPosition({ x: node.x * ratio, y: node.y * ratio, z: (node.z ?? 0) * ratio }, node, 800);
   };
 
   const selectNode = (id: string) => {
-    setSelectedId((prev) => (prev === id ? null : id));
-    const node = graphData.nodes.find((n) => n.id === id);
-    if (node) flyTo(node);
+    const next = selectedId === id ? null : id;
+    onSelectNode(next);
+    if (next) {
+      const node = graphData.nodes.find((n) => n.id === id);
+      if (node) flyTo(node);
+    }
   };
 
   const toggleType = (t: NodeType) =>
@@ -165,18 +194,29 @@ export function SystemGraph3D({
       return next;
     });
 
-  const bg = isDark ? "#080812" : "#f8fafc";
   const ready = FG && size;
+  const empty = nodes.length === 0;
 
   return (
-    <div ref={containerRef} className={`relative w-full h-full ${className ?? ""}`} style={{ background: bg }}>
+    <div
+      ref={containerRef}
+      className={`relative h-full w-full ${className ?? ""}`}
+      style={{
+        // CSS-driven (follows .dark instantly); a distinct dotted surface so the
+        // graph reads as its own working area, separate from the panels.
+        backgroundColor: "var(--canvas-bg)",
+        backgroundImage: "radial-gradient(var(--canvas-dot) 1px, transparent 1px)",
+        backgroundSize: "22px 22px",
+      }}
+    >
       {ready && (
         <FG
           ref={fgRef}
           graphData={graphData}
           width={size.w}
           height={size.h}
-          backgroundColor={bg}
+          rendererConfig={{ alpha: true, antialias: true }}
+          backgroundColor="rgba(0,0,0,0)"
           showNavInfo={false}
           controlType="orbit"
           nodeId="id"
@@ -200,7 +240,7 @@ export function SystemGraph3D({
           linkDirectionalParticleSpeed={0.006}
           linkDirectionalParticleColor={particleColor}
           onNodeClick={(n: any) => selectNode(n.id)}
-          onBackgroundClick={() => setSelectedId(null)}
+          onBackgroundClick={() => onSelectNode(null)}
           onEngineStop={() => {
             if (!fittedRef.current) {
               fittedRef.current = true;
@@ -212,100 +252,90 @@ export function SystemGraph3D({
 
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-[11px] font-mono text-muted-foreground/40">loading topology…</span>
+          <span className="text-xs text-muted-foreground">loading topology…</span>
         </div>
       )}
 
-      {/* Search */}
-      <div className="absolute top-4 left-4 z-10 w-56">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="search nodes…"
-          className="w-full px-3 py-1.5 rounded-lg text-[11px] font-mono bg-background/85 backdrop-blur-sm border border-border/50 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-border"
-        />
-        {searchResults.length > 0 && (
-          <div className="mt-1 rounded-lg border border-border/50 bg-background/95 backdrop-blur-sm overflow-hidden">
-            {searchResults.map((n) => {
-              const pal = palette[n.type];
-              return (
-                <button
-                  key={n.id}
-                  onClick={() => {
-                    setSelectedId(n.id);
-                    setQuery("");
-                    const node = graphData.nodes.find((g) => g.id === n.id);
-                    if (node) flyTo(node);
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-muted/50 transition-colors"
-                >
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: pal.stroke }} />
-                  <span className="text-[11px] font-mono text-foreground/80 truncate">{n.label}</span>
-                  <span className="text-[9px] font-mono text-muted-foreground/40 ml-auto shrink-0">{n.type}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Node detail */}
-      {selectedId && (
-        <div className="absolute top-4 right-4 z-10">
-          <NodeInfoPanel nodeId={selectedId} onClose={() => setSelectedId(null)} />
+      {ready && empty && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-xs text-muted-foreground">
+            no topology yet — run the loop to populate it
+          </span>
         </div>
       )}
 
-      {/* Legend / type filter */}
-      <div className="absolute bottom-5 left-5 z-10">
-        <Legend isDark={isDark} activeTypes={activeTypes} onToggle={toggleType} />
+      {/* Top-left: search, then the legend / type-filter directly below it */}
+      <div className="absolute top-4 left-4 z-10 flex w-56 flex-col gap-2">
+        <div>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="search nodes…"
+            className="w-full px-3 py-1.5 rounded-lg text-xs bg-background/85 backdrop-blur-sm border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-border"
+          />
+          {searchResults.length > 0 && (
+            <div className="mt-1 rounded-lg border border-border/50 bg-background/95 backdrop-blur-sm overflow-hidden">
+              {searchResults.map((n) => {
+                const pal = palette[n.type];
+                return (
+                  <button
+                    key={n.id}
+                    onClick={() => {
+                      onSelectNode(n.id);
+                      setQuery("");
+                      const node = graphData.nodes.find((g) => g.id === n.id);
+                      if (node) flyTo(node);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: pal.stroke }} />
+                    <span className="text-xs text-foreground truncate">{n.label}</span>
+                    <span className="text-xs text-muted-foreground ml-auto shrink-0">{n.type}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <Legend activeTypes={activeTypes} onToggle={toggleType} />
       </div>
 
       {/* Controls + hint */}
       <div className="absolute bottom-5 right-5 z-10 flex flex-col items-end gap-2">
         <button
           onClick={() => fgRef.current?.zoomToFit(500, 60)}
-          className="px-2.5 py-1.5 rounded-lg text-[10px] font-mono bg-background/85 backdrop-blur-sm border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+          className="px-2.5 py-1.5 rounded-lg text-xs bg-background/85 backdrop-blur-sm border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
         >
           zoom to fit
         </button>
-        <p className={`text-[10px] font-mono ${isDark ? "text-white/15" : "text-muted-foreground/30"}`}>
-          drag to orbit · scroll to zoom · click a node
-        </p>
+        <p className="text-xs text-muted-foreground">drag to orbit · scroll to zoom · click a node</p>
       </div>
     </div>
   );
 }
 
 function Legend({
-  isDark,
   activeTypes,
   onToggle,
 }: {
-  isDark: boolean;
   activeTypes: Set<NodeType>;
   onToggle: (t: NodeType) => void;
 }) {
-  const palette = isDark ? TYPE_COLOR_DARK : TYPE_COLOR_LIGHT;
+  // Theme-correct via the popover token (the per-type dot strokes are identical
+  // across the light/dark palettes, so the swatches are theme-agnostic).
   return (
-    <div
-      className={`flex flex-col gap-1 p-3 rounded-xl border backdrop-blur-sm ${
-        isDark ? "border-white/5 bg-black/40" : "border-border/50 bg-background/90 shadow-sm"
-      }`}
-    >
+    <div className="flex flex-col gap-1 rounded-xl border bg-popover/95 p-3 shadow-sm backdrop-blur-sm">
       {ALL_TYPES.map((type) => {
         const on = activeTypes.has(type);
         return (
           <button
             key={type}
             onClick={() => onToggle(type)}
-            className="flex items-center gap-2 text-left transition-opacity"
-            style={{ opacity: on ? 1 : 0.35 }}
+            className="flex items-center gap-2 text-left transition-opacity hover:opacity-100"
+            style={{ opacity: on ? 1 : 0.4 }}
           >
-            <span className="w-3 h-3 rounded-full shrink-0" style={{ background: palette[type].stroke }} />
-            <span className={`text-[10px] font-mono ${isDark ? "text-white/45" : "text-muted-foreground"}`}>
-              {TYPE_LABEL[type]}
-            </span>
+            <span className="size-3 shrink-0 rounded-full" style={{ background: TYPE_COLOR_LIGHT[type].stroke }} />
+            <span className="text-xs text-muted-foreground">{TYPE_LABEL[type]}</span>
           </button>
         );
       })}

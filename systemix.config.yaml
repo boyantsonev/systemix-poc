@@ -28,38 +28,17 @@ hermes:
     medium: 0.55
 self_improvement:
   mode: audit
-  meta_contract: contract/meta/hermes-accuracy.mdx
+  meta_contract: experiments/meta/hermes-accuracy.mdx
   audit_window_days: 90
 trust:
   orchestrator_tier: 0   # Ghost Mode at init — never executes autonomously without config
   hermes_tier: 0
 atlas:
-  # Instance vocabulary for the Workflow Atlas (contract/workflows/*.mdx).
-  # personas = tab order; agents = step owners; surfaces = prototype frames.
-  # persona/agent/surface in a workflow contract MUST be declared here.
-  personas:
-    - founder
-    - designer
-    - engineer
+  # agents = synthesis functions that own steps in the evidence loop.
+  # surfaces = prototype frames under test.
   agents:
     hermes:
       label: Hermes
-    orchestrator:
-      label: Orchestrator
-    scout:
-      label: Scout
-    flux:
-      label: Flux
-    ada:
-      label: Ada
-    echo:
-      label: Echo
-    prism:
-      label: Prism
-    sage:
-      label: Sage
-    ship:
-      label: Ship
   surfaces:
     - phone
     - tablet

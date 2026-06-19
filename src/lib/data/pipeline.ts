@@ -1107,7 +1107,7 @@ Triggers Hermes (local Ollama LLM) to read an experiment contract, synthesize th
   {
     command: "/init-experiment",
     name: "Init Experiment",
-    description: "Create a new hypothesis contract in contract/hypotheses/. Prompts for hypothesis, ICP, section, and variant copy. Writes the MDX stub and registers the experiment as running. Install: npx systemix workflow add hypothesis-validation",
+    description: "Create a new experiment in experiments/. Prompts for hypothesis, ICP, section, and variant copy. Writes the MDX stub and registers the experiment as running. Install: npx systemix workflow add hypothesis-validation",
     file: "~/.claude/skills/init-experiment/SKILL.md",
     triggersAgent: "Hermes",
     category: "pipeline",

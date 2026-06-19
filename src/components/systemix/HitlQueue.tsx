@@ -55,7 +55,7 @@ const STATUS_STYLE: Record<CardStatus, string> = {
   pending:  "text-amber-600 dark:text-amber-400",
   approved: "text-emerald-600 dark:text-emerald-400",
   rejected: "text-red-600 dark:text-red-400",
-  deferred: "text-muted-foreground/60",
+  deferred: "text-muted-foreground",
 };
 
 function ago(iso: string): string {
@@ -76,7 +76,7 @@ function DecideOnHome() {
   return (
     <Link
       href="/config"
-      className="inline-block pl-5 text-[11px] font-mono text-muted-foreground/60 hover:text-foreground transition-colors"
+      className="inline-block pl-5 text-xs text-muted-foreground hover:text-foreground transition-colors"
     >
       Decide on Home →
     </Link>
@@ -106,20 +106,20 @@ function HypothesisCard({
       <div className="px-4 pt-3.5 pb-3">
         {/* Header */}
         <div className="flex items-start gap-2.5 mb-3">
-          <span className="text-[12px] font-mono mt-px shrink-0 text-emerald-600 dark:text-emerald-400">◈</span>
+          <span className="text-sm mt-px shrink-0 text-emerald-600 dark:text-emerald-400">◈</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Hypothesis</span>
-              <span className="text-[11px] font-mono text-muted-foreground/60">{ago(card.requestedAt)}</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Hypothesis</span>
+              <span className="text-xs text-muted-foreground">{ago(card.requestedAt)}</span>
               {card.project && (
-                <span className="text-[11px] font-mono text-muted-foreground/60">{card.project}</span>
+                <span className="text-xs text-muted-foreground">{card.project}</span>
               )}
             </div>
-            <p className="text-[13px] font-mono text-foreground/90 leading-snug">
+            <p className="text-sm text-foreground leading-snug">
               {card.hypothesis ?? card.context}
             </p>
           </div>
-          <span className={`text-[11px] font-bold uppercase tracking-wide shrink-0 ${STATUS_STYLE[card.status]}`}>
+          <span className={`text-xs font-bold uppercase tracking-wide shrink-0 ${STATUS_STYLE[card.status]}`}>
             {card.status}
           </span>
         </div>
@@ -128,16 +128,16 @@ function HypothesisCard({
         {card.metric && card.baselineRate != null && card.variantRate != null && (
           <div className="pl-5 mb-3 grid grid-cols-3 gap-2">
             <div className="rounded border border-border/40 px-2.5 py-2">
-              <p className="text-[10px] font-mono text-muted-foreground/70 mb-1 uppercase tracking-wide">Baseline</p>
-              <p className="text-[14px] font-mono font-bold text-foreground/70">{fmtPct(card.baselineRate)}</p>
+              <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Baseline</p>
+              <p className="text-[14px] font-bold text-foreground">{fmtPct(card.baselineRate)}</p>
             </div>
             <div className="rounded border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-2">
-              <p className="text-[10px] font-mono text-muted-foreground/70 mb-1 uppercase tracking-wide">Variant</p>
-              <p className="text-[14px] font-mono font-bold text-emerald-600 dark:text-emerald-400">{fmtPct(card.variantRate)}</p>
+              <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Variant</p>
+              <p className="text-[14px] font-bold text-emerald-600 dark:text-emerald-400">{fmtPct(card.variantRate)}</p>
             </div>
             <div className="rounded border border-border/40 px-2.5 py-2">
-              <p className="text-[10px] font-mono text-muted-foreground/70 mb-1 uppercase tracking-wide">Delta</p>
-              <p className={`text-[14px] font-mono font-bold ${isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+              <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Delta</p>
+              <p className={`text-[14px] font-bold ${isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
                 {isPositive ? "+" : ""}{delta}%
               </p>
             </div>
@@ -154,12 +154,12 @@ function HypothesisCard({
                   style={{ width: `${card.confidenceLevel * 100}%` }}
                 />
               </div>
-              <span className="text-[11px] font-mono text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {Math.round(card.confidenceLevel * 100)}% confidence
               </span>
             </div>
             {card.sessions != null && (
-              <span className="text-[11px] font-mono text-muted-foreground/60 tabular-nums">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {card.sessions.toLocaleString()} sessions
               </span>
             )}
@@ -167,15 +167,15 @@ function HypothesisCard({
         )}
 
         {/* Hermes synthesis */}
-        <p className="text-[13px] text-muted-foreground leading-relaxed pl-5 mb-3">
+        <p className="text-sm text-muted-foreground leading-relaxed pl-5 mb-3">
           {card.context}
         </p>
 
         {/* Proposed action */}
         {card.proposal && (
           <div className="pl-5 mb-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5">
-            <p className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1.5">Hermes recommends</p>
-            <p className="text-[12px] font-mono text-emerald-800 dark:text-emerald-300 leading-relaxed">{card.proposal}</p>
+            <p className="text-xs text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1.5">Hermes recommends</p>
+            <p className="text-sm text-emerald-800 dark:text-emerald-300 leading-relaxed">{card.proposal}</p>
           </div>
         )}
 
@@ -185,19 +185,19 @@ function HypothesisCard({
           <div className="pl-5 flex items-center gap-1.5">
             <button
               onClick={() => onAction(card.id, "approved")}
-              className="px-3 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold hover:bg-emerald-500/20 transition-colors"
+              className="px-3 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors"
             >
               Promote variant
             </button>
             <button
               onClick={() => onAction(card.id, "deferred")}
-              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-[11px] font-bold hover:bg-muted/70 transition-colors"
+              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-xs font-bold hover:bg-muted/70 transition-colors"
             >
               Run longer
             </button>
             <button
               onClick={() => onAction(card.id, "rejected")}
-              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground/70 text-[11px] font-bold hover:bg-muted/70 transition-colors"
+              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-xs font-bold hover:bg-muted/70 transition-colors"
             >
               Discard
             </button>
@@ -206,11 +206,11 @@ function HypothesisCard({
             <DecideOnHome />
           )
         ) : card.status === "approved" ? (
-          <p className="pl-5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400/70">
+          <p className="pl-5 text-xs text-emerald-700 dark:text-emerald-400/70">
             ✓ evidence written to contract
           </p>
         ) : card.status === "rejected" ? (
-          <p className="pl-5 text-[11px] font-mono text-muted-foreground/60">
+          <p className="pl-5 text-xs text-muted-foreground">
             rejection recorded — Hermes will not re-propose this direction
           </p>
         ) : null}
@@ -236,16 +236,16 @@ function EngagementCard({
     )}>
       <div className="px-4 pt-3.5 pb-3">
         <div className="flex items-start gap-2.5 mb-3">
-          <span className="text-[12px] font-mono mt-px shrink-0 text-cyan-600 dark:text-cyan-400">◷</span>
+          <span className="text-sm mt-px shrink-0 text-cyan-600 dark:text-cyan-400">◷</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-cyan-600 dark:text-cyan-400">Engagement</span>
-              <span className="text-[11px] font-mono text-muted-foreground/60">{ago(card.requestedAt)}</span>
-              {card.surface && <span className="text-[11px] font-mono text-muted-foreground/60">{card.surface}</span>}
+              <span className="text-xs font-bold uppercase tracking-wide text-cyan-600 dark:text-cyan-400">Engagement</span>
+              <span className="text-xs text-muted-foreground">{ago(card.requestedAt)}</span>
+              {card.surface && <span className="text-xs text-muted-foreground">{card.surface}</span>}
             </div>
-            <p className="text-[13px] font-mono text-foreground/90 leading-snug">{card.hypothesis ?? card.context}</p>
+            <p className="text-sm text-foreground leading-snug">{card.hypothesis ?? card.context}</p>
           </div>
-          <span className={`text-[11px] font-bold uppercase tracking-wide shrink-0 ${STATUS_STYLE[card.status]}`}>
+          <span className={`text-xs font-bold uppercase tracking-wide shrink-0 ${STATUS_STYLE[card.status]}`}>
             {card.status}
           </span>
         </div>
@@ -255,14 +255,14 @@ function EngagementCard({
           <div className="pl-5 mb-3 grid grid-cols-2 gap-2 max-w-xs">
             {card.baselineRate != null && (
               <div className="rounded border border-cyan-500/20 bg-cyan-500/5 px-2.5 py-2">
-                <p className="text-[10px] font-mono text-muted-foreground/70 mb-1 uppercase tracking-wide">{card.metric ?? "conversion"}</p>
-                <p className="text-[14px] font-mono font-bold text-cyan-600 dark:text-cyan-400">{fmtPct(card.baselineRate)}</p>
+                <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">{card.metric ?? "conversion"}</p>
+                <p className="text-[14px] font-bold text-cyan-600 dark:text-cyan-400">{fmtPct(card.baselineRate)}</p>
               </div>
             )}
             {card.sessions != null && (
               <div className="rounded border border-border/40 px-2.5 py-2">
-                <p className="text-[10px] font-mono text-muted-foreground/70 mb-1 uppercase tracking-wide">Visitors</p>
-                <p className="text-[14px] font-mono font-bold text-foreground/70">{card.sessions.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Visitors</p>
+                <p className="text-[14px] font-bold text-foreground">{card.sessions.toLocaleString()}</p>
               </div>
             )}
           </div>
@@ -273,18 +273,18 @@ function EngagementCard({
             <div className="w-[60px] h-1.5 rounded-full bg-border overflow-hidden">
               <div className="h-full rounded-full bg-cyan-500" style={{ width: `${card.confidenceLevel * 100}%` }} />
             </div>
-            <span className="text-[11px] font-mono text-muted-foreground tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums">
               {Math.round(card.confidenceLevel * 100)}% signal strength
             </span>
           </div>
         )}
 
-        <p className="text-[13px] text-muted-foreground leading-relaxed pl-5 mb-3">{card.context}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed pl-5 mb-3">{card.context}</p>
 
         {card.proposal && (
           <div className="pl-5 mb-3 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-2.5">
-            <p className="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 uppercase tracking-widest mb-1.5">Read</p>
-            <p className="text-[12px] font-mono text-cyan-800 dark:text-cyan-300 leading-relaxed">{card.proposal}</p>
+            <p className="text-xs text-cyan-700 dark:text-cyan-400 uppercase tracking-widest mb-1.5">Read</p>
+            <p className="text-sm text-cyan-800 dark:text-cyan-300 leading-relaxed">{card.proposal}</p>
           </div>
         )}
 
@@ -293,19 +293,19 @@ function EngagementCard({
           <div className="pl-5 flex items-center gap-1.5">
             <button
               onClick={() => onAction(card.id, "approved")}
-              className="px-3 py-1.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-700 dark:text-cyan-400 text-[11px] font-bold hover:bg-cyan-500/20 transition-colors"
+              className="px-3 py-1.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-700 dark:text-cyan-400 text-xs font-bold hover:bg-cyan-500/20 transition-colors"
             >
               Acknowledge
             </button>
             <button
               onClick={() => onAction(card.id, "deferred")}
-              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-[11px] font-bold hover:bg-muted/70 transition-colors"
+              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-xs font-bold hover:bg-muted/70 transition-colors"
             >
               Flag for experiment
             </button>
             <button
               onClick={() => onAction(card.id, "rejected")}
-              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground/70 text-[11px] font-bold hover:bg-muted/70 transition-colors"
+              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-xs font-bold hover:bg-muted/70 transition-colors"
             >
               Dismiss
             </button>
@@ -314,9 +314,9 @@ function EngagementCard({
             <DecideOnHome />
           )
         ) : card.status === "approved" ? (
-          <p className="pl-5 text-[11px] font-mono text-cyan-700 dark:text-cyan-400/70">✓ acknowledged in the engagement log</p>
+          <p className="pl-5 text-xs text-cyan-700 dark:text-cyan-400/70">✓ acknowledged in the engagement log</p>
         ) : card.status === "deferred" ? (
-          <p className="pl-5 text-[11px] font-mono text-muted-foreground/60">flagged for an experiment</p>
+          <p className="pl-5 text-xs text-muted-foreground">flagged for an experiment</p>
         ) : null}
       </div>
     </div>
@@ -342,32 +342,32 @@ function StandardCard({
     )}>
       <div className="px-4 pt-3.5 pb-3">
         <div className="flex items-start gap-2.5 mb-2.5">
-          <span className={`text-[12px] font-mono mt-px shrink-0 ${cfg.color}`}>{cfg.icon}</span>
+          <span className={`text-sm mt-px shrink-0 ${cfg.color}`}>{cfg.icon}</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-[11px] font-bold uppercase tracking-wide ${cfg.color}`}>
+              <span className={`text-xs font-bold uppercase tracking-wide ${cfg.color}`}>
                 {cfg.label}
               </span>
-              <span className="text-[11px] font-mono text-muted-foreground/60">{ago(card.requestedAt)}</span>
+              <span className="text-xs text-muted-foreground">{ago(card.requestedAt)}</span>
             </div>
-            <p className="text-[13px] font-mono text-foreground/90 truncate">
+            <p className="text-sm text-foreground truncate">
               {card.token ?? card.component ?? card.filePath}
             </p>
           </div>
-          <span className={`text-[11px] font-bold uppercase tracking-wide shrink-0 ${STATUS_STYLE[card.status]}`}>
+          <span className={`text-xs font-bold uppercase tracking-wide shrink-0 ${STATUS_STYLE[card.status]}`}>
             {card.status}
           </span>
         </div>
 
         {card.proposed && (
           <div className="mb-2.5 pl-5">
-            <code className="text-[11px] font-mono text-foreground/70 bg-muted/60 px-1.5 py-0.5 rounded break-all">
+            <code className="text-xs text-foreground bg-muted/60 px-1.5 py-0.5 rounded break-all">
               {card.proposed}
             </code>
           </div>
         )}
 
-        <p className="text-[13px] text-muted-foreground leading-relaxed pl-5 mb-3">
+        <p className="text-sm text-muted-foreground leading-relaxed pl-5 mb-3">
           {card.context}
         </p>
 
@@ -376,7 +376,7 @@ function StandardCard({
             <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden max-w-[80px]">
               <div className="h-full rounded-full bg-muted-foreground/50" style={{ width: `${card.confidence * 100}%` }} />
             </div>
-            <span className="text-[11px] font-mono text-muted-foreground/70 tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums">
               {Math.round(card.confidence * 100)}% conf
             </span>
           </div>
@@ -387,19 +387,19 @@ function StandardCard({
           <div className="pl-5 flex items-center gap-1.5">
             <button
               onClick={() => onAction(card.id, "approved")}
-              className="px-3 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold hover:bg-emerald-500/20 transition-colors"
+              className="px-3 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors"
             >
               Approve
             </button>
             <button
               onClick={() => onAction(card.id, "rejected")}
-              className="px-3 py-1.5 rounded bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-[11px] font-bold hover:bg-red-500/20 transition-colors"
+              className="px-3 py-1.5 rounded bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors"
             >
               Reject
             </button>
             <button
               onClick={() => onAction(card.id, "deferred")}
-              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-[11px] font-bold hover:bg-muted/70 transition-colors"
+              className="px-3 py-1.5 rounded bg-muted border border-border text-muted-foreground text-xs font-bold hover:bg-muted/70 transition-colors"
             >
               Defer
             </button>
@@ -486,14 +486,14 @@ export function HitlQueue({
   return (
     <div className={className ?? "max-w-2xl mt-8 md:mt-10"}>
       <div className="flex items-baseline gap-3 mb-3">
-        <h2 className="text-[11px] font-black tracking-widest uppercase text-muted-foreground/70">
+        <h2 className="text-xs font-black tracking-widest uppercase text-muted-foreground">
           {title ?? "Hermes Queue"}
         </h2>
         {isDemo && (
-          <span className="text-[11px] font-mono text-muted-foreground/50">demo</span>
+          <span className="text-xs text-muted-foreground">demo</span>
         )}
         {pending.length > 0 && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-600 dark:text-amber-500">
+          <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-500">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
             {pending.length} pending
           </span>
@@ -504,7 +504,7 @@ export function HitlQueue({
         <div className="space-y-2.5">{pending.map(renderCard)}</div>
       ) : (
         <div className="rounded-lg border border-dashed border-border/50 px-5 py-4">
-          <p className="text-[12px] font-mono text-muted-foreground/60">
+          <p className="text-sm text-muted-foreground">
             {hideDemo
               ? "No pending decisions — cards arrive from scheduled evidence runs."
               : "Queue is clear — Hermes has no pending decisions."}
@@ -514,7 +514,7 @@ export function HitlQueue({
 
       {resolved.length > 0 && (
         <div className="mt-4">
-          <p className="text-[11px] font-mono text-muted-foreground/60 mb-2 uppercase tracking-widest">
+          <p className="text-xs text-muted-foreground mb-2 uppercase tracking-widest">
             Resolved ({resolved.length})
           </p>
           <div className="space-y-2">{resolved.map(renderCard)}</div>
