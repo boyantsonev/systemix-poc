@@ -441,3 +441,100 @@ real `signal-source` port/adapter pair.
 **Consequences:** `SystemGraph3D` gains controlled-selection props; `NodeInfoPanel` becomes a polymorphic right-column `NodeCardPanel`; `RuntimePanel` flips to a left rail (border-r); a new topology-builder module is added; `signals.<source>` gains a `type:` field (serializer must round-trip it — same footgun class as ADR-020's region/host); `social-signal` is slated to decouple from PostHog. The v7 plan's standalone **Phase 5 is absorbed** into this feature. The ADR-020 banner becomes a transitional fallback. `/measure` + the experiment schema's `evidence-posthog`/`evidence-social` split aligns with the wired/manual source kinds.
 
 **Review trigger:** the graph topology grows past ~legibility (dozens of nodes) → revisit grouping/level-of-detail; or a real second instance (a client, not the dogfood) needs the Home → validate the topology builder against a non-self instance.
+
+## ADR-022: Unified shadcn app shell — one sidebar + header across all surfaces, fumadocs Option B, file-tree nav, the `/config` dashboard
+**Date:** 2026-06-19
+**Status:** DECIDED (shipped via PR #65 → `main` `ac53466`; live on getsystemix.vercel.app)
+**Feature:** shell-redesign (v7)
+**Completes:** ADR-021 (the node-centric Home now lives inside the shell; absorbs the v7 plan's Phase 5)
+**Realizes:** ADR-011 (fumadocs as the shared renderer, "both mounts, one theme") — now literally one shell
+
+**Context:** The three product surfaces had grown up apart. `/config` carried a bespoke header and a
+`w-screen` layout; `/contract` and `/experiments` were standalone fumadocs `DocsLayout`s, each with its own
+sidebar, nav, and theme-switch. The result was three disconnected chromes: cross-surface nav was broken,
+responsiveness was poor, contrast failed in ~307 spots (opacity-on-text + sub-12px labels), `font-mono` was
+over-used as a UI face, and pre-v7 legacy components still cluttered `src/`. The founder rejected the
+slice-1 UI and approved a full rebuild on a modern shadcn app-shell (plan
+`~/.claude/plans/i-dont-like-the-fuzzy-tide.md`). Two cross-cutting calls were locked up front: **theme =
+refined modern-shadcn-neutral** (keep the oklch base — the palette wasn't the problem); **cleanup =
+remove orphaned legacy now, defer the /docs-coupled tier** (pipeline.ts, the 2D graph, docs+components data)
+to the Phase-4 `/docs` rebuild.
+
+**Decision:**
+
+1. **One route group, one shell.** `src/app/(app)/` hosts a single `layout.tsx` = `SidebarProvider` +
+`AppSidebar` + `SiteHeader` + `SidebarInset`. The three surfaces (config/contract/experiments) were
+`git mv`'d under it; **URLs are unchanged**. The root layout stays Providers-only; `/` (landing) and
+`/docs` (public docs) stay OUTSIDE the group.
+
+2. **Fumadocs Option B (chrome-disabled).** Contract + Experiments keep their fumadocs `DocsLayout` but with
+`sidebar`/`nav`/`themeSwitch` `{{ enabled: false }}` (and `RootProvider theme={{ enabled: false }}`), so each
+contributes only its MDX body + TOC. Their page trees are converted (`pageTreeToElements`) and fed into the
+ONE shell sidebar; theme defers to the app root (next-themes); search is scoped per surface
+(`/api/system-search`). This is the realization of ADR-011's "both mounts, one theme".
+
+3. **Central nav config.** `src/lib/nav.config.ts` is the SSOT — `PRIMARY_NAV` (Home/Contract/Experiments) +
+`SECONDARY_NAV` (Docs/GitHub), `isActive`/`surfaceLabel`, and the `pageTreeToElements`/`collectFolderIds`
+page-tree→file-tree adapters. It replaces the dead `src/lib/nav.ts` and the hardcoded `APP_NAV` that was
+scattered across the old `AppTopBar` and the `/config` header.
+
+4. **Sidebar = magicui file-tree; header = toggle + breadcrumb + command + theme.** `AppSidebar` shows Home
+as a top button, then Contract + Experiments as persistent, expandable magicui Folders
+(`src/components/ui/file-tree.tsx`): folders expand, files navigate, the current route highlights, and the
+active surface's folder starts expanded. `SiteHeader` = sidebar toggle + breadcrumb (`surfaceLabel`) +
+command palette + theme toggle. New shell modules: `src/components/shell/{AppSidebar,SiteHeader,CommandMenu}.tsx`.
+
+5. **The `/config` dashboard.** Reflowed responsive: a shadcn `ResizablePanelGroup` (react-resizable-panels
+v4 — `orientation` not `direction`, `%`-string sizes) with **runtime | graph** panels (drag handles,
+min/max, runtime collapsible); the **node inspector is a floating card** (`absolute right-4 top-4`, overlays
+the canvas so the graph keeps full width — reversed from an earlier docked-panel build); below `md` the
+panels collapse to Sheets. The center is a **dotted canvas** — transparent WebGL (`alpha:true`,
+`backgroundColor: rgba(0,0,0,0)`) over a CSS-var-driven radial-gradient dot grid
+(`--canvas-bg`/`--canvas-dot` in `:root` + `.dark`, so it follows the theme class instantly, not a lagging
+JS `resolvedTheme`).
+
+6. **The graph is the live instance topology** (completes ADR-021 #6). `src/lib/state/instance-topology.ts`
+reads real instance state — signals/sources, the pipeline manifests (installed skills), the atlas agents,
+`experiments/*.mdx`, the surfaces, plus fixed infra + tools — and emits all 7 node types + the loop edges;
+available nodes render full-color, unwired sources dim.
+
+7. **Theme = de-mono + WCAG contrast, not a re-palette.** The live surfaces were globally de-mono'd (Manrope
+sans for labels/prose); `<code>/kbd/samp/pre` keep mono via a `globals.css` base rule; mono is reserved for
+commands and IDs. A contrast sweep removed opacity-on-text (`text-…/NN` → solid) and bumped sub-12px text to
+a 12px AA floor. The neutral oklch palette is unchanged — the de-mono **is** the refinement.
+
+**Rationale:** One shell across all surfaces is the only way to get coherent cross-surface nav,
+responsiveness, and theming — the duplicated chrome was the actual failure. Option B keeps fumadocs's MDX
+rendering + TOC (cheap, well-tested) while ceding the chrome (the duplicated part) to the shell. A file-tree
+sidebar renders the contract/experiments corpora as what they are — browsable folders of MDX. The floating
+inspector keeps the graph full-width. Topology-as-Home is the "demo of itself" from ADR-021. Keeping the
+palette and fixing mono-overuse + opacity-on-text targets the real contrast failures and avoids a clash with
+the parallel landing branch (`claude/upbeat-ardinghelli`), which also touches `globals.css`.
+
+**Alternatives considered:** (a) Keep three standalone fumadocs layouts (status quo) — rejected; that *was*
+the broken UX. (b) Fumadocs Option A (fumadocs is the outer shell, `/config` mounts inside it) — rejected;
+`/config` is a bespoke React dashboard, not MDX, so the shadcn shell must be the outer frame and fumadocs the
+guest. (c) Re-palette to a new neutral ramp — rejected; the palette was fine, mono-overuse + opacity-on-text
+were the contrast failures. (d) Docked inspector panel — built, then reversed (round 4) to a floating card so
+the graph keeps full width. (e) Delete ALL legacy incl. the /docs-coupled tier now — rejected; pipeline.ts /
+the 2D `SystemGraph` / docs+components data are reachable only via the docs embeds
+(`ArchitectureGraph`/`SkillsBrowser`) and are bundled with the Phase-4 `/docs` rebuild.
+
+**Consequences:** A new `(app)` route group + `(app)/layout.tsx`; `src/components/shell/*`,
+`src/lib/nav.config.ts`, `src/lib/state/instance-topology.ts`, `src/components/ui/{file-tree,resizable}.tsx`,
+and shadcn primitives (sidebar/sheet/dropdown-menu/breadcrumb/dialog/input/label/select/skeleton + use-mobile)
+are added. `SystemGraph3D` gains controlled selection + a transparent renderer; `NodeCardPanel` / `RuntimePanel`
+are reshaped. **`SidebarInset` requires `min-w-0`** — a reusable shadcn gotcha: flexbox `min-width:auto`
+otherwise lets the inset overflow the viewport and push the header's search/theme off-screen. **Phase 5
+(this cleanup):** the orphaned pre-v7 modules are removed in two waves. The landing + /docs rebuild (PR #67,
+`51a5e8d`) deleted `components/{dashboard,drift,components-page,canvas,pipeline}`, `library/IntegrationStatus`,
+and the whole /docs-coupled tier (`lib/data/{pipeline,docs,components}`, the 2D `SystemGraph`), and rebuilt
+`content/docs/*` Ollama-free (engine = Claude Code, ADR-019 — `architecture.mdx` retired with the embed). This
+commit removes the orphans #67 left behind — `lib/data/{github,workflows}`, the dead `lib/nav.ts`, and the
+unmounted `systemix/{AppShell,LeftSidebar,MobileHeader,AppTopBar,RightAnchorNav}`. No /docs-coupled tier or
+stale Ollama copy remains deferred. A pre-existing dev-only `SystemGraph3D` `Legend` hydration warning is
+untouched.
+
+**Review trigger:** a fourth product surface is added → validate the `(app)` group + `nav.config` scale; or a
+fumadocs major upgrade changes the `DocsLayout` chrome-disable API (Option B depends on
+`sidebar`/`nav`/`themeSwitch` `{{ enabled: false }}`).
