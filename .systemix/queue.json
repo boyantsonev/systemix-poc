@@ -37,6 +37,71 @@
         "note": null,
         "resolvedBy": "dashboard"
       }
+    },
+    {
+      "id": "engagement-landing-1781949578335",
+      "type": "engagement-snapshot",
+      "recordPath": "contract/engagement/landing.mdx",
+      "surface": "landing",
+      "hypothesis": "Landing engagement — 3 visitors, 1 install",
+      "metric": "install conversion",
+      "baselineRate": 0.3333333333333333,
+      "variantRate": null,
+      "sessions": 3,
+      "confidenceLevel": 0.2,
+      "context": "Over 30d: 3 unique visitors, 9 pageviews, 1 ran the install command (33.3% conversion). CTAs — hero 0, nav 0. Top sections: hero, the-gap, magic-glue.",
+      "proposal": "keep-collecting (sample below 100 visitors)",
+      "_posthogData": {
+        "surface": "landing",
+        "period_days": 30,
+        "fetched_at": "2026-06-20",
+        "unique_visitors": 3,
+        "pageviews": 9,
+        "install_copies": 2,
+        "install_persons": 1,
+        "install_conversion": 0.3333333333333333,
+        "cta_clicks": {
+          "hero": 0,
+          "nav": 0
+        },
+        "sections": [
+          {
+            "section": "hero",
+            "views": 3
+          },
+          {
+            "section": "the-gap",
+            "views": 3
+          },
+          {
+            "section": "magic-glue",
+            "views": 2
+          },
+          {
+            "section": "the-loop",
+            "views": 1
+          },
+          {
+            "section": "surfaces",
+            "views": 1
+          },
+          {
+            "section": "hitl-preview",
+            "views": 1
+          },
+          {
+            "section": "bottom-cta",
+            "views": 1
+          },
+          {
+            "section": "storybook-callout",
+            "views": 1
+          }
+        ],
+        "source": "live"
+      },
+      "requestedAt": "2026-06-20T09:59:38.335Z",
+      "status": "pending"
     }
   ]
 }
