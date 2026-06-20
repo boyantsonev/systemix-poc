@@ -17,5 +17,5 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     PendingDecisions,
     AutonomyClause,
     ...components,
-  };
+  } as MDXComponents;
 }
