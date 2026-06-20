@@ -1,28 +1,12 @@
 {
   "title": "Docs",
   "pages": [
-    "---Get started---",
-    "introduction",
-    "quick-install",
-    "guides/setup",
-    "---Configure---",
-    "reference/posthog",
-    "---Run---",
-    "concepts/hypothesis-validation",
-    "concepts/hermes",
-    "concepts/hitl",
-    "concepts/evidence-layer",
-    "concepts/instance-model",
-    "concepts/workflow-atlas",
-    "concepts/contract",
-    "concepts/drift",
-    "concepts/quality-score",
-    "[Contract (living agreement)](/contract)",
-    "[Config](/config)",
-    "---Extend---",
-    "skills",
-    "reference/mcp-server",
-    "concepts/figma-mcps",
-    "architecture"
+    "index",
+    "getting-started",
+    "---Concepts---",
+    "concepts/experiment",
+    "concepts/the-loop",
+    "---Reference---",
+    "slash-commands"
   ]
 }

@@ -1,0 +1,89 @@
+---
+title: The experiment
+---
+
+An experiment is the unit of work in Systemix. It's a single MDX file in `experiments/` that starts as an open hypothesis and ends as a written decision with evidence.
+
+## The shape
+
+```yaml
+---
+type: experiment
+id: landing-live-loop-2026-06
+section: landing
+status: open          # open | running | decided
+
+# Who this is for and why
+icp: daily-shipping founder
+jtbd: convert a stranger into a consultancy conversation, earlier than a feature pitch
+
+# The bet
+hypothesis: seeing a live, dogfooded loop converts the founder to a consultancy call
+given: |
+  You land on Systemix. You see one real experiment — the product's own landing bet —
+  rendered as a step graph with a live verdict. You understand the loop from watching
+  it run on itself.
+conclusion: book-a-call rate lifts within 30 days
+
+# The AI workflow (optional — renders as a step graph on the experiment page)
+workflow:
+  steps:
+    - id: start
+      kind: input
+      label: Founder lands on /
+    - id: loop
+      kind: agent
+      label: Sees the live experiment
+    - id: cta
+      kind: output
+      label: Books a call
+  edges:
+    - from: start
+      to: loop
+    - from: loop
+      to: cta
+
+# Measurement
+metric: book-a-call-rate
+posthog-event: book_call_clicked
+
+# Evidence (filled by /measure)
+evidence-posthog: ~
+evidence-social: ~
+
+# Decision (filled by /close-experiment)
+result: ~
+decision: ~
+confidence: ~
+---
+
+Rationale and notes go here in markdown.
+```
+
+## Lifecycle
+
+| Status | What it means |
+|---|---|
+| `open` | Authored, not yet running. Variants may still be in progress. |
+| `running` | Live. PostHog is tracking the posthog-event. |
+| `decided` | Closed. Result, decision, and confidence are written. Learning is in LEARNINGS.md. |
+
+## Key fields
+
+**`icp`** — the specific person this bet targets. Not "users" — a role, a context, a moment.
+
+**`hypothesis`** — the assertion you're testing. One sentence.
+
+**`given`** — the prompt or setup that puts the ICP in the situation. What do they see? What do they do?
+
+**`conclusion`** — the win state. What would have to be true for this to be "decided: ship"?
+
+**`workflow`** — optional. Defines the AI workflow as steps and edges. When present, the experiment page renders it as a step graph.
+
+**`metric` / `posthog-event`** — what you're measuring and the event name in PostHog.
+
+**`evidence-posthog`** — filled by `/measure` from PostHog data.
+
+**`evidence-social`** — qualitative evidence (quotes, interviews, replays) logged manually.
+
+**`result` / `decision` / `confidence`** — filled by `/close-experiment`. The decision is written to `LEARNINGS.md`.

@@ -1,0 +1,56 @@
+---
+title: Getting started
+---
+
+## Install
+
+```sh
+npm install -g systemix
+# or
+npx systemix@latest init
+```
+
+## Run the init wizard
+
+```sh
+/systemix-init
+```
+
+The wizard walks you through:
+
+1. **Instance brief** — your product, your ICP, what you're trying to learn
+2. **Design setup** — scaffold a `design/` folder, point at an existing one, or skip
+3. **Signal setup** — wire PostHog (recommended) or skip for now
+4. **First experiment** — ICP · JTBD · hypothesis · the AI workflow that tests it · the metric you'll measure
+
+It writes two files:
+
+- `experiments/<id>.mdx` — the experiment contract
+- `experiments/LEARNINGS.md` — the compounding memory ledger (starts blank)
+
+## What you have after init
+
+```
+experiments/
+  <id>.mdx          ← your first experiment
+  LEARNINGS.md      ← learnings accumulate here after each close
+  goals/            ← KPIs the experiments roll up to
+.claude/skills/     ← the six loop skills, installed project-scoped
+systemix.config.yaml
+```
+
+## Next: run the loop
+
+Once an experiment is authored, the [five-skill loop](/docs/concepts/the-loop) carries it from open hypothesis to written decision:
+
+```
+/write-variants → /measure → /close-experiment
+```
+
+See [The loop](/docs/concepts/the-loop) for the full sequence.
+
+## Connect a signal (optional but recommended)
+
+Without PostHog wired, `/measure` will log a warning and skip the evidence fetch — experiments still author and close, just without live data.
+
+To wire PostHog, run `/connect-signal` after init. It guides you through the capture key, the reverse-proxy `/ingest` config (for ad-blocker bypass), and the `NEXT_PUBLIC_POSTHOG_KEY` env var.
