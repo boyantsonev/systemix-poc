@@ -104,8 +104,8 @@
 
   /* Graph canvas — a distinct dotted surface (CSS-driven so it follows .dark
      instantly, not the lagging JS resolvedTheme). */
-  --canvas-bg: #e8ecf3;
-  --canvas-dot: rgba(30, 41, 59, 0.14);
+  --canvas-bg: oklch(95.5% 0.007 88);
+  --canvas-dot: oklch(45% 0.02 70 / 0.13);
 
   /* Light mode — warm paper-minimal (hue ~80, low chroma) */
   --background: oklch(97% 0.005 90);
@@ -226,7 +226,7 @@
 
 .dark {
   /* Graph canvas — dark variant */
-  --canvas-bg: #0b0b16;
+  --canvas-bg: oklch(11% 0.006 75);
   --canvas-dot: rgba(255, 255, 255, 0.10);
 
   /* ── Dark mode surface hierarchy ─────────────────────────── */

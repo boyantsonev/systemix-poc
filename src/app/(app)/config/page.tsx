@@ -12,10 +12,7 @@ export default function ConfigPage() {
   const runtime = loadRuntimeState();
   // The live instance loop as graph data (ADR-021) — slice 1 seeds source nodes.
   const topology = buildInstanceTopology(cfg);
-  // Signals enabled in config but not wired (e.g. posthog with no key).
-  const unwiredSignals = signalStatus(cfg)
-    .filter((s) => s.enabled && s.wired === false)
-    .map((s) => s.id);
+  const signals = signalStatus(cfg);
 
   if (!cfg) {
     return (
@@ -35,5 +32,5 @@ export default function ConfigPage() {
     );
   }
 
-  return <ConfigView cfg={cfg} runtime={runtime} unwiredSignals={unwiredSignals} topology={topology} />;
+  return <ConfigView cfg={cfg} runtime={runtime} signals={signals} topology={topology} />;
 }

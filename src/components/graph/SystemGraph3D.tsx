@@ -45,6 +45,7 @@ export function SystemGraph3D({
   onSelectNode,
   dimNodeIds,
   className,
+  preview,
 }: {
   nodes: SystemNode[];
   links: SystemLink[];
@@ -52,6 +53,8 @@ export function SystemGraph3D({
   onSelectNode: (id: string | null) => void;
   dimNodeIds?: Set<string>;
   className?: string;
+  /** Card snapshot: hide search/legend/controls + disable interaction. */
+  preview?: boolean;
 }) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -200,7 +203,7 @@ export function SystemGraph3D({
   return (
     <div
       ref={containerRef}
-      className={`relative h-full w-full ${className ?? ""}`}
+      className={`relative h-full w-full ${preview ? "pointer-events-none [&_.graph-overlay]:hidden" : ""} ${className ?? ""}`}
       style={{
         // CSS-driven (follows .dark instantly); a distinct dotted surface so the
         // graph reads as its own working area, separate from the panels.
@@ -265,7 +268,7 @@ export function SystemGraph3D({
       )}
 
       {/* Top-left: search, then the legend / type-filter directly below it */}
-      <div className="absolute top-4 left-4 z-10 flex w-56 flex-col gap-2">
+      <div className="graph-overlay absolute top-4 left-4 z-10 flex w-56 flex-col gap-2">
         <div>
           <input
             value={query}
@@ -301,7 +304,7 @@ export function SystemGraph3D({
       </div>
 
       {/* Controls + hint */}
-      <div className="absolute bottom-5 right-5 z-10 flex flex-col items-end gap-2">
+      <div className="graph-overlay absolute bottom-5 right-5 z-10 flex flex-col items-end gap-2">
         <button
           onClick={() => fgRef.current?.zoomToFit(500, 60)}
           className="px-2.5 py-1.5 rounded-lg text-xs bg-background/85 backdrop-blur-sm border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
