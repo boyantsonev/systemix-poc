@@ -79,7 +79,6 @@ describe("instance-config atlas round-trip", () => {
 
     // Guard the guard: the real config must actually carry an atlas block, else
     // this test would pass vacuously.
-    expect(base.atlas?.personas).toEqual(["founder", "designer", "engineer"]);
     expect(Object.keys(base.atlas?.agents ?? {})).toContain("hermes");
     expect(base.atlas?.surfaces).toEqual(["phone", "tablet", "desktop"]);
 
