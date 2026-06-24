@@ -38,35 +38,37 @@ export function SiteHeader() {
   const crumbs = buildCrumbs(pathname);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-1 h-4" />
-      <Breadcrumb>
-        <BreadcrumbList>
-          {crumbs.map((c, i) => {
-            const last = i === crumbs.length - 1;
-            return (
-              <Fragment key={c.href}>
-                <BreadcrumbItem>
-                  {last ? (
-                    <BreadcrumbPage>{c.label}</BreadcrumbPage>
-                  ) : i === 0 ? (
-                    <BreadcrumbLink asChild>
-                      <Link href={c.href}>{c.label}</Link>
-                    </BreadcrumbLink>
-                  ) : (
-                    <span className="text-muted-foreground">{c.label}</span>
-                  )}
-                </BreadcrumbItem>
-                {!last && <BreadcrumbSeparator />}
-              </Fragment>
-            );
-          })}
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="ml-auto flex items-center gap-1.5">
-        <CommandMenu />
-        <ThemeToggle />
+    <header className="sticky top-0 z-30 shrink-0 px-3 pt-2.5 pb-1.5">
+      <div className="flex h-11 items-center gap-2 rounded-2xl border border-border/50 bg-background/75 px-3 shadow-sm backdrop-blur-md">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-1 h-4" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            {crumbs.map((c, i) => {
+              const last = i === crumbs.length - 1;
+              return (
+                <Fragment key={c.href}>
+                  <BreadcrumbItem>
+                    {last ? (
+                      <BreadcrumbPage>{c.label}</BreadcrumbPage>
+                    ) : i === 0 ? (
+                      <BreadcrumbLink asChild>
+                        <Link href={c.href}>{c.label}</Link>
+                      </BreadcrumbLink>
+                    ) : (
+                      <span className="text-muted-foreground">{c.label}</span>
+                    )}
+                  </BreadcrumbItem>
+                  {!last && <BreadcrumbSeparator />}
+                </Fragment>
+              );
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="ml-auto flex items-center gap-1.5">
+          <CommandMenu />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
