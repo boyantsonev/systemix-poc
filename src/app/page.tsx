@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { InstallCommand, SectionTrack } from "@/components/systemix/LandingEvents";
@@ -72,8 +73,8 @@ function Lead({ children, className }: { children: React.ReactNode; className?: 
 
 function LandingNav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-6">
+    <header className="sticky top-0 z-50 px-4 pt-3 pb-2">
+      <div className="mx-auto flex h-12 max-w-5xl items-center gap-6 rounded-full border border-border/50 bg-background/80 px-5 shadow-[var(--shadow-sm)] backdrop-blur-md">
         <Link href="/" className="transition-opacity hover:opacity-80">
           <span className="text-xl font-black tracking-tight">systemix</span>
         </Link>
@@ -83,7 +84,7 @@ function LandingNav() {
             <Link
               key={l.href}
               href={l.href}
-              className="px-3 py-1.5 text-[13px] text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+              className="rounded-full px-3 py-1.5 text-[13px] text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
             >
               {l.label}
             </Link>
@@ -92,14 +93,11 @@ function LandingNav() {
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <a
-            href={nav.cta.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border border-border px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-muted/50"
-          >
-            {nav.cta.label}
-          </a>
+          <Button variant="outline" size="sm" asChild>
+            <a href={nav.cta.href} target="_blank" rel="noopener noreferrer">
+              {nav.cta.label}
+            </a>
+          </Button>
         </div>
       </div>
     </header>

@@ -207,9 +207,9 @@
   --space-16: 4rem;     /* 64px */
 
   /* ── Border + shadow tokens ──────────────────────────────── */
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.12);
-  --shadow-md: 0 2px 8px oklch(0% 0 0 / 0.16);
-  --shadow-lg: 0 4px 16px oklch(0% 0 0 / 0.20);
+  --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.07);
+  --shadow-md: 0 2px 8px oklch(0% 0 0 / 0.10);
+  --shadow-lg: 0 4px 16px oklch(0% 0 0 / 0.14);
   --shadow-glow-ada: 0 0 20px oklch(68% 0.18 280 / 0.25);
   --shadow-glow-flux: 0 0 20px oklch(70% 0.16 185 / 0.25);
 
@@ -259,6 +259,12 @@
   --sidebar-accent-foreground: oklch(0.97 0.004 90);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0.01 75);
+
+  /* Shadow tokens — invert strategy: drop shadow stays dark but heavier,
+     plus an inset top highlight for the glass-raised effect */
+  --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.35), inset 0 0.5px 0 oklch(100% 0 0 / 0.07);
+  --shadow-md: 0 2px 8px oklch(0% 0 0 / 0.45), inset 0 0.5px 0 oklch(100% 0 0 / 0.07);
+  --shadow-lg: 0 4px 16px oklch(0% 0 0 / 0.55), inset 0 0.5px 0 oklch(100% 0 0 / 0.07);
 
   /* Status semantic — brighter in dark */
   --status-synced: oklch(0.72 0.17 162);
