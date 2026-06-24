@@ -1,64 +1,8 @@
 "use client";
 
 import { usePostHog } from "posthog-js/react";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { siteConfig } from "@/lib/site-config";
 import { useVariant } from "@/lib/useVariant";
-
-// ── Hero CTAs ─────────────────────────────────────────────────────────────────
-
-export function HeroCTAs() {
-  const ph = usePostHog();
-
-  return (
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-      <a
-        href={siteConfig.githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => ph.capture("hero_cta_click", { cta: "github" })}
-        className="inline-flex items-center gap-2 text-[13px] font-medium bg-foreground text-background px-4 py-2 hover:opacity-90 transition-opacity"
-      >
-        Star on GitHub →
-      </a>
-      <Link
-        href="/docs/quick-install"
-        onClick={() => ph.capture("hero_cta_click", { cta: "docs" })}
-        className="text-[13px] text-muted-foreground hover:text-foreground transition-colors"
-      >
-        Read the docs →
-      </Link>
-    </div>
-  );
-}
-
-// ── Nav CTAs ──────────────────────────────────────────────────────────────────
-
-export function NavCTAs() {
-  const ph = usePostHog();
-
-  return (
-    <div className="ml-auto flex items-center gap-2">
-      <a
-        href={siteConfig.githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => ph.capture("nav_cta_click", { cta: "github" })}
-        className="text-[12px] font-medium border border-border text-foreground px-3 py-1.5 hover:bg-muted/50 transition-colors"
-      >
-        GitHub →
-      </a>
-      <Link
-        href="/docs/quick-install"
-        onClick={() => ph.capture("nav_cta_click", { cta: "get-started" })}
-        className="text-[12px] font-medium bg-foreground text-background px-3 py-1.5 hover:opacity-90 transition-opacity"
-      >
-        Get started →
-      </Link>
-    </div>
-  );
-}
 
 // ── Install command with copy button ──────────────────────────────────────────
 
