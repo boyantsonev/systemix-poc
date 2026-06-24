@@ -16,6 +16,8 @@ experiments/
 
 Files are the interface. Any tool that can read a directory — Claude Code, the CLI, the MCP server, a shell script, a GitHub Action — can work with the contract. There is no hidden database.
 
+And files are the interface for a deeper reason: an agent's memory evaporates between sessions. Without durable state on disk, every run starts from scratch — re-deriving context it already earned. The files are the loop's memory because the model has none of its own. (More on the reasoning: [Why files & loops](/docs/concepts/why-files).)
+
 The contract is durable because it lives in your repo. It versions with your code, ships with your deploys, and survives tool changes. `LEARNINGS.md` in version control is a decision log that compounds over years, not a transient state that evaporates when you rotate providers.
 
 ## LEARNINGS.md

@@ -14,14 +14,20 @@ export type MemoryEntry = {
   reviewBy: string; // YYYY-MM-DD — claims expire and get re-validated
 };
 
-/** Render the canonical memory bullet for one entry. */
+/**
+ * Render the canonical memory bullet for one entry. This template is shared (by
+ * convention, not import — separate packages) with the CLI and MCP writers:
+ * packages/cli/src/lib/experiments.js `appendLearning` and
+ * packages/mcp-server/src/tools/experiment.ts `appendLearning`. Keep all three
+ * byte-identical so the one reader (parseLearnings) can read every writer.
+ * Shape: confidence is ALWAYS present (— when null); the summary sentence is optional.
+ */
 export function renderMemoryLine(e: MemoryEntry): string {
-  const conf = e.confidence != null ? `confidence ${e.confidence} · ` : "";
   const summary = e.summary.trim().replace(/\s+/g, " ");
-  const dot = summary && !/[.!?]$/.test(summary) ? "." : "";
+  const reason = summary ? ` ${summary}${/[.!?]$/.test(summary) ? "" : "."}` : "";
   return (
-    `- **${e.date} · ${e.title}** — ${conf}from [${e.experimentId}], ` +
-    `decision: ${e.decision}. ${summary}${dot} Review by: ${e.reviewBy}. Used by: —`
+    `- **${e.date} · ${e.title}** — confidence ${e.confidence ?? "—"} · from [${e.experimentId}], ` +
+    `decision: ${e.decision}.${reason} Review by: ${e.reviewBy}. Used by: —`
   );
 }
 

@@ -46,8 +46,14 @@ describe("renderMemoryLine", () => {
     expect(line).toContain("Used by: —");
   });
 
-  it("omits confidence when null", () => {
-    expect(renderMemoryLine({ ...ENTRY, confidence: null })).not.toContain("confidence");
+  it("renders confidence as — when null (canonical: always present)", () => {
+    expect(renderMemoryLine({ ...ENTRY, confidence: null })).toContain("confidence —");
+  });
+
+  it("drops the summary clause cleanly when empty (no double space)", () => {
+    const line = renderMemoryLine({ ...ENTRY, summary: "" });
+    expect(line).toContain("decision: promote. Review by:");
+    expect(line).not.toContain("  "); // no doubled spaces
   });
 });
 

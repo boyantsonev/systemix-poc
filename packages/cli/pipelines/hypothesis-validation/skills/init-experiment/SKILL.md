@@ -16,6 +16,16 @@ Create a new experiment MDX file in `experiments/`. This is the first step in th
 
 ## Steps
 
+### Step 0 — Recall prior learnings
+
+Before authoring, pull the loop's recent memory so this experiment starts from evidence, not a blank slate (curated recall — don't load the whole ledger):
+
+- MCP: `experiment_learnings({ recent: 5 })`
+- CLI: `systemix experiment learnings --recent 5`
+- Lineage of a specific prior bet: `experiment_learnings({ for: "<id>" })` / `--for <id>`
+
+Surface anything related to the user ("we already tested X — it promoted/killed; confidence Y"). If this experiment builds on a prior learning, note that learning's `[<id>]` — `/close-experiment` records the backlink (`Used by:`) when this one closes. If the ledger is empty (a fresh instance), say so and continue.
+
 ### Step 1 — Determine the experiment ID
 
 If `$ARGUMENTS` is provided, use it as the experiment ID (e.g. `hero-vp-icp-match-2026-04`). Otherwise ask the user:

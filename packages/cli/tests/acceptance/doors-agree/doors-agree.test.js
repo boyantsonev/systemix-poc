@@ -20,6 +20,8 @@ const read = (...p) => fs.readFileSync(path.join(__dirname, ...p), "utf8");
 const cliCommand = read("..", "..", "..", "src", "commands", "experiment.js");
 const cliLib = read("..", "..", "..", "src", "lib", "experiments.js");
 const mcpTool = read("..", "..", "..", "..", "mcp-server", "src", "tools", "experiment.ts");
+// The third writer lives in the app package (repo-root src/), not the CLI.
+const appWriter = read("..", "..", "..", "..", "..", "src", "lib", "contract", "memory-mdx.ts");
 
 const LEARNINGS = path.basename(layout.rel.learnings); // "LEARNINGS.md"
 const QUEUE = path.basename(layout.rel.queue);         // "queue.json"
@@ -40,5 +42,17 @@ describe("the three doors share one canonical loop layout", () => {
     expect(mcpTool).toContain(QUEUE);
     expect(mcpTool).toContain(layout.EXPERIMENTS); // "experiments"
     expect(mcpTool).toContain(MEMORY_ANCHOR);
+  });
+
+  it("all three memory writers share ONE canonical learning bullet template (no format drift)", () => {
+    // The CLI lib, the MCP tool, and the app writer (memory-mdx.ts) render the same
+    // bullet by convention (separate packages, can't import). These markers — confidence
+    // ALWAYS present (— when null), the optional summary insertion point, the Used-by
+    // backlink, and the trailing-punctuation guard — must appear in all three, so the one
+    // reader (parseLearnings) reads every writer. Change one writer, change all three.
+    const markers = ['?? "—"} · from [', ".${reason} Review by: ", ". Used by: —", "/[.!?]$/.test("];
+    for (const src of [cliLib, mcpTool, appWriter]) {
+      for (const m of markers) expect(src).toContain(m);
+    }
   });
 });
