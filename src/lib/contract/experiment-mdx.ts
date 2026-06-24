@@ -1,22 +1,22 @@
 import fs from "node:fs";
 import path from "node:path";
 
-// Shared helpers for reading/writing hypothesis contract MDX files.
+// Shared helpers for reading/writing experiment contract MDX files.
 // Writes use manual string construction + line-targeted regex (NOT a YAML
 // serializer) to stay byte-compatible with the queue route's write-back regex
-// (src/app/api/queue/route.ts applyHypothesisDecision) and the detail page's
+// (src/app/api/queue/route.ts applyExperimentDecision) and the detail page's
 // parseVariants(). The detail page reads with gray-matter; both must agree.
 
-export const HYPOTHESES_DIR = path.join(process.cwd(), "experiments");
+export const EXPERIMENTS_DIR = path.join(process.cwd(), "experiments");
 const FRONTMATTER_RE = /^---[\r\n]+([\s\S]*?)[\r\n]+---[\r\n]*([\s\S]*)$/;
 const VALID_SLUG = /^[a-z0-9][a-z0-9-]*$/;
 
-export function hypothesisPath(slug: string): string {
-  return path.join(HYPOTHESES_DIR, `${slug}.mdx`);
+export function experimentPath(slug: string): string {
+  return path.join(EXPERIMENTS_DIR, `${slug}.mdx`);
 }
 
-export function hypothesisExists(slug: string): boolean {
-  return fs.existsSync(hypothesisPath(slug));
+export function experimentExists(slug: string): boolean {
+  return fs.existsSync(experimentPath(slug));
 }
 
 export function isValidSlug(s: string): boolean {
@@ -85,7 +85,7 @@ export function setVariantsBlock(fmBlock: string, variants: Record<string, strin
   return `${fmBlock.replace(/\s*$/, "")}\n${block}`;
 }
 
-export interface HypothesisDecisionInput {
+export interface ExperimentDecisionInput {
   decision: "promote" | "kill";
   /** ISO date (YYYY-MM-DD) the evidence was fetched / decision recorded. */
   now: string;
@@ -98,17 +98,17 @@ export interface HypothesisDecisionInput {
 }
 
 /**
- * Apply a promote/kill decision to a hypothesis contract's MDX, returning the
+ * Apply a promote/kill decision to an experiment contract's MDX, returning the
  * updated file contents (null if the frontmatter can't be parsed). Pure transform
  * (no fs) so it can be unit-tested and imported by the queue route handler.
  *
- * Re-running for the same hypothesis overwrites cleanly: the `evidence-posthog`
+ * Re-running for the same experiment overwrites cleanly: the `evidence-posthog`
  * block is collapsed via {@link setTopLevelField} rather than leaving duplicate
  * nested keys behind (which would make gray-matter throw "duplicated mapping key").
  */
-export function applyHypothesisDecisionToMdx(
+export function applyExperimentDecisionToMdx(
   raw: string,
-  input: HypothesisDecisionInput,
+  input: ExperimentDecisionInput,
 ): string | null {
   const split = splitFrontmatter(raw);
   if (!split) return null;
@@ -140,7 +140,7 @@ export function applyHypothesisDecisionToMdx(
   return `---\n${fm}\n---\n\n${bodyWithoutEvidence}\n${evidenceSection}`;
 }
 
-export interface HypothesisInput {
+export interface ExperimentInput {
   id: string;
   section?: string;
   hypothesis: string;
@@ -152,8 +152,8 @@ export interface HypothesisInput {
   evidenceSocial?: string | null;
 }
 
-/** Build a complete, queue-compatible hypothesis MDX file from scratch. */
-export function buildHypothesisMdx(input: HypothesisInput, createdDate: string): string {
+/** Build a complete, queue-compatible experiment MDX file from scratch. */
+export function buildExperimentMdx(input: ExperimentInput, createdDate: string): string {
   const variantsObj =
     input.variants && Object.keys(input.variants).length
       ? input.variants

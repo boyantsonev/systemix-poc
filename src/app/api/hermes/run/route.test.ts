@@ -50,7 +50,7 @@ async function loadPost() {
 }
 
 describe("POST /api/hermes/run", () => {
-  it("writes a pending hypothesis-validation card to the queue and returns its id", async () => {
+  it("writes a pending experiment-validation card to the queue and returns its id", async () => {
     writeContract(
       "pricing-headline-v2",
       ['type: experiment', 'id: pricing-headline-v2', 'hypothesis: "Sharper headline lifts signups"', 'icp: founders', 'status: running', 'variants:', '  control: "A"', '  variant_b: "B"'].join("\n"),
@@ -67,8 +67,8 @@ describe("POST /api/hermes/run", () => {
     const queue = readQueue();
     expect(queue.cards).toHaveLength(1);
     const card = queue.cards[0];
-    expect(card.type).toBe("hypothesis-validation");
-    expect(card.hypothesisId).toBe("pricing-headline-v2");
+    expect(card.type).toBe("experiment-validation");
+    expect(card.experimentId).toBe("pricing-headline-v2");
     expect(card.status).toBe("pending");
     expect(card.hypothesis).toBe("Sharper headline lifts signups");
     expect(typeof card.context).toBe("string");
@@ -88,7 +88,7 @@ describe("POST /api/hermes/run", () => {
     // Re-run: a new pending card supersedes the old one for the same hypothesis.
     await POST(jsonRequest({ slug: "h-det" }) as never);
     const queue = readQueue();
-    const cardsForH = queue.cards.filter((c) => c.hypothesisId === "h-det" && c.status === "pending");
+    const cardsForH = queue.cards.filter((c) => c.experimentId === "h-det" && c.status === "pending");
 
     expect(cardsForH).toHaveLength(1); // prior pending superseded
     expect(cardsForH[0].confidenceLevel).toBe(first); // synthesize() is deterministic

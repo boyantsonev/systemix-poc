@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { applyHypothesisDecisionToMdx } from "@/lib/contract/hypothesis-mdx";
-import { hypothesisGoalMap } from "@/lib/contract/goal-map";
+import { applyExperimentDecisionToMdx, experimentPath } from "@/lib/contract/experiment-mdx";
+import { experimentGoalMap } from "@/lib/contract/goal-map";
 import {
   appendMemoryEntry,
-  titleFromHypothesis,
+  titleFromExperiment,
   addDays,
 } from "@/lib/contract/memory-mdx";
 import { assertWriteAllowed } from "@/lib/contract/write-policy";
@@ -39,14 +39,14 @@ function writeQueue(data: unknown) {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const projectSlug = searchParams.get("project") ?? null;
-  const hypothesisSlug = searchParams.get("hypothesis") ?? null;
+  const experimentSlug = searchParams.get("experiment") ?? null;
   const goalSlug = searchParams.get("goal") ?? null;
 
   const queue = readQueue();
   if (!queue) {
-    // Demo cards carry no hypothesisId or goal — a contract-scoped query has
+    // Demo cards carry no experimentId or goal — a contract-scoped query has
     // no demo data (the proof surface must never render unlabeled samples).
-    const cards = hypothesisSlug || goalSlug
+    const cards = experimentSlug || goalSlug
       ? []
       : projectSlug
       ? DEMO_CARDS.filter(c => !("project" in c) || c.project === projectSlug)
@@ -57,16 +57,16 @@ export async function GET(req: NextRequest) {
       isDemo: true,
     });
   }
-  // Cards may carry an explicit goal; cards that only carry a hypothesisId are
-  // scoped through the hypothesis frontmatter's goal: backlink.
-  const goalMap = goalSlug ? hypothesisGoalMap() : {};
+  // Cards may carry an explicit goal; cards that only carry an experimentId are
+  // scoped through the experiment frontmatter's goal: backlink.
+  const goalMap = goalSlug ? experimentGoalMap() : {};
   const cards = (queue.cards ?? []).filter(
-    (c: { project?: string; hypothesisId?: string; goal?: string }) =>
+    (c: { project?: string; experimentId?: string; goal?: string }) =>
       (!projectSlug || !c.project || c.project === projectSlug) &&
-      (!hypothesisSlug || c.hypothesisId === hypothesisSlug) &&
+      (!experimentSlug || c.experimentId === experimentSlug) &&
       (!goalSlug ||
         c.goal === goalSlug ||
-        (!!c.hypothesisId && goalMap[c.hypothesisId] === goalSlug))
+        (!!c.experimentId && goalMap[c.experimentId] === goalSlug))
   );
   const pendingCount = cards.filter((c: { status: string }) => c.status === "pending").length;
   return NextResponse.json({ cards, pendingCount, isDemo: false });
@@ -83,11 +83,11 @@ type InstrumentationCard = {
   resolution?: unknown;
 };
 
-type HypothesisCard = {
+type ExperimentCard = {
   id: string;
   type: string;
   status: string;
-  hypothesisId?: string;
+  experimentId?: string;
   context?: string;
   confidenceLevel?: number;
   _posthogData?: { fetched_at?: string; source?: string };
@@ -95,23 +95,21 @@ type HypothesisCard = {
   resolution?: unknown;
 };
 
-const HYPOTHESES_DIR = path.join(process.cwd(), "experiments");
-
-function applyHypothesisDecision(
-  card: HypothesisCard,
+function applyExperimentDecision(
+  card: ExperimentCard,
   decision: "promote" | "kill",
 ): { ok: boolean; error?: string } {
-  if (!card.hypothesisId) return { ok: false, error: "No hypothesisId on card" };
-  const filePath = path.join(HYPOTHESES_DIR, `${card.hypothesisId}.mdx`);
+  if (!card.experimentId) return { ok: false, error: "No experimentId on card" };
+  const filePath = experimentPath(card.experimentId);
   if (!fs.existsSync(filePath)) return { ok: false, error: `Contract not found: ${filePath}` };
 
   const raw = fs.readFileSync(filePath, "utf8");
   const now = card._posthogData?.fetched_at ?? new Date().toISOString().slice(0, 10);
   const conf = card.confidenceLevel ?? 0;
 
-  // Block-aware write-back: re-deciding the same hypothesis collapses the prior
+  // Block-aware write-back: re-deciding the same experiment collapses the prior
   // evidence-posthog block instead of orphaning its nested keys.
-  const updated = applyHypothesisDecisionToMdx(raw, {
+  const updated = applyExperimentDecisionToMdx(raw, {
     decision,
     now,
     confidence: conf,
@@ -134,18 +132,18 @@ function applyHypothesisDecision(
 const LEARNINGS_PATH = path.join(process.cwd(), "experiments", "LEARNINGS.md");
 
 function applyMemoryFromDecision(
-  card: HypothesisCard & { hypothesis?: string; confidence?: number },
+  card: ExperimentCard & { hypothesis?: string; confidence?: number },
   decision: "promote" | "kill",
 ): void {
-  if (!card.hypothesisId || !fs.existsSync(LEARNINGS_PATH)) return;
+  if (!card.experimentId || !fs.existsSync(LEARNINGS_PATH)) return;
   const tier = loadInstanceConfig()?.trust?.hermes_tier ?? 0;
   assertWriteAllowed({ tier, artifact: "memory", humanApproved: true });
 
   const now = card._posthogData?.fetched_at ?? new Date().toISOString().slice(0, 10);
   const updated = appendMemoryEntry(fs.readFileSync(LEARNINGS_PATH, "utf8"), {
     date: now,
-    title: titleFromHypothesis(card.hypothesis, card.hypothesisId),
-    experimentId: card.hypothesisId,
+    title: titleFromExperiment(card.hypothesis, card.experimentId),
+    experimentId: card.experimentId,
     decision,
     confidence: card.confidenceLevel ?? card.confidence ?? null,
     summary: card.context ?? "",
@@ -257,23 +255,23 @@ export async function PATCH(req: NextRequest) {
     }
   }
 
-  // For hypothesis-validation: approved → promote, rejected → kill; deferred skips write-back
-  if (card.type === "hypothesis-validation") {
+  // For experiment-validation: approved → promote, rejected → kill; deferred skips write-back
+  if (card.type === "experiment-validation") {
     const decision = action === "approved" ? "promote" : action === "rejected" ? "kill" : null;
     if (decision) {
-      const result = applyHypothesisDecision(card as HypothesisCard, decision);
+      const result = applyExperimentDecision(card as ExperimentCard, decision);
       if (!result.ok) {
         return NextResponse.json({ error: result.error ?? "Evidence write-back failed" }, { status: 500 });
       }
       // Record the learning in ## Memory — non-fatal if it can't be written.
       try {
-        applyMemoryFromDecision(card as HypothesisCard, decision);
+        applyMemoryFromDecision(card as ExperimentCard, decision);
       } catch {
         /* memory write is best-effort; the decision still stands */
       }
       // Fire-and-forget: skill update after confirmed contract write
       void import("../../../../packages/cli/src/commands/skill-update.js")
-        .then(({ update }) => update((card as HypothesisCard).hypothesisId!, decision, card))
+        .then(({ update }) => update((card as ExperimentCard).experimentId!, decision, card))
         .catch(() => {});
     }
   }

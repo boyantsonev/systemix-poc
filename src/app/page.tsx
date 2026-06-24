@@ -313,7 +313,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <LandingNav />
       <main>
-        <SectionTrack name="hero" hypothesisId="landing-velocity-gap-2026-06">
+        <SectionTrack name="hero" experimentId="landing-velocity-gap-2026-06">
           <LandingHero />
         </SectionTrack>
         <SectionTrack name="problem">

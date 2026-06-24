@@ -10,7 +10,7 @@ type CardType =
   | "drift-resolution"
   | "instrumentation-approval"
   | "new-token"
-  | "hypothesis-validation"
+  | "experiment-validation"
   | "engagement-snapshot";
 
 type CardStatus = "pending" | "approved" | "rejected" | "deferred";
@@ -28,7 +28,7 @@ type QueueCard = {
   context: string;
   requestedAt: string;
   status: CardStatus;
-  // hypothesis-validation
+  // experiment-validation
   hypothesis?: string;
   metric?: string;
   baselineRate?: number;
@@ -47,7 +47,7 @@ const CARD_TYPE: Record<CardType, { label: string; icon: string; color: string }
   "drift-resolution":         { label: "Drift",      icon: "◎", color: "text-amber-600 dark:text-amber-400"   },
   "instrumentation-approval": { label: "Instrument", icon: "▷", color: "text-blue-600 dark:text-blue-400"    },
   "new-token":                { label: "New token",  icon: "◆", color: "text-violet-600 dark:text-violet-400"  },
-  "hypothesis-validation":    { label: "Hypothesis", icon: "◈", color: "text-emerald-600 dark:text-emerald-400" },
+  "experiment-validation":    { label: "Experiment", icon: "◈", color: "text-emerald-600 dark:text-emerald-400" },
   "engagement-snapshot":      { label: "Engagement", icon: "◷", color: "text-cyan-600 dark:text-cyan-400"     },
 };
 
@@ -83,9 +83,9 @@ function DecideOnHome() {
   );
 }
 
-// ── Hypothesis card ───────────────────────────────────────────────────────────
+// ── Experiment validation card ────────────────────────────────────────────────
 
-function HypothesisCard({
+function ExperimentCard({
   card,
   onAction,
 }: {
@@ -109,7 +109,7 @@ function HypothesisCard({
           <span className="text-sm mt-px shrink-0 text-emerald-600 dark:text-emerald-400">◈</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Hypothesis</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Experiment</span>
               <span className="text-xs text-muted-foreground">{ago(card.requestedAt)}</span>
               {card.project && (
                 <span className="text-xs text-muted-foreground">{card.project}</span>
@@ -418,7 +418,7 @@ function StandardCard({
 export function HitlQueue({
   projectSlug,
   goal,
-  hypothesis,
+  experiment,
   title,
   className,
   hideDemo,
@@ -426,7 +426,7 @@ export function HitlQueue({
 }: {
   projectSlug?: string;
   goal?: string;
-  hypothesis?: string;
+  experiment?: string;
   title?: string;
   className?: string;
   /** Home feed: never show the labeled demo fallback — real cards only. */
@@ -442,7 +442,7 @@ export function HitlQueue({
     const params = new URLSearchParams();
     if (projectSlug) params.set("project", projectSlug);
     if (goal) params.set("goal", goal);
-    if (hypothesis) params.set("hypothesis", hypothesis);
+    if (experiment) params.set("experiment", experiment);
     const qs = params.toString();
     fetch(qs ? `/api/queue?${qs}` : "/api/queue")
       .then(r => r.json())
@@ -458,7 +458,7 @@ export function HitlQueue({
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [projectSlug, goal, hypothesis, hideDemo]);
+  }, [projectSlug, goal, experiment, hideDemo]);
 
   const handleAction = useCallback(async (id: string, action: CardStatus) => {
     setCards(prev => prev.map(c => c.id === id ? { ...c, status: action } : c));
@@ -478,7 +478,7 @@ export function HitlQueue({
 
   function renderCard(c: QueueCard) {
     const act = readOnly ? undefined : handleAction;
-    if (c.type === "hypothesis-validation") return <HypothesisCard key={c.id} card={c} onAction={act} />;
+    if (c.type === "experiment-validation") return <ExperimentCard key={c.id} card={c} onAction={act} />;
     if (c.type === "engagement-snapshot")  return <EngagementCard  key={c.id} card={c} onAction={act} />;
     return <StandardCard key={c.id} card={c} onAction={act} />;
   }

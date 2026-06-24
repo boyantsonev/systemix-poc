@@ -3,6 +3,7 @@
   "pages": [
     "index",
     "getting-started",
+    "the-contract",
     "---Concepts---",
     "concepts/experiment",
     "concepts/the-loop",

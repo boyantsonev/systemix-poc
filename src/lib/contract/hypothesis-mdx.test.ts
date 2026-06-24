@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isValidSlug, slugify } from "@/lib/contract/hypothesis-mdx";
+import { isValidSlug, slugify } from "@/lib/contract/experiment-mdx";
 
 // isValidSlug is the path-traversal guard the three API routes rely on before
 // ever touching the filesystem. It IS its own driving port (pure function whose

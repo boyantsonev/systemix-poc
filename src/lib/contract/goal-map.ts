@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 // experiment id → parent goal id, read from experiments/ frontmatter.
-// Queue cards that only carry a hypothesisId can be scoped to a goal without
-// duplicating the link on every card (single source: the hypothesis file).
-export function hypothesisGoalMap(): Record<string, string> {
+// Queue cards that only carry an experimentId can be scoped to a goal without
+// duplicating the link on every card (single source: the experiment file).
+export function experimentGoalMap(): Record<string, string> {
   const dir = path.join(process.cwd(), "experiments");
   const map: Record<string, string> = {};
   let files: string[] = [];
