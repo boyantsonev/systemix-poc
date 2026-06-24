@@ -65,20 +65,11 @@ const BentoCard = ({
         <p className="max-w-lg text-[13px] leading-relaxed text-muted-foreground">{description}</p>
       </div>
 
-      <div
-        className={cn(
-          "pointer-events-none mt-3 flex w-full translate-y-0 transform-gpu flex-row items-center transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:hidden"
-        )}
-      >
-        <Button
-          variant="link"
-          asChild
-          size="sm"
-          className="pointer-events-auto p-0"
-        >
+      <div className="mt-3 lg:hidden">
+        <Button variant="ghost" size="sm" asChild className="pointer-events-auto -ml-2">
           <a href={href}>
             {cta}
-            <ArrowRightIcon className="ms-2 h-4 w-4 rtl:rotate-180" />
+            <ArrowRightIcon className="h-4 w-4 rtl:rotate-180" />
           </a>
         </Button>
       </div>
@@ -86,18 +77,13 @@ const BentoCard = ({
 
     <div
       className={cn(
-        "pointer-events-none absolute bottom-0 hidden w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:flex"
+        "pointer-events-none absolute bottom-0 hidden w-full translate-y-10 transform-gpu flex-row items-center p-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:flex"
       )}
     >
-      <Button
-        variant="link"
-        asChild
-        size="sm"
-        className="pointer-events-auto p-0"
-      >
+      <Button variant="ghost" size="sm" asChild className="pointer-events-auto">
         <a href={href}>
           {cta}
-          <ArrowRightIcon className="ms-2 h-4 w-4 rtl:rotate-180" />
+          <ArrowRightIcon className="h-4 w-4 rtl:rotate-180" />
         </a>
       </Button>
     </div>
