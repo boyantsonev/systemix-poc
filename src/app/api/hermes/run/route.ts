@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import { hypothesisPath, isValidSlug } from "@/lib/contract/hypothesis-mdx";
+import { experimentPath, isValidSlug } from "@/lib/contract/experiment-mdx";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -31,13 +31,13 @@ function writeQueue(data: unknown): void {
 type QueueCard = {
   id: string;
   type: string;
-  hypothesisId?: string;
+  experimentId?: string;
   status?: string;
 };
 
-// POST /api/hermes/run — synthesize a decision card for one hypothesis and queue it.
-// Phase 4: synthetic synthesis (no Ollama). Produces a `hypothesis-validation` card
-// the existing HitlQueue renders and whose approval writes back to the contract.
+// POST /api/hermes/run — synthesize a decision card for one experiment and queue it.
+// Produces an `experiment-validation` card the existing HitlQueue renders and
+// whose approval writes back to the contract.
 export async function POST(req: NextRequest) {
   let slug: string | undefined;
   try {
@@ -48,9 +48,9 @@ export async function POST(req: NextRequest) {
   if (!slug) return NextResponse.json({ error: "slug required" }, { status: 400 });
   if (!isValidSlug(slug)) return NextResponse.json({ error: "invalid slug" }, { status: 400 });
 
-  const file = hypothesisPath(slug);
+  const file = experimentPath(slug);
   if (!fs.existsSync(file)) {
-    return NextResponse.json({ error: "hypothesis not found" }, { status: 404 });
+    return NextResponse.json({ error: "experiment not found" }, { status: 404 });
   }
 
   const { data: fm } = matter(fs.readFileSync(file, "utf8"));
@@ -67,16 +67,16 @@ export async function POST(req: NextRequest) {
 
   const queue = readQueue() ?? { cards: [] };
   const existing = (Array.isArray(queue.cards) ? queue.cards : []) as QueueCard[];
-  // Supersede any prior *pending* synthesis for this hypothesis so the latest wins.
+  // Supersede any prior *pending* synthesis for this experiment so the latest wins.
   const kept = existing.filter(
-    (c) => !(c.type === "hypothesis-validation" && c.hypothesisId === slug && c.status === "pending"),
+    (c) => !(c.type === "experiment-validation" && c.experimentId === slug && c.status === "pending"),
   );
 
   const card = {
     id: `hermes-${slug}-${Date.now()}`,
-    type: "hypothesis-validation",
+    type: "experiment-validation",
     project: "systemix",
-    hypothesisId: slug,
+    experimentId: slug,
     hypothesis,
     context,
     proposal,

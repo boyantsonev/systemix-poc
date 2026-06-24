@@ -14,8 +14,8 @@ export default async function DecisionPage(props: { params: Promise<{ id: string
   if (!card) notFound();
 
   const action = card.resolution?.action ?? card.status;
-  const subjectHref = card.hypothesisId
-    ? `/experiments/${card.hypothesisId}`
+  const subjectHref = card.experimentId
+    ? `/experiments/${card.experimentId}`
     : null;
 
   const rows: Array<[string, React.ReactNode]> = [
@@ -24,7 +24,7 @@ export default async function DecisionPage(props: { params: Promise<{ id: string
       "Subject",
       subjectHref ? (
         <Link key="s" href={subjectHref} className="underline underline-offset-2">
-          {card.hypothesisId}
+          {card.experimentId}
         </Link>
       ) : (
         (card.token ?? card.component ?? card.filePath ?? "—")

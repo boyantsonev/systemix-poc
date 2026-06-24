@@ -9,7 +9,7 @@ export type QueueCard = {
   // contract scoping — new in the contract rework; older cards may lack both
   goal?: string;
   subject?: string;
-  hypothesisId?: string;
+  experimentId?: string;
   // payload fields by card type
   token?: string;
   component?: string;

@@ -108,7 +108,7 @@ describe("GET /api/queue goal scoping", () => {
     seedHypothesis("h1", "landing-validation");
     seedQueue([
       { id: "a", type: "new-token", status: "pending", goal: "design-system" },
-      { id: "b", type: "hypothesis-validation", status: "pending", hypothesisId: "h1" },
+      { id: "b", type: "experiment-validation", status: "pending", experimentId: "h1" },
       { id: "c", type: "drift-resolution", status: "pending" },
     ]);
     const { GET } = await routes();
@@ -175,9 +175,9 @@ describe("PATCH /api/queue — memory write-back (Phase D)", () => {
     seedQueue([
       {
         id: "hyp-1",
-        type: "hypothesis-validation",
+        type: "experiment-validation",
         status: "pending",
-        hypothesisId: "velocity-gap",
+        experimentId: "velocity-gap",
         hypothesis: "Reframing the hero around the velocity gap converts founders",
         context: "Variant B +38% on install_command_copied.",
         confidenceLevel: 0.82,
@@ -201,9 +201,9 @@ describe("PATCH /api/queue — memory write-back (Phase D)", () => {
     seedQueue([
       {
         id: "hyp-2",
-        type: "hypothesis-validation",
+        type: "experiment-validation",
         status: "pending",
-        hypothesisId: "velocity-gap",
+        experimentId: "velocity-gap",
         context: "x",
         requestedAt: "2026-06-01T00:00:00.000Z",
       },

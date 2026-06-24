@@ -1,0 +1,50 @@
+---
+title: The contract
+---
+
+The contract is the set of files where the loop writes its state. Every experiment, every learning, every decision lives here — in plain MDX files your agent can read, write, and audit.
+
+```
+experiments/
+  <id>.mdx          ← one file per experiment
+  LEARNINGS.md      ← the compounding memory ledger
+  goals/            ← KPIs the experiments roll up to
+  meta/             ← Hermes calibration history
+```
+
+## Why files
+
+Files are the interface. Any tool that can read a directory — Claude Code, the CLI, the MCP server, a shell script, a GitHub Action — can work with the contract. There is no hidden database.
+
+The contract is durable because it lives in your repo. It versions with your code, ships with your deploys, and survives tool changes. `LEARNINGS.md` in version control is a decision log that compounds over years, not a transient state that evaporates when you rotate providers.
+
+## LEARNINGS.md
+
+Every time you close an experiment, one entry is appended:
+
+```md
+## Memory
+
+### 2026-06-19 | landing-live-loop-2026-06 | confidence: high
+**Decision:** ship — book-a-call rate lifted 23% in 28 days
+**Learning:** Self-referential demos (showing the loop running on itself) convert founders
+faster than a feature list. The "earned" framing matters: the verdict has to be real.
+```
+
+The `## Memory` anchor is stable — skills append atomically without parsing the whole file.
+
+## The three doors
+
+The same files are readable and writable from three entry points. Pick the one that fits your workflow:
+
+| Door | Entry point |
+|---|---|
+| Claude Code skills | `/systemix-init`, `/measure`, `/close-experiment`, etc. |
+| CLI | `systemix experiment new \| list \| close \| learnings` |
+| MCP | `experiment_new`, `experiment_get`, `experiment_close`, `experiment_learnings` |
+
+The MCP door means any other agent in your stack can drive or read the loop — not just Claude Code. The files are the contract between them.
+
+## Self-modification is always HITL
+
+Skills and guardrails in `.claude/skills/` are part of the contract. `/hermes` can propose changes to them after reviewing accumulated learnings, but those proposals always go to the HITL queue — they are never applied automatically, even when the instance is configured for autonomous mode. The autonomy dial controls *how often* decisions are proposed; it never removes the human from the loop for self-modification.

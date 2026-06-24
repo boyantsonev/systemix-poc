@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   appendMemoryEntry,
   renderMemoryLine,
-  titleFromHypothesis,
+  titleFromExperiment,
   addDays,
   type MemoryEntry,
 } from "./memory-mdx";
@@ -83,11 +83,11 @@ describe("appendMemoryEntry", () => {
 });
 
 describe("helpers", () => {
-  it("titleFromHypothesis takes the first clause", () => {
-    expect(titleFromHypothesis("One two three four five six seven", "fallback")).toBe(
+  it("titleFromExperiment takes the first clause", () => {
+    expect(titleFromExperiment("One two three four five six seven", "fallback")).toBe(
       "One two three four five six…",
     );
-    expect(titleFromHypothesis(undefined, "fallback-id")).toBe("fallback-id");
+    expect(titleFromExperiment(undefined, "fallback-id")).toBe("fallback-id");
   });
 
   it("addDays advances a date string", () => {

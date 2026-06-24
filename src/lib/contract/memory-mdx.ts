@@ -67,7 +67,7 @@ export function appendMemoryEntry(raw: string, entry: MemoryEntry): string | nul
 }
 
 /** A short title from a hypothesis statement (first clause, ~6 words). */
-export function titleFromHypothesis(statement: string | undefined, fallback: string): string {
+export function titleFromExperiment(statement: string | undefined, fallback: string): string {
   if (!statement) return fallback;
   const words = statement.replace(/\s+/g, " ").trim().split(" ");
   return words.slice(0, 6).join(" ") + (words.length > 6 ? "…" : "");

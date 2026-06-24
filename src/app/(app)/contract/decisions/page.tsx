@@ -59,7 +59,7 @@ export default function DecisionsLedger() {
               {resolved.map((c) => {
                 const action = c.resolution?.action ?? c.status;
                 const cfg = ACTION[action] ?? ACTION.deferred;
-                const label = c.token ?? c.component ?? c.hypothesisId ?? c.id;
+                const label = c.token ?? c.component ?? c.experimentId ?? c.id;
                 return (
                   <Link
                     key={c.id}

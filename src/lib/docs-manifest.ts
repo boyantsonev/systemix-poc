@@ -86,10 +86,10 @@ export const docsManifest: DocEntry[] = [
 
   // ─── Run ───────────────────────────────────────────────────────────────────
   {
-    slug: "concepts/hypothesis-validation",
+    slug: "concepts/the-loop",
     title: "The loop",
     section: "Run",
-    href: "/docs/concepts/hypothesis-validation",
+    href: "/docs/concepts/the-loop",
     status: "review",
     audience: "operator",
     lastUpdated: "2026-06-06",

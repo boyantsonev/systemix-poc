@@ -46,7 +46,7 @@ export default async function Page(props: {
         <MDX components={getMDXComponents()} />
         {isExperiment && data.id ? (
           <div className="mt-10">
-            <PendingDecisions hypothesis={String(data.id)} />
+            <PendingDecisions experiment={String(data.id)} />
           </div>
         ) : null}
       </DocsBody>

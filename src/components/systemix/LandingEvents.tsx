@@ -94,9 +94,9 @@ export function InstallCommand() {
 
 // ── Section view tracker (Intersection Observer) ──────────────────────────────
 
-export function SectionTrack({ name, hypothesisId, children, className }: {
+export function SectionTrack({ name, experimentId, children, className }: {
   name: string;
-  hypothesisId?: string;
+  experimentId?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -112,9 +112,9 @@ export function SectionTrack({ name, hypothesisId, children, className }: {
         if (entry.isIntersecting && !fired.current) {
           fired.current = true;
           ph.capture("section_viewed", { section: name });
-          if (hypothesisId) {
-            ph.capture("hypothesis_social_signal", {
-              hypothesis_id: hypothesisId,
+          if (experimentId) {
+            ph.capture("experiment_social_signal", {
+              experiment_id: experimentId,
               section: name,
               signal_type: "section_view",
             });
@@ -125,7 +125,7 @@ export function SectionTrack({ name, hypothesisId, children, className }: {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [name, hypothesisId, ph]);
+  }, [name, experimentId, ph]);
 
   return <div ref={ref} className={className}>{children}</div>;
 }
