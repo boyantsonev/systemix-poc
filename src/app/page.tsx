@@ -10,7 +10,10 @@ import { ThreeDoorsBento } from "@/components/landing/ThreeDoorsBento";
 import { TrustBento } from "@/components/landing/TrustBento";
 import {
   GITHUB_URL,
+  BRAND_CLONE_MAILTO,
+  about,
   bottomCta,
+  brandClone,
   doors,
   effect,
   footer,
@@ -22,9 +25,9 @@ import {
 } from "@/lib/landing/content";
 
 export const metadata: Metadata = {
-  title: "Systemix — the experiment loop for builders",
+  title: "Systemix — your design decisions, finally written down",
   description:
-    "Your agents ship a variant a day; your learning lags a quarter behind. Systemix closes the loop the day each experiment resolves — the result and the decision written back into your repo, so the next ship starts from evidence, not memory. Open-source, runs in Claude Code.",
+    "Systemix closes the gap between shipping a variant and learning from it. Free CLI kit, or let Boyan wire the loop in a one-week sprint. Paste your URL — we clone your brand in session one.",
 };
 
 // ── Shared section primitives ─────────────────────────────────────────────────
@@ -47,7 +50,7 @@ function Section({
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 font-mono text-[11px] uppercase tracking-widest text-muted-foreground/60">
+    <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
       {children}
     </p>
   );
@@ -94,7 +97,7 @@ function LandingNav() {
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
           <Button variant="outline" size="sm" asChild>
-            <a href={nav.cta.href} target="_blank" rel="noopener noreferrer">
+            <a href={nav.cta.href}>
               {nav.cta.label}
             </a>
           </Button>
@@ -117,10 +120,10 @@ function Problem() {
       <div className="mt-14 grid gap-4 sm:grid-cols-2 sm:gap-5">
         {gap.stats.map((s) => (
           <div key={s.k} className="rounded-xl border border-border/40 bg-card px-6 py-5">
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
               {s.k}
             </p>
-            <p className="font-mono text-lg font-bold text-foreground">{s.v}</p>
+            <p className="text-lg font-bold text-foreground">{s.v}</p>
           </div>
         ))}
       </div>
@@ -144,6 +147,39 @@ function Effect() {
             <p className="text-[13px] leading-relaxed text-muted-foreground">{it.body}</p>
           </div>
         ))}
+      </div>
+    </Section>
+  );
+}
+
+// ── Brand clone hook ─────────────────────────────────────────────────────────
+
+function BrandCloneHook() {
+  return (
+    <Section>
+      <div className="grid gap-10 sm:grid-cols-2 sm:gap-16 sm:items-center">
+        <div>
+          <Eyebrow>{brandClone.label}</Eyebrow>
+          <SectionHeading>{brandClone.heading}</SectionHeading>
+          <Lead>{brandClone.body}</Lead>
+        </div>
+        <div className="rounded-xl border border-border/40 bg-card p-8">
+          <p className="mb-5 text-[13px] font-medium text-foreground">
+            Your site URL
+          </p>
+          <div className="flex flex-col gap-3">
+            <div className="rounded border border-border/60 bg-background px-4 py-3 font-mono text-[13px] text-muted-foreground/60">
+              https://your-site.com
+            </div>
+            <a
+              href={brandClone.cta.href}
+              className="bg-foreground px-4 py-3 text-center text-[13px] font-medium text-background transition-opacity hover:opacity-90"
+            >
+              {brandClone.cta.label}
+            </a>
+          </div>
+          <p className="mt-4 font-mono text-[11px] text-muted-foreground/40">{brandClone.note}</p>
+        </div>
       </div>
     </Section>
   );
@@ -215,6 +251,29 @@ function Trust() {
   );
 }
 
+// ── About ─────────────────────────────────────────────────────────────────────
+
+function About() {
+  return (
+    <Section>
+      <div className="max-w-xl">
+        <p className="text-[14px] leading-relaxed text-muted-foreground/70">{about.body}</p>
+        <div className="mt-5 flex items-center gap-5">
+          {about.links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-[13px] text-muted-foreground/60 underline underline-offset-4 transition-colors hover:text-foreground"
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
 // ── CTA ───────────────────────────────────────────────────────────────────────
 
 function BottomCTA() {
@@ -227,16 +286,24 @@ function BottomCTA() {
         <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
           {bottomCta.body}
         </p>
-        <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-          <InstallCommand />
+        <div className="mt-9 flex flex-col items-center gap-3">
           <a
-            href={GITHUB_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+            href={BRAND_CLONE_MAILTO}
+            className="bg-foreground px-6 py-3 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
           >
-            or star on GitHub →
+            Send your URL →
           </a>
+          <div className="flex items-center gap-3">
+            <InstallCommand />
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              or star on GitHub →
+            </a>
+          </div>
         </div>
         <p className="mt-7 font-mono text-[12px] text-muted-foreground/40">{bottomCta.fineprint}</p>
       </div>
@@ -244,7 +311,7 @@ function BottomCTA() {
   );
 }
 
-// ── Secondary trust + CTA · services ──────────────────────────────────────────
+// ── Services / pick your path ─────────────────────────────────────────────────
 
 function Services() {
   return (
@@ -255,27 +322,30 @@ function Services() {
         <Lead className="max-w-2xl">{services.body}</Lead>
       </div>
 
-      <div className="mt-14 grid gap-4 sm:grid-cols-2 sm:gap-5">
-        {services.sprints.map((s) => (
-          <div key={s.name} className="rounded-xl border border-border/40 bg-card p-6">
-            <p className="mb-1.5 text-[14px] font-bold text-foreground">{s.name}</p>
-            <p className="text-[13px] leading-relaxed text-muted-foreground">{s.body}</p>
+      <div className="mt-14 grid gap-4 sm:grid-cols-3 sm:gap-5">
+        {services.tiers.map((t) => (
+          <div
+            key={t.name}
+            className={cn(
+              "flex flex-col rounded-xl border bg-card p-6",
+              t.highlight ? "border-foreground" : "border-border/40"
+            )}
+          >
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50">
+              {t.price}
+            </p>
+            <p className="mb-3 text-[14px] font-bold text-foreground">{t.name}</p>
+            <p className="flex-1 text-[13px] leading-relaxed text-muted-foreground">{t.body}</p>
+            <a
+              href={t.cta.href}
+              className="mt-5 inline-block text-[12px] font-medium text-foreground underline underline-offset-4 transition-opacity hover:opacity-70"
+            >
+              {t.cta.label} →
+            </a>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 flex flex-col items-start gap-4 rounded-xl border border-l-2 border-border/40 border-l-foreground bg-muted/5 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-[13px] font-bold text-foreground">Boyan Tsonev · design engineer</p>
-          <p className="text-[13px] leading-relaxed text-muted-foreground">{services.note}</p>
-        </div>
-        <a
-          href={services.cta.href}
-          className="shrink-0 bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
-        >
-          {services.cta.label}
-        </a>
-      </div>
     </Section>
   );
 }
@@ -320,20 +390,26 @@ export default function LandingPage() {
         <SectionTrack name="effect">
           <Effect />
         </SectionTrack>
+        <SectionTrack name="brand-clone">
+          <BrandCloneHook />
+        </SectionTrack>
         <SectionTrack name="loop">
           <TheLoop />
         </SectionTrack>
         <SectionTrack name="three-doors">
           <ThreeDoors />
         </SectionTrack>
+        <SectionTrack name="services">
+          <Services />
+        </SectionTrack>
         <SectionTrack name="trust">
           <Trust />
         </SectionTrack>
+        <SectionTrack name="about">
+          <About />
+        </SectionTrack>
         <SectionTrack name="bottom-cta">
           <BottomCTA />
-        </SectionTrack>
-        <SectionTrack name="services">
-          <Services />
         </SectionTrack>
       </main>
       <LandingFooter />

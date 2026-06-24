@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { RiLoopRightLine } from "@remixicon/react";
 import { OrbitingCircles } from "@/components/ui/orbiting-circles";
 import { cn } from "@/lib/utils";
 import { RINGS, BrandChip } from "./brand-nodes";
@@ -77,21 +76,20 @@ export function LoopOrbit({ className }: { className?: string }) {
           })}
         </div>
 
-        {/* center hub — the loop */}
+        {/* center hub — systemix wordmark */}
         <div
-          className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 rounded-full border border-border bg-card"
+          className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card"
           style={{
             width: Math.round(96 * scale),
             height: Math.round(96 * scale),
             boxShadow: "0 0 44px -10px var(--foreground)",
           }}
         >
-          <RiLoopRightLine size={Math.round(26 * scale)} className="text-foreground" />
           <span
-            className="font-mono uppercase tracking-widest text-muted-foreground"
-            style={{ fontSize: Math.max(8, Math.round(9 * scale)) }}
+            className="font-black tracking-tight text-foreground"
+            style={{ fontSize: Math.max(9, Math.round(11 * scale)) }}
           >
-            loop
+            systemix
           </span>
         </div>
       </div>

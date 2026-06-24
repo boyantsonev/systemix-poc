@@ -28,12 +28,12 @@ export function LandingHero() {
       </div>
 
       <div className="relative max-w-3xl mx-auto px-6 pt-28 pb-24 text-center">
-        <p className="text-[11px] font-mono text-muted-foreground/70 uppercase tracking-[0.18em] mb-6">
+        <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-[0.18em] mb-6">
           {v.eyebrow}
         </p>
 
         <h1 className="text-[2.75rem] sm:text-[3.75rem] font-black tracking-tight leading-[1.05] mb-7">
-          {hero.lead}{" "}
+          <span className="block">{hero.lead}</span>
           <RotatingWord phrases={hero.phrases} className="text-foreground" />
         </h1>
 
@@ -56,6 +56,13 @@ export function LandingHero() {
         </p>
 
         <div className="flex flex-col items-center gap-4">
+          <a
+            href={hero.brandCloneCta.href}
+            onClick={() => ph.capture("hero_cta_click", { cta: "brand_clone" })}
+            className="bg-foreground px-6 py-3 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
+          >
+            {hero.brandCloneCta.label}
+          </a>
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <InstallCommand />
             <a
@@ -68,7 +75,7 @@ export function LandingHero() {
               or star on GitHub →
             </a>
           </div>
-          <p className="text-[12px] font-mono text-muted-foreground/50">{hero.tagline}</p>
+          <p className="text-[12px] font-mono text-muted-foreground/50">{hero.fineprint}</p>
         </div>
       </div>
     </section>
