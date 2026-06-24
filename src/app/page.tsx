@@ -10,7 +10,6 @@ import { ThreeDoorsBento } from "@/components/landing/ThreeDoorsBento";
 import { TrustBento } from "@/components/landing/TrustBento";
 import {
   GITHUB_URL,
-  BRAND_CLONE_MAILTO,
   about,
   bottomCta,
   brandClone,
@@ -173,7 +172,7 @@ function BrandCloneHook() {
             </div>
             <a
               href={brandClone.cta.href}
-              className="bg-foreground px-4 py-3 text-center text-[13px] font-medium text-background transition-opacity hover:opacity-90"
+              className="rounded-full bg-foreground px-5 py-3 text-center text-[13px] font-medium text-background transition-opacity hover:opacity-90"
             >
               {brandClone.cta.label}
             </a>
@@ -286,24 +285,16 @@ function BottomCTA() {
         <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
           {bottomCta.body}
         </p>
-        <div className="mt-9 flex flex-col items-center gap-3">
+        <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
+          <InstallCommand />
           <a
-            href={BRAND_CLONE_MAILTO}
-            className="bg-foreground px-6 py-3 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
           >
-            Send your URL →
+            or star on GitHub →
           </a>
-          <div className="flex items-center gap-3">
-            <InstallCommand />
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              or star on GitHub →
-            </a>
-          </div>
         </div>
         <p className="mt-7 font-mono text-[12px] text-muted-foreground/40">{bottomCta.fineprint}</p>
       </div>
@@ -338,7 +329,12 @@ function Services() {
             <p className="flex-1 text-[13px] leading-relaxed text-muted-foreground">{t.body}</p>
             <a
               href={t.cta.href}
-              className="mt-5 inline-block text-[12px] font-medium text-foreground underline underline-offset-4 transition-opacity hover:opacity-70"
+              className={cn(
+                "mt-5 inline-block rounded-full px-4 py-2 text-[12px] font-medium transition-opacity hover:opacity-80",
+                t.highlight
+                  ? "bg-foreground text-background"
+                  : "border border-border/60 text-foreground hover:border-foreground"
+              )}
             >
               {t.cta.label} →
             </a>

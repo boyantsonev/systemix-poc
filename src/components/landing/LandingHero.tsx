@@ -56,13 +56,6 @@ export function LandingHero() {
         </p>
 
         <div className="flex flex-col items-center gap-4">
-          <a
-            href={hero.brandCloneCta.href}
-            onClick={() => ph.capture("hero_cta_click", { cta: "brand_clone" })}
-            className="bg-foreground px-6 py-3 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
-          >
-            {hero.brandCloneCta.label}
-          </a>
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <InstallCommand />
             <a
