@@ -58,7 +58,7 @@ const BentoCard = ({
     <div>{background}</div>
     <div className="p-4">
       <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 transition-all duration-300 lg:group-hover:-translate-y-10">
-        <Icon className="h-10 w-10 origin-left transform-gpu text-foreground transition-all duration-300 ease-in-out group-hover:scale-75" />
+        <Icon className="h-5 w-5 origin-left transform-gpu text-muted-foreground/60 transition-all duration-300 ease-in-out" />
         <h3 className="text-lg font-semibold text-foreground">
           {name}
         </h3>
@@ -67,7 +67,7 @@ const BentoCard = ({
 
       <div
         className={cn(
-          "pointer-events-none flex w-full translate-y-0 transform-gpu flex-row items-center transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:hidden"
+          "pointer-events-none mt-3 flex w-full translate-y-0 transform-gpu flex-row items-center transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:hidden"
         )}
       >
         <Button
