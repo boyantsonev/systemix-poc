@@ -62,7 +62,7 @@ export const effect = {
   heading: "Every ship lands in a void.",
   items: [
     { title: "Déjà-ship", body: "You run a test you've already run. Nothing flagged it because nothing wrote down the result." },
-    { title: "Context amnesia", body: "The next person who touches that component has no idea why it looks this way. The experiment is gone." },
+    { title: "Context amnesia", body: "The next teammate — or the next agent — who touches that component has no idea why it looks this way. The experiment is gone." },
     { title: "Evidence graveyard", body: "Your analytics tool recorded everything. The decision that followed? Nowhere. Not in code. Not in the design file. Gone." },
   ],
 };

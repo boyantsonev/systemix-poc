@@ -188,7 +188,7 @@ const handlers = new Map<string, (args: Record<string, unknown>) => Promise<Tool
   [experimentNewDefinition.name, (a) => experimentNewHandler(a as Parameters<typeof experimentNewHandler>[0], PROJECT_ROOT)],
   [experimentMeasureDefinition.name, (a) => experimentMeasureHandler(a as Parameters<typeof experimentMeasureHandler>[0], PROJECT_ROOT)],
   [experimentCloseDefinition.name, (a) => experimentCloseHandler(a as Parameters<typeof experimentCloseHandler>[0], PROJECT_ROOT)],
-  [experimentLearningsDefinition.name, (a) => experimentLearningsHandler(a, PROJECT_ROOT)],
+  [experimentLearningsDefinition.name, (a) => experimentLearningsHandler(a as Parameters<typeof experimentLearningsHandler>[0], PROJECT_ROOT)],
 ]);
 
 // ---------------------------------------------------------------------------

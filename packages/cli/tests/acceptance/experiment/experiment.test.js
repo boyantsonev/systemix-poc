@@ -140,3 +140,123 @@ describe("experiments/ loop — file-first ops", () => {
     expect(fm.status).toBe("running");
   });
 });
+
+describe("experiments/ loop — scoped recall + backlinks", () => {
+  let root;
+  beforeEach(() => { root = tmpRoot(); });
+  afterEach(() => { fs.rmSync(root, { recursive: true, force: true }); });
+
+  // Seed the ledger through the real write path (close → appendLearning), so recall
+  // is tested against the exact format the loop writes, not a hand-rolled fixture.
+  const seed = (id, { decision = "promote", confidence = 0.8, learning, now }) => {
+    exp.createExperiment(root, id, { now: NOW });
+    exp.closeExperiment(root, id, { result: `${id} result`, decision, confidence, learning, now });
+  };
+
+  it("parseLearnings extracts the structured fields from the written bullet", () => {
+    seed("exp-a", { decision: "promote", confidence: 0.85, learning: "bold cta wins", now: NOW });
+    const raw = fs.readFileSync(path.join(root, "experiments", "LEARNINGS.md"), "utf8");
+    const entries = exp.parseLearnings(raw);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({ id: "exp-a", decision: "promote", title: "bold cta wins", usedBy: [] });
+    expect(entries[0].date).toBe("2026-06-18");
+    expect(entries[0].reviewBy).toBe("2026-09-16");
+  });
+
+  it("readLearnings({recent}) returns only the N newest bullets", () => {
+    seed("a", { now: new Date("2026-06-17T00:00:00.000Z") });
+    seed("b", { now: new Date("2026-06-18T00:00:00.000Z") });
+    seed("c", { now: new Date("2026-06-19T00:00:00.000Z") });
+    const recent = exp.readLearnings(root, { recent: 2 });
+    expect(recent).toContain("[c]");   // newest two (file order = newest-first)
+    expect(recent).toContain("[b]");
+    expect(recent).not.toContain("[a]");
+    expect((recent.match(/from \[/g) || []).length).toBe(2);
+  });
+
+  it("readLearnings({forId}) returns only that experiment's lineage", () => {
+    seed("keep", { now: NOW });
+    seed("other", { decision: "kill", now: NOW });
+    const lineage = exp.readLearnings(root, { forId: "keep" });
+    expect(lineage).toContain("[keep]");
+    expect(lineage).not.toContain("[other]");
+  });
+
+  it("readLearnings() with no opts still returns the full ledger (back-compat)", () => {
+    seed("a", { now: NOW });
+    const full = exp.readLearnings(root);
+    expect(full).toContain("## Memory");
+    expect(full).toContain("[a]");
+  });
+
+  it("markLearningUsed backlinks a prior learning, and forId recall then finds it via Used by", () => {
+    seed("prior", { now: NOW });
+    expect(fs.readFileSync(path.join(root, "experiments", "LEARNINGS.md"), "utf8")).toContain("Used by: —");
+
+    const r = exp.markLearningUsed(root, "prior", "follow-up");
+    expect(r.updated).toBe(true);
+
+    const after = fs.readFileSync(path.join(root, "experiments", "LEARNINGS.md"), "utf8");
+    expect(after).toContain("Used by: [follow-up]");
+    expect(after).not.toContain("Used by: —");
+    // the prior learning is now reachable from the experiment that applied it
+    expect(exp.readLearnings(root, { forId: "follow-up" })).toContain("[prior]");
+  });
+
+  it("markLearningUsed is a no-op when no learning cites the prior id", () => {
+    seed("a", { now: NOW });
+    expect(exp.markLearningUsed(root, "does-not-exist", "x").updated).toBe(false);
+  });
+
+  it("CLI door: `learnings --recent` and `used --by` drive recall + backlink", async () => {
+    seed("old", { now: new Date("2026-06-17T00:00:00.000Z") });
+    seed("new", { now: new Date("2026-06-19T00:00:00.000Z") });
+    await experiment(["used", "old", "--by", "new"], { projectRoot: root });
+    const ledger = fs.readFileSync(path.join(root, "experiments", "LEARNINGS.md"), "utf8");
+    expect(ledger).toMatch(/from \[old\].*Used by: \[new\]/);
+  });
+});
+
+describe("experiments/ loop — canonical learning format (no writer drift)", () => {
+  let root;
+  beforeEach(() => { root = tmpRoot(); });
+  afterEach(() => { fs.rmSync(root, { recursive: true, force: true }); });
+
+  const ledgerLine = (id) =>
+    exp.parseLearnings(fs.readFileSync(path.join(root, "experiments", "LEARNINGS.md"), "utf8"))
+      .find((e) => e.id === id).raw;
+
+  it("close emits the canonical bullet: confidence always present + evidence sentence", () => {
+    exp.createExperiment(root, "exp-x", { now: NOW });
+    exp.closeExperiment(root, "exp-x", {
+      result: "variant_b +28%", decision: "promote", confidence: 0.85, learning: "bold cta wins", now: NOW,
+    });
+    expect(ledgerLine("exp-x")).toBe(
+      "- **2026-06-18 · bold cta wins** — confidence 0.85 · from [exp-x], decision: promote. variant_b +28%. Review by: 2026-09-16. Used by: —"
+    );
+  });
+
+  it("close renders `confidence —` when confidence is null (canonical: always present)", () => {
+    exp.createExperiment(root, "exp-n", { now: NOW });
+    exp.closeExperiment(root, "exp-n", { result: "no clear winner", decision: "iterate", now: NOW });
+    expect(ledgerLine("exp-n")).toContain("confidence — · from [exp-n]");
+    expect(ledgerLine("exp-n")).toContain("decision: iterate. Review by:"); // no summary, clean spacing
+  });
+
+  it("parseLearnings reads the app (memory-mdx) writer's line verbatim — one reader, all writers", () => {
+    // Byte-for-byte the shape src/lib/contract/memory-mdx.ts renderMemoryLine emits
+    // (always-present confidence + a summary sentence). The reader must not drift from it.
+    const appLine =
+      "- **2026-06-19 · velocity-gap framing wins** — confidence 0.82 · from [landing-velocity-gap-2026-06], decision: promote. Pre-PMF founders respond to the velocity-gap framing. Review by: 2026-09-17. Used by: —";
+    const [e] = exp.parseLearnings(`# Learnings\n\n## Memory\n\n${appLine}\n`);
+    expect(e).toMatchObject({
+      date: "2026-06-19",
+      title: "velocity-gap framing wins",
+      confidence: "0.82",
+      id: "landing-velocity-gap-2026-06",
+      decision: "promote",
+      reviewBy: "2026-09-17",
+      usedBy: [],
+    });
+  });
+});

@@ -70,9 +70,16 @@ function setFrontmatterField(raw: string, key: string, value: string): string {
   return `---\n${lines.join("\n")}\n---\n\n${m[2].trim()}\n`;
 }
 
+/**
+ * Append a learning bullet. The template is shared (by convention, not import —
+ * separate packages) with the CLI writer (packages/cli/src/lib/experiments.js
+ * `appendLearning`) and the app writer (src/lib/contract/memory-mdx.ts
+ * `renderMemoryLine`). Keep all three byte-identical so the one reader
+ * (parseLearnings) reads every writer. Confidence ALWAYS present; summary optional.
+ */
 function appendLearning(
   root: string,
-  e: { id: string; title: string; decision: string | null; confidence: number | null; day: string; reviewBy: string }
+  e: { id: string; title: string; decision: string | null; confidence: number | null; summary?: string; day: string; reviewBy: string }
 ): void {
   const file = path.join(root, LEARNINGS_REL);
   let text = fs.existsSync(file)
@@ -80,9 +87,11 @@ function appendLearning(
     : "# Learnings\n\n## Memory\n\n*No entries yet.*\n";
   if (!text.includes("## Memory")) text += "\n\n## Memory\n\n*No entries yet.*\n";
 
+  const s = (e.summary ?? "").trim().replace(/\s+/g, " ");
+  const reason = s ? ` ${s}${/[.!?]$/.test(s) ? "" : "."}` : "";
   const bullet =
     `- **${e.day} · ${e.title}** — confidence ${e.confidence ?? "—"} · from [${e.id}], ` +
-    `decision: ${e.decision ?? "—"}. Review by: ${e.reviewBy}. Used by: —`;
+    `decision: ${e.decision ?? "—"}.${reason} Review by: ${e.reviewBy}. Used by: —`;
 
   const lines = text.split("\n");
   const idx = lines.findIndex((l) => l.trim() === "## Memory");
@@ -312,6 +321,8 @@ export async function experimentCloseHandler(
     title: args.learning || args.result || args.id,
     decision: args.decision ?? null,
     confidence: args.confidence ?? null,
+    // distinct learning title → the result becomes the evidence sentence (mirrors CLI + app)
+    summary: args.learning && args.result ? args.result : undefined,
     day,
     reviewBy,
   });
@@ -328,14 +339,66 @@ export async function experimentCloseHandler(
 
 // --- experiment_learnings ---------------------------------------------------
 
+interface LearningEntry {
+  date: string | null; title: string | null; confidence: string | null; id: string | null;
+  decision: string | null; reviewBy: string | null; usedBy: string[]; raw: string;
+}
+
+/**
+ * Parse the `## Memory` bullets into structured entries (file order = newest-first).
+ * Mirrors the CLI lib (packages/cli/src/lib/experiments.js) so the doors stay in parity.
+ * A line is an entry iff it's a `-` bullet citing an experiment (`from [<id>]`).
+ */
+function parseLearnings(raw: string): LearningEntry[] {
+  const lines = raw.split("\n");
+  const anchor = lines.findIndex((l) => l.trim() === "## Memory");
+  const scope = anchor === -1 ? lines : lines.slice(anchor + 1);
+  const entries: LearningEntry[] = [];
+  for (const line of scope) {
+    const l = line.trim();
+    if (!l.startsWith("- ") || !l.includes("from [")) continue;
+    const pick = (re: RegExp): string | null => { const m = l.match(re); return m ? m[1] : null; };
+    const usedByRaw = (pick(/Used by:\s*(.+)$/) ?? "—").trim();
+    entries.push({
+      date: pick(/\*\*(\d{4}-\d{2}-\d{2})\s*·/),
+      title: pick(/·\s*([^*]+?)\s*\*\*/),
+      confidence: pick(/confidence\s+(\S+?)\s*·/),
+      id: pick(/from \[([^\]]+)\]/),
+      decision: pick(/decision:\s*([A-Za-z][\w-]*)/),
+      reviewBy: pick(/Review by:\s*(\d{4}-\d{2}-\d{2})/),
+      usedBy: usedByRaw === "—" ? [] : (usedByRaw.match(/\[([^\]]+)\]/g) ?? []).map((s) => s.slice(1, -1)),
+      raw: l,
+    });
+  }
+  return entries;
+}
+
 export const experimentLearningsDefinition: ToolDefinition = {
   name: "experiment_learnings",
-  description: "Return the synthesized loop memory (experiments/LEARNINGS.md) — the earned, cited learnings.",
-  inputSchema: { type: "object", properties: {} },
+  description:
+    "Return the synthesized loop memory (experiments/LEARNINGS.md) — the earned, cited learnings. " +
+    "Scope it for context-efficient recall: 'recent' (the N newest) or 'for' (one experiment's lineage). " +
+    "No args returns the full ledger.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      recent: { type: "number", description: "Return only the N newest learnings (curated recall)." },
+      for: { type: "string", description: "Return only learnings in this experiment id's lineage (authored by it, or marked Used by it)." },
+    },
+  },
 };
 
-export async function experimentLearningsHandler(_args: Record<string, unknown>, projectRoot: string): Promise<ToolResult> {
+export async function experimentLearningsHandler(
+  args: { recent?: number; for?: string },
+  projectRoot: string
+): Promise<ToolResult> {
   const file = path.join(projectRoot, LEARNINGS_REL);
   if (!fs.existsSync(file)) return ok("(no LEARNINGS.md yet — close an experiment to write the first learning)");
-  return ok(fs.readFileSync(file, "utf8"));
+  const raw = fs.readFileSync(file, "utf8");
+  if (args.recent == null && args.for == null) return ok(raw); // full ledger
+  let entries = parseLearnings(raw);
+  if (args.for != null) entries = entries.filter((e) => e.id === args.for || e.usedBy.includes(args.for!));
+  if (args.recent != null) entries = entries.slice(0, Number(args.recent));
+  if (!entries.length) return ok("(no matching learnings yet)");
+  return ok(entries.map((e) => e.raw).join("\n"));
 }

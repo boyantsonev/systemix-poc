@@ -51,6 +51,10 @@ Also queues a HITL card in `.systemix/queue.json` for human review.
 
 Reviews all running experiments. Surfaces ones with enough evidence to close, ones that have stalled (no evidence, no activity), and Hermes-level proposals (skill or guardrail improvements). Run weekly to keep the loop moving.
 
+## Why separate skills
+
+Each skill is a separate agent invocation with a clean context window — not one long session. The experiment file is the handoff: the next skill reads it cold, does one thing, and writes back. State accumulates in files, not in a session that fills up and loses the thread. That's deliberate — one focused, context-clean run is more reliable than one sprawling one. See [Why files & loops](/docs/concepts/why-files).
+
 ## LEARNINGS.md
 
 The compounding memory. Every closed experiment appends one entry with the decision, the confidence, and the transferable insight. Future experiments — and other agents reading via MCP — start from this ledger.

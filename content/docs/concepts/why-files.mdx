@@ -1,0 +1,35 @@
+---
+title: Why files & loops
+---
+
+Systemix keeps the loop's memory **on disk, curated** — not in the model's context window. Every architectural choice here follows from one fact: an LLM session is stateless and degrades as it fills. So the next run has to start from the *relevant* prior evidence, not the whole pile. That discipline has a name — **context engineering** — and the loop is one opinionated answer to it.
+
+## Sessions are stateless — files are the memory
+
+An agent has no memory between sessions. Close the window and the thread is gone. If the loop's state lived in the model's head, every run would start from scratch — re-deriving context it already earned.
+
+So it doesn't live there. It lives in `experiments/*.mdx`, `LEARNINGS.md`, and `.systemix/queue.json` — plain files in your repo. Any tool that can read a directory can pick up where the last one left off. The files are the memory; the agent is just what reads and writes them.
+
+## Context rot — curate, don't dump
+
+A bigger context window is not the fix. An LLM has a finite attention budget: as the window fills, precision drops and it starts missing what matters. Handing it 498 pages to find the relevant 2 makes it *worse*, not better. This is **context rot**, and it gets more expensive with every token.
+
+That's why `LEARNINGS.md` is a curated ledger, not a transcript. Each closed experiment compacts to one cited line — decision, confidence, provenance. And recall is **scoped**: the next experiment pulls the *relevant* learnings (recent, or this experiment's lineage), not the entire file. Curation is the point.
+
+## One task per iteration — clean context per run
+
+Each skill in [the loop](/docs/concepts/the-loop) is a separate agent invocation with a clean context window. `/write-variants` proposes copy and exits. `/measure` pulls evidence and exits. `/close-experiment` writes the decision and exits. None of them carry the others' context.
+
+The experiment file is the handoff. A skill reads it cold, does one thing, and writes back — so state accumulates in files, not in a session that fills up and loses the thread. One focused, context-clean run beats one long sprawling one. The forgetting between runs is a feature, not a limitation.
+
+## HITL is observability, not just safety
+
+You cannot debug context you cannot see. The HITL queue and the autonomy dial aren't only a safety rail — they're the window into what the loop decided and why. Every decision lands as a card you can read; [self-modification](/docs/the-contract) (skills, guardrails) always routes through that window, even in autonomous mode. The dial controls *how often* the loop proposes; it never removes your ability to see what entered a run.
+
+## What's next
+
+The curation story has further to run. Three increments, deferred until the loop has earned the volume to need them:
+
+- **Compaction.** When the ledger passes ~30–50 entries, roll expired learnings (past their `review-by`) into a "Patterns" summary above `## Memory`, preserving provenance — so recall stays cheap as the ledger grows.
+- **Context events.** Emit a record of *what context entered each run* (which learnings a skill pulled in), making the loop's inputs inspectable, not just its outcomes.
+- **Self-advancing autonomy.** The dial already gates writes by tier; the open question is how far the loop should advance on its own before a human looks. Self-modification stays HITL regardless.

@@ -16,7 +16,8 @@ const EXPERIMENT_HELP = `
     systemix experiment list [--status running|complete]
     systemix experiment measure <id> --event <posthog-event> [--metric <metric>]
     systemix experiment close <id> --result "…" --decision promote|iterate|kill|no-action [--confidence 0.0-1.0] [--learning "…"]
-    systemix experiment learnings        Print the synthesized memory (LEARNINGS.md)
+    systemix experiment learnings [--recent <n>] [--for <id>]   Loop memory — full, or scoped recall
+    systemix experiment used <prior-id> --by <id>               Backlink: mark a prior learning Used by <id>
     systemix experiment audit            Running experiments + whether they're measured
 `;
 
@@ -98,8 +99,26 @@ async function experiment(args = [], opts = {}) {
     }
 
     case "learnings": {
-      const text = exp.readLearnings(root);
+      const recent = flags.recent != null && flags.recent !== true ? Number(flags.recent) : undefined;
+      const text = exp.readLearnings(root, { recent, forId: str(flags.for) });
       console.log(text ?? "  (no LEARNINGS.md yet — close an experiment to write the first learning)");
+      break;
+    }
+
+    case "used": {
+      const priorId = positional[0] ?? str(flags.id);
+      const byId = str(flags.by);
+      if (!priorId || !byId) {
+        console.log("  usage: systemix experiment used <prior-id> --by <this-id>");
+        process.exitCode = 1;
+        break;
+      }
+      const r = exp.markLearningUsed(root, priorId, byId);
+      console.log(
+        r.updated
+          ? `  ✓  [${priorId}] now Used by: ${r.usedBy.map((x) => `[${x}]`).join(", ")}`
+          : `  (no learning citing [${priorId}] found in ${layout.rel.learnings})`
+      );
       break;
     }
 

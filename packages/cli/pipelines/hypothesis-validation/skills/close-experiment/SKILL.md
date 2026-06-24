@@ -60,6 +60,14 @@ this format so the ledger stays machine-readable:
 
 Every entry MUST cite the experiment `[<id>]` (provenance) and carry a review-by date.
 
+### Step 5b — Backlink the prior learning (if any)
+If this experiment built on a prior learning (its `[<prior-id>]` noted at `/init-experiment`), record that the learning is load-bearing — flip that bullet's `Used by: —` to `Used by: [<this-id>]`:
+
+- CLI: `systemix experiment used <prior-id> --by <this-id>`
+- File-first: edit the matching `from [<prior-id>]` bullet in `experiments/LEARNINGS.md` directly.
+
+This makes recall a loop, not a one-way write: you can see which learnings later experiments actually applied. Skip if this experiment didn't build on a prior learning.
+
 ### Step 6 — Queue the decision for review (HITL)
 Append a card to the `cards` array in `.systemix/queue.json` (create the file as
 `{ "cards": [] }` if absent; never clobber existing cards):
