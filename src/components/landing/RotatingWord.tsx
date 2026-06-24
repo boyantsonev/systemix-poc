@@ -1,25 +1,19 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-/**
- * The hero's rotating phrase — defines what Systemix is, one phrase at a time.
- * Terminal slot (nothing follows on the line) so phrase-width changes don't
- * reflow the rest of the headline. Reduced-motion freezes to the first phrase;
- * the full set is read once for screen readers, the animated span is hidden.
- */
 export function RotatingWord({
   phrases,
-  intervalMs = 2400,
+  intervalMs = 2800,
   className,
 }: {
   phrases: readonly string[];
   intervalMs?: number;
   className?: string;
 }) {
-  const [i, setI] = useState(0);
-  const [show, setShow] = useState(true);
+  const [index, setIndex] = useState(0);
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
@@ -32,27 +26,46 @@ export function RotatingWord({
 
   useEffect(() => {
     if (reduced) return;
-    const id = setInterval(() => {
-      setShow(false);
-      window.setTimeout(() => {
-        setI((p) => (p + 1) % phrases.length);
-        setShow(true);
-      }, 220);
-    }, intervalMs);
+    const id = setInterval(() => setIndex((p) => (p + 1) % phrases.length), intervalMs);
     return () => clearInterval(id);
   }, [reduced, phrases.length, intervalMs]);
 
-  return (
-    <span className={cn("whitespace-nowrap", className)}>
-      <span className="sr-only">{phrases.join(", ")}</span>
-      <span
-        aria-hidden
-        className="inline-block transition-opacity duration-200"
-        style={{ opacity: reduced ? 1 : show ? 1 : 0 }}
-      >
-        {phrases[reduced ? 0 : i]}
+  if (reduced) {
+    return (
+      <span className={cn("whitespace-nowrap", className)}>
+        {phrases[0]}
+        <span aria-hidden className="agent-cursor ml-[3px]" />
       </span>
-      <span aria-hidden className="agent-cursor ml-1" />
+    );
+  }
+
+  return (
+    // min-height keeps the line box stable during the wait-mode gap between exit and enter
+    <span className={cn("inline-block", className)} style={{ minHeight: "1.05em" }}>
+      <span className="sr-only">{phrases.join(", ")}</span>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          aria-hidden
+          key={index}
+          className="inline-block whitespace-nowrap"
+          initial={{ y: "30%", opacity: 0, filter: "blur(6px)" }}
+          animate={{
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+          }}
+          exit={{
+            y: "-20%",
+            opacity: 0,
+            filter: "blur(4px)",
+            transition: { duration: 0.2, ease: "easeIn" },
+          }}
+        >
+          {phrases[index]}
+          <span aria-hidden className="agent-cursor ml-[3px]" />
+        </motion.span>
+      </AnimatePresence>
     </span>
   );
 }
