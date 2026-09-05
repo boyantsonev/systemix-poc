@@ -188,6 +188,17 @@
       "summary": "No evidence ever pulled — the hero copy was extended/succeeded by landing-rebrand-hifi-2026-07 on the same seam before this bet could be measured.",
       "status": "pending",
       "requestedAt": "2026-07-10T10:59:34.659Z"
+    },
+    {
+      "id": "close-proposal-landing-rebrand-hifi-2026-07-1788607263412",
+      "type": "close-proposal",
+      "experimentId": "landing-rebrand-hifi-2026-07",
+      "recommendedDecision": "iterate",
+      "confidence": 0.6,
+      "summary": "current vs the prior 30d: lift -100% over 30d (n=1). Recommended: iterate. Close it with /close-experiment landing-rebrand-hifi-2026-07 — the runner never closes.",
+      "proposedBy": "loop-runner",
+      "status": "pending",
+      "requestedAt": "2026-09-05T11:21:03.412Z"
     }
   ]
 }
