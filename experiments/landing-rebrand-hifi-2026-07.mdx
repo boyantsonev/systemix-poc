@@ -17,35 +17,35 @@ workflow:
   steps:
     - id: references
       kind: input
-      label: "the reference decode"
+      label: the reference decode
       note: dense product landings
     - id: copy
       kind: agent
-      label: "write the copy decks"
+      label: write the copy decks
       note: landing · kit · audit + SEO brief
     - id: theme
       kind: agent
-      label: "design the theme"
+      label: design the theme
       note: TVA · Amber Mainframe tokens
     - id: encode
       kind: tool
-      label: "encode copy + tokens"
+      label: encode copy + tokens
       note: content.ts · globals.css
     - id: rebuild
       kind: tool
-      label: "rebuild the pages"
+      label: rebuild the pages
       note: deep-dives · pricing · FAQ
     - id: measure
       kind: tool
-      label: "measure"
+      label: measure
       note: install_command_copied before/after
     - id: decide
       kind: human
-      label: "decide"
+      label: decide
       note: HITL card
     - id: learn
       kind: agent
-      label: "write the learning"
+      label: write the learning
       note: LEARNINGS.md
       agent: hermes
   edges:
@@ -67,7 +67,14 @@ posthog-event: install_command_copied
 result: null
 decision: null
 confidence: null
-evidence-posthog: null
+evidence-posthog:
+  fetched_at: '2026-09-05'
+  window_days: 30
+  source: live
+  event: install_command_copied
+  samples: 0
+  variants: {}
+  prev_total: 1
 evidence-social: null
 created: '2026-07-08'
 review-by: '2026-08-07'
