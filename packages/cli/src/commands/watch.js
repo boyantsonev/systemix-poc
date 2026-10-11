@@ -5,6 +5,11 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const { evidence } = require("./evidence");
 
+// component_name arrives on a PostHog event (anyone with the public project key
+// can send one) and becomes a file name — no ".", "/" or backslash. Case is allowed:
+// the default event key is the PascalCase component name.
+const COMPONENT_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,80}$/;
+
 // culori is a workspace dep — resolve from the monorepo root
 let _culori = null;
 function getCulori() {
@@ -491,6 +496,10 @@ async function pollPostHog(projectRoot, dryRun) {
 
   let updatedCount = 0;
   for (const [componentName, stats] of Object.entries(byComponent)) {
+    if (!COMPONENT_NAME_RE.test(componentName)) {
+      console.warn(`  [posthog] skipping invalid component_name ${JSON.stringify(componentName)}`);
+      continue;
+    }
     const mdxPath = path.join(componentsDir, `${componentName}.mdx`);
     if (!fs.existsSync(mdxPath)) continue;
 
@@ -697,4 +706,4 @@ async function watch(args) {
   await new Promise(() => {});
 }
 
-module.exports = { watch };
+module.exports = { watch, pollPostHog };

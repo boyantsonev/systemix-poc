@@ -15,6 +15,7 @@
 
 const fs   = require("fs");
 const path = require("path");
+const { isValidExperimentId } = require("../lib/experiments");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -143,6 +144,12 @@ async function update(hypothesisId, decision, card, opts = {}) {
   // Step 2: Resolve skill path (skill-tags frontmatter, default "hermes")
   const tags      = parseSkillTags(fm["skill-tags"]);
   const tag       = tags[0] || "hermes";
+  // The tag comes from repo-file frontmatter and becomes a directory name —
+  // hold it to the slug rule so "../../x" can't reach outside .claude/skills/.
+  if (!isValidExperimentId(tag)) {
+    log({ event: "skill-update.skipped", reason: "invalid-skill-tag", hypothesisId });
+    return;
+  }
   const skillPath = path.join(workspaceRoot, ".claude", "skills", tag, "SKILL.md");
   if (!fs.existsSync(skillPath)) {
     log({ event: "skill-update.skipped", reason: "skill-dir-absent", hypothesisId });

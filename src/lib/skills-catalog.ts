@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { isValidSlug } from "@/lib/contract/experiment-mdx";
 
 // The skills & workflows catalog — enumerates the CLI packs (workflows) under
 // packages/cli/pipelines/*/manifest.json with each skill's SKILL.md
@@ -41,6 +42,8 @@ function skillDescription(packDir: string, slug: string): string {
  * route and the /skills/[slug] detail page so there's one resolution order.
  */
 export function resolveSkillFile(slug: string): { path: string; raw: string } | null {
+  // The slug comes from the URL and becomes a path segment — slug rule only.
+  if (!isValidSlug(slug)) return null;
   const root = process.cwd();
   const candidates = [path.join(root, ".claude", "skills", slug, "SKILL.md")];
 
