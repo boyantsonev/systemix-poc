@@ -170,6 +170,18 @@ product pitch: 25-minute calls with people who have had an AI agent change UI in
 in the last 30 days. The screener takes two minutes: {link}. I'll post the anonymised findings here
 afterwards. Is this allowed, and where would you like it?"
 
+## Booking page blurb and private tracker
+
+**Booking page text (any free scheduling tool, 25-minute slots):** "I'm a solo founder studying how teams keep
+UI consistent when an AI coding agent writes part of it. This is research, not a sales call: I'll ask about the
+last time it went wrong for you and what you did, and I'll send you the anonymised patterns afterwards. If you'd
+like, you can skip any question, and recording is optional. Please pick a slot and answer two screener
+questions first."
+
+**Private tracker** (a private sheet or private repo; never this public repo; no names here): date · channel ·
+segment (A / B / C / warm) · touch number · replied · booked · held · screener pass · highest rung (0–5) ·
+introductions given · one-line quote · follow-up date. The public log below holds only graded, anonymised rows.
+
 ## Call procedure (30-minute box)
 
 3 min intro and consent · 20 min past behaviour (5–6 of the 8 guide questions) · 4 min commitment
