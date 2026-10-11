@@ -15,7 +15,7 @@ review has been requested (the nWave rule requires G1–G4 to pass first).
 **Phase documents:**
 - `problem-validation.md` — Phase 1: verdicts, assumption register (15), G1 check
 - `opportunity-tree.md` — Phase 2: 9 opportunities, job map, desk-estimated scores (not valid for G2)
-- `solution-testing.md` — Phase 3: 7 hypotheses, 6 experiments, decision rules (nothing run)
+- `solution-testing.md` — Phase 3: 7 hypotheses, 6 experiments, decision rules (one E4 dry run on the founder's own repo; no hypothesis tested)
 - `lean-canvas.md` — Phase 4: candidate canvas, four big risks (value RED, viability RED), pivot options
 
 ## Key decisions (desk-research level; confidence capped until G1)

@@ -34,7 +34,7 @@ This plan comes from a parallel analysis of six inputs:
 | [`discover/interview-log.md`](discover/interview-log.md) | The G1 gate: who to talk to, the guide, hypotheses, recruiting plan, screener, outreach kit, debrief template |
 | [`restart-reassessment.md`](restart-reassessment.md) | **Start here for the restart:** what works, what is decided, what is needed from the founder (evidence-checked, 2026-10-11) |
 | [`discover/problem-validation.md`](discover/problem-validation.md) | Phase 1: hypothesis verdicts after the desk round, assumption register, G1 check |
-| [`discover/opportunity-tree.md`](discover/opportunity-tree.md) · [`discover/solution-testing.md`](discover/solution-testing.md) · [`discover/lean-canvas.md`](discover/lean-canvas.md) | Phases 2–4: drafts and test plans; scores are desk estimates; nothing run yet |
+| [`discover/opportunity-tree.md`](discover/opportunity-tree.md) · [`discover/solution-testing.md`](discover/solution-testing.md) · [`discover/lean-canvas.md`](discover/lean-canvas.md) | Phases 2–4: drafts and test plans; scores are desk estimates; one E4 dry run on our own repo (scores not reproducible), no hypothesis tested |
 | [`discover/evidence/`](discover/evidence/README.md) | 90 public evidence rows plus the recruiting map (secondary; not interviews) |
 | [`diverge/options-raw.md`](diverge/options-raw.md) · [`diverge/recommendation.md`](diverge/recommendation.md) | Options scored; the recommended direction |
 | [`design/presentation-ia.md`](design/presentation-ia.md) | Design Hub + App Shell: one source, two layouts (IA draft) |
