@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { listWorkflows, saveWorkflow } from '@/lib/workflow/persistence';
+import { isValidWorkflowId, listWorkflows, saveWorkflow } from '@/lib/workflow/persistence';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +21,9 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date().toISOString(),
       version: 1,
     };
+    if (!isValidWorkflowId(workflow.id)) {
+      return NextResponse.json({ error: 'invalid workflow id' }, { status: 400 });
+    }
     saveWorkflow(workflow);
     return NextResponse.json({ workflow }, { status: 201 });
   } catch (err) {

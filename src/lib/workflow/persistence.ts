@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { isValidSlug } from '@/lib/contract/experiment-mdx';
 
 const WORKFLOWS_DIR = path.join(process.cwd(), '.systemix', 'workflows');
 
@@ -7,6 +8,12 @@ function ensureDir() {
   if (!fs.existsSync(WORKFLOWS_DIR)) {
     fs.mkdirSync(WORKFLOWS_DIR, { recursive: true });
   }
+}
+
+// Path-traversal guard: ids become filenames under WORKFLOWS_DIR, so only
+// [a-z0-9-] slugs are allowed (no `..`, `/`, or absolute paths).
+export function isValidWorkflowId(id: unknown): id is string {
+  return typeof id === 'string' && isValidSlug(id);
 }
 
 export interface PersistedWorkflow {
@@ -21,6 +28,7 @@ export interface PersistedWorkflow {
 }
 
 export function saveWorkflow(workflow: PersistedWorkflow): void {
+  if (!isValidWorkflowId(workflow.id)) throw new Error('invalid workflow id');
   ensureDir();
   const filePath = path.join(WORKFLOWS_DIR, `${workflow.id}.json`);
   const updated = { ...workflow, updatedAt: new Date().toISOString() };
@@ -30,6 +38,7 @@ export function saveWorkflow(workflow: PersistedWorkflow): void {
 }
 
 export function loadWorkflow(id: string): PersistedWorkflow | null {
+  if (!isValidWorkflowId(id)) return null;
   const filePath = path.join(WORKFLOWS_DIR, `${id}.json`);
   if (!fs.existsSync(filePath)) return null;
   try {
@@ -55,6 +64,7 @@ export function listWorkflows(): PersistedWorkflow[] {
 }
 
 export function deleteWorkflow(id: string): boolean {
+  if (!isValidWorkflowId(id)) return false;
   const filePath = path.join(WORKFLOWS_DIR, `${id}.json`);
   if (!fs.existsSync(filePath)) return false;
   fs.unlinkSync(filePath);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadWorkflow } from '@/lib/workflow/persistence';
+import { isValidWorkflowId, loadWorkflow } from '@/lib/workflow/persistence';
 import { workflowEngine } from '@/lib/workflow/engine';
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +7,9 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    if (!isValidWorkflowId(id)) {
+      return NextResponse.json({ error: 'invalid workflow id' }, { status: 400 });
+    }
     const body = await req.json().catch(() => ({}));
     const dryRun = body.dryRun ?? true; // default to dry run for safety
 
