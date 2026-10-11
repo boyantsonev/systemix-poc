@@ -32,6 +32,7 @@ This plan comes from a parallel analysis of six inputs:
 | [`discover/reference-instances.md`](discover/reference-instances.md) | What Vero and the other builds teach the kit (public-safe summary) |
 | [`discover/market-landscape.md`](discover/market-landscape.md) | Design Studio teardown, AI-native DS tooling, billing infra, GTM patterns |
 | [`discover/interview-log.md`](discover/interview-log.md) | The G1 gate: who to talk to, the guide, hypotheses, recruiting plan, screener, outreach kit, debrief template |
+| [`restart-reassessment.md`](restart-reassessment.md) | **Start here for the restart:** what works, what is decided, what is needed from the founder (evidence-checked, 2026-10-11) |
 | [`discover/problem-validation.md`](discover/problem-validation.md) | Phase 1: hypothesis verdicts after the desk round, assumption register, G1 check |
 | [`discover/opportunity-tree.md`](discover/opportunity-tree.md) · [`discover/solution-testing.md`](discover/solution-testing.md) · [`discover/lean-canvas.md`](discover/lean-canvas.md) | Phases 2–4: drafts and test plans; scores are desk estimates; nothing run yet |
 | [`discover/evidence/`](discover/evidence/README.md) | 90 public evidence rows plus the recruiting map (secondary; not interviews) |

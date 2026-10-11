@@ -65,7 +65,7 @@ exactly where the beta's differentiator lives.
 - d. An MCP server that serves tokens and component usage on demand instead of a long doc in context (R1-19, R2-10).
 
 **O1 — know it drifted**
-- a. The `systemix audit` scorecard (deterministic, no model call). It exists today.
+- a. A deterministic scorecard (no model call). **It does not exist yet:** `systemix audit` only installs a skill, and the nearest piece, `drift scan`, is a regex counter whose score saturates at 0/100 (see `../restart-reassessment.md`). Today's audit is a model-judged concierge audit.
 - b. A PR-time drift comment.
 - c. Screenshot diffing on every PR (R1-30).
 - d. A weekly drift digest in the Design Hub.
