@@ -504,3 +504,57 @@ describe("PATCH /api/queue — card-driven writes stay inside the project allowl
     expect(readQueue().cards[0].status).toBe("pending");
   });
 });
+
+describe("PATCH /api/queue — card fields from queue.json stay in their directory", () => {
+  // queue.json is written by agents and the CLI, so a card's experimentId /
+  // recordPath must never point a write outside experiments/ or contract/engagement/.
+  const DECOY = "---\ntype: experiment\nid: decoy\nstatus: running\n---\n\n# not a contract\n";
+
+  it.each(["../decoy", "nested/decoy", "..", "Upper-Case"])(
+    "experiment-validation with experimentId %j 400s, writes nothing, card stays pending",
+    async (experimentId) => {
+      // experiments/../decoy.mdx resolves to <root>/decoy.mdx — outside the loop
+      fs.writeFileSync(path.join(tmp, "decoy.mdx"), DECOY);
+      seedQueue([
+        { id: "exp-1", type: "experiment-validation", status: "pending", experimentId, context: "x" },
+      ]);
+      const { PATCH } = await routes();
+      const res = await PATCH(patchReq({ id: "exp-1", action: "approved" }));
+      expect(res.status).toBe(400);
+      expect((await res.json()).error).toBe(`Invalid experimentId on card: ${JSON.stringify(experimentId)}`);
+      expect(fs.readFileSync(path.join(tmp, "decoy.mdx"), "utf8")).toBe(DECOY);
+      expect(readQueue().cards[0].status).toBe("pending");
+    },
+  );
+
+  it.each([
+    "contract/decoy.mdx",
+    "contract/engagement/../decoy.mdx",
+    "contract/engagement/../../decoy.mdx",
+    "decoy.mdx",
+    "contract/engagement/nested/landing.mdx",
+  ])(
+    "engagement-snapshot with recordPath %j 400s, appends nowhere, card stays pending",
+    async (recordPath) => {
+      fs.writeFileSync(path.join(tmp, "contract", "decoy.mdx"), DECOY);
+      fs.writeFileSync(path.join(tmp, "decoy.mdx"), DECOY);
+      seedQueue([{ ...engagementCard(), recordPath }]);
+      const { PATCH } = await routes();
+      const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
+      expect(res.status).toBe(400);
+      expect((await res.json()).error).toMatch(/^Invalid recordPath on card: /);
+      expect(fs.readFileSync(path.join(tmp, "contract", "decoy.mdx"), "utf8")).toBe(DECOY);
+      expect(fs.readFileSync(path.join(tmp, "decoy.mdx"), "utf8")).toBe(DECOY);
+      expect(readRecord()).toBe(RECORD);
+      expect(readQueue().cards[0].status).toBe("pending");
+    },
+  );
+
+  it("accepts the Windows-separator recordPath the CLI writes on win32", async () => {
+    seedQueue([{ ...engagementCard(), recordPath: "contract\\engagement\\landing.mdx" }]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
+    expect(res.status).toBe(200);
+    expect(readRecord()).toMatch(/acknowledged _\(dashboard\)_/);
+  });
+});

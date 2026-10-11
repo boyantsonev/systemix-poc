@@ -24,7 +24,7 @@ touch `.systemix/queue.json`, `experiments/`, or source files directly.
 ### 0. Recall — read the digest
 
 ```bash
-npx systemix propose context
+npx @getsystemix/cli propose context
 ```
 
 If `pendingProposal` is non-null, **stop and report it**: at most one proposal
@@ -87,7 +87,7 @@ creates `experiments/<id>.mdx` from exactly these fields):
 ### 4. Queue it (the only write — through the CLI door)
 
 ```bash
-npx systemix propose queue --stdin <<'JSON'
+npx @getsystemix/cli propose queue --stdin <<'JSON'
 { ...the proposal JSON... }
 JSON
 ```

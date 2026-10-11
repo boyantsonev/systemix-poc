@@ -21,7 +21,6 @@ const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
 // card-driven writes may land in, and the event-key charset (it's spliced into code).
 const ACTIONS = new Set(["approved", "rejected", "deferred"]);
 const INSTRUMENT_FILES = { roots: ["src"], exts: [".tsx", ".jsx"] };
-const ENGAGEMENT_RECORDS = { roots: [path.join("contract", "engagement")], exts: [".mdx"] };
 const DEFAULT_ENGAGEMENT_RECORD = path.join("contract", "engagement", "landing.mdx");
 const EVENT_KEY = /^[\w .:/-]{1,100}$/;
 
@@ -110,6 +109,11 @@ function applyExperimentDecision(
   decision: "promote" | "kill",
 ): { ok: boolean; error?: string } {
   if (!card.experimentId) return { ok: false, error: "No experimentId on card" };
+  // The id comes from .systemix/queue.json and becomes experiments/<id>.mdx —
+  // only a plain slug, never a path that resolves outside experiments/.
+  if (!isValidSlug(card.experimentId)) {
+    return { ok: false, error: `Invalid experimentId on card: ${JSON.stringify(card.experimentId)}` };
+  }
   const filePath = experimentPath(card.experimentId);
   if (!fs.existsSync(filePath)) return { ok: false, error: `Contract not found: ${filePath}` };
 
@@ -165,6 +169,16 @@ function applyMemoryFromDecision(
   fs.renameSync(tmp, LEARNINGS_PATH);
 }
 
+// A card's recordPath comes from .systemix/queue.json, so only a record directly
+// under contract/engagement/ is accepted — contract/engagement/<slug>.mdx, with
+// either separator (the CLI writes it with path.join, so `\` on Windows). The
+// path is rebuilt from the slug; null for anything else.
+function engagementRecordFile(rel: string): string | null {
+  const m = /^contract[\\/]engagement[\\/]([^\\/]+)\.mdx$/.exec(rel);
+  if (!m || !isValidSlug(m[1])) return null;
+  return path.join(process.cwd(), "contract", "engagement", `${m[1]}.mdx`);
+}
+
 // Engagement snapshots write to a standalone engagement record (NOT the
 // hypotheses dir): every resolution appends an entry to its ## Engagement Log.
 function applyEngagementAck(
@@ -173,8 +187,13 @@ function applyEngagementAck(
   note?: string | null,
 ): { ok: boolean; error?: string } {
   const rel = card.recordPath ?? DEFAULT_ENGAGEMENT_RECORD;
-  const filePath = resolveProjectFile(rel, ENGAGEMENT_RECORDS);
-  if (!filePath) return { ok: false, error: "Engagement record path is not allowed" };
+  const filePath = engagementRecordFile(rel);
+  if (!filePath) {
+    return {
+      ok: false,
+      error: `Invalid recordPath on card: ${JSON.stringify(rel)} — expected contract/engagement/<id>.mdx`,
+    };
+  }
   if (!fs.existsSync(filePath)) return { ok: false, error: `Engagement record not found: ${rel}` };
   const verb =
     action === "approved" ? "acknowledged"
@@ -303,17 +322,21 @@ function cardProblem(card: Record<string, unknown>, action: string): string | nu
       if (!resolveProjectFile(card.filePath, INSTRUMENT_FILES)) return "filePath must be a .tsx/.jsx file under src/";
       return EVENT_KEY.test(String(card.posthogEventKey ?? card.component ?? "unknown")) ? null : "invalid event key";
     case "experiment-validation":
-      return action === "deferred" || isSlug(card.experimentId) ? null : "invalid experimentId";
+      return action === "deferred" || isSlug(card.experimentId)
+        ? null
+        : `Invalid experimentId on card: ${JSON.stringify(card.experimentId)}`;
     case "hypothesis-proposal": {
       if (action !== "approved") return null;
       if (!isSlug((card.payload as { id?: unknown } | undefined)?.id)) return "invalid payload.id";
       const cited = card.citedLearnings ?? [];
       return Array.isArray(cited) && cited.every(isSlug) ? null : "invalid citedLearnings";
     }
-    case "engagement-snapshot":
-      return resolveProjectFile(card.recordPath ?? DEFAULT_ENGAGEMENT_RECORD, ENGAGEMENT_RECORDS)
+    case "engagement-snapshot": {
+      const rel = String(card.recordPath ?? DEFAULT_ENGAGEMENT_RECORD);
+      return engagementRecordFile(rel)
         ? null
-        : "recordPath must be an .mdx file under contract/engagement/";
+        : `Invalid recordPath on card: ${JSON.stringify(rel)} — expected contract/engagement/<id>.mdx`;
+    }
     default:
       return null;
   }
@@ -348,7 +371,7 @@ export async function PATCH(req: NextRequest) {
   }
   const problem = cardProblem(card as unknown as Record<string, unknown>, action);
   if (problem) {
-    return NextResponse.json({ error: `Malformed ${card.type} card: ${problem}` }, { status: 400 });
+    return NextResponse.json({ error: problem }, { status: 400 });
   }
 
   // For instrumentation approvals, write the code before updating the card

@@ -22,7 +22,7 @@ story is layered **beneath** it, not in place of it.
 
 1. **Hook — the loop.** The current promise: every experiment records its own
    result, permanently, in your repo. The next decision starts from evidence.
-2. **It's a local app you install.** `npx systemix init`. Runs in your repo.
+2. **It's a local app you install.** `npx @getsystemix/cli init`. Runs in your repo.
    Hermes on Ollama — no API key, no cloud, no data leaving your machine.
 3. **It configures the loop to your inputs.** Feed Figma files / an existing repo
    / a desired UI setup; define your hypothesis; the agentic pipeline asks the

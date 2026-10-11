@@ -14,11 +14,28 @@ const fs = require("fs");
 const path = require("path");
 const matter = require("gray-matter");
 const layout = require("./layout");
-const { stringifyMdx } = require("./experiments");
+const { stringifyMdx, EXPERIMENT_ID_RE } = require("./experiments");
 
 const isoDay = (d) => d.toISOString().slice(0, 10);
 
+// A goal id becomes a file name (experiments/goals/<id>.mdx), so it follows the
+// same path-safe kebab-case rule as experiment ids (EXPERIMENT_ID_RE) — no path
+// separators, no "..", nothing that resolves outside experiments/goals/.
+const isValidGoalId = (id) => typeof id === "string" && EXPERIMENT_ID_RE.test(id);
+
+/** Throw a clear error unless `id` is a safe goal id. */
+function assertGoalId(id) {
+  if (id == null || id === "") throw new Error("a goal id is required");
+  if (!isValidGoalId(id)) {
+    throw new Error(
+      `invalid goal id ${JSON.stringify(id)} — use lowercase letters, digits and hyphens, ` +
+        "starting with a letter or digit (max 81 characters), e.g. consultancy-leads"
+    );
+  }
+}
+
 function goalFile(root, id) {
+  assertGoalId(id);
   return path.join(layout.abs(root).goals, `${id}.mdx`);
 }
 
@@ -45,8 +62,7 @@ function listGoals(root) {
 
 /** Create experiments/goals/<id>.mdx (status: active). Throws if it already exists. */
 function createGoal(root, id, fields = {}) {
-  if (!id) throw new Error("a goal id is required");
-  const file = goalFile(root, id);
+  const file = goalFile(root, id); // throws on a missing or unsafe id, before any write
   if (fs.existsSync(file)) throw new Error(`goal already exists: experiments/goals/${id}.mdx`);
   fs.mkdirSync(path.dirname(file), { recursive: true });
 
@@ -78,4 +94,4 @@ function createGoal(root, id, fields = {}) {
   return file;
 }
 
-module.exports = { listGoals, createGoal, goalFile };
+module.exports = { listGoals, createGoal, goalFile, isValidGoalId, assertGoalId };

@@ -14,7 +14,7 @@ Public-release groundwork (Phase 0) in progress:
 - ✅ `write-policy` self-modification safety rail (skill/guardrail writes = always HITL)
 - ✅ `design/` instance template (`packages/cli/templates/design/`) — the spine
 - ✅ Hermes re-pointed Ollama → deterministic (engine = Claude Code)
-- ✅ `npx systemix init` scaffolds `design/` + a per-instance `CLAUDE.md`, ghost-at-init
+- ✅ `npx @getsystemix/cli init` scaffolds `design/` + a per-instance `CLAUDE.md`, ghost-at-init
 - ⬜ migrate the POC's own runtime-state readers (MCP/app) off `.systemix/` into `design/.state/`
 - Next: the validation loop (build-first), code-first drift + claude-design-sync, the scheduled routine, distribution + fumadocs docs.
 

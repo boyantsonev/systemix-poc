@@ -48,9 +48,9 @@ Cross-referencing the fetched getsystemix.vercel.app copy against what's actuall
 
 | getdesign.md/LaunchKit mechanic | Systemix equivalent, already built | Where |
 |---|---|---|
-| Static DESIGN.md scrape of a live site | `npx systemix init` → generated `DESIGN.md` **with evidence** (`x-systemix:` block: drift counts, PostHog production evidence, not just colors) | `scripts/generate-design-md.ts`, confirmed lint-clean + WCAG-checked by the canonical `@google/design.md` reader (`spikes/design-md/RESULTS.md`) |
+| Static DESIGN.md scrape of a live site | `npx @getsystemix/cli init` → generated `DESIGN.md` **with evidence** (`x-systemix:` block: drift counts, PostHog production evidence, not just colors) | `scripts/generate-design-md.ts`, confirmed lint-clean + WCAG-checked by the canonical `@google/design.md` reader (`spikes/design-md/RESULTS.md`) |
 | "Drop it in your project, agent builds matching UI" | Same mechanic, but the file is regenerated from `contract/tokens/*.mdx` + `contract/components/*.mdx`, so it isn't a one-time scrape — it's live to the repo (ADR-019: DESIGN.md is the single contract carrier) | ADR-019 |
-| Free tier | `npx systemix init` — free forever, MIT | getsystemix.vercel.app "Pick your path" |
+| Free tier | `npx @getsystemix/cli init` — free forever, MIT | getsystemix.vercel.app "Pick your path" |
 | Paid tier | "Design system build" — 1-week sprint, bespoke | getsystemix.vercel.app; **no price shown publicly today** |
 | Design-partner / pilot tier | Free setup + workflow mapping, 1–2 slots | getsystemix.vercel.app; Connecta is partner #1 (validated JOB-002/003/004/007) |
 | Content/SEO virality loop | getdesign.md's 70+ testimonial tweets, YouTube coverage | Systemix has no equivalent yet — `content/linkedin/PLAN.md` tracks a different, quieter practice (human replies, not stars) |
@@ -58,7 +58,7 @@ Cross-referencing the fetched getsystemix.vercel.app copy against what's actuall
 | Drift detection | `/drift-report` skill, OKLCH-based perceptual diff (ADR-002), already proven on the Connecta engagement (`research/connecta-current-state.md` — hardcoded 62px hero override flagged as drift against `--t-display`) | ADR-002, `research/connecta-*.md` |
 
 **The asymmetry: Systemix's raw artifact-generation tech is already ahead of getdesign.md's paid
-tier — it's just never been sold as a self-serve product.** Today it's either free (`npx systemix
+tier — it's just never been sold as a self-serve product.** Today it's either free (`npx @getsystemix/cli
 init`) or bundled into a week-long bespoke sprint with no public price. Nothing sits in the $39–299
 band getdesign.md proved the market will pay for a single markdown file.
 
@@ -103,7 +103,7 @@ vs. what still needs a human (you) in the loop:
 
 | Tier | What | Price anchor | Mechanic |
 |---|---|---|---|
-| Free | `npx systemix init` — the loop scaffolded, MIT | $0 | Unchanged — the magnet (`experiments/goals/consultancy-leads.mdx`) |
+| Free | `npx @getsystemix/cli init` — the loop scaffolded, MIT | $0 | Unchanged — the magnet (`experiments/goals/consultancy-leads.mdx`) |
 | **New — self-serve artifact** | AI-Native Design System Readiness Audit (auto-generated: DESIGN.md + drift score + JTBD gap map) for *their* repo/URL | **$149–249 one-time** | Fill a form (repo/site URL, email) → same mechanic as getdesign.md's request flow → delivered as attachable files + a Cowork live-artifact link. No call required. This is the missing middle tier. |
 | Existing — sprint | "Design system build" — 1-week bespoke sprint, custom skills tuned to the client's workflow | **No public price today — recommend anchoring at €3,000–6,500** (matches the freelance UX-audit + design-system market range already priced for the Savin engagement) | Book a call, scoped per client |
 | Existing — design partner | Free setup + workflow mapping across marketing/eng/business/design, 1–2 seats | $0 (equity is the proving ground, not cash) | Application-based |

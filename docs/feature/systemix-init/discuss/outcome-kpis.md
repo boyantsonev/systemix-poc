@@ -1,4 +1,4 @@
-# Outcome KPIs — `npx systemix init`
+# Outcome KPIs — `npx @getsystemix/cli init`
 
 **Feature:** `systemix-init`
 **Job trace:** JOB-002 `install-into-foreign-repo`
@@ -11,7 +11,7 @@ behaviour, and survives mutation testing at an acceptable kill rate.
 
 ## Feature Objective
 
-Ship a green, mutation-hardened acceptance test suite for `npx systemix init` so that
+Ship a green, mutation-hardened acceptance test suite for `npx @getsystemix/cli init` so that
 any future change to `init.js` that breaks an observed behaviour is caught in CI
 before it reaches a design partner install.
 
@@ -23,7 +23,7 @@ before it reaches a design partner install.
 |---|-----|-----------|-------------|----------|-------------|------|
 | 1 | CI pipeline | Runs `init.js` acceptance tests on every PR to `packages/cli` | 100% pass rate (zero flakes) | 0 tests exist today | Jest exit code in CI | Leading |
 | 2 | Mutation testing (Stryker/jest-stryker) | Kills mutants in `init.js` branches | ≥ 85% mutation kill rate on `init.js` | 0% (no tests) | Stryker report in CI | Leading |
-| 3 | Design partner (Priya) | Completes `npx systemix init` without filing a support issue or needing manual filesystem correction | 0 post-install support issues on first install | 1 design partner (Connecta) — no post-install issues recorded but untested | Manual support log review after next G1 install | Lagging |
+| 3 | Design partner (Priya) | Completes `npx @getsystemix/cli init` without filing a support issue or needing manual filesystem correction | 0 post-install support issues on first install | 1 design partner (Connecta) — no post-install issues recorded but untested | Manual support log review after next G1 install | Lagging |
 | 4 | DISTILL wave test author | Writes acceptance tests from user stories without ambiguity or back-questions | 0 CLARIFICATION_NEEDED returns to DISCUSS wave | N/A — first test run | Count of CLARIFICATION_NEEDED responses from DISTILL agent | Leading |
 | 5 | `init.js` branches | Are exercised by at least one named test scenario | 100% branch coverage of `init.js` decision points documented in story map | No coverage today | NYC/Istanbul branch coverage report | Leading |
 

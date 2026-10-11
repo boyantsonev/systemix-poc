@@ -117,6 +117,25 @@ describe("init context interview", () => {
     // untouched template frontmatter when nothing was answered
     expect(ws.read("design/DESIGN.md")).toContain("icp: your-icp");
   });
+
+  test("a --reconfigure re-run updates config context: but never rewrites an existing DESIGN.md", async () => {
+    ws = makeWorkspace();
+    const answers = (product, icp) => ["1", "", "", "", "1", "2", product, icp, "", "1"];
+    const run = (prompt, extra = {}) =>
+      silence(() =>
+        init({ projectRoot: ws.projectRoot, homeDir: ws.homeDir, prompt, detectClients: noClients, registerServer: noopRegister, ...extra })
+      );
+
+    await run(makePrompt(answers("Clinic scheduling SaaS", "practice managers")));
+    // the team hand-edits DESIGN.md — it is their source of truth from here on
+    const edited = ws.read("design/DESIGN.md").replace(/^description: .*$/m, 'description: "Written by the team"');
+    fs.writeFileSync(path.join(ws.projectRoot, "design", "DESIGN.md"), edited, "utf8");
+
+    await run(makePrompt(answers("Veterinary booking app", "vet receptionists")), { reconfigure: true });
+
+    expect(ws.read("systemix.config.yaml")).toContain('product: "Veterinary booking app"');
+    expect(ws.read("design/DESIGN.md")).toBe(edited);
+  });
 });
 
 describe("systemix app command", () => {

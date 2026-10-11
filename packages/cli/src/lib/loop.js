@@ -189,7 +189,12 @@ async function runLoop(root, id, opts = {}) {
   };
 
   // A missing file is a skip, not a crash — a scheduled sweep must not die on
-  // a stale id (bad arg, renamed experiment, stale queue reference).
+  // a stale id (bad arg, renamed experiment, stale queue reference). An id that
+  // can't be an experiment file name (e.g. "../x") is skipped before any path
+  // is resolved from it.
+  if (!exp.isValidExperimentId(id)) {
+    return stop("skipped:invalid-id", `${JSON.stringify(id)} is not a valid experiment id — nothing changed`);
+  }
   if (!fs.existsSync(layout.abs(root).experimentFile(id))) {
     return stop("skipped:not-found", `${layout.rel.experimentFile(id)} does not exist — nothing changed`);
   }

@@ -25,7 +25,7 @@ Two things got resolved this round:
    when the dev server isn't running. Config's 3D graph is unaffected by this — `three.js` still can't
    run in an artifact, so it stays the localhost-app / premium surface, as concluded in the prior doc.
 2. **The offer ladder needs a fifth, cheaper rung** — and it turns out the free one already half-exists:
-   `npx systemix audit` (`packages/cli/src/commands/audit.js`) already vendors a **free, local,
+   `npx @getsystemix/cli audit` (`packages/cli/src/commands/audit.js`) already vendors a **free, local,
    zero-setup** `design-audit` skill, and the landing copy (`src/lib/landing/content.ts`) is already
    written around "**two doors: audit · interview**." The new **paid** self-serve tier from the
    benchmark doc sits naturally *after* that free entry point, not instead of it.
@@ -42,7 +42,7 @@ This plan turns both into concrete, buildable phases, with a Claude Code entry p
 2. **Fallback — MCP tool call.** `window.cowork.callMcpTool('list_workflows', {})` /
    `get_workflow` against `packages/mcp-server` (already implemented, already reads
    `.systemix/workflows.json` or parses `src/lib/data/workflows.ts` directly) when no dev server is
-   running. This is the path that works for a client who only ran `npx systemix init` and never
+   running. This is the path that works for a client who only ran `npx @getsystemix/cli init` and never
    started the app.
 
 **Rendering:** hand-rolled inline SVG/DOM (step nodes, group labels, a legend — the same visual
@@ -63,9 +63,9 @@ Supersedes the productization-benchmark doc's §4 table with a fifth rung the co
 
 | Rung | What | Price | Status |
 |---|---|---|---|
-| 0 · Free skill | `npx systemix audit` → `/design-audit` — zero-setup, local, read-only, infers the de-facto DS and flags drift | $0 | **Already built** (`packages/cli/src/commands/audit.js`) |
+| 0 · Free skill | `npx @getsystemix/cli audit` → `/design-audit` — zero-setup, local, read-only, infers the de-facto DS and flags drift | $0 | **Already built** (`packages/cli/src/commands/audit.js`) |
 | 1 · Paid self-serve report | **Readiness Audit request** — the "interview" door's cheap alternative: submit a repo/site URL, get back a scored report (drift history, JTBD gap map, an AI-native readiness score) + a delivered artifact | **$149–249 one-time** | New — build target of Phase 2 below |
-| 2 · Paid self-serve kit | **AI Kit** — full `npx systemix init` (loop + design substrate) + the Atlas live-artifact (§1) + the JTBD methodology as a reusable skill + guardrails. Everything needed to *run* the loop, not just get audited | **$249–299 one-time** (LaunchKit-anchored) | New — build target of Phase 3 below |
+| 2 · Paid self-serve kit | **AI Kit** — full `npx @getsystemix/cli init` (loop + design substrate) + the Atlas live-artifact (§1) + the JTBD methodology as a reusable skill + guardrails. Everything needed to *run* the loop, not just get audited | **$249–299 one-time** (LaunchKit-anchored) | New — build target of Phase 3 below |
 | 3 · Sprint | Bespoke 1-week build; **this is where Config's 3D graph lives** (per the packaging doc's conclusion) + custom-tuned skills | No public price today → recommend **€3,000–6,500** | Existing, unpriced |
 | 4 · Design partner | Free setup + workflow mapping, 1–2 seats | $0 | Existing |
 
@@ -121,7 +121,7 @@ link, per the productization doc's §3). This is also the natural moment to pric
 Savin/ESG-regtech engagement (from the first doc, §5) can be the first paid delivery through this
 exact pipeline instead of a bespoke one-off.
 
-**Phase 3 — `/kit` page + packaging.** Bundle `npx systemix init` + the Atlas artifact skill (Phase 1)
+**Phase 3 — `/kit` page + packaging.** Bundle `npx @getsystemix/cli init` + the Atlas artifact skill (Phase 1)
 + a JTBD-methodology skill (new — package the `jobs.yaml` ODI-scoring approach as a reusable
 `/jtbd-audit` skill, generalized from the Systemix-specific version) + guardrails into one downloadable
 kit, price it, build the page.
@@ -150,7 +150,7 @@ Ready to paste into a Claude Code session in this repo, one per phase:
   pipeline combining `scripts/generate-design-md.ts`, `/drift-report`, and a client-repo-scoped version
   of the JTBD ODI-scoring method in `docs/product/jobs.yaml`. Then scaffold the `/audit` request-form
   page under `src/app`, following the copy/structure conventions in `src/lib/landing/content.ts`."*
-- **Phase 3:** *"Package `npx systemix init` + the Atlas artifact skill (Phase 1) + a new generalized
+- **Phase 3:** *"Package `npx @getsystemix/cli init` + the Atlas artifact skill (Phase 1) + a new generalized
   `/jtbd-audit` skill + guardrails into one kit. Scaffold the `/kit` page mirroring LaunchKit's
   structure (feature list, build-vs-buy table, FAQ) — see
   `docs/systemix-productization-execution-plan-2026-07.md` §3."*

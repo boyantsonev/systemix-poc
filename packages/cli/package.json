@@ -1,6 +1,6 @@
 {
   "name": "@getsystemix/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Agentic design system ops for Claude Code — install pipelines in one command.",
   "keywords": [
     "claude-code",

@@ -39,7 +39,7 @@ model. **Blueprint / IA only — no code this round.**
 
 ## Resolved decisions (2026-06-06)
 1. **Surfaces home = a separate shadcn shell repo** (the installable app shell that
-   `npx systemix init` distributes). getsystemix stays marketing + docs and demos
+   `npx @getsystemix/cli init` distributes). getsystemix stays marketing + docs and demos
    the surfaces via **screenshots**.
 2. **Demo mechanic = screenshots.**
 3. **Theming = build-time** CSS custom properties (compiled from the instance DS at
