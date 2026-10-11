@@ -121,7 +121,7 @@ build-verified in the main checkout.
    Connecta) to produce it, themed by the client DS (build-time).
 2. Validate against **Connecta** (`connecta-design-system` → `systemix update`).
 
-**Acceptance:** `npx systemix init`/`update` produces the three-layer app themed by the client DS; the
+**Acceptance:** `npx @getsystemix/cli init`/`update` produces the three-layer app themed by the client DS; the
 Connecta instance renders Config + System; Atlas lights up once Connecta's DS is synced.
 
 ---

@@ -172,7 +172,7 @@ What makes this DESIGN.md more than a static export: the system is meant to
 evolve from evidence. `experiments/` is where prototypes get measured
 (PostHog); validated learnings land in `experiments/LEARNINGS.md`. Before any
 product/UI change, recall what's already been learned —
-`npx systemix experiment learnings --recent 5` — and don't contradict a
+`npx @getsystemix/cli experiment learnings --recent 5` — and don't contradict a
 high-confidence learning without flagging it.
 
 When drift or a learning suggests a rule change, the engine proposes a

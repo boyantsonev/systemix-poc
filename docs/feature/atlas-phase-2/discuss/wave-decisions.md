@@ -4,7 +4,7 @@
 > Job is pre-validated in SSOT — JTBD skipped per the DISCUSS decision matrix.
 
 ## Key Decisions
-- **[D1] Feature type = Backend.** The deliverable is a CLI generator (`npx systemix atlas build`)
+- **[D1] Feature type = Backend.** The deliverable is a CLI generator (`npx @getsystemix/cli atlas build`)
   + a config-schema addition. The `/atlas` renderer already shipped in Phase 1; it only swaps
   its data source (hardcoded module → generated catalog). (see: spec §5, §7 Phase-2)
 - **[D2] Walking skeleton = one workflow, full pipeline.** Thinnest end-to-end slice:
@@ -29,7 +29,7 @@
 - Feature type: backend (D1).
 
 ## Acceptance Criteria (DISTILL anchor — what `atlas build` must satisfy)
-**AC-1 (walking skeleton).** Given one valid `contract/workflows/*.mdx`, `npx systemix atlas build`
+**AC-1 (walking skeleton).** Given one valid `contract/workflows/*.mdx`, `npx @getsystemix/cli atlas build`
 emits a catalog artifact implementing the `WorkflowCatalog` port (`all()`/`byPersona()`/`byId()`),
 and `/atlas` renders that workflow.
 **AC-2 (vocab validation).** A contract whose `persona`/`surface`/`agent` is NOT declared in the

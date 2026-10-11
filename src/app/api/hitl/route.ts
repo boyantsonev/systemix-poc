@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { rejectNonLocal } from '@/lib/local-request';
 
 const QUEUE_PATH = path.join(process.cwd(), '.systemix', 'hitl-queue.json');
 
@@ -28,6 +29,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = rejectNonLocal(req);
+  if (denied) return denied;
   try {
     const { taskId, action, note, resolvedBy } = await req.json();
     if (!taskId || !action) {

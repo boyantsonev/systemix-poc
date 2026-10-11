@@ -70,10 +70,10 @@ The reader has to get it in one read. "Contracts / self-training layer / evidenc
 ## 5. GTM — where the first users come from
 Ordered by fit, not reach. Do one well before adding the next.
 
-1. **Open source as the funnel.** Free `npx systemix init` is the top of funnel. GitHub README = a second landing page; mirror the hero line there. A star is a lead.
+1. **Open source as the funnel.** Free `npx @getsystemix/cli init` is the top of funnel. GitHub README = a second landing page; mirror the hero line there. A star is a lead.
 2. **Show, don't tell — dogfood proof.** "This site runs on Systemix and picks its own headlines" is your single strongest asset. Put a live "the loop chose this" badge/section on the landing. It's the demo.
 3. **Design-engineering communities.** Where design-eng and AI-native teams already are: relevant Discords/Slacks, r/DesignSystems, Hacker News (Show HN: "I built a tool that keeps design systems from rotting — and it runs its own site"). Lead with the dogfood story, not features.
-4. **Long-tail content.** 4–6 short posts on the "how to" keywords (§2). Each ends in `npx systemix init`. Low volume, high intent, compounds.
+4. **Long-tail content.** 4–6 short posts on the "how to" keywords (§2). Each ends in `npx @getsystemix/cli init`. Low volume, high intent, compounds.
 5. **The free audit as a wedge.** `/audit` turns a cold repo into a warm conversation and a proof-generating case study. Feed outcomes back into the proof wall.
 
 **Channel priority for a two-person studio:** 1 + 2 first (near-zero cost, plays to your strength), then 3, then 4/5.
@@ -81,7 +81,7 @@ Ordered by fit, not reach. Do one well before adding the next.
 ---
 
 ## 6. Conversion levers (what actually moves the number)
-- **One primary action per page.** Landing = `npx systemix init`. `/kit` = buy. `/audit` = submit form. Don't split attention.
+- **One primary action per page.** Landing = `npx @getsystemix/cli init`. `/kit` = buy. `/audit` = submit form. Don't split attention.
 - **Copy the install command, don't gate it.** Friction-free `install_command_copied` is your cleanest activation signal.
 - **Anchor the price.** ~~$299~~ $249, "pay once, no subscription" — the anchor and the no-meter promise do the work.
 - **Reduce risk out loud.** Ghost mode ("never touches your code"), "you own the files," "no sales call" — permission-granting beats hype for this audience.

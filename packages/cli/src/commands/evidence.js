@@ -12,6 +12,7 @@ const skillUpdate = require("./skill-update");
 const fs = require("fs");
 const path = require("path");
 const { fetchPosthogEvidence } = require("../lib/loop");
+const { assertExperimentId, isValidExperimentId, EXPERIMENT_ID_RE } = require("../lib/experiments");
 
 const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
 const EXPERIMENTS_DIR = path.join(process.cwd(), "experiments");
@@ -221,6 +222,7 @@ function writeQueue(queue) {
 // ── Write decision back to MDX (shared by both CLI close and queue approval) ──
 
 function writeDecisionToContract(hypothesisId, decision, evidence) {
+  assertExperimentId(hypothesisId);
   const filePath = path.join(EXPERIMENTS_DIR, `${hypothesisId}.mdx`);
   if (!fs.existsSync(filePath)) throw new Error(`Contract not found: ${filePath}`);
 
@@ -366,6 +368,7 @@ function synthesizeExperiment(ev, meta = {}) {
 // Byte-compatible with the app close-writer's ^evidence-posthog:...$ regex
 // (src/lib/contract/experiment-mdx.ts) so a later close collapses it cleanly.
 function writeExperimentSnapshot(id, ev) {
+  assertExperimentId(id);
   const filePath = path.join(EXPERIMENTS_DIR, `${id}.mdx`);
   if (!fs.existsSync(filePath)) throw new Error(`Experiment not found: ${filePath}`);
   const raw = fs.readFileSync(filePath, "utf8");
@@ -441,6 +444,12 @@ async function experimentPull(args) {
   console.log(`\n  systemix evidence experiment pull — ${candidates.length} experiment${candidates.length !== 1 ? "s" : ""} (${days}d)\n`);
 
   for (const { id, data } of candidates) {
+    // id comes from frontmatter — skip (like the runner's skipped:invalid-id)
+    // before it reaches a file path or a queue card.
+    if (!isValidExperimentId(id)) {
+      console.log(`  ── skipped:invalid-id — ${JSON.stringify(id)} is not a valid experiment id`);
+      continue;
+    }
     const event = String(data["posthog-event"]);
     process.stdout.write(`  ── ${id} · ${event}\n`);
     process.stdout.write("     querying PostHog... ");
@@ -555,7 +564,21 @@ async function close(args) {
 
 // ── engagement subcommand (standalone landing record) ────────────────────────
 
+// A record id becomes a file name (contract/engagement/<id>.mdx), so it follows
+// the same path-safe kebab-case rule as experiment ids — no path separators,
+// no "..", nothing that resolves outside contract/engagement/.
+function assertEngagementRecordId(recordId) {
+  if (recordId == null || recordId === "") throw new Error("an engagement record id is required");
+  if (typeof recordId !== "string" || !EXPERIMENT_ID_RE.test(recordId)) {
+    throw new Error(
+      `invalid engagement record id ${JSON.stringify(recordId)} — use lowercase letters, digits and hyphens, ` +
+        "starting with a letter or digit (max 81 characters), e.g. landing"
+    );
+  }
+}
+
 function appendEngagementAck(recordId, { action, note, by }) {
+  assertEngagementRecordId(recordId);
   const filePath = path.join(ENGAGEMENT_DIR, `${recordId}.mdx`);
   if (!fs.existsSync(filePath)) throw new Error(`Engagement record not found: ${filePath}`);
   const raw = fs.readFileSync(filePath, "utf8");
@@ -617,6 +640,7 @@ async function engagementPull(args) {
 
 function engagementClose(args) {
   const recordId = args.find(a => !a.startsWith("--")) ?? "landing";
+  assertEngagementRecordId(recordId); // before any path is built from it
   const noteIdx  = args.indexOf("--note");
   const note     = noteIdx !== -1 ? args[noteIdx + 1] : null;
   const action   = args.includes("--flag") ? "flagged-for-experiment" : "acknowledged";

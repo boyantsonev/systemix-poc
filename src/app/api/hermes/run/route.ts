@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { experimentPath, isValidSlug } from "@/lib/contract/experiment-mdx";
+import { rejectNonLocal } from "@/lib/local-request";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -39,6 +40,9 @@ type QueueCard = {
 // Produces an `experiment-validation` card the existing HitlQueue renders and
 // whose approval writes back to the contract.
 export async function POST(req: NextRequest) {
+  const denied = rejectNonLocal(req);
+  if (denied) return denied;
+
   let slug: string | undefined;
   try {
     ({ slug } = await req.json());

@@ -14,7 +14,7 @@ generate → build → measure → synthesize → learn → generate → …
 
 **Engine = Claude Code on a GitHub Actions spine.** No external service, no
 local model, no subscription infrastructure — the repo runs its own growth
-loop, and `npx systemix init` vendors the same engine into any repo. This is
+loop, and `npx @getsystemix/cli init` vendors the same engine into any repo. This is
 what the $249 AI Kit *is*: not a folder of skills, but a growth loop that runs
 itself in your repo and proposes your next bet every week.
 
@@ -126,7 +126,7 @@ failure mode is a low-confidence card, not a confident guess.
 
 ## 7. The kit story
 
-`npx systemix init` now vendors the full engine:
+`npx @getsystemix/cli init` now vendors the full engine:
 
 - `.claude/skills/propose-experiment/` (via the hypothesis-validation
   manifest) — plus the rest of the loop skills, as before.

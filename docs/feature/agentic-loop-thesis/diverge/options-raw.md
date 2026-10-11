@@ -165,9 +165,9 @@
 
 ### Option C8-3: CLI-first, zero-UI architecture — the MCP server is the entire product
 
-**Core idea:** No web dashboard. No landing page app (beyond marketing). The entire product is a CLI and an MCP server. `npx systemix init` installs the MCP server and CLI. All interactions happen inside Claude Code or Cursor via slash commands. The evidence score is a CLI output. The hypothesis contract is a file in the repo. The HITL decision is a CLI prompt. This is the minimal viable architecture: ship nothing that isn't the core loop.
+**Core idea:** No web dashboard. No landing page app (beyond marketing). The entire product is a CLI and an MCP server. `npx @getsystemix/cli init` installs the MCP server and CLI. All interactions happen inside Claude Code or Cursor via slash commands. The evidence score is a CLI output. The hypothesis contract is a file in the repo. The HITL decision is a CLI prompt. This is the minimal viable architecture: ship nothing that isn't the core loop.
 
-**Key mechanism:** MCP server exposes: `get_evidence(component_id)`, `propose_evidence_update(component_id, evidence)`, `approve_evidence_update(proposal_id)`, `get_evidence_score(component_id)`. CLI exposes: `/init-experiment`, `/write-variants`, `/close-experiment`, `/evidence-pull`. No web app required. Evidence contracts are files in the repo. Deployment is `npx systemix init` — no account, no signup.
+**Key mechanism:** MCP server exposes: `get_evidence(component_id)`, `propose_evidence_update(component_id, evidence)`, `approve_evidence_update(proposal_id)`, `get_evidence_score(component_id)`. CLI exposes: `/init-experiment`, `/write-variants`, `/close-experiment`, `/evidence-pull`. No web app required. Evidence contracts are files in the repo. Deployment is `npx @getsystemix/cli init` — no account, no signup.
 
 **Key assumption:** The Tier 1 ICP (design engineers using Claude Code/Cursor) never wants to leave their editor. A web dashboard adds cognitive overhead and a second product surface to maintain. The MCP server already provides everything an agent needs; the CLI provides everything a human needs.
 
@@ -246,7 +246,7 @@
 
 ### Option 1: Developer-First Run Architecture
 
-**Core idea:** A user experiences Systemix entirely through their editor and CLI. `npx systemix init` creates a `.systemix/` directory with a runs manifest. Every experiment is a "run" (analogous to W&B's run concept): `systemix run start --hypothesis "darker primary converts better" --artifact "--primary" --event "cta_click"`. When PostHog reaches significance, `systemix run close --run hero-cta --result "+12% CTR"` writes evidence into the component's DESIGN.md. No web app required at any step. The MCP server serves run history to agents.
+**Core idea:** A user experiences Systemix entirely through their editor and CLI. `npx @getsystemix/cli init` creates a `.systemix/` directory with a runs manifest. Every experiment is a "run" (analogous to W&B's run concept): `systemix run start --hypothesis "darker primary converts better" --artifact "--primary" --event "cta_click"`. When PostHog reaches significance, `systemix run close --run hero-cta --result "+12% CTR"` writes evidence into the component's DESIGN.md. No web app required at any step. The MCP server serves run history to agents.
 
 **Key mechanism:** The run/artifact abstraction maps W&B's proven architecture onto product decisions. Runs are structured JSON files in `.systemix/runs/`. The MCP server indexes all runs and serves them when an agent accesses a component. The evidence score is a CLI output (`systemix score --component Button`). HITL happens as a CLI prompt at run close time.
 

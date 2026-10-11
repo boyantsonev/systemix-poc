@@ -1,6 +1,6 @@
 # systemix.config.yaml — your instance topology. Committed; contains NO secrets.
 # Secrets (Figma/PostHog keys) live in ~/.systemix/config.json or env vars.
-# Edit by hand or re-run `npx systemix init` to regenerate.
+# Edit by hand or re-run `npx @getsystemix/cli init` to regenerate.
 version: 1
 surfaces:
   - design-system

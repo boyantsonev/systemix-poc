@@ -6,25 +6,20 @@ import { NextResponse } from "next/server";
 import { spawn } from "child_process";
 import { existsSync, writeFileSync, mkdirSync, appendFileSync } from "fs";
 import path from "path";
-import { getSkill, SKILL_MAP } from "@/lib/skill-map";
+import { getSkill, runnableAt, SKILL_MAP } from "@/lib/skill-map";
+import { rejectNonLocal } from "@/lib/local-request";
+import { loadInstanceConfig } from "@/lib/state/instance-config";
+import { tierLabel } from "@/lib/contract/write-policy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const RUNS_DIR = path.join(process.cwd(), ".systemix", "runs");
 
-// CORS headers for Figma plugin iframe (different origin)
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
-
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
-
 export async function POST(request: Request) {
+  const denied = rejectNonLocal(request);
+  if (denied) return denied;
+
   let body: { skill?: string; context?: Record<string, unknown> };
 
   try {
@@ -32,7 +27,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       { error: "Invalid JSON body" },
-      { status: 400, headers: CORS_HEADERS }
+      { status: 400 }
     );
   }
 
@@ -42,7 +37,7 @@ export async function POST(request: Request) {
   if (process.env.VERCEL) {
     return NextResponse.json(
       { error: "Skill runs execute in the local app — npx @getsystemix/cli init" },
-      { status: 503, headers: CORS_HEADERS }
+      { status: 503 }
     );
   }
 
@@ -51,7 +46,7 @@ export async function POST(request: Request) {
   if (!skillSlug || typeof skillSlug !== "string") {
     return NextResponse.json(
       { error: "Missing required field: skill" },
-      { status: 400, headers: CORS_HEADERS }
+      { status: 400 }
     );
   }
 
@@ -59,7 +54,19 @@ export async function POST(request: Request) {
   if (!skillDef) {
     return NextResponse.json(
       { error: `Unknown skill: ${skillSlug}`, available: Object.keys(SKILL_MAP) },
-      { status: 404, headers: CORS_HEADERS }
+      { status: 404 }
+    );
+  }
+
+  // The autonomy dial is enforced here, not only by which chips the UI shows.
+  const configured = loadInstanceConfig()?.trust?.hermes_tier;
+  const tier = typeof configured === "number" && Number.isFinite(configured) ? configured : 0;
+  if (!runnableAt(skillDef, tier)) {
+    return NextResponse.json(
+      {
+        error: `${skillDef.label} needs ${tierLabel(skillDef.minTier ?? 0)} autonomy (instance is ${tierLabel(tier)}).`,
+      },
+      { status: 403 }
     );
   }
 
@@ -75,7 +82,7 @@ export async function POST(request: Request) {
           process.cwd() +
           " first — spawned skills resolve modules against this directory.",
       },
-      { status: 503, headers: CORS_HEADERS }
+      { status: 503 }
     );
   }
 
@@ -182,6 +189,6 @@ export async function POST(request: Request) {
       status: "started",
       startedAt,
     },
-    { status: 202, headers: CORS_HEADERS }
+    { status: 202 }
   );
 }

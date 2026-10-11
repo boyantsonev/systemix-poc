@@ -310,3 +310,74 @@ describe("experiments/ loop — canonical learning format (no writer drift)", ()
     });
   });
 });
+
+describe("experiments/ loop — path-safe ids", () => {
+  let root;
+  beforeEach(() => { root = tmpRoot(); });
+  afterEach(() => { fs.rmSync(root, { recursive: true, force: true }); });
+
+  const UNSAFE_IDS = [
+    "../escaped-id",
+    "../../outside-the-repo",
+    "nested/id",
+    "back\\slash",
+    "..",
+    ".hidden",
+    "-leading-hyphen",
+    "Upper-Case",
+    "with space",
+    "under_score",
+    "dotted.name",
+    "line\nbreak",
+    "x".repeat(82),
+  ];
+
+  it.each(UNSAFE_IDS)("new rejects the unsafe id %j and writes nothing", (id) => {
+    expect(() => exp.createExperiment(root, id, { now: NOW })).toThrow(/^invalid experiment id /);
+    expect(fs.readdirSync(root)).toEqual([]); // not even experiments/ — rejected before any write
+  });
+
+  it("new rejects a missing id with a clear error", () => {
+    expect(() => exp.createExperiment(root, undefined)).toThrow("an experiment id is required");
+    expect(() => exp.createExperiment(root, "")).toThrow("an experiment id is required");
+  });
+
+  it.each(["a", "0", "hero-cta-2026-06", "x".repeat(81)])("new accepts the kebab-case id %j", (id) => {
+    exp.createExperiment(root, id, { now: NOW });
+    expect(fs.existsSync(path.join(root, "experiments", `${id}.mdx`))).toBe(true);
+  });
+
+  it("measure / close / get refuse a traversal id and never touch the file it points at", () => {
+    // experiments/../decoy.mdx resolves to <root>/decoy.mdx — a file OUTSIDE the loop
+    const decoy = path.join(root, "decoy.mdx");
+    const original = "---\nid: decoy\nstatus: running\n---\n\n# not an experiment\n";
+    fs.writeFileSync(decoy, original, "utf8");
+
+    expect(() => exp.getExperiment(root, "../decoy")).toThrow(/^invalid experiment id/);
+    expect(() => exp.setMeasurement(root, "../decoy", { event: "x" })).toThrow(/^invalid experiment id/);
+    expect(() =>
+      exp.closeExperiment(root, "../decoy", { result: "r", decision: "promote", now: NOW })
+    ).toThrow(/^invalid experiment id/);
+
+    expect(fs.readFileSync(decoy, "utf8")).toBe(original);
+    expect(fs.existsSync(path.join(root, "experiments", "LEARNINGS.md"))).toBe(false);
+    expect(fs.existsSync(path.join(root, ".systemix", "queue.json"))).toBe(false);
+  });
+
+  it("CLI door: `experiment new ../escaped-id` rejects the id", async () => {
+    await expect(experiment(["new", "../escaped-id"], { projectRoot: root })).rejects.toThrow(
+      'invalid experiment id "../escaped-id"'
+    );
+    expect(fs.existsSync(path.join(root, "escaped-id.mdx"))).toBe(false);
+  });
+
+  it("the `systemix` binary prints the error and exits 1 — no stack trace, no file", () => {
+    const { spawnSync } = require("child_process");
+    const bin = path.join(__dirname, "..", "..", "..", "bin", "cli.js");
+    const r = spawnSync(process.execPath, [bin, "experiment", "new", "../escaped-id"], { cwd: root, encoding: "utf8" });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('✗ invalid experiment id "../escaped-id" — use lowercase letters, digits and hyphens');
+    expect(r.stderr).not.toMatch(/\n\s+at /); // no stack frames
+    expect(fs.existsSync(path.join(root, "escaped-id.mdx"))).toBe(false);
+  });
+});

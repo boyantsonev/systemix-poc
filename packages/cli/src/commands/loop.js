@@ -27,6 +27,7 @@ const VALUE_FLAGS = new Set(["--days", "--max-iterations"]);
 const NEXT_HINT = {
   "decision-ready": (id) => `review the card, then: /close-experiment ${id}`,
   "skipped:not-found": () => "check the id — `systemix experiment list` shows what exists",
+  "skipped:invalid-id": () => "ids are kebab-case (e.g. landing-hero-2026-07) — rename the experiment file to match",
   "blocked:not-measured": (id) => `run /measure ${id} to wire the posthog-event`,
   "blocked:not-wired": () => "run /connect-signal (or set POSTHOG_API_KEY + POSTHOG_PROJECT_ID)",
   "blocked:posthog-error": () => "check POSTHOG_HOST / POSTHOG_PROJECT_ID",

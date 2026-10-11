@@ -124,7 +124,7 @@ Assessment: This is past-behavior framing of a hypothetical, which is the strong
 - That the frequency is high enough to create urgency (the example is a three-month cycle, not a weekly pain)
 - That the cost of the current workaround (digging in PostHog + Notion) is high enough to trigger a buy
 
-**Commitment signals:** None. The blog post is a distribution artifact, not a customer interview. The CTA (`npx systemix init`) measures install behavior — a future-action signal that becomes real evidence only after it ships.
+**Commitment signals:** None. The blog post is a distribution artifact, not a customer interview. The CTA (`npx @getsystemix/cli init`) measures install behavior — a future-action signal that becomes real evidence only after it ships.
 
 **Mom Test verdict:** The blog post is a hypothesis about a problem, written in past-behavior language. It is a well-formed hypothesis, not validated evidence. The HN distribution plan creates the mechanism to validate it — if founders respond with "this happened to me last week," that is the confirmation. If they respond with "interesting idea," that is a polite rejection.
 
@@ -209,7 +209,7 @@ Failure signal: founders describe using structured systems (Notion databases, Ro
 
 **Gap 2 — No commitment signals from any external party**
 
-The hypothesis contracts, copy spec, and blog post have not yet shipped. None of the distribution channels have been tested. The install count (`npx systemix init`) is the first real commitment signal available and it requires the blog post to publish.
+The hypothesis contracts, copy spec, and blog post have not yet shipped. None of the distribution channels have been tested. The install count (`npx @getsystemix/cli init`) is the first real commitment signal available and it requires the blog post to publish.
 
 **Gap 3 — No past-behavior evidence for Claim B (the macro shift)**
 

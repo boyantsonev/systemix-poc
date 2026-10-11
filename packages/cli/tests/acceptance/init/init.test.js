@@ -21,6 +21,9 @@
  *   AC-02c Figma key: invalid input loops then Enter skips — no project-context.json created
  *   AC-03a Idempotency: re-running without --reconfigure preserves existing systemix.config.yaml
  *   AC-03b Reconfigure: --reconfigure flag overwrites systemix.config.yaml
+ *   AC-03c Non-destructive: a re-run keeps edited learnings, goals, design/ files and skills
+ *   AC-03d Non-destructive: --reconfigure rewrites the config but still keeps every edited file
+ *   AC-03e Non-destructive: a re-run restores a deleted template file without touching edited ones
  *   AC-04a Gitignore: systemix entries appended to existing .gitignore, existing entries preserved
  *   AC-04b Gitignore: re-running init does not duplicate gitignore entries
  *   AC-04c Gitignore: partial entries completed without duplicating existing
@@ -129,6 +132,43 @@ const hasClients   = () => [{ exists: true, configPath: "/fake/.claude.json" }];
 
 /** No-op server registration (real registration writes JSON files we don't need here). */
 const noopRegister = () => {};
+
+/**
+ * Runs init in the workspace with default answers (scaffold design, skip all
+ * credentials) and returns everything it printed, so re-run tests can assert on
+ * the "exists — left as-is" report without spamming the test output.
+ */
+async function runInit(ws, extra = {}) {
+  const lines = [];
+  const origLog = console.log;
+  console.log = (...args) => lines.push(args.join(" "));
+  try {
+    await init({
+      projectRoot:    ws.projectRoot,
+      homeDir:        ws.homeDir,
+      prompt:         makePrompt([]),
+      detectClients:  noClients,
+      registerServer: noopRegister,
+      ...extra,
+    });
+  } finally {
+    console.log = origLog;
+  }
+  return lines.join("\n");
+}
+
+/** The files a user edits after the first init — all of them came from a template. */
+const USER_EDITS = {
+  "experiments/LEARNINGS.md":
+    "# Learnings\n\n## Memory\n\n- **2026-10-01 · Bolder CTA lifts signups** — confidence 0.8 · from [hero-cta-2026-09], decision: promote. Review by: 2026-12-30. Used by: —\n",
+  "experiments/goals/_example.mdx": "---\ntype: goal\nid: consultancy-leads\n---\n\n# Book 5 consultancy calls a month\n",
+  "design/DESIGN.md": "---\nname: Acme\n---\n\n# Acme design system — our own words\n",
+  "design/guardrails.mdx": "# Guardrails\n\n- Never use raw hex in components.\n",
+  "design/tokens.css": ":root {\n  --brand: oklch(0.62 0.19 30);\n}\n",
+  ".claude/skills/close-experiment/SKILL.md": "---\nname: close-experiment\n---\n\n## Past Decisions\n\n- hero-cta-2026-09 → promote\n",
+};
+
+const segments = (rel) => rel.split("/");
 
 // ── Skill sets (verified against manifest.json on disk) ───────────────────────
 
@@ -587,6 +627,94 @@ describe("systemix init — acceptance tests", () => {
 
       // Then — overwritten with balanced
       expect(ws.read("systemix.config.yaml")).toContain("autonomy: assisted");
+    }
+  );
+
+  // ── AC-03c: Non-destructive — a re-run keeps every edited file ──────────────
+
+  it(
+    // Given init ran once and the user then edited their learnings, a goal, the
+    //   design/ substrate and a skill (all files that came from a template)
+    // When init is run again
+    // Then every edited file is byte-identical to the user's version, and init
+    //   reports each one as left as-is
+    "AC-03c (non-destructive): re-running init keeps edited learnings, goals, design/ files and skills",
+    async () => {
+      // Given
+      await runInit(ws);
+      for (const [rel, text] of Object.entries(USER_EDITS)) {
+        fs.writeFileSync(ws.file(...segments(rel)), text, "utf8");
+      }
+
+      // When
+      const output = await runInit(ws);
+
+      // Then — nothing the user wrote was overwritten
+      for (const [rel, text] of Object.entries(USER_EDITS)) {
+        expect(ws.read(...segments(rel))).toBe(text);
+      }
+
+      // Then — init says what it left alone
+      expect(output).toContain(`${path.join("experiments", "LEARNINGS.md")} exists — left as-is`);
+      expect(output).toContain(`${path.join("experiments", "goals", "_example.mdx")} exists — left as-is`);
+      expect(output).toContain(`${path.join("design", "DESIGN.md")} exists — left as-is`);
+      expect(output).toContain(`${path.join("design", "guardrails.mdx")} exists — left as-is`);
+      expect(output).toContain(`${path.join("design", "tokens.css")} exists — left as-is`);
+      expect(output).toMatch(/close-experiment\s+exists — left as-is/);
+      expect(output).toContain("skills sync");
+    }
+  );
+
+  // ── AC-03d: Non-destructive — --reconfigure rewrites only the config ────────
+
+  it(
+    // Given init ran once and the user then edited their learnings, a goal, the
+    //   design/ substrate and a skill
+    // When init is run again with --reconfigure and a different autonomy answer
+    // Then systemix.config.yaml is rewritten, but every edited file is kept
+    "AC-03d (non-destructive): --reconfigure rewrites systemix.config.yaml but keeps every edited file",
+    async () => {
+      // Given
+      await runInit(ws);
+      for (const [rel, text] of Object.entries(USER_EDITS)) {
+        fs.writeFileSync(ws.file(...segments(rel)), text, "utf8");
+      }
+
+      // When — reconfigure with autonomy "2" (assisted)
+      await runInit(ws, { prompt: makePrompt(["", "", "", "", "2", ""]), reconfigure: true });
+
+      // Then — the config was reconfigured…
+      expect(ws.read("systemix.config.yaml")).toContain("autonomy: assisted");
+
+      // …and the user's files were not touched
+      for (const [rel, text] of Object.entries(USER_EDITS)) {
+        expect(ws.read(...segments(rel))).toBe(text);
+      }
+    }
+  );
+
+  // ── AC-03e: Non-destructive — missing template files are restored ──────────
+
+  it(
+    // Given init ran once, the user edited LEARNINGS.md and deleted the example experiment
+    // When init is run again
+    // Then the deleted example is restored and the edited LEARNINGS.md is kept
+    "AC-03e (non-destructive): a re-run restores a deleted template file without touching edited ones",
+    async () => {
+      // Given
+      await runInit(ws);
+      const learnings = USER_EDITS["experiments/LEARNINGS.md"];
+      fs.writeFileSync(ws.file("experiments", "LEARNINGS.md"), learnings, "utf8");
+      fs.rmSync(ws.file("experiments", "_example.mdx"));
+
+      // When
+      const output = await runInit(ws);
+
+      // Then
+      expect(ws.exists("experiments", "_example.mdx")).toBe(true);
+      expect(ws.read("experiments", "LEARNINGS.md")).toBe(learnings);
+      expect(output).toContain(`✓  ${path.join("experiments", "_example.mdx")}`);
+      expect(output).toContain(`${path.join("experiments", "LEARNINGS.md")} exists — left as-is`);
     }
   );
 
