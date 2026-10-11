@@ -9,6 +9,9 @@ export interface SkillDef {
   args?: string[];
   description: string;
   env?: Record<string, string>;
+  // Lowest trust tier (0 ghost · 1 assisted · 2 autonomous) allowed to run it.
+  // Enforced by POST /api/run; the /config chips filter on the same field.
+  minTier?: number;
 }
 
 export const SKILL_MAP: Record<string, SkillDef> = {
@@ -27,12 +30,8 @@ export const SKILL_MAP: Record<string, SkillDef> = {
     args: ["tsx", "scripts/drift-report.ts"],
     description: "Scan src/ for raw hex + off-token styles — appends a drift snapshot",
   },
-  "deploy": {
-    label: "Build & Deploy",
-    command: "vercel",
-    args: ["--prod", "--yes"],
-    description: "Build and deploy to Vercel production",
-  },
+  // No deploy entry: production deploys stay an explicit human step outside the
+  // dashboard (vercel CLI / merge to main).
   "build": {
     label: "Build",
     command: "npm",
@@ -50,7 +49,12 @@ export const SKILL_MAP: Record<string, SkillDef> = {
 };
 
 export function getSkill(slug: string): SkillDef | null {
-  return SKILL_MAP[slug] ?? null;
+  return Object.hasOwn(SKILL_MAP, slug) ? SKILL_MAP[slug] : null;
+}
+
+/** Whether an instance at trust `tier` may run `def`. */
+export function runnableAt(def: SkillDef, tier: number): boolean {
+  return tier >= (def.minTier ?? 0);
 }
 
 export function listSkills(): { slug: string; def: SkillDef }[] {

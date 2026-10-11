@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { applyExperimentDecisionToMdx, experimentPath } from "@/lib/contract/experiment-mdx";
+import { applyExperimentDecisionToMdx, experimentPath, isValidSlug } from "@/lib/contract/experiment-mdx";
 import { experimentGoalMap } from "@/lib/contract/goal-map";
 import {
   appendMemoryEntry,
@@ -10,10 +10,19 @@ import {
 } from "@/lib/contract/memory-mdx";
 import { assertWriteAllowed } from "@/lib/contract/write-policy";
 import { loadInstanceConfig } from "@/lib/state/instance-config";
+import { rejectNonLocal } from "@/lib/local-request";
+import { resolveProjectFile } from "@/lib/project-path";
 
 export const dynamic = "force-dynamic";
 
 const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
+
+// What a resolution may touch: the actions the dashboard sends, the project files
+// card-driven writes may land in, and the event-key charset (it's spliced into code).
+const ACTIONS = new Set(["approved", "rejected", "deferred"]);
+const INSTRUMENT_FILES = { roots: ["src"], exts: [".tsx", ".jsx"] };
+const DEFAULT_ENGAGEMENT_RECORD = path.join("contract", "engagement", "landing.mdx");
+const EVENT_KEY = /^[\w .:/-]{1,100}$/;
 
 // Blank slate — no demo cards. The queue renders real cards from .systemix/queue.json
 // (written by close-experiment / the HITL flow); an empty instance shows an empty queue.
@@ -100,6 +109,11 @@ function applyExperimentDecision(
   decision: "promote" | "kill",
 ): { ok: boolean; error?: string } {
   if (!card.experimentId) return { ok: false, error: "No experimentId on card" };
+  // The id comes from .systemix/queue.json and becomes experiments/<id>.mdx —
+  // only a plain slug, never a path that resolves outside experiments/.
+  if (!isValidSlug(card.experimentId)) {
+    return { ok: false, error: `Invalid experimentId on card: ${JSON.stringify(card.experimentId)}` };
+  }
   const filePath = experimentPath(card.experimentId);
   if (!fs.existsSync(filePath)) return { ok: false, error: `Contract not found: ${filePath}` };
 
@@ -155,6 +169,16 @@ function applyMemoryFromDecision(
   fs.renameSync(tmp, LEARNINGS_PATH);
 }
 
+// A card's recordPath comes from .systemix/queue.json, so only a record directly
+// under contract/engagement/ is accepted — contract/engagement/<slug>.mdx, with
+// either separator (the CLI writes it with path.join, so `\` on Windows). The
+// path is rebuilt from the slug; null for anything else.
+function engagementRecordFile(rel: string): string | null {
+  const m = /^contract[\\/]engagement[\\/]([^\\/]+)\.mdx$/.exec(rel);
+  if (!m || !isValidSlug(m[1])) return null;
+  return path.join(process.cwd(), "contract", "engagement", `${m[1]}.mdx`);
+}
+
 // Engagement snapshots write to a standalone engagement record (NOT the
 // hypotheses dir): every resolution appends an entry to its ## Engagement Log.
 function applyEngagementAck(
@@ -162,8 +186,14 @@ function applyEngagementAck(
   action: string,
   note?: string | null,
 ): { ok: boolean; error?: string } {
-  const rel = card.recordPath ?? path.join("contract", "engagement", "landing.mdx");
-  const filePath = path.join(process.cwd(), rel);
+  const rel = card.recordPath ?? DEFAULT_ENGAGEMENT_RECORD;
+  const filePath = engagementRecordFile(rel);
+  if (!filePath) {
+    return {
+      ok: false,
+      error: `Invalid recordPath on card: ${JSON.stringify(rel)} — expected contract/engagement/<id>.mdx`,
+    };
+  }
   if (!fs.existsSync(filePath)) return { ok: false, error: `Engagement record not found: ${rel}` };
   const verb =
     action === "approved" ? "acknowledged"
@@ -179,34 +209,10 @@ function applyEngagementAck(
   return { ok: true };
 }
 
-// A card's filePath comes from .systemix/queue.json, so only a .tsx/.jsx file
-// under the repo's src/ is accepted — resolved (and symlinks followed) before
-// the check, so `../` or a link can't point the rewrite outside the repo.
-function instrumentableFile(rel: string): string | null {
-  const srcRoot = path.resolve(process.cwd(), "src");
-  const inSrc = (abs: string) => {
-    const r = path.relative(srcRoot, abs);
-    return r !== "" && !r.startsWith("..") && !path.isAbsolute(r);
-  };
-  const abs = path.resolve(process.cwd(), rel);
-  if (!inSrc(abs) || !/\.(tsx|jsx)$/.test(abs)) return null;
-  if (fs.existsSync(abs) && !inSrc(fs.realpathSync(abs))) return null;
-  return abs;
-}
-
-// The event key is emitted into the component's source as a string literal —
-// only a conservative identifier-ish key, never one that can close the quote.
-const EVENT_KEY_RE = /^[A-Za-z0-9_.:-]+$/;
-
 function applyInstrumentation(card: InstrumentationCard): { ok: boolean; error?: string } {
   if (!card.filePath) return { ok: false, error: "No filePath on card" };
-  const absPath = instrumentableFile(card.filePath);
-  if (!absPath) {
-    return {
-      ok: false,
-      error: `Invalid filePath on card: ${JSON.stringify(card.filePath)} — expected a .tsx/.jsx file under src/`,
-    };
-  }
+  const absPath = resolveProjectFile(card.filePath, INSTRUMENT_FILES);
+  if (!absPath) return { ok: false, error: "filePath is not an allowed project file" };
   if (!fs.existsSync(absPath)) return { ok: false, error: `File not found: ${card.filePath}` };
 
   let src = fs.readFileSync(absPath, "utf8");
@@ -217,9 +223,6 @@ function applyInstrumentation(card: InstrumentationCard): { ok: boolean; error?:
   }
 
   const eventKey = card.posthogEventKey ?? card.component ?? "unknown";
-  if (!EVENT_KEY_RE.test(eventKey)) {
-    return { ok: false, error: `Invalid event key on card: ${JSON.stringify(eventKey)}` };
-  }
 
   // Add "use client" if not present
   if (!src.startsWith('"use client"') && !src.startsWith("'use client'")) {
@@ -307,15 +310,68 @@ async function applyHypothesisProposal(
   return { ok: true };
 }
 
+// Card fields that steer a write are checked before anything is written: paths
+// must resolve to allowlisted project files, ids must be slugs, and strings that
+// are spliced into generated code must stay inert.
+const isSlug = (v: unknown): v is string => typeof v === "string" && isValidSlug(v);
+
+function cardProblem(card: Record<string, unknown>, action: string): string | null {
+  switch (card.type) {
+    case "instrumentation-approval":
+      if (action !== "approved") return null;
+      if (!resolveProjectFile(card.filePath, INSTRUMENT_FILES)) return "filePath must be a .tsx/.jsx file under src/";
+      return EVENT_KEY.test(String(card.posthogEventKey ?? card.component ?? "unknown")) ? null : "invalid event key";
+    case "experiment-validation":
+      return action === "deferred" || isSlug(card.experimentId)
+        ? null
+        : `Invalid experimentId on card: ${JSON.stringify(card.experimentId)}`;
+    case "hypothesis-proposal": {
+      if (action !== "approved") return null;
+      if (!isSlug((card.payload as { id?: unknown } | undefined)?.id)) return "invalid payload.id";
+      const cited = card.citedLearnings ?? [];
+      return Array.isArray(cited) && cited.every(isSlug) ? null : "invalid citedLearnings";
+    }
+    case "engagement-snapshot": {
+      const rel = String(card.recordPath ?? DEFAULT_ENGAGEMENT_RECORD);
+      return engagementRecordFile(rel)
+        ? null
+        : `Invalid recordPath on card: ${JSON.stringify(rel)} — expected contract/engagement/<id>.mdx`;
+    }
+    default:
+      return null;
+  }
+}
+
 export async function PATCH(req: NextRequest) {
-  const { id, action, note } = await req.json();
-  if (!id || !action) {
+  const denied = rejectNonLocal(req);
+  if (denied) return denied;
+
+  let body: { id?: unknown; action?: unknown; note?: unknown };
+  try {
+    body = (await req.json()) ?? {};
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  const { id, action, note } = body;
+  if (typeof id !== "string" || !id || typeof action !== "string" || !action) {
     return NextResponse.json({ error: "id and action required" }, { status: 400 });
   }
+  if (!ACTIONS.has(action)) {
+    return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
+  }
+  if (note != null && typeof note !== "string") {
+    return NextResponse.json({ error: "note must be a string" }, { status: 400 });
+  }
+  const noteText = typeof note === "string" ? note : null;
   const queue = readQueue() ?? { cards: [] };
-  const card = (queue.cards as InstrumentationCard[]).find(c => c.id === id);
+  const cards: InstrumentationCard[] = Array.isArray(queue.cards) ? queue.cards : [];
+  const card = cards.find(c => c && c.id === id);
   if (!card) {
     return NextResponse.json({ error: "Card not found" }, { status: 404 });
+  }
+  const problem = cardProblem(card as unknown as Record<string, unknown>, action);
+  if (problem) {
+    return NextResponse.json({ error: problem }, { status: 400 });
   }
 
   // For instrumentation approvals, write the code before updating the card
@@ -357,7 +413,7 @@ export async function PATCH(req: NextRequest) {
 
   // Engagement snapshots: every resolution appends to the engagement log.
   if (card.type === "engagement-snapshot") {
-    const result = applyEngagementAck(card as { recordPath?: string }, action, note);
+    const result = applyEngagementAck(card as { recordPath?: string }, action, noteText);
     if (!result.ok) {
       return NextResponse.json({ error: result.error ?? "Engagement write-back failed" }, { status: 500 });
     }
@@ -365,7 +421,7 @@ export async function PATCH(req: NextRequest) {
 
   card.status = action;
   card.resolvedAt = new Date().toISOString();
-  card.resolution = { action, note: note ?? null, resolvedBy: "dashboard" };
+  card.resolution = { action, note: noteText, resolvedBy: "dashboard" };
   writeQueue(queue);
   return NextResponse.json({ id, action, card });
 }

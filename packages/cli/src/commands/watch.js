@@ -594,7 +594,7 @@ function checkInstrumentation(projectRoot) {
     const relToSrc = path.relative(path.join(projectRoot, "src"), fullSourcePath);
     if (!relToSrc || relToSrc.startsWith("..") || path.isAbsolute(relToSrc)) continue;
     if (!/\.(tsx|jsx)$/.test(fullSourcePath)) continue;
-    if (!/^[A-Za-z0-9_.:-]+$/.test(posthogEventKey ?? componentName)) continue;
+    if (!/^[\w .:/-]{1,100}$/.test(posthogEventKey ?? componentName)) continue;
 
     if (!fs.existsSync(fullSourcePath)) continue;
 

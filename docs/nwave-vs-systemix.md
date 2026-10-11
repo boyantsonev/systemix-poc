@@ -62,7 +62,7 @@ Never unsupervised end-to-end. Mechanics worth noting:
 
 | Borrow | Why it fits Systemix |
 |---|---|
-| **Repo-as-product + thin SPA + stars/forks as signal** | Validates the pivot. Ship Systemix as an MIT GitHub repo + `npx systemix` + deep in-repo docs; track **stars/forks as a first-class signal** alongside PostHog. The repo is the magnet. |
+| **Repo-as-product + thin SPA + stars/forks as signal** | Validates the pivot. Ship Systemix as an MIT GitHub repo + `npx @getsystemix/cli` + deep in-repo docs; track **stars/forks as a first-class signal** alongside PostHog. The repo is the magnet. |
 | **The `/nw-buddy` concierge** | Build **`/systemix next`** — a zero-config planner that reads the instance (config + contracts + queue) and says the next step. This is exactly the "planner picks the next node" idea, productized. Highest-leverage borrow. |
 | **`/nw-rigor`-style profiles** | Collapse Systemix's `autonomy` + Hermes thresholds + engine choice (ADR-013) + Trust Tier (ADR-008) into **one `/systemix rigor` command**: lean (Ollama/haiku, no review) → thorough (Claude/opus, HITL on everything). Better UX than a static YAML. |
 | **Named phases + reviewable artifact + human gate** | Systemix's loop already is this; adopt nWave's *discipline* of "every phase emits one artifact you approve." |
@@ -118,7 +118,7 @@ The transferable lesson is the **shape of the company**, not the code: a two-per
 that is the product, thin marketing, deep docs, stars as proof, dogfooded on itself. Three concrete
 moves for Systemix:
 
-1. **Make the repo the product.** Public, MIT, `npx systemix`, in-repo docs as the depth. Demote the
+1. **Make the repo the product.** Public, MIT, `npx @getsystemix/cli`, in-repo docs as the depth. Demote the
    app further; let GitHub be the surface.
 2. **Add `/systemix next` (the buddy)** — the zero-config planner. This is the nWave borrow with the
    highest payoff and it *is* the "operator" node we kept circling.

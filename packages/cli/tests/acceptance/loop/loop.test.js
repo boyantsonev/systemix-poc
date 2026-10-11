@@ -232,6 +232,13 @@ describe("systemix loop — the Ralph runner", () => {
     expect(readQueue(root).cards).toHaveLength(0);
   });
 
+  it("an unsafe id skips before any path is resolved from it (no throw, nothing written)", async () => {
+    const r = await runLoop(root, "../escaped-id", { now: NOW, fetchEvidence: fetcher({ control: 1, variant_b: 2 }) });
+    expect(r.stop).toBe("skipped:invalid-id");
+    expect(r.note).toContain('"../escaped-id" is not a valid experiment id');
+    expect(readQueue(root).cards).toHaveLength(0);
+  });
+
   it("sweepLoop returns one explicit stop per running experiment", async () => {
     exp.createExperiment(root, "y", { now: NOW });
     exp.setMeasurement(root, "x", { event: "book_call_clicked" });

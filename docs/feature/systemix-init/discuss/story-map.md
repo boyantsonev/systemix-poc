@@ -1,4 +1,4 @@
-# Story Map: `npx systemix init`
+# Story Map: `npx @getsystemix/cli init`
 
 ## User: Design partner (G1 client) — Priya Mehta, frontend lead installing Systemix into a foreign repo
 ## Goal: Install a working, self-contained Systemix instance in one command — skills, config, and contracts — so the loops run locally and in CI from day one (JOB-002)
@@ -7,7 +7,7 @@
 
 ## Backbone
 
-Activities in chronological order as the user moves through `npx systemix init`:
+Activities in chronological order as the user moves through `npx @getsystemix/cli init`:
 
 | (1) Choose Surfaces | (2) Provide Credentials | (3) Set Autonomy | (4) Set Self-Improvement | (5) Verify Artifacts |
 |---------------------|-------------------------|------------------|--------------------------|----------------------|

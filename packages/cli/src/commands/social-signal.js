@@ -21,6 +21,7 @@ const path     = require("path");
 const os       = require("os");
 const https    = require("https");
 const readline = require("readline");
+const { assertExperimentId } = require("../lib/experiments");
 
 const HYPOTHESIS_DIR  = path.join(process.cwd(), "experiments");
 const USER_CONFIG     = path.join(os.homedir(), ".systemix", "config.json");
@@ -182,6 +183,7 @@ async function socialSignal(args) {
 
   // ── validate hypothesis file ──────────────────────────────────────────────
 
+  assertExperimentId(hypothesisId);
   const hypothesisFile = path.join(HYPOTHESIS_DIR, `${hypothesisId}.mdx`);
   if (!fs.existsSync(hypothesisFile)) {
     console.error(`  ✗  Hypothesis not found: ${hypothesisFile}`);

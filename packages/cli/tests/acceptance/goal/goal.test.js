@@ -97,6 +97,63 @@ describe("experiments/goals/ — file-first ops", () => {
   });
 });
 
+describe("experiments/goals/ — path-safe ids", () => {
+  let root;
+  beforeEach(() => { root = tmpRoot(); });
+  afterEach(() => { fs.rmSync(root, { recursive: true, force: true }); });
+
+  const UNSAFE_IDS = [
+    "../x",
+    "../../outside-the-repo",
+    "nested/id",
+    "back\\slash",
+    "..",
+    ".hidden",
+    "-leading-hyphen",
+    "Upper-Case",
+    "with space",
+    "under_score",
+    "dotted.name",
+    "line\nbreak",
+    "x".repeat(82),
+  ];
+
+  it.each(UNSAFE_IDS)("new rejects the unsafe id %j and writes nothing", (id) => {
+    expect(() => goalsLib.createGoal(root, id, { now: NOW })).toThrow(/^invalid goal id /);
+    expect(fs.readdirSync(root)).toEqual([]); // not even experiments/goals/ — rejected before any write
+  });
+
+  it("new rejects a missing id with a clear error", () => {
+    expect(() => goalsLib.createGoal(root, undefined)).toThrow("a goal id is required");
+    expect(() => goalsLib.createGoal(root, "")).toThrow("a goal id is required");
+  });
+
+  it.each(["a", "0", "consultancy-leads", "x".repeat(81)])("new accepts the kebab-case id %j", (id) => {
+    goalsLib.createGoal(root, id, { now: NOW });
+    expect(fs.existsSync(path.join(root, "experiments", "goals", `${id}.mdx`))).toBe(true);
+  });
+
+  it("goalFile refuses a traversal id instead of resolving a path outside experiments/goals/", () => {
+    expect(() => goalsLib.goalFile(root, "../x")).toThrow('invalid goal id "../x"');
+  });
+
+  it("CLI door: `goal new ../x` rejects the id and writes nothing outside experiments/goals/", async () => {
+    await expect(goal(["new", "../x"], { projectRoot: root })).rejects.toThrow('invalid goal id "../x"');
+    expect(fs.existsSync(path.join(root, "experiments", "x.mdx"))).toBe(false); // where ../x would land
+    expect(fs.readdirSync(root)).toEqual([]);
+  });
+
+  it("the `systemix` binary prints the error and exits 1 — no stack trace, no file", () => {
+    const { spawnSync } = require("child_process");
+    const bin = path.join(__dirname, "..", "..", "..", "bin", "cli.js");
+    const r = spawnSync(process.execPath, [bin, "goal", "new", "../x"], { cwd: root, encoding: "utf8" });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('✗ invalid goal id "../x" — use lowercase letters, digits and hyphens');
+    expect(r.stderr).not.toMatch(/\n\s+at /); // no stack frames
+    expect(fs.existsSync(path.join(root, "experiments"))).toBe(false);
+  });
+});
+
 describe("experiments/<id>.mdx — the `goal:` link to a goal", () => {
   let root;
   beforeEach(() => { root = tmpRoot(); });

@@ -36,12 +36,12 @@ work is.**
 **What you asked for:** "do I have a design system already? convert, decide use cases, recommend."
 
 **What exists today:**
-- Detection/audit: `npx systemix audit` → `/design-audit` — zero-setup, infers the de-facto DS,
+- Detection/audit: `npx @getsystemix/cli audit` → `/design-audit` — zero-setup, infers the de-facto DS,
   flags drift, proposes a starter `design/` (`packages/cli/src/commands/audit.js`).
 - Conversion: `scripts/token-converter.ts` (globals.css → tokens.bridge.json) and
   `scripts/generate-design-md.ts` (contract → DESIGN.md) — the mechanics of turning an existing
   system into Systemix's format exist, but as separate scripts, not one guided path.
-- "Decide use cases": the **already-locked** `npx systemix init` 4-question wizard (ADR-008) —
+- "Decide use cases": the **already-locked** `npx @getsystemix/cli init` 4-question wizard (ADR-008) —
   Surfaces / Signals / Autonomy / Self-improvement → `systemix.config.yaml`. This *is* the
   use-case-selection step, already decided, already shipping.
 - Adopt-vs-scaffold: `systemix.config.yaml` already has the seam for this —
@@ -113,7 +113,7 @@ artifact sandbox allow a localhost fetch) as the first thing to verify.
 
 ## 6. Drift report, audit — already built, ongoing
 
-`/drift-report` (OKLCH perceptual diff, ADR-002) and `/design-audit` (`npx systemix audit`) already
+`/drift-report` (OKLCH perceptual diff, ADR-002) and `/design-audit` (`npx @getsystemix/cli audit`) already
 do this. Nothing new required for this stage; it's the maintenance heartbeat that runs continuously
 once §1–5 are done once. Its output (drift status per token/component) is also one of the three
 ingredients in the paid Readiness Audit artifact from the productization-benchmark doc.

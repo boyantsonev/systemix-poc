@@ -67,7 +67,7 @@ Each decision is structured as:
 
 **Risk score: (2×3) + (2×2) + (1×1) = 6+4+1 = 11 — test soon.**
 
-**Recommended action:** Treat them as zoom levels with an explicit segmentation decision. The landing page serves the design-engineer ICP (Beta positioning, copy spec approved). The blog post serves the pre-PMF founder ICP (meta thesis). Both routes lead to `npx systemix init`. After 30 days of data from both channels, revisit which ICP converts at a higher rate and concentrates the product narrative there.
+**Recommended action:** Treat them as zoom levels with an explicit segmentation decision. The landing page serves the design-engineer ICP (Beta positioning, copy spec approved). The blog post serves the pre-PMF founder ICP (meta thesis). Both routes lead to `npx @getsystemix/cli init`. After 30 days of data from both channels, revisit which ICP converts at a higher rate and concentrates the product narrative there.
 
 ---
 
@@ -125,7 +125,7 @@ Each decision is structured as:
 
 **Risk score: (2×3) + (1×2) + (1×1) = 6+2+1 = 9 — test soon.**
 
-**Recommended action:** Publish the blog post, track the `npx systemix init` install signal as a PostHog event, write the result back to a contract for the blog post hypothesis. This closes the loop publicly and operationalises the meta-narrative. This is the single most effective action to make the thesis credible.
+**Recommended action:** Publish the blog post, track the `npx @getsystemix/cli init` install signal as a PostHog event, write the result back to a contract for the blog post hypothesis. This closes the loop publicly and operationalises the meta-narrative. This is the single most effective action to make the thesis credible.
 
 ---
 

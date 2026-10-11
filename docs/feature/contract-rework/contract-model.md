@@ -109,7 +109,7 @@ hypotheses of real history — that *is* the demo.
 ## Records — unchanged
 
 `contract/tokens/*`, `contract/components/*`, `contract/workflows/*` keep their schemas and their
-writers (sync skills, `npx systemix atlas build`). Only their *place* changes: appendix, linked
+writers (sync skills, `npx @getsystemix/cli atlas build`). Only their *place* changes: appendix, linked
 from goals. The Atlas catalog generator is unaffected.
 
 ## Hermes write-access matrix (the autonomy dial, made mechanical)

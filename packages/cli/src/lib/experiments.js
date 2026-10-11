@@ -15,6 +15,25 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 const isoDay = (d) => d.toISOString().slice(0, 10);
 
+// An experiment id becomes a file name (experiments/<id>.mdx), so it must be a
+// plain kebab-case slug — no path separators, no "..", nothing that resolves
+// outside experiments/. The MCP door (packages/mcp-server/src/tools/experiment.ts)
+// enforces the SAME pattern; doors-agree.test.js keeps the two in sync.
+const EXPERIMENT_ID_RE = /^[a-z0-9][a-z0-9-]{0,80}$/;
+
+const isValidExperimentId = (id) => typeof id === "string" && EXPERIMENT_ID_RE.test(id);
+
+/** Throw a clear error unless `id` is a safe experiment id. */
+function assertExperimentId(id) {
+  if (id == null || id === "") throw new Error("an experiment id is required");
+  if (!isValidExperimentId(id)) {
+    throw new Error(
+      `invalid experiment id ${JSON.stringify(id)} — use lowercase letters, digits and hyphens, ` +
+        "starting with a letter or digit (max 81 characters), e.g. landing-hero-2026-07"
+    );
+  }
+}
+
 /**
  * Deep-copy parsed frontmatter into fresh plain objects, converting YAML
  * timestamps back to YYYY-MM-DD strings (js-yaml parses bare dates as Date;
@@ -66,6 +85,7 @@ function listExperiments(root, { status } = {}) {
 
 /** Read one experiment ({ data, content }) or throw if missing. */
 function getExperiment(root, id) {
+  assertExperimentId(id);
   const file = layout.abs(root).experimentFile(id);
   if (!fs.existsSync(file)) throw new Error(`experiment not found: ${layout.rel.experimentFile(id)}`);
   const parsed = matter(fs.readFileSync(file, "utf8"));
@@ -78,7 +98,7 @@ function getExperiment(root, id) {
 
 /** Create experiments/<id>.mdx (status: running). Throws if it already exists. */
 function createExperiment(root, id, fields = {}) {
-  if (!id) throw new Error("an experiment id is required");
+  assertExperimentId(id);
   const file = layout.abs(root).experimentFile(id);
   if (fs.existsSync(file)) throw new Error(`experiment already exists: ${layout.rel.experimentFile(id)}`);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -310,6 +330,9 @@ module.exports = {
   readLearnings,
   parseLearnings,
   markLearningUsed,
+  EXPERIMENT_ID_RE,
+  isValidExperimentId,
+  assertExperimentId,
   // internals exported for reuse/tests
   appendLearning,
   pushQueueCard,

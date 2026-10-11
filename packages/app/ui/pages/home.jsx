@@ -40,7 +40,7 @@ export default function Home() {
           </dl>
         ) : (
           <p className="muted">
-            not captured yet — rerun <code>npx systemix init --reconfigure</code>
+            not captured yet — rerun <code>npx @getsystemix/cli init --reconfigure</code>
           </p>
         )}
       </div>

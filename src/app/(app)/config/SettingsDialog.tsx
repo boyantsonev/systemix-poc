@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { TIER_LABELS, tierLabel, tierFromLabel } from "@/lib/contract/write-policy";
@@ -22,7 +23,8 @@ const SELF_MODES = ["off", "audit", "active"];
 
 // The instance settings, as a centered modal. The save path is unchanged — POST
 // /api/config → applyConfigPatch → writes systemix.config.yaml — plus a
-// router.refresh() so the topology reflects it.
+// router.refresh() so the topology reflects it. Raising autonomy round-trips once
+// more: the server prints a one-time code to its terminal and the save resends it.
 export function SettingsDialog({
   cfg,
   signals = [],
@@ -40,6 +42,8 @@ export function SettingsDialog({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsCode, setNeedsCode] = useState(false);
+  const [code, setCode] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -47,6 +51,8 @@ export function SettingsDialog({
       initialRef.current = cfg;
       setSaved(false);
       setError(null);
+      setNeedsCode(false);
+      setCode("");
     }
   }, [open, cfg]);
 
@@ -83,13 +89,23 @@ export function SettingsDialog({
     setSaving(true);
     setError(null);
     try {
+      const confirmCode = needsCode ? code.trim() : "";
       const res = await fetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
+        body: JSON.stringify(confirmCode ? { ...draft, confirmCode } : draft),
       });
       const json = await res.json();
+      if (json.needsConfirmation) {
+        setNeedsCode(true);
+        setCode("");
+        setError(json.error);
+        setSaving(false);
+        return;
+      }
       if (!json.ok) throw new Error(json.error || "Save failed");
+      setNeedsCode(false);
+      setCode("");
       initialRef.current = json.config;
       setDraft(json.config);
       setSaved(true);
@@ -214,6 +230,7 @@ export function SettingsDialog({
             </ToggleGroup>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               ghost proposes everything · assisted writes low-risk · autonomous writes most (never goals).
+              Raising it asks for a one-time code from your terminal.
             </p>
           </Group>
 
@@ -243,12 +260,25 @@ export function SettingsDialog({
         </div>
 
         <DialogFooter className="items-center gap-3 sm:justify-start">
+          {needsCode && (
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="ABCD-EFGH"
+              aria-label="Confirmation code from your terminal"
+              autoComplete="off"
+              autoFocus
+              className="h-8 w-full shrink-0 sm:w-32"
+            />
+          )}
           <Button onClick={save} disabled={!dirty || saving} size="sm" className="w-full sm:w-auto">
-            {saving ? "Saving…" : "Save config"}
+            {saving ? "Saving…" : needsCode && code.trim() ? "Confirm & save" : "Save config"}
           </Button>
           {saved && <span className="text-xs text-success">✓ written</span>}
           {dirty && !saved && <span className="text-xs text-muted-foreground">unsaved changes</span>}
-          {error && <span className="text-xs text-destructive">{error}</span>}
+          {error && (
+            <span className={needsCode ? "text-xs text-warning" : "text-xs text-destructive"}>{error}</span>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

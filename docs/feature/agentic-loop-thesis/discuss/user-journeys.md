@@ -29,7 +29,7 @@ The agentic loop thesis produces one primary journey: **the evidence loop**. It 
 **What Tomas does:**
 
 ```
-$ npx systemix init
+$ npx @getsystemix/cli init
 ```
 
 ```

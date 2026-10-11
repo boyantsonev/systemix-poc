@@ -1,4 +1,4 @@
-# How `npx systemix init` Works
+# How `npx @getsystemix/cli init` Works
 
 **Derives from:** [`what-is-systemix.md`](./what-is-systemix.md) · reconciles ADR-008 (the
 4-question wizard) with `product-model.md` §2's "forward shape." Scope = the **setup contract** that
@@ -8,7 +8,7 @@ turns a client repo into a running Systemix instance.
 
 ## The forward shape (what we communicate)
 
-1. **`npx systemix init`** in the client repo.
+1. **`npx @getsystemix/cli init`** in the client repo.
 2. **Feed inputs** — connect **Figma files**, **existing repos**, and/or a **desired UI setup**.
    These are what the loop will keep in sync.
 3. **Define a hypothesis** — one of the three domains (UI / workflow / landing value-prop),

@@ -335,6 +335,8 @@ function atomicWrite(file, data) {
  */
 export function resolveQueueItem(root, id, { action, note, resolvedBy }) {
   if (!action) return { error: 'action required', status: 400 }
+  if (action !== 'approve' && action !== 'decline') return { error: 'action must be approve or decline', status: 400 }
+  if (note != null && typeof note !== 'string') return { error: 'note must be a string', status: 400 }
   const now = new Date().toISOString()
 
   const queueData = readJson(QUEUE(root), null)
@@ -347,9 +349,9 @@ export function resolveQueueItem(root, id, { action, note, resolvedBy }) {
     atomicWrite(QUEUE(root), queueData)
     const nextHint =
       card.type === 'close-proposal' && action === 'approve' && card.experimentId
-        ? `apply the decision: npx systemix experiment close ${card.experimentId}`
+        ? `apply the decision: npx @getsystemix/cli experiment close ${card.experimentId}`
         : card.type === 'hypothesis-proposal' && action === 'approve'
-          ? 'scaffold it: npx systemix experiment new <id> (or /init-experiment)'
+          ? 'scaffold it: npx @getsystemix/cli experiment new <id> (or /init-experiment)'
           : null
     return { item: card, nextHint }
   }

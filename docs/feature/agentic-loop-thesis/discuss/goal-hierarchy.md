@@ -46,7 +46,7 @@ The approved decision is written to DESIGN.md in a structured format that Claude
 ### Priority 4 — Queue discoverability (onboarding)
 The first HITL card must arrive within 7 days of install for the founder to believe the product works. If the queue is empty for two weeks, the founder churns. The onboarding flow must close the gap between install and first card arrival.
 
-**Measure:** Time from `npx systemix init` to first HITL card displayed. Target: <7 days for a founder running 2+ PostHog experiments.
+**Measure:** Time from `npx @getsystemix/cli init` to first HITL card displayed. Target: <7 days for a founder running 2+ PostHog experiments.
 
 ---
 

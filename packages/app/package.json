@@ -18,7 +18,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "node server/index.js",
-    "test": "node --test server/test"
+    "test": "node --test server/test/*.test.js"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
