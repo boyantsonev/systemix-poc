@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadWorkflow, saveWorkflow, deleteWorkflow } from '@/lib/workflow/persistence';
+import { rejectNonLocal } from '@/lib/local-request';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = rejectNonLocal(req);
+  if (denied) return denied;
   try {
     const { id } = await params;
     const body = await req.json();
@@ -29,7 +32,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = rejectNonLocal(req, { json: false });
+  if (denied) return denied;
   const { id } = await params;
   const deleted = deleteWorkflow(id);
   if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });

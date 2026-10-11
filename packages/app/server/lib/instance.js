@@ -335,6 +335,8 @@ function atomicWrite(file, data) {
  */
 export function resolveQueueItem(root, id, { action, note, resolvedBy }) {
   if (!action) return { error: 'action required', status: 400 }
+  if (action !== 'approve' && action !== 'decline') return { error: 'action must be approve or decline', status: 400 }
+  if (note != null && typeof note !== 'string') return { error: 'note must be a string', status: 400 }
   const now = new Date().toISOString()
 
   const queueData = readJson(QUEUE(root), null)

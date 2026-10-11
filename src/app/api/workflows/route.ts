@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listWorkflows, saveWorkflow } from '@/lib/workflow/persistence';
+import { rejectNonLocal } from '@/lib/local-request';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = rejectNonLocal(req);
+  if (denied) return denied;
   try {
     const body = await req.json();
     const workflow = {
