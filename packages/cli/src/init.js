@@ -37,12 +37,33 @@ function extractFileKey(input) {
   return m ? m[1] : null;
 }
 
-function copyDir(src, dest) {
+// Copy a template tree WITHOUT clobbering: a file that already exists is left
+// as-is, so re-running init (even with --reconfigure) never erases the user's
+// learnings, goals, tokens, guardrails or edited skills. Returns every template
+// file in copy order as { file, kept }.
+function copyDir(src, dest, results = []) {
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
     const s = path.join(src, entry.name);
     const d = path.join(dest, entry.name);
-    entry.isDirectory() ? copyDir(s, d) : fs.copyFileSync(s, d);
+    if (entry.isDirectory()) copyDir(s, d, results);
+    else if (fs.existsSync(d)) results.push({ file: d, kept: true });
+    else { fs.copyFileSync(s, d); results.push({ file: d, kept: false }); }
+  }
+  return results;
+}
+
+// Scaffold a template tree into the repo. A fresh scaffold prints one summary
+// line; a re-run reports each file it added and each one it left alone.
+function scaffoldTree(projectRoot, src, dest, summary) {
+  const results = copyDir(src, dest);
+  if (results.every((r) => !r.kept)) {
+    console.log(`  ✓  ${summary}`);
+    return;
+  }
+  for (const { file, kept } of results) {
+    const rel = path.relative(projectRoot, file);
+    console.log(kept ? `  -  ${rel} exists — left as-is` : `  ✓  ${rel}`);
   }
 }
 
@@ -93,20 +114,26 @@ function installPipeline(name, skillsDir) {
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, "manifest.json"), "utf8"));
   const skillsSrc = path.join(dir, "skills");
   fs.mkdirSync(skillsDir, { recursive: true });
+  let keptAny = false;
   for (const skill of manifest.skills) {
     const src  = path.join(skillsSrc, skill);
     const dest = path.join(skillsDir, skill);
     if (!fs.existsSync(src)) { console.log(`  -  ${skill.padEnd(20)} (missing, skipped)`); continue; }
-    copyDir(src, dest);
-    console.log(`  ✓  ${skill.padEnd(20)} → .claude/skills/${skill}/`);
+    const results = copyDir(src, dest);
+    const kept = results.filter((r) => r.kept).length;
+    keptAny = keptAny || kept > 0;
+    if (kept === 0) console.log(`  ✓  ${skill.padEnd(20)} → .claude/skills/${skill}/`);
+    else if (kept === results.length) console.log(`  -  ${skill.padEnd(20)} exists — left as-is`);
+    else console.log(`  ✓  ${skill.padEnd(20)} → .claude/skills/${skill}/  (existing files left as-is)`);
   }
+  return keptAny;
 }
 
 function scaffoldExperiments(projectRoot, includeMeta) {
   // Vendor the loop (the core): experiments/<id>.mdx, LEARNINGS.md (the synthesized
   // memory close-experiment writes to), and goals/. General — not design-bound.
-  copyDir(path.join(TEMPLATES_DIR, "experiments"), layout.abs(projectRoot).experiments);
-  console.log(`  ✓  ${layout.rel.experiments}/  (the loop: <id>.mdx, LEARNINGS.md, goals/)`);
+  scaffoldTree(projectRoot, path.join(TEMPLATES_DIR, "experiments"), layout.abs(projectRoot).experiments,
+    `${layout.rel.experiments}/  (the loop: <id>.mdx, LEARNINGS.md, goals/)`);
 
   if (includeMeta) {
     fs.mkdirSync(layout.abs(projectRoot).meta, { recursive: true });
@@ -129,8 +156,8 @@ function scaffoldEngineWorkflow(projectRoot) {
 
 function scaffoldDesign(projectRoot) {
   // Vendor the design/ substrate (optional): DESIGN.md, guardrails.mdx, tokens.css.
-  copyDir(path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).design);
-  console.log(`  ✓  ${layout.rel.design}/  (DESIGN.md, guardrails.mdx, tokens.css)`);
+  scaffoldTree(projectRoot, path.join(TEMPLATES_DIR, "design"), layout.abs(projectRoot).design,
+    `${layout.rel.design}/  (DESIGN.md, guardrails.mdx, tokens.css)`);
 }
 
 // Build systemix.config.yaml — the instance topology (committed; no secrets). See ADR-008.
@@ -360,8 +387,14 @@ async function init(opts = {}) {
   // ── Install skills (project-scoped) ───────────────────────────────────────
   const projectSkillsDir = projectSkillsDirFor(projectRoot);
   console.log("  Installing skills into .claude/skills/ ...\n");
-  installPipeline("hypothesis-validation", projectSkillsDir);  // the loop — always
-  if (doDesign) installPipeline("design-system", projectSkillsDir);
+  let keptSkills = installPipeline("hypothesis-validation", projectSkillsDir);  // the loop — always
+  if (doDesign) keptSkills = installPipeline("design-system", projectSkillsDir) || keptSkills;
+  // A skill can carry the loop's own edits (skill-update appends Past Decisions),
+  // so init never refreshes one — `skills sync` is the explicit, dry-runnable update.
+  if (keptSkills) {
+    console.log("     Existing skills were left as-is. Preview a refresh with: npx @getsystemix/cli skills sync --dry-run" +
+      (doDesign ? " [--pipeline design-system]" : ""));
+  }
   console.log();
 
   // ── Scaffold the loop (always) + the design substrate (when scaffolding) ──
@@ -370,8 +403,10 @@ async function init(opts = {}) {
   seedGoalFromContext(projectRoot, context);
   scaffoldEngineWorkflow(projectRoot);
   if (designMode === "scaffold") {
+    const freshDesignMd = !fs.existsSync(layout.abs(projectRoot).designFile);
     scaffoldDesign(projectRoot);
-    mirrorContextIntoDesign(projectRoot, context);
+    // Mirror context only into a DESIGN.md this run created — an existing one is the user's.
+    if (freshDesignMd) mirrorContextIntoDesign(projectRoot, context);
   } else if (designMode === "existing") {
     console.log(`  -  design/: using your existing design system${designSource ? ` at ${designSource}` : " (set design.source later)"}`);
   } else {

@@ -1,5 +1,5 @@
 <!-- markdownlint-disable MD024 -->
-# User Stories — `npx systemix init`
+# User Stories — `npx @getsystemix/cli init`
 
 **Feature:** `systemix-init`
 **Job trace:** JOB-002 `install-into-foreign-repo` (validated-conditional, confidence=medium)
@@ -22,10 +22,10 @@
 ## US-01: Surface Selection Installs Correct Pipeline Skills
 
 ### Elevator Pitch
-- **Before:** Priya runs `npx systemix init` and answers "1" (design-system only), but
+- **Before:** Priya runs `npx @getsystemix/cli init` and answers "1" (design-system only), but
   has no way to verify which skill dirs were actually created. She checks `.claude/skills/`
   manually and is not sure if she got all 6 or some partial set.
-- **After:** `npx systemix init` (answer "1" at surface prompt) exits with
+- **After:** `npx @getsystemix/cli init` (answer "1" at surface prompt) exits with
   `.claude/skills/figma/`, `.claude/skills/tokens/`, `.claude/skills/sync-to-figma/`,
   `.claude/skills/drift-report/`, `.claude/skills/check-parity/`, `.claude/skills/contract-query/`
   all present. Answer "2" gives the 9 hypothesis-validation skills. Answer "3" gives both sets.
@@ -34,7 +34,7 @@
 
 ### Problem
 Priya Mehta is a frontend lead at a Series-A startup who has never run Systemix before.
-She finds it unclear which skill files end up on disk after `npx systemix init`, because the
+She finds it unclear which skill files end up on disk after `npx @getsystemix/cli init`, because the
 wizard output uses display names ("Design System Sync") but the actual dirs use pipeline names
 ("design-system"). She cannot verify correctness without manual inspection.
 
@@ -63,7 +63,7 @@ test contract verifies exact dir names exist on disk.
 
 #### Scenario: Design-system surface installs exactly the 6 expected skill dirs
 ```gherkin
-Given Priya runs npx systemix init in a clean tmp repo
+Given Priya runs npx @getsystemix/cli init in a clean tmp repo
 And answers "1" at the surfaces prompt
 And presses Enter (skip) at all credential prompts
 When init completes
@@ -74,7 +74,7 @@ And no hypothesis-validation skill dirs are present
 
 #### Scenario: Hypothesis-validation surface installs exactly the 9 expected skill dirs
 ```gherkin
-Given Carlos runs npx systemix init in a clean tmp repo
+Given Carlos runs npx @getsystemix/cli init in a clean tmp repo
 And answers "2" at the surfaces prompt
 And presses Enter (skip) at the PostHog key prompt
 When init completes
@@ -86,7 +86,7 @@ And no design-system skill dirs are present
 
 #### Scenario: Both surfaces installs all 15 skill dirs and 3 contract dirs
 ```gherkin
-Given Aisha runs npx systemix init in a clean tmp repo
+Given Aisha runs npx @getsystemix/cli init in a clean tmp repo
 And presses Enter at the surfaces prompt (defaults to "3")
 And skips all credential prompts
 When init completes
@@ -96,7 +96,7 @@ And contract/tokens/, contract/components/, contract/hypotheses/ all exist
 
 #### Scenario: Surfaces YAML lists surface names, not pipeline dirs
 ```gherkin
-Given Carlos runs npx systemix init with choice "2" (hypothesis-validation)
+Given Carlos runs npx @getsystemix/cli init with choice "2" (hypothesis-validation)
 When init completes and systemix.config.yaml is read
 Then the surfaces list contains: [landing, onboarding]
 And NOT [hypothesis-validation]
@@ -128,7 +128,7 @@ And NOT [hypothesis-validation]
 ### Elevator Pitch
 - **Before:** Priya pastes a Figma branch URL and `init` exits with no file key saved — she
   doesn't know if the URL format was wrong or if init crashed silently.
-- **After:** `npx systemix init` (choice "1") prompts for a Figma file URL or key, re-prompts
+- **After:** `npx @getsystemix/cli init` (choice "1") prompts for a Figma file URL or key, re-prompts
   on unrecognisable input (prints `"Couldn't read a file key — paste the full Figma URL or bare key"`),
   and accepts all valid Figma URL formats. Pressing Enter skips without error.
 - **Decision enabled:** Priya knows the file key was either accepted and saved to
@@ -219,15 +219,15 @@ And .systemix/project-context.json is not created
 ## US-03: Config Idempotency and Reconfigure Flag
 
 ### Elevator Pitch
-- **Before:** Carlos re-runs `npx systemix init` after changing his autonomy preference and
+- **Before:** Carlos re-runs `npx @getsystemix/cli init` after changing his autonomy preference and
   accidentally wipes the Figma key and PostHog key he set in the first run.
-- **After:** `npx systemix init` preserves an existing `systemix.config.yaml` unless
+- **After:** `npx @getsystemix/cli init` preserves an existing `systemix.config.yaml` unless
   `--reconfigure` is passed. Re-running with `--reconfigure` overwrites it with fresh answers.
 - **Decision enabled:** Carlos can re-run init safely during onboarding without losing credentials
   or config he set earlier.
 
 ### Problem
-Carlos is iterating on his Systemix setup. He re-runs `npx systemix init` to change
+Carlos is iterating on his Systemix setup. He re-runs `npx @getsystemix/cli init` to change
 autonomy from "balanced" to "conservative" but the re-run overwrites his existing config,
 losing his Figma key reference that he had saved in the first run.
 
@@ -244,7 +244,7 @@ forces overwrite.
 ### Domain Examples
 1. **Idempotent re-run** — Carlos ran init on Monday. Re-runs on Tuesday without flags.
    `systemix.config.yaml` is unchanged; stdout says "left as-is (re-run with --reconfigure to overwrite)."
-2. **Forced reconfigure** — Carlos runs `npx systemix init --reconfigure`. New answers
+2. **Forced reconfigure** — Carlos runs `npx @getsystemix/cli init --reconfigure`. New answers
    are written; `systemix.config.yaml` gets fresh content.
 3. **First run** — No existing `systemix.config.yaml`. Init writes it unconditionally.
 
@@ -298,7 +298,7 @@ And stdout contains "systemix.config.yaml"
 ### Elevator Pitch
 - **Before:** Priya runs init, then runs it again two weeks later. Her `.gitignore` now has
   duplicate `# systemix runtime dirs` blocks and duplicate entries, making the file messy.
-- **After:** `npx systemix init` appends `.systemix/handoffs/`, `.systemix/cache/`,
+- **After:** `npx @getsystemix/cli init` appends `.systemix/handoffs/`, `.systemix/cache/`,
   `.systemix/runs/` to `.gitignore` only if absent. Re-running never duplicates.
 - **Decision enabled:** Priya can commit `.gitignore` without review — it is always clean.
 
@@ -375,7 +375,7 @@ And .systemix/handoffs/ appears exactly once
 - **Before:** Aisha assumes that choosing "progressive" autonomy (choice "3") also elevates
   the trust tier. She checks `systemix.config.yaml` and sees `orchestrator_tier: 0` — she is
   unsure if that is a bug.
-- **After:** `npx systemix init` always writes `orchestrator_tier: 0` and `hermes_tier: 0`
+- **After:** `npx @getsystemix/cli init` always writes `orchestrator_tier: 0` and `hermes_tier: 0`
   in `systemix.config.yaml`, regardless of autonomy answer. The file comment explains: "Ghost Mode
   at init — never executes autonomously without config."
 - **Decision enabled:** Aisha can share the generated config with her team knowing it is safe
@@ -455,7 +455,7 @@ And systemix.config.yaml contains: hermes_tier: 0
 ### Elevator Pitch
 - **Before:** Carlos answers "off" for self-improvement but still sees a `contract/meta/`
   dir in his repo. He is not sure what it is for or whether to commit it.
-- **After:** `npx systemix init` with self-improvement "off" (choice "1") creates
+- **After:** `npx @getsystemix/cli init` with self-improvement "off" (choice "1") creates
   `contract/tokens/`, `contract/components/`, `contract/hypotheses/` but NOT `contract/meta/`.
   Any other self-improvement choice creates `contract/meta/` too.
 - **Decision enabled:** Carlos knows exactly which contract dirs to commit based on his
@@ -523,9 +523,9 @@ And systemix.config.yaml contains: meta_contract: contract/meta/hermes-accuracy.
 ## US-07: MCP Registration Fallback Prints Manual Snippet
 
 ### Elevator Pitch
-- **Before:** Priya runs `npx systemix init` on a fresh machine with no Claude Code config.
+- **Before:** Priya runs `npx @getsystemix/cli init` on a fresh machine with no Claude Code config.
   Init crashes with an unhandled error when trying to register the MCP server.
-- **After:** When no MCP client config is found, `npx systemix init` prints the manual
+- **After:** When no MCP client config is found, `npx @getsystemix/cli init` prints the manual
   registration snippet to stdout and continues. Init does not crash.
 - **Decision enabled:** Priya can manually add the MCP config snippet to her `~/.claude.json`
   and still complete the setup without re-running init.

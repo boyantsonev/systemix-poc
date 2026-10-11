@@ -70,7 +70,7 @@
 **Date:** 2026-04-06
 **Status:** DECIDED
 
-**Decision:** The Vercel deployment at systemix-alpha.vercel.app is the interactive documentation layer and design system canvas, not a marketing site. The hero landing page pivoted to `npx systemix init` — a CLI-first concept. Fake dashboard metrics pages are to be removed (BAST-106).
+**Decision:** The Vercel deployment at systemix-alpha.vercel.app is the interactive documentation layer and design system canvas, not a marketing site. The hero landing page pivoted to `npx @getsystemix/cli init` — a CLI-first concept. Fake dashboard metrics pages are to be removed (BAST-106).
 
 **Rationale:** The real value is the workspace — token audit, component isolation, drift detection. These are interactive and built from actual design tokens. The marketing wrapper added noise without adding value for the target audience (designers and developers using the tool themselves).
 
@@ -87,7 +87,7 @@
 **Status:** DECIDED
 **Feature:** systemix-v2 (Decision A)
 
-**Decision:** Systemix v-next ships as an **embedded, single-tenant instance** installed per client repo via `npx systemix init`. The v1 central, multi-tenant, Supabase-backed app is **demoted to an OPTIONAL control plane** (read-only dashboard view + opt-in cross-instance HITL/evidence aggregation). The client repo is the source of truth; the hosted layer is a view that is never required to run the loops.
+**Decision:** Systemix v-next ships as an **embedded, single-tenant instance** installed per client repo via `npx @getsystemix/cli init`. The v1 central, multi-tenant, Supabase-backed app is **demoted to an OPTIONAL control plane** (read-only dashboard view + opt-in cross-instance HITL/evidence aggregation). The client repo is the source of truth; the hosted layer is a view that is never required to run the loops.
 
 **Rationale:** Design Partner #1 (Connecta, EU K-12) must own its instance and data for GDPR. The onboarding prototype confirms contracts are MDX files in-repo ("no database, no hosted UI"). Local-first honors data ownership; an opt-in control plane preserves the SaaS business without making clients depend on our uptime.
 
@@ -121,7 +121,7 @@
 **Status:** DECIDED
 **Feature:** systemix-v2 (Decision C) · Prototype: `docs/feature/systemix-v2/prototypes/`
 
-**Decision:** `npx systemix init` runs a **4-question topology wizard** and scaffolds a self-contained instance, writing `systemix.config.yaml`. The questions: (1) **Surfaces** validated (landing / onboarding / features / design-system / gtm) → determines installed skills; (2) **Signals** Hermes may read (PostHog / Vercel / Social / Figma); (3) **Autonomy** mode (conservative / balanced / progressive) → Hermes confidence thresholds; (4) **Self-improvement** mode (off / audit / tuning / auto) → the meta-audit loop. The MCP server exposes contracts to Claude Code / Cursor; `systemix watch` runs Hermes on local Ollama. Agents start at **Trust Tier 0 (Ghost Mode)** — never autonomous without config. The instance ships a **local force-graph viewer** of its own topology (the design-partner's first localhost surface).
+**Decision:** `npx @getsystemix/cli init` runs a **4-question topology wizard** and scaffolds a self-contained instance, writing `systemix.config.yaml`. The questions: (1) **Surfaces** validated (landing / onboarding / features / design-system / gtm) → determines installed skills; (2) **Signals** Hermes may read (PostHog / Vercel / Social / Figma); (3) **Autonomy** mode (conservative / balanced / progressive) → Hermes confidence thresholds; (4) **Self-improvement** mode (off / audit / tuning / auto) → the meta-audit loop. The MCP server exposes contracts to Claude Code / Cursor; `systemix watch` runs Hermes on local Ollama. Agents start at **Trust Tier 0 (Ghost Mode)** — never autonomous without config. The instance ships a **local force-graph viewer** of its own topology (the design-partner's first localhost surface).
 
 **Rationale:** This is the gating artifact for every client build (`meta-plan.md` §8). The prototype `systemix-onboarding-v2.jsx` defines the exact wizard UX and the `systemix.config.yaml` schema; the graph is "what Connecta sees on localhost." Core loops run framework-agnostically (Connecta learning L1).
 
@@ -276,7 +276,7 @@
 **Status:** DECIDED
 **Feature:** distribution / cowork-operating-layer · Analysis: `docs/nwave-vs-systemix.md`
 
-**Decision:** Systemix's primary surface is a **public, MIT-licensed GitHub repo + `npx systemix` CLI + deep in-repo docs**, fronted by a **thin marketing landing**. **GitHub stars / forks / issues** are tracked as a **product-level** traction signal alongside PostHog. The hosted app stays demoted to the optional control plane (ADR-006). Model borrowed from nWave (the repo is product + magnet + dogfood, run by ~2 people at 499★).
+**Decision:** Systemix's primary surface is a **public, MIT-licensed GitHub repo + `npx @getsystemix/cli` CLI + deep in-repo docs**, fronted by a **thin marketing landing**. **GitHub stars / forks / issues** are tracked as a **product-level** traction signal alongside PostHog. The hosted app stays demoted to the optional control plane (ADR-006). Model borrowed from nWave (the repo is product + magnet + dogfood, run by ~2 people at 499★).
 
 **Rationale:** Lowest-surface distribution for a 1–3 person team; the repo is simultaneously the deliverable, the proof, and the lead magnet, and it matches Cowork-first + local-first (ADR-007, ADR-016). nWave empirically validates the model.
 
@@ -284,7 +284,7 @@
 
 **Alternatives considered:** Lead with the hosted app (rejected — ADR-005/006 already demoted it); private repo + sales-led (rejected — forecloses the magnet/social-proof that makes the model work for a tiny team).
 
-**Consequences:** Prioritize public-repo readiness (README, MIT, `npx systemix` clean first-run, docs as depth). A `social-signal`/stars connector becomes a signal source for the loop. Landing stays thin.
+**Consequences:** Prioritize public-repo readiness (README, MIT, `npx @getsystemix/cli` clean first-run, docs as depth). A `social-signal`/stars connector becomes a signal source for the loop. Landing stays thin.
 
 **Review trigger:** A hosted product becomes the primary distribution channel.
 

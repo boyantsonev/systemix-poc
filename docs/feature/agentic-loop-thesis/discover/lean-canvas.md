@@ -81,7 +81,7 @@ Hermes-3 (local LLM via Ollama) reads PostHog event stream and proposes contract
 ### 5. Channels
 
 **Primary (open source / developer PLG):**
-- `npx systemix init` as the installation primitive
+- `npx @getsystemix/cli init` as the installation primitive
 - Show HN for the blog post (distribution sequence already planned in `docs/blog/evidence-layer-post.md`)
 - GitHub trending (the `contract/hypotheses/` schema is open — designed to be adopted without the Systemix tooling)
 - Claude Code / Cursor MCP marketplace (when available)
@@ -142,7 +142,7 @@ Hermes-3 (local LLM via Ollama) reads PostHog event stream and proposes contract
 |---|---|---|---|
 | Active hypothesis contracts | 1 (self) | 10 (external) | Contract files in partner repos |
 | Evidence loops closed | 0 | 5 (external) | `decision: promote/iterate/kill` filed in contracts |
-| `npx systemix init` installs | 0 | 50 | npm download count |
+| `npx @getsystemix/cli init` installs | 0 | 50 | npm download count |
 | HN Show HN engagement | 0 | >50 points, >20 comments | HN post metrics |
 | Social signal logged | 0 | 1 (from blog post itself) | `evidence-social` field in blog post contract |
 | Hermes acceptance rate | untested | >80% unmodified | SPIKE 1 result |
@@ -180,14 +180,14 @@ Hermes-3 (local LLM via Ollama) reads PostHog event stream and proposes contract
 - The pre-PMF founder ICP has not been interviewed
 - The macro thesis (AI commoditises "how") is logical but not empirically confirmed at product level
 
-**Validation path:** 5 founder interviews (past behavior: "tell me about the last time you made a decision without the context from the prior experiment"), fake-door test on the blog post (measure install rate from `npx systemix init` CTA), DM outreach to 10 PostHog community members
+**Validation path:** 5 founder interviews (past behavior: "tell me about the last time you made a decision without the context from the prior experiment"), fake-door test on the blog post (measure install rate from `npx @getsystemix/cli init` CTA), DM outreach to 10 PostHog community members
 
 ---
 
 ### Usability risk — Can customers use this?
 
 **Risk level: MEDIUM (amber)**
-- The CLI flow (`npx systemix init` → `/init-experiment` → run → `/close-experiment`) is simple in concept
+- The CLI flow (`npx @getsystemix/cli init` → `/init-experiment` → run → `/close-experiment`) is simple in concept
 - No usability testing has occurred with external users
 - The Hermes-3 HITL flow requires a local Ollama install — this is a non-trivial setup step for non-engineer ICPs. For the pre-PMF founder ICP (likely technical), this is low friction. For ops-heavy roles (hypothesis contract's ICP), this may be a hard blocker.
 

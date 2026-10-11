@@ -20,7 +20,7 @@ slop.
 
 | Rung | Price | What it is | Where it converts |
 |---|---|---|---|
-| Open-source kit | Free | `npx systemix init` — the whole loop, self-serve | GitHub / hero CTA |
+| Open-source kit | Free | `npx @getsystemix/cli init` — the whole loop, self-serve | GitHub / hero CTA |
 | AI-Readiness Report | $149 | done-for-you scored scan of your repo/site | /audit |
 | AI Kit | $299 | the loop set up for you; includes the report | /kit |
 | Sprint | from $2,500 | 1-week build wired to your signals | scoping call |
@@ -36,13 +36,13 @@ Rules that keep it honest:
 
 ## Naming fix (shipped)
 
-The free CLI (`npx systemix audit`) and the paid offer were both called "audit."
+The free CLI (`npx @getsystemix/cli audit`) and the paid offer were both called "audit."
 The paid product is now the **AI-Readiness Report** (route `/audit` unchanged);
 the CLI keeps its name because it's the wedge printed everywhere.
 
 ## The funnel, mechanically
 
-1. **Wedge:** `npx systemix audit` — free, zero-setup, immediate value in the
+1. **Wedge:** `npx @getsystemix/cli audit` — free, zero-setup, immediate value in the
    founder's own repo. Every mention everywhere points here.
 2. **Proof:** the site dogfoods itself — /experiments shows the live loop,
    /contract/memory shows the notebook. When the first learning lands, that

@@ -1,0 +1,37 @@
+name: CI
+
+# Runs both test suites on every pull request: the CLI's Jest suite
+# (packages/cli) and the root Vitest suite (the app's route/contract tests plus
+# the MCP server's tests). The other workflows here are scheduled loop jobs.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests (Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: CLI tests (Jest)
+        run: npm --prefix packages/cli test
+
+      - name: App + MCP tests (Vitest)
+        run: npm test

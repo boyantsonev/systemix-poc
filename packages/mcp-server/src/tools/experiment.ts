@@ -32,6 +32,22 @@ const fail = (text: string): ToolResult => ({ content: [{ type: "text", text }],
 
 const expPath = (root: string, id: string) => path.join(root, EXPERIMENTS_DIR, `${id}.mdx`);
 
+// An experiment id becomes a file name (experiments/<id>.mdx), so it must be a
+// plain kebab-case slug — no path separators, no "..", nothing that resolves
+// outside experiments/. Same pattern as the CLI door (packages/cli/src/lib/
+// experiments.js EXPERIMENT_ID_RE); doors-agree.test.js keeps the two in sync.
+const EXPERIMENT_ID_RE = /^[a-z0-9][a-z0-9-]{0,80}$/;
+
+/** A clear tool error for a missing or unsafe id; null when the id is valid. */
+function invalidId(id: unknown): ToolResult | null {
+  if (id == null || id === "") return fail("an experiment id is required");
+  if (typeof id === "string" && EXPERIMENT_ID_RE.test(id)) return null;
+  return fail(
+    `invalid experiment id ${JSON.stringify(id)} — use lowercase letters, digits and hyphens, ` +
+      "starting with a letter or digit (max 81 characters), e.g. landing-hero-2026-07"
+  );
+}
+
 /** Flat-only frontmatter parser (top-level keys; nested blocks are ignored). */
 function parseFrontmatter(raw: string): { data: Record<string, unknown>; content: string } {
   const match = raw.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---[\r\n]*([\s\S]*)$/);
@@ -210,6 +226,8 @@ export const experimentGetDefinition: ToolDefinition = {
 };
 
 export async function experimentGetHandler(args: { id: string }, projectRoot: string): Promise<ToolResult> {
+  const bad = invalidId(args.id);
+  if (bad) return bad;
   const file = expPath(projectRoot, args.id);
   if (!fs.existsSync(file)) return fail(`experiment not found: ${EXPERIMENTS_DIR}/${args.id}.mdx`);
   const { data, content } = parseFrontmatter(fs.readFileSync(file, "utf8"));
@@ -251,6 +269,8 @@ export async function experimentNewHandler(
   },
   projectRoot: string
 ): Promise<ToolResult> {
+  const bad = invalidId(args.id);
+  if (bad) return bad;
   const file = expPath(projectRoot, args.id);
   if (fs.existsSync(file)) return fail(`experiment already exists: ${EXPERIMENTS_DIR}/${args.id}.mdx`);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -310,6 +330,8 @@ export async function experimentMeasureHandler(
   args: { id: string; event: string; metric?: string },
   projectRoot: string
 ): Promise<ToolResult> {
+  const bad = invalidId(args.id);
+  if (bad) return bad;
   const file = expPath(projectRoot, args.id);
   if (!fs.existsSync(file)) return fail(`experiment not found: ${EXPERIMENTS_DIR}/${args.id}.mdx`);
   let raw = fs.readFileSync(file, "utf8");
@@ -344,6 +366,8 @@ export async function experimentCloseHandler(
   args: { id: string; result?: string; decision?: string; confidence?: number; learning?: string },
   projectRoot: string
 ): Promise<ToolResult> {
+  const bad = invalidId(args.id);
+  if (bad) return bad;
   const file = expPath(projectRoot, args.id);
   if (!fs.existsSync(file)) return fail(`experiment not found: ${EXPERIMENTS_DIR}/${args.id}.mdx`);
   const now = new Date();

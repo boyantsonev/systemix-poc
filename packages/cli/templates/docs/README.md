@@ -45,9 +45,9 @@ deviations · Do & don't**.
 ## Regenerating
 
 ```
-npx systemix docs sync                        # rebuild manifest.json from doc frontmatter
-npx systemix docs sync --check                # CI guard: fails if the manifest is stale
-npx systemix docs new <Name> --group <group>  # scaffold a new skeleton doc
+npx @getsystemix/cli docs sync                        # rebuild manifest.json from doc frontmatter
+npx @getsystemix/cli docs sync --check                # CI guard: fails if the manifest is stale
+npx @getsystemix/cli docs new <Name> --group <group>  # scaffold a new skeleton doc
 ```
 
 The docs ARE the inventory: `manifest.json` is generated **from the

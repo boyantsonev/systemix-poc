@@ -4,7 +4,7 @@
 
 | Tier | Price | What | Delivery today |
 |---|---|---|---|
-| Free | €0 | every skill, ghost mode | `npx systemix init` (real) |
+| Free | €0 | every skill, ghost mode | `npx @getsystemix/cli init` (real) |
 | **Full Kit** | **€99** | the whole context engine to download | **mailto → manual** (no checkout, no gate) |
 | Readiness Audit | €249 | automated me-in-the-loop audit, 24–48h | mailto → human runs the skill |
 | Consultancy | Custom | 2-week discovery + implementation sprint | mailto |
@@ -13,7 +13,7 @@
 
 There is **zero gating today**:
 - `packages/cli/package.json` is MIT, `publishConfig.access: public`, `files: [bin, src, pipelines, templates]` — **every skill ships in the public npm tarball.**
-- `npx systemix init` vends ~24 skills by plain file-copy; `npx systemix add <x>` pulls the rest. The only "free vs paid" line is which pipelines `init` copies — trivially bypassable.
+- `npx @getsystemix/cli init` vends ~24 skills by plain file-copy; `npx @getsystemix/cli add <x>` pulls the rest. The only "free vs paid" line is which pipelines `init` copies — trivially bypassable.
 - No license key, no auth, no entitlement check anywhere (the one "gate" is a UI render-condition on the 3D graph, not payment).
 - The Kit "purchase" is a `mailto:`.
 
@@ -23,7 +23,7 @@ So a paid **download** needs a real distribution boundary that doesn't exist yet
 
 You **cannot** meaningfully DRM the engine — it's MIT and the skills are inert markdown (the open-core literature is blunt about this; the Meetily precedent shows "Pro" features that are already in the MIT tree leak immediately). So don't try. **Gate convenience + service, not the code:**
 
-- The **free** tier is genuinely the whole engine (every skill, `npx systemix init`). Never crippled.
+- The **free** tier is genuinely the whole engine (every skill, `npx @getsystemix/cli init`). Never crippled.
 - The **€99 Kit** sells *packaging + setup + updates + delivery*: the whole thing assembled, configured, and delivered as one download you own — you pay to not stitch it together yourself, and to get lifetime updates.
 - The **€249 audit + consultancy** sell *labor* (a human running the readiness audit / wiring your instance) — naturally gated by payment, nothing to DRM.
 

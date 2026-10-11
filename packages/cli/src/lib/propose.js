@@ -167,6 +167,7 @@ function validateProposal(root, proposal) {
       throw new Error(`proposal.payload.${key} is required`);
     }
   }
+  exp.assertExperimentId(p.id); // it becomes experiments/<id>.mdx on approval
   if (fs.existsSync(layout.abs(root).experimentFile(p.id))) {
     throw new Error(`experiment already exists: ${layout.rel.experimentFile(p.id)} — propose a different id`);
   }

@@ -48,7 +48,7 @@ All 6 options survive DVF (all > 6). No elimination at this stage.
 
 **DVF score rationale (brief):**
 
-**Option 1:** D=4 (strong signal from W&B adoption that developers want run-based experiment tracking; ICP is already CLI-native); V=4 (clear PLG path via `npx systemix init`; monetize hosted runs history); F=4 (MCP + CLI architecture is already partially built per DISCOVER feasibility notes)
+**Option 1:** D=4 (strong signal from W&B adoption that developers want run-based experiment tracking; ICP is already CLI-native); V=4 (clear PLG path via `npx @getsystemix/cli init`; monetize hosted runs history); F=4 (MCP + CLI architecture is already partially built per DISCOVER feasibility notes)
 
 **Option 2:** D=4 (single number is universally understood; PR gate is a forcing function that creates immediate value); V=4 (the score is a natural freemium gate — open source score computation, hosted score history is the paid tier); F=5 (score computation is deterministic math; the hardest part — evidence collection — is shared with all other options)
 
@@ -92,8 +92,8 @@ All 6 options survive DVF (all > 6). No elimination at this stage.
 
 | Option | Score | Rationale |
 |--------|-------|-----------|
-| 1 Developer-First Run | 3 | First interaction: `npx systemix init` → `systemix run start`. Two commands, but the second requires understanding the run/artifact model before executing. The full power (MCP server, agent integration, HITL) is hidden until the user is ready, but the first run setup is mildly complex. |
-| 2 Score as Primary UX | 4 | First interaction: `npx systemix init` → see score on existing components. The score requires no prior action — it computes from the existing repo state. Depth (score improvement, experiment integration, evidence accumulation) is revealed only when the user is curious. |
+| 1 Developer-First Run | 3 | First interaction: `npx @getsystemix/cli init` → `systemix run start`. Two commands, but the second requires understanding the run/artifact model before executing. The full power (MCP server, agent integration, HITL) is hidden until the user is ready, but the first run setup is mildly complex. |
+| 2 Score as Primary UX | 4 | First interaction: `npx @getsystemix/cli init` → see score on existing components. The score requires no prior action — it computes from the existing repo state. Depth (score improvement, experiment integration, evidence accumulation) is revealed only when the user is curious. |
 | 3 Git Notes Layer | 5 | First interaction: `systemix evidence attach --commit HEAD --experiment hero-cta`. One command. Depth (reading notes, MCP server integration, agent access) is entirely hidden until needed. The first use is a single git-like command with immediate, visible result. |
 | 4 Evidence-First Design | 1 | First interaction requires: understanding what an evidence requirement is, writing one before creating the component, understanding what "decision pending" means, and knowing what PostHog event to connect. All complexity is front-loaded. The value (evidence-ready component) is deferred until the requirement is met. |
 | 5 HITL Queue | 4 | First interaction: open the queue → review a card → approve. Three actions, all obvious. The underlying complexity (Hermes pipeline, contract format, PostHog integration) is fully hidden. Depth is revealed only when the user asks "what happened to this component?" |

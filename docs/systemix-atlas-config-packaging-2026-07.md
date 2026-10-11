@@ -13,7 +13,7 @@ canon:
 
 ## 0. TL;DR
 
-Neither Atlas nor Config's 3D graph is shipped to clients today — `npx systemix init` (v6, per
+Neither Atlas nor Config's 3D graph is shipped to clients today — `npx @getsystemix/cli init` (v6, per
 `packages/cli/src/lib/layout.js`) only scaffolds `experiments/` (the loop) and the optional
 `design/` substrate (`DESIGN.md`, `guardrails.mdx`, `tokens.css`). Atlas and the 3D graph exist
 **only inside Systemix's own dogfood app** and are demoed to prospects via screenshots
@@ -40,7 +40,7 @@ Read together: the **data/logic layer for both is already close to plugin-shaped
 with typed tools). The thing that isn't yet portable is the **rendering layer** — and only Config's
 is hard-blocked from running inside the skill/Cowork-artifact model; Atlas's plausibly isn't.
 
-## 2. Option A — Skills-only (extend the existing `npx systemix init` v6 model)
+## 2. Option A — Skills-only (extend the existing `npx @getsystemix/cli init` v6 model)
 
 **Mechanics:** Either (a) vendor the Atlas/Config app code into `packages/cli/templates/` the way
 `design/` is vendored today (`DESIGN.md`, `guardrails.mdx`, `tokens.css` — three flat files, no
@@ -53,7 +53,7 @@ render inside a Cowork live-artifact instead of shipping the app at all.
 - Matches the v6 philosophy stated in `layout.js` itself: "the LOOP is the core... design/ is an
   OPTIONAL substrate" — skills-only keeps that principle intact instead of quietly growing the
   vendored footprint.
-- No new distribution mechanism to build — `npx systemix init` already exists (ADR-008), already
+- No new distribution mechanism to build — `npx @getsystemix/cli init` already exists (ADR-008), already
   copies templates into a client repo, already versions with the client's own git history.
 - Fully local-first and air-gap-compatible (ADR-007) — nothing to install beyond the CLI, no
   external service dependency, no auth.
@@ -147,7 +147,7 @@ defensible split:
   premium — a workflow catalog as a diagram is useful even flattened to 2D.
 - **Config's 3D graph → the plugin-gated (or sprint-tier-bespoke) premium surface.** It mechanically
   becomes the concrete answer to "part of the full skillset" — the thing that's materially better
-  with a paid plugin/sprint engagement than with the free `npx systemix init` loop, instead of
+  with a paid plugin/sprint engagement than with the free `npx @getsystemix/cli init` loop, instead of
   something every free user already gets for nothing. This also sidesteps most of Option A's
   vendoring cost, since only the harder-to-reproduce surface goes through the heavier packaging path.
 

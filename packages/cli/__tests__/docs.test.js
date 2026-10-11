@@ -159,7 +159,7 @@ describe("docs sync --check — the CI guard", () => {
     spy.mockRestore();
 
     expect(process.exitCode).toBe(1);
-    expect(errors.join("\n")).toContain("stale — run npx systemix docs sync");
+    expect(errors.join("\n")).toContain("stale — run npx @getsystemix/cli docs sync");
     expect(fs.readFileSync(path.join(root, "docs", "manifest.json"), "utf8")).toBe(before); // no write
   });
 
@@ -202,7 +202,7 @@ describe("docs new — scaffold from the template", () => {
   it("creates docs/README.md (the consumption contract) on first use and runs sync", async () => {
     await docs(["new", "Badge", "--group", "data-display"], { projectRoot: root });
     const readme = fs.readFileSync(path.join(root, "docs", "README.md"), "utf8");
-    expect(readme).toContain("npx systemix docs sync");
+    expect(readme).toContain("npx @getsystemix/cli docs sync");
     const m = readManifest(root); // sync ran
     expect(m.count).toBe(1);
     expect(m.components[0]).toMatchObject({ slug: "badge", group: "data-display", status: "skeleton" });

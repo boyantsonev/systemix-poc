@@ -347,9 +347,9 @@ export function resolveQueueItem(root, id, { action, note, resolvedBy }) {
     atomicWrite(QUEUE(root), queueData)
     const nextHint =
       card.type === 'close-proposal' && action === 'approve' && card.experimentId
-        ? `apply the decision: npx systemix experiment close ${card.experimentId}`
+        ? `apply the decision: npx @getsystemix/cli experiment close ${card.experimentId}`
         : card.type === 'hypothesis-proposal' && action === 'approve'
-          ? 'scaffold it: npx systemix experiment new <id> (or /init-experiment)'
+          ? 'scaffold it: npx @getsystemix/cli experiment new <id> (or /init-experiment)'
           : null
     return { item: card, nextHint }
   }

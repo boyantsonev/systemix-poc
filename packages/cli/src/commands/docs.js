@@ -111,13 +111,13 @@ function syncDocs(root, { check = false } = {}) {
   const componentsDir = path.join(root, "docs", "components");
   if (!fs.existsSync(componentsDir)) {
     console.error("  ✗  docs/components/ not found — nothing to sync.");
-    console.log("     scaffold the first doc: `npx systemix docs new <Name> --group <group>`");
+    console.log("     scaffold the first doc: `npx @getsystemix/cli docs new <Name> --group <group>`");
     console.log("     (it vendors docs/README.md + the _template.md contract from the CLI's templates/docs/)");
     return false;
   }
   const { manifest, errors } = buildManifest(root);
   if (errors.length) {
-    console.error("  ✗  invalid doc frontmatter — fix these, then re-run `npx systemix docs sync`:");
+    console.error("  ✗  invalid doc frontmatter — fix these, then re-run `npx @getsystemix/cli docs sync`:");
     for (const e of errors) console.error(`     - ${e}`);
     return false;
   }
@@ -126,7 +126,7 @@ function syncDocs(root, { check = false } = {}) {
   const prev = fs.existsSync(manifestPath) ? fs.readFileSync(manifestPath, "utf8") : null;
   if (check) {
     if (prev !== out) {
-      console.error("  ✗  docs/manifest.json is stale — run npx systemix docs sync");
+      console.error("  ✗  docs/manifest.json is stale — run npx @getsystemix/cli docs sync");
       return false;
     }
     console.log(`  ✓  docs/manifest.json up to date (${manifest.count} components)`);

@@ -73,7 +73,7 @@ Absent `atlas:` → `/atlas` renders the empty state (like `/instance` without a
 
 ## 5. The generator (the one new piece)
 
-`packages/cli` command — `npx systemix atlas build` (and a watch mode):
+`packages/cli` command — `npx @getsystemix/cli atlas build` (and a watch mode):
 
 1. Read `contract/workflows/*.mdx` → parse frontmatter.
 2. Validate against `atlas:` vocab + the closed `kind`/`pattern` enums.
@@ -89,7 +89,7 @@ Yes — the higher-value version. A skill (`/atlas-scan`) reads the client's age
 ## 7. Phased build
 
 - **Phase 1 — Renderer (probe).** Lift port + `flow-layout` + shell into the Systemix app behind `/atlas`. Feed it a hardcoded sample catalog. Proves the surface renders here. *(½ day — code already exists.)*
-- **Phase 2 — Generator (MVP).** `contract/workflows/*.mdx` + `atlas:` config + `npx systemix atlas build` → catalog → `/atlas`. Hand-authored contracts. Port the Connecta tests. *(This is the real work.)*
+- **Phase 2 — Generator (MVP).** `contract/workflows/*.mdx` + `atlas:` config + `npx @getsystemix/cli atlas build` → catalog → `/atlas`. Hand-authored contracts. Port the Connecta tests. *(This is the real work.)*
 - **Phase 3 — Authoring loop.** `/atlas-scan` drafts workflow contracts from the client codebase, HITL-gated. Makes Atlas self-maintaining.
 
 ## 8. Landing impact
