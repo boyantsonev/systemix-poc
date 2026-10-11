@@ -20,6 +20,7 @@ import {
   loadTokens,
   resolveQueueItem,
 } from './lib/instance.js'
+import { checkHost, checkMutation } from './lib/request-guard.js'
 
 const args = process.argv.slice(2)
 const argOf = (name, fallback) => {
@@ -46,7 +47,7 @@ const json = (res, status, data) => {
 }
 
 const readBody = (req) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     let body = ''
     req.on('data', (c) => {
       body += c
@@ -55,7 +56,7 @@ const readBody = (req) =>
       try {
         resolve(JSON.parse(body || '{}'))
       } catch {
-        resolve({})
+        reject(new Error('invalid JSON body'))
       }
     })
   })
@@ -88,7 +89,15 @@ async function handleApi(req, res, url) {
   if (p === '/api/queue') return json(res, 200, loadQueue(ROOT))
   const resolveMatch = p.match(/^\/api\/queue\/([\w.-]+)\/resolve$/)
   if (resolveMatch && req.method === 'POST') {
-    const body = await readBody(req)
+    const denied = checkMutation(req, PORT)
+    if (denied) return json(res, denied.status, { error: denied.error })
+    let body
+    try {
+      body = await readBody(req)
+    } catch (err) {
+      return json(res, 400, { error: err.message })
+    }
+    if (!body || typeof body !== 'object') return json(res, 400, { error: 'expected a JSON object' })
     const result = resolveQueueItem(ROOT, resolveMatch[1], body)
     return result.error ? json(res, result.status, { error: result.error }) : json(res, 200, result)
   }
@@ -112,7 +121,11 @@ function serveStatic(res, urlPath) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`)
   try {
-    if (url.pathname.startsWith('/api/')) return await handleApi(req, res, url)
+    if (url.pathname.startsWith('/api/')) {
+      const denied = checkHost(req, PORT)
+      if (denied) return json(res, denied.status, { error: denied.error })
+      return await handleApi(req, res, url)
+    }
     return serveStatic(res, url.pathname)
   } catch (err) {
     return json(res, 500, { error: String(err?.message ?? err) })

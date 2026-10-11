@@ -17,15 +17,7 @@ const SSE_HEADERS = {
   "Cache-Control": "no-cache, no-transform",
   "Connection": "keep-alive",
   "X-Accel-Buffering": "no",
-  // CORS for Figma plugin iframe
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
 };
-
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: SSE_HEADERS });
-}
 
 export async function GET(
   request: NextRequest,
