@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadWorkflow, saveWorkflow, deleteWorkflow } from '@/lib/workflow/persistence';
+import { isValidWorkflowId, loadWorkflow, saveWorkflow, deleteWorkflow } from '@/lib/workflow/persistence';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!isValidWorkflowId(id)) return NextResponse.json({ error: 'invalid workflow id' }, { status: 400 });
   const workflow = loadWorkflow(id);
   if (!workflow) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ workflow });
@@ -13,6 +14,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    if (!isValidWorkflowId(id)) return NextResponse.json({ error: 'invalid workflow id' }, { status: 400 });
+  if (!isValidWorkflowId(id)) return NextResponse.json({ error: 'invalid workflow id' }, { status: 400 });
     const body = await req.json();
     const existing = loadWorkflow(id);
     const updated = {
@@ -31,6 +34,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!isValidWorkflowId(id)) return NextResponse.json({ error: 'invalid workflow id' }, { status: 400 });
   const deleted = deleteWorkflow(id);
   if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ success: true });
