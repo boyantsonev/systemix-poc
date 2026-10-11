@@ -9,7 +9,7 @@
 
 > **Systemix is an embeddable engine that stands up and runs a living design system for a team.**
 
-You `npx systemix init` it into your repo, point it at your **Figma / existing code / desired UI**
+You `npx @getsystemix/cli init` it into your repo, point it at your **Figma / existing code / desired UI**
 plus a **hypothesis**, and it scaffolds a **per-instance, local-first app** with three layers —
 **Config, System, Atlas** — wrapped in an agentic **learning loop** that keeps your design system,
 workflows, and landing in sync with **evidence, not memory**.
@@ -23,7 +23,7 @@ conflict — they are three altitudes of the same thing, and this definition sta
 |---|---|---|
 | "A learning loop around your design system." | `product-model.md` §1 | The **spine** — the reason it exists. |
 | "Software-in-a-service that implements + keeps a design system alive." | `PLAN.md` §1 | The **deliverable** — it builds and maintains the DS. |
-| "Embedded per-client instance via `npx systemix init`, local-first." | ADR-006…009 | The **shape** — how it ships and runs. |
+| "Embedded per-client instance via `npx @getsystemix/cli init`, local-first." | ADR-006…009 | The **shape** — how it ships and runs. |
 
 The decided definition says all three at once: an **engine** (deliverable) you **init into your
 repo** (shape) that runs a **learning loop** (spine).

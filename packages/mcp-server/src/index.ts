@@ -17,7 +17,7 @@
  * Usage:
  *   systemix-mcp --project-root /path/to/project
  *   # or via npx:
- *   npx systemix-mcp --project-root .
+ *   npx systemix-mcp-server --project-root .
  *
  * The server communicates over stdio (MCP default transport).
  */

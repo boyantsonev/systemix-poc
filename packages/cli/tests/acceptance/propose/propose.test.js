@@ -180,6 +180,13 @@ describe("systemix propose — queue (validate → dedupe → atomic write)", ()
     expect(readQueue(root).cards).toHaveLength(0);
   });
 
+  it("rejects a payload id that is not a path-safe experiment id (it becomes experiments/<id>.mdx)", () => {
+    expect(() =>
+      pushHypothesisProposal(root, proposal({ payload: { id: "../escaped-id" } }), { now: NOW }),
+    ).toThrow('invalid experiment id "../escaped-id"');
+    expect(readQueue(root).cards).toHaveLength(0);
+  });
+
   it("rejects malformed proposals (missing payload fields, missing citation context)", () => {
     expect(() => pushHypothesisProposal(root, {}, { now: NOW })).toThrow(/payload/);
     expect(() =>

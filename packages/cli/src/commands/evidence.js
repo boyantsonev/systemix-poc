@@ -12,6 +12,7 @@ const skillUpdate = require("./skill-update");
 const fs = require("fs");
 const path = require("path");
 const { fetchPosthogEvidence } = require("../lib/loop");
+const { assertExperimentId } = require("../lib/experiments");
 
 const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
 const EXPERIMENTS_DIR = path.join(process.cwd(), "experiments");
@@ -221,6 +222,7 @@ function writeQueue(queue) {
 // ── Write decision back to MDX (shared by both CLI close and queue approval) ──
 
 function writeDecisionToContract(hypothesisId, decision, evidence) {
+  assertExperimentId(hypothesisId);
   const filePath = path.join(EXPERIMENTS_DIR, `${hypothesisId}.mdx`);
   if (!fs.existsSync(filePath)) throw new Error(`Contract not found: ${filePath}`);
 

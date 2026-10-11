@@ -71,7 +71,7 @@ async function handleApi(req, res, url) {
     const manifest = loadDocsManifest(ROOT)
     return manifest
       ? json(res, 200, manifest)
-      : json(res, 404, { error: 'no docs manifest', hint: 'run `npx systemix docs sync` (docs/ contract) in this repo' })
+      : json(res, 404, { error: 'no docs manifest', hint: 'run `npx @getsystemix/cli docs sync` (docs/ contract) in this repo' })
   }
   const docMatch = p.match(/^\/api\/docs\/([a-z0-9-]+)$/)
   if (docMatch) {

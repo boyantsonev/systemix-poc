@@ -16,7 +16,7 @@ Document: $ARGUMENTS
 
 ## Steps
 1. **Read the inventory** — `docs/manifest.json` (the agent entry point). If it's
-   missing or stale, run `npx systemix docs sync` first.
+   missing or stale, run `npx @getsystemix/cli docs sync` first.
 2. **Pick the doc** — the component the user named ($ARGUMENTS), else the
    `status: skeleton` entries. Work one component at a time.
 3. **Read the truth, in precedence order** (see `docs/README.md`):
@@ -35,8 +35,8 @@ Document: $ARGUMENTS
    - *Do & don't* — short imperatives.
 5. **Keep the frontmatter intact** — the only permitted change is flipping
    `status: skeleton` → `status: ported` when the component has actually shipped.
-6. **Verify** — run `npx systemix docs sync --check`; if it reports stale, run
-   `npx systemix docs sync` and include the manifest in the same change.
+6. **Verify** — run `npx @getsystemix/cli docs sync --check`; if it reports stale, run
+   `npx @getsystemix/cli docs sync` and include the manifest in the same change.
 
 ## HITL
 Propose every doc edit as a diff for human review — never mass-rewrite silently.
@@ -44,5 +44,5 @@ At ghost autonomy: one component per confirmation.
 
 ## Notes
 - The docs ARE the inventory: to add a component, scaffold its doc
-  (`npx systemix docs new <Name> --group <group>`) — never edit `manifest.json` by hand.
+  (`npx @getsystemix/cli docs new <Name> --group <group>`) — never edit `manifest.json` by hand.
 - When the doc and the source disagree, the source wins — regenerate the doc.

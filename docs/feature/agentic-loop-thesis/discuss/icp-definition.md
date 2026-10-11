@@ -93,7 +93,7 @@ The landing page needs to be rewritten for the pre-PMF founder before any distri
 
 1. **Headline** must name the pre-PMF founder's pain, not the design engineer's pain. The experiment-that-forgot-what-it-learned is the felt pain. Token drift is not.
 2. **Use case copy** must reference PostHog, experiments, and hypothesis tracking — not Storybook, tokens, or component parity.
-3. **The CTA** (`npx systemix init`) should lead into the experiment-initialization flow, not the design-system sync flow.
+3. **The CTA** (`npx @getsystemix/cli init`) should lead into the experiment-initialization flow, not the design-system sync flow.
 4. **The social proof section** (when it exists) should feature pre-PMF founders, not design system leads.
 
 **The design-engineer ICP (ICP-1) is not abandoned.** It is the secondary ICP. The landing page can address both — but the primary framing, the hero copy, and the primary CTA must be anchored on the pre-PMF founder ICP first.

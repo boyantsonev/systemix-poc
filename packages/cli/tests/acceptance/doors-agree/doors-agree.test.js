@@ -66,4 +66,11 @@ describe("the three doors share one canonical loop layout", () => {
       for (const m of markers) expect(src).toContain(m);
     }
   });
+
+  it("the CLI and MCP doors validate experiment ids with the SAME path-safe pattern", () => {
+    // An id becomes experiments/<id>.mdx on both doors. If the MCP copy of the
+    // pattern drifts looser, an agent could write outside experiments/ through it.
+    const { EXPERIMENT_ID_RE } = require("../../../src/lib/experiments");
+    expect(mcpTool).toContain(`const EXPERIMENT_ID_RE = /${EXPERIMENT_ID_RE.source}/;`);
+  });
 });

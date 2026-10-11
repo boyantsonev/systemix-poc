@@ -40,7 +40,7 @@ from evidence.**
 
 ## 2. Install & setup — configuring the loop
 
-1. `npx systemix init`.
+1. `npx @getsystemix/cli init`.
 2. Setup questions **feed the loop**: connect **Figma files**, **existing repos**,
    and/or a **desired UI setup**.
 3. You **define the hypothesis** (e.g. a pre-seed MVP landing-tracking experiment).

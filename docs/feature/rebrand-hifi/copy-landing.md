@@ -19,7 +19,7 @@
 **Control**
 - H1: **Your design system rots. Systemix fixes that.**
 - Sub: One line — Systemix watches what you ship, catches drift, and proposes fixes your team approves. Your system learns instead of decaying.
-- CTA primary: `npx systemix init`  *(copy command → `install_command_copied`)*
+- CTA primary: `npx @getsystemix/cli init`  *(copy command → `install_command_copied`)*
 - CTA secondary: **View on GitHub** (outline)
 
 **variant_b**
@@ -87,7 +87,7 @@ CTA: **See the loop running →** (links to `/experiments` or LEARNINGS)
 
 | Tier | Price | Line |
 |---|---|---|
-| **Start free** | `npx systemix init` · $0 | The full loop in ghost mode. Your files, your repo. |
+| **Start free** | `npx @getsystemix/cli init` · $0 | The full loop in ghost mode. Your files, your repo. |
 | **AI Kit** | ~~$299~~ **$249** · pay once | Everything to run the loop for real. Yours to keep, no subscription. → `kit_requested` |
 | **Scheduled Loop** | monthly | We run the loop on a schedule so you don't have to remember to. |
 | **Team** | custom | Multiple repos, shared decision history, support. → `book_a_call` |
@@ -117,7 +117,7 @@ Header: **Build this yourself, or turn it on today.**
 ## 8. FAQ  *(permission-granting; short answers)*
 
 1. **What exactly do I get?** A CLI and framework that runs the ship→signal→decide→record loop on your design system. Free to start; the AI Kit adds the paid pieces.
-2. **I don't have a design system yet — can I use this?** Yes. `npx systemix init` scaffolds one and starts the loop from day one.
+2. **I don't have a design system yet — can I use this?** Yes. `npx @getsystemix/cli init` scaffolds one and starts the loop from day one.
 3. **Why not just prompt my AI tool from scratch each time?** Because it forgets. Systemix keeps the decisions and evidence, so you don't re-solve the same thing every release.
 4. **Do I own the files?** Yes. Everything lives in your repo as plain files. Cancel anytime, keep everything.
 5. **Which AI tools does it work with?** Claude Code, Cursor, Codex — any of the three doors.
@@ -129,7 +129,7 @@ Header: **Build this yourself, or turn it on today.**
 ---
 
 ## 9. Footer
-Nav + `npx systemix init` + GitHub · light/dark toggle · links to `/kit`, `/audit`, `/docs`.
+Nav + `npx @getsystemix/cli init` + GitHub · light/dark toggle · links to `/kit`, `/audit`, `/docs`.
 
 ---
 

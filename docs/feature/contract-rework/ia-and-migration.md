@@ -95,7 +95,7 @@ biggest UX change; D makes the autonomy story real; E closes the loop publicly.
 
 ## Non-impacts (checked against the codebase)
 
-- **Atlas**: `npx systemix atlas build` reads `contract/workflows/*` — unchanged (workflows stay
+- **Atlas**: `npx @getsystemix/cli atlas build` reads `contract/workflows/*` — unchanged (workflows stay
   records). `/atlas` routes untouched.
 - **Token pipeline**: `globals.css` → `tokens.bridge.json` → Figma flow untouched; only where token
   pages *sit* changes.

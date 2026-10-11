@@ -7,7 +7,7 @@ The loop is unchanged. What changes is what we say the engine *delivers*.
 
 ## The one-liner (new)
 
-> **Systemix is an engine you give goals to.** You `npx systemix init` it into your repo and write
+> **Systemix is an engine you give goals to.** You `npx @getsystemix/cli init` it into your repo and write
 > the contract — *build this landing and prove it converts; stand up this design system and keep it
 > honest; validate this agentic flow with real users* — and the engine ships variants, reads the
 > signals, synthesizes evidence with Hermes, and brings you the decision. Everything it learns is

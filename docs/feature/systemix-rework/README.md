@@ -4,7 +4,7 @@
 **Locked as:** ADR-010 (three layers) · ADR-011 (Fumadocs) · ADR-012 (Connecta) in
 [`../../../decisions/ADR.md`](../../../decisions/ADR.md). · **Output:** docs only — no production code.
 
-This round sharpens **what Systemix is** and **how `npx systemix init` works**, decides **Fumadocs**
+This round sharpens **what Systemix is** and **how `npx @getsystemix/cli init` works**, decides **Fumadocs**
 as the shared documentation layer, retrospects **Connecta** (design partner #1), and collapses the
 app from four surfaces to **three layers**. It is the strategy checkpoint the big landing redesign,
 the Fumadocs integration, the editable config page, and the Atlas port all build on next.
@@ -29,7 +29,7 @@ The build sequencing that follows from these locks is in
 ## Read order
 
 1. [`what-is-systemix.md`](./what-is-systemix.md) — the **one decided definition**.
-2. [`init-flow.md`](./init-flow.md) — how `npx systemix init` works, end to end, incl. the **gates**.
+2. [`init-flow.md`](./init-flow.md) — how `npx @getsystemix/cli init` works, end to end, incl. the **gates**.
 3. [`app-three-layers.md`](./app-three-layers.md) — the **three-layer** per-instance app spec
    (Config / System / Atlas), the editable config page, and the Atlas gating rule.
 4. [`fumadocs-integration.md`](./fumadocs-integration.md) — the **one-shared-theme** architecture

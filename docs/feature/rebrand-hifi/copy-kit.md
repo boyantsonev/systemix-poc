@@ -1,8 +1,8 @@
 # copy-kit.md — AI Kit page (`/kit`)
 
 > **Superseded.** Pricing here ($299/$249) is stale — the Kit ships at €99.
-> "npx systemix init" is also stale post-rename — see `src/lib/landing/content.ts`
-> (`INIT_COMMAND`) for the current install command. Treat `src/app/kit/page.tsx`
+> The install command below was updated after the npm rename — `src/lib/landing/content.ts`
+> (`INIT_COMMAND`) is the source of truth for it. Treat `src/app/kit/page.tsx`
 > as the source of truth, not this file.
 
 > The closest LaunchKit clone. The offer: pay once, own it forever. Lead with what you skip, not what's inside.
@@ -14,7 +14,7 @@
 - H1: **Everything to run the loop. Yours to keep.**
 - Sub: Skip the weeks of wiring. The AI Kit ships the full validation loop — ready to run on your AI coding tool.
 - CTA: **Get the AI Kit — ~~$299~~ $249** → `kit_requested`
-- Sub-CTA: `npx systemix init` (try the free loop first)
+- Sub-CTA: `npx @getsystemix/cli init` (try the free loop first)
 
 ---
 
@@ -58,7 +58,7 @@ Header: **Build it yourself, or turn it on today.**
 - Line: **Pay once. Lifetime access. Every file is yours.**
 - Bullets: full loop · human-approval rail · signals · drift audit · scheduled runner · lifetime updates
 - CTA: **Get the AI Kit** → `kit_requested`
-- Reassurance: *Not sure yet? Start free with `npx systemix init`.*
+- Reassurance: *Not sure yet? Start free with `npx @getsystemix/cli init`.*
 
 ---
 
