@@ -11,19 +11,9 @@ export const dynamic = "force-dynamic";
 const RUNS_DIR = path.join(process.cwd(), ".systemix", "runs");
 const MAX_RUNS = 50;
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
-
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
-
 export async function GET() {
   if (!existsSync(RUNS_DIR)) {
-    return NextResponse.json({ runs: [], total: 0 }, { headers: CORS_HEADERS });
+    return NextResponse.json({ runs: [], total: 0 });
   }
 
   let files: string[];
@@ -32,7 +22,7 @@ export async function GET() {
   } catch {
     return NextResponse.json(
       { error: "Failed to list runs" },
-      { status: 500, headers: CORS_HEADERS }
+      { status: 500 }
     );
   }
 
@@ -57,8 +47,5 @@ export async function GET() {
 
   const limited = runs.slice(0, MAX_RUNS);
 
-  return NextResponse.json(
-    { runs: limited, total: runs.length },
-    { headers: CORS_HEADERS }
-  );
+  return NextResponse.json({ runs: limited, total: runs.length });
 }

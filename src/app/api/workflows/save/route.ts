@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { rejectNonLocal } from "@/lib/local-request";
 
 export async function POST(request: NextRequest) {
+  const denied = rejectNonLocal(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const { name, nodes, edges } = body;

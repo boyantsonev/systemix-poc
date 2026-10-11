@@ -43,13 +43,32 @@ export function useHashRoute() {
 // ---- tiny markdown renderer (no deps) ------------------------------------
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const unesc = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+const escAttr = (s) => esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+
+// Link targets come from agent-written markdown: only http(s), mailto, relative
+// and #fragment URLs become links; any other scheme (javascript:, data:, …)
+// renders as plain text. The scheme is read the way browsers read it — leading
+// and trailing control chars/space trimmed, tabs and newlines dropped.
+export function safeHref(url) {
+  const u = String(url)
+    .replace(/^[\x00-\x20]+|[\x00-\x20]+$/g, '')
+    .replace(/[\t\n\r]/g, '')
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(u)
+  return scheme && !/^(https?|mailto)$/i.test(scheme[1]) ? null : u
+}
+
+const link = (_, text, target) => {
+  const href = safeHref(unesc(target))
+  return href == null ? text : `<a href="${escAttr(href)}" target="_blank" rel="noreferrer">${text}</a>`
+}
 
 const inline = (s) =>
   s
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, link)
 
 const isTableRow = (l) => /^\s*\|.*\|\s*$/.test(l)
 const isTableSep = (l) => /^[\s|:-]+$/.test(l)

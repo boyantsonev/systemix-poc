@@ -12,7 +12,7 @@ const skillUpdate = require("./skill-update");
 const fs = require("fs");
 const path = require("path");
 const { fetchPosthogEvidence } = require("../lib/loop");
-const { assertExperimentId, isValidExperimentId } = require("../lib/experiments");
+const { assertExperimentId, isValidExperimentId, EXPERIMENT_ID_RE } = require("../lib/experiments");
 
 const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
 const EXPERIMENTS_DIR = path.join(process.cwd(), "experiments");
@@ -564,7 +564,21 @@ async function close(args) {
 
 // ── engagement subcommand (standalone landing record) ────────────────────────
 
+// A record id becomes a file name (contract/engagement/<id>.mdx), so it follows
+// the same path-safe kebab-case rule as experiment ids — no path separators,
+// no "..", nothing that resolves outside contract/engagement/.
+function assertEngagementRecordId(recordId) {
+  if (recordId == null || recordId === "") throw new Error("an engagement record id is required");
+  if (typeof recordId !== "string" || !EXPERIMENT_ID_RE.test(recordId)) {
+    throw new Error(
+      `invalid engagement record id ${JSON.stringify(recordId)} — use lowercase letters, digits and hyphens, ` +
+        "starting with a letter or digit (max 81 characters), e.g. landing"
+    );
+  }
+}
+
 function appendEngagementAck(recordId, { action, note, by }) {
+  assertEngagementRecordId(recordId);
   const filePath = path.join(ENGAGEMENT_DIR, `${recordId}.mdx`);
   if (!fs.existsSync(filePath)) throw new Error(`Engagement record not found: ${filePath}`);
   const raw = fs.readFileSync(filePath, "utf8");
@@ -626,6 +640,7 @@ async function engagementPull(args) {
 
 function engagementClose(args) {
   const recordId = args.find(a => !a.startsWith("--")) ?? "landing";
+  assertEngagementRecordId(recordId); // before any path is built from it
   const noteIdx  = args.indexOf("--note");
   const note     = noteIdx !== -1 ? args[noteIdx + 1] : null;
   const action   = args.includes("--flag") ? "flagged-for-experiment" : "acknowledged";

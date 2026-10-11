@@ -208,6 +208,25 @@ export function applyConfigPatch(base: InstanceConfig, patch: unknown): Instance
   };
 }
 
+const tierOf = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+
+/** True when `next` turns any autonomy knob up from `base`: the dial
+ * (hermes.autonomy / trust.hermes_tier) or the orchestrator tier. Raising is a
+ * human decision — /api/config only applies it with a locally confirmed code. */
+export function raisesAutonomy(base: InstanceConfig, next: InstanceConfig): boolean {
+  const level = (label: unknown) => AUTONOMY_VALUES.indexOf(String(label));
+  return (
+    level(next.hermes?.autonomy) > level(base.hermes?.autonomy) ||
+    tierOf(next.trust?.hermes_tier) > tierOf(base.trust?.hermes_tier) ||
+    tierOf(next.trust?.orchestrator_tier) > tierOf(base.trust?.orchestrator_tier)
+  );
+}
+
+/** The autonomy settings a confirmation code is bound to. */
+export function autonomyTarget(cfg: InstanceConfig): string {
+  return `${cfg.hermes?.autonomy}|hermes_tier=${tierOf(cfg.trust?.hermes_tier)}|orchestrator_tier=${tierOf(cfg.trust?.orchestrator_tier)}`;
+}
+
 /** Emit a parsed YAML subtree — nested maps, scalar sequences, and scalars — at
  * `indent` spaces. Mirrors what parseInstanceConfig understands, so blocks not
  * modelled as typed fields (e.g. `atlas:`) round-trip through a save verbatim

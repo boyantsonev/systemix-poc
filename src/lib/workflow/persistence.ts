@@ -9,6 +9,14 @@ function ensureDir() {
   }
 }
 
+// Workflow ids become file names under .systemix/workflows/ — keep them plain.
+const VALID_ID = /^[A-Za-z0-9][\w-]{0,127}$/;
+
+function workflowFile(id: string): string {
+  if (typeof id !== 'string' || !VALID_ID.test(id)) throw new Error(`Invalid workflow id: ${String(id)}`);
+  return path.join(WORKFLOWS_DIR, `${id}.json`);
+}
+
 export interface PersistedWorkflow {
   id: string;
   name: string;
@@ -21,8 +29,8 @@ export interface PersistedWorkflow {
 }
 
 export function saveWorkflow(workflow: PersistedWorkflow): void {
+  const filePath = workflowFile(workflow.id);
   ensureDir();
-  const filePath = path.join(WORKFLOWS_DIR, `${workflow.id}.json`);
   const updated = { ...workflow, updatedAt: new Date().toISOString() };
   const tmp = filePath + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(updated, null, 2));
@@ -30,7 +38,8 @@ export function saveWorkflow(workflow: PersistedWorkflow): void {
 }
 
 export function loadWorkflow(id: string): PersistedWorkflow | null {
-  const filePath = path.join(WORKFLOWS_DIR, `${id}.json`);
+  if (!VALID_ID.test(id)) return null;
+  const filePath = workflowFile(id);
   if (!fs.existsSync(filePath)) return null;
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -55,7 +64,8 @@ export function listWorkflows(): PersistedWorkflow[] {
 }
 
 export function deleteWorkflow(id: string): boolean {
-  const filePath = path.join(WORKFLOWS_DIR, `${id}.json`);
+  if (!VALID_ID.test(id)) return false;
+  const filePath = workflowFile(id);
   if (!fs.existsSync(filePath)) return false;
   fs.unlinkSync(filePath);
   return true;

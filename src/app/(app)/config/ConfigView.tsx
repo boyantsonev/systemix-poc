@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { tierLabel } from "@/lib/contract/write-policy";
+import { runnableAt } from "@/lib/skill-map";
 import type { LearningEntry } from "@/lib/contract/learnings";
 import type { InstanceConfig, SignalStatus } from "@/lib/state/instance-config";
 import type { InstanceTopology } from "@/lib/state/instance-topology";
@@ -63,10 +64,10 @@ export function ConfigView({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [feedRefresh, setFeedRefresh] = useState(0);
 
-  // Deploy stays HITL territory: hidden while the instance runs at ghost tier.
+  // Same tier rule POST /api/run enforces — chips the instance can't run stay hidden.
   const playableSkills = useMemo(() => {
     const tier = cfg.trust?.hermes_tier ?? 0;
-    return skills.filter(({ slug }) => slug !== "deploy" || tier > 0);
+    return skills.filter(({ def }) => runnableAt(def, tier));
   }, [skills, cfg.trust?.hermes_tier]);
 
   // Inactive nodes (no live data) dim but stay visible; the builder marks active ones.

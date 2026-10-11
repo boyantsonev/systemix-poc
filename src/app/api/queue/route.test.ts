@@ -77,10 +77,11 @@ function readQueue() {
   return JSON.parse(fs.readFileSync(path.join(tmp, ".systemix", "queue.json"), "utf8"));
 }
 
-function patchReq(body: unknown): NextRequest {
-  return new NextRequest("http://t/api/queue", {
+// The dashboard's own same-origin request (PATCH is local-only).
+function patchReq(body: unknown, headers: Record<string, string> = {}): NextRequest {
+  return new NextRequest("http://localhost:3001/api/queue", {
     method: "PATCH",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", origin: "http://localhost:3001", ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -334,5 +335,226 @@ describe("PATCH /api/queue — engagement-snapshot", () => {
     const { PATCH } = await routes();
     const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
     expect(res.status).toBe(500);
+  });
+});
+
+describe("PATCH /api/queue — local-only", () => {
+  it("rejects a cross-origin PATCH and leaves the queue untouched", async () => {
+    seedQueue([engagementCard()]);
+    const { PATCH } = await routes();
+    const res = await PATCH(
+      patchReq({ id: "engagement-landing-1", action: "approved" }, { origin: "https://evil.example" }),
+    );
+    expect(res.status).toBe(403);
+    expect(readQueue().cards[0].status).toBe("pending");
+    expect(readRecord()).not.toMatch(/acknowledged/);
+  });
+
+  it("rejects a text/plain body", async () => {
+    seedQueue([engagementCard()]);
+    const { PATCH } = await routes();
+    const res = await PATCH(
+      patchReq({ id: "engagement-landing-1", action: "approved" }, { "content-type": "text/plain" }),
+    );
+    expect(res.status).toBe(415);
+    expect(readQueue().cards[0].status).toBe("pending");
+  });
+
+  it("refuses unknown actions", async () => {
+    seedQueue([engagementCard()]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "pwned" }));
+    expect(res.status).toBe(400);
+    expect(readQueue().cards[0].status).toBe("pending");
+  });
+});
+
+describe("PATCH /api/queue — card-driven writes stay inside the project allowlist", () => {
+  const COMPONENT = [
+    'import React from "react";',
+    "",
+    "export function Hero() {",
+    "  return <div>hi</div>;",
+    "}",
+    "",
+  ].join("\n");
+
+  function instrumentationCard(over: Record<string, unknown> = {}) {
+    return {
+      id: "instr-1",
+      type: "instrumentation-approval",
+      status: "pending",
+      component: "Hero",
+      filePath: "src/components/Hero.tsx",
+      posthogEventKey: "hero_render",
+      requestedAt: "2026-10-01T00:00:00.000Z",
+      ...over,
+    };
+  }
+
+  function seedComponent(rel = path.join("src", "components", "Hero.tsx")) {
+    fs.mkdirSync(path.dirname(path.join(tmp, rel)), { recursive: true });
+    fs.writeFileSync(path.join(tmp, rel), COMPONENT, "utf8");
+  }
+
+  // A file outside the workspace that a hostile card would like to rewrite.
+  let outside: string;
+  beforeEach(() => {
+    outside = fs.mkdtempSync(path.join(os.tmpdir(), "queue-outside-"));
+    fs.writeFileSync(path.join(outside, "victim.tsx"), COMPONENT, "utf8");
+  });
+  afterEach(() => fs.rmSync(outside, { recursive: true, force: true }));
+
+  it("instruments an allowlisted component (control)", async () => {
+    seedComponent();
+    seedQueue([instrumentationCard()]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+    expect(res.status).toBe(200);
+    const src = fs.readFileSync(path.join(tmp, "src", "components", "Hero.tsx"), "utf8");
+    expect(src).toContain("component_name: 'hero_render'");
+  });
+
+  it.each([
+    ["a `..` escape", () => path.relative(tmp, path.join(outside, "victim.tsx"))],
+    ["an absolute path", () => path.join(outside, "victim.tsx")],
+    ["a non-component file", () => "package.json"],
+    ["a file outside src/", () => "victim.tsx"],
+  ])("refuses %s as filePath", async (_label, target) => {
+    fs.writeFileSync(path.join(tmp, "package.json"), "{}\n", "utf8");
+    fs.writeFileSync(path.join(tmp, "victim.tsx"), COMPONENT, "utf8");
+    seedQueue([instrumentationCard({ filePath: target() })]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+    expect(res.status).toBe(400);
+    expect(fs.readFileSync(path.join(outside, "victim.tsx"), "utf8")).toBe(COMPONENT);
+    expect(fs.readFileSync(path.join(tmp, "victim.tsx"), "utf8")).toBe(COMPONENT);
+    expect(fs.readFileSync(path.join(tmp, "package.json"), "utf8")).toBe("{}\n");
+    expect(readQueue().cards[0].status).toBe("pending");
+  });
+
+  it("refuses a src/ symlink that resolves outside the repo", async () => {
+    fs.mkdirSync(path.join(tmp, "src", "components"), { recursive: true });
+    fs.symlinkSync(path.join(outside, "victim.tsx"), path.join(tmp, "src", "components", "Linked.tsx"));
+    seedQueue([instrumentationCard({ filePath: "src/components/Linked.tsx" })]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+    expect(res.status).toBe(400);
+    expect(fs.readFileSync(path.join(outside, "victim.tsx"), "utf8")).toBe(COMPONENT);
+  });
+
+  it("refuses an event key that would break out of the generated string literal", async () => {
+    seedComponent();
+    seedQueue([instrumentationCard({ posthogEventKey: "x', pwned: (globalThis.pwned = 1), y: '" })]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+    expect(res.status).toBe(400);
+    expect(fs.readFileSync(path.join(tmp, "src", "components", "Hero.tsx"), "utf8")).toBe(COMPONENT);
+  });
+
+  it("still lets a human reject a malformed card (nothing is written)", async () => {
+    seedQueue([instrumentationCard({ filePath: path.join(outside, "victim.tsx") })]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "rejected" }));
+    expect(res.status).toBe(200);
+    expect(readQueue().cards[0].status).toBe("rejected");
+    expect(fs.readFileSync(path.join(outside, "victim.tsx"), "utf8")).toBe(COMPONENT);
+  });
+
+  it("refuses an engagement recordPath outside contract/engagement/", async () => {
+    fs.mkdirSync(path.join(tmp, "experiments"), { recursive: true });
+    fs.writeFileSync(path.join(tmp, "experiments", "LEARNINGS.md"), "# Learnings\n", "utf8");
+    seedQueue([{ ...engagementCard(), recordPath: "experiments/LEARNINGS.md" }]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
+    expect(res.status).toBe(400);
+    expect(fs.readFileSync(path.join(tmp, "experiments", "LEARNINGS.md"), "utf8")).toBe("# Learnings\n");
+  });
+
+  it("refuses an experimentId that isn't a slug", async () => {
+    fs.writeFileSync(path.join(tmp, "contract", "engagement", "x.mdx"), RECORD, "utf8");
+    seedQueue([
+      {
+        id: "hyp-x",
+        type: "experiment-validation",
+        status: "pending",
+        experimentId: "../contract/engagement/x",
+        context: "x",
+      },
+    ]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "hyp-x", action: "approved" }));
+    expect(res.status).toBe(400);
+    expect(fs.readFileSync(path.join(tmp, "contract", "engagement", "x.mdx"), "utf8")).toBe(RECORD);
+  });
+
+  it("refuses a hypothesis proposal whose payload.id isn't a slug", async () => {
+    seedQueue([
+      {
+        id: "prop-x",
+        type: "hypothesis-proposal",
+        status: "pending",
+        payload: { id: "../escaped", hypothesis: "h", metric: "m" },
+      },
+    ]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "prop-x", action: "approved" }));
+    expect(res.status).toBe(400);
+    expect(fs.existsSync(path.join(tmp, "escaped.mdx"))).toBe(false);
+    expect(readQueue().cards[0].status).toBe("pending");
+  });
+});
+
+describe("PATCH /api/queue — card fields from queue.json stay in their directory", () => {
+  // queue.json is written by agents and the CLI, so a card's experimentId /
+  // recordPath must never point a write outside experiments/ or contract/engagement/.
+  const DECOY = "---\ntype: experiment\nid: decoy\nstatus: running\n---\n\n# not a contract\n";
+
+  it.each(["../decoy", "nested/decoy", "..", "Upper-Case"])(
+    "experiment-validation with experimentId %j 400s, writes nothing, card stays pending",
+    async (experimentId) => {
+      // experiments/../decoy.mdx resolves to <root>/decoy.mdx — outside the loop
+      fs.writeFileSync(path.join(tmp, "decoy.mdx"), DECOY);
+      seedQueue([
+        { id: "exp-1", type: "experiment-validation", status: "pending", experimentId, context: "x" },
+      ]);
+      const { PATCH } = await routes();
+      const res = await PATCH(patchReq({ id: "exp-1", action: "approved" }));
+      expect(res.status).toBe(400);
+      expect((await res.json()).error).toBe(`Invalid experimentId on card: ${JSON.stringify(experimentId)}`);
+      expect(fs.readFileSync(path.join(tmp, "decoy.mdx"), "utf8")).toBe(DECOY);
+      expect(readQueue().cards[0].status).toBe("pending");
+    },
+  );
+
+  it.each([
+    "contract/decoy.mdx",
+    "contract/engagement/../decoy.mdx",
+    "contract/engagement/../../decoy.mdx",
+    "decoy.mdx",
+    "contract/engagement/nested/landing.mdx",
+  ])(
+    "engagement-snapshot with recordPath %j 400s, appends nowhere, card stays pending",
+    async (recordPath) => {
+      fs.writeFileSync(path.join(tmp, "contract", "decoy.mdx"), DECOY);
+      fs.writeFileSync(path.join(tmp, "decoy.mdx"), DECOY);
+      seedQueue([{ ...engagementCard(), recordPath }]);
+      const { PATCH } = await routes();
+      const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
+      expect(res.status).toBe(400);
+      expect((await res.json()).error).toMatch(/^Invalid recordPath on card: /);
+      expect(fs.readFileSync(path.join(tmp, "contract", "decoy.mdx"), "utf8")).toBe(DECOY);
+      expect(fs.readFileSync(path.join(tmp, "decoy.mdx"), "utf8")).toBe(DECOY);
+      expect(readRecord()).toBe(RECORD);
+      expect(readQueue().cards[0].status).toBe("pending");
+    },
+  );
+
+  it("accepts the Windows-separator recordPath the CLI writes on win32", async () => {
+    seedQueue([{ ...engagementCard(), recordPath: "contract\\engagement\\landing.mdx" }]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "engagement-landing-1", action: "approved" }));
+    expect(res.status).toBe(200);
+    expect(readRecord()).toMatch(/acknowledged _\(dashboard\)_/);
   });
 });

@@ -98,6 +98,19 @@ describe("systemix propose — context (the read-only digest)", () => {
     ]);
   });
 
+  it("a goal whose id isn't a safe slug is skipped — never read through, never a crash", () => {
+    createGoal(root, "leads", { title: "Leads", now: NOW });
+    // A hand-edited goal whose frontmatter id resolves outside experiments/goals/
+    fs.writeFileSync(
+      path.join(root, "experiments", "goals", "sneaky.mdx"),
+      "---\ntype: goal\nid: ../../outside\nstatus: active\n---\n",
+      "utf8"
+    );
+    fs.writeFileSync(path.join(root, "outside.mdx"), "---\ngiven: not a goal\n---\n", "utf8");
+    const ctx = buildProposalContext(root);
+    expect(ctx.goals.map((g) => g.id)).toEqual(["leads"]);
+  });
+
   it("ODI outcomes are RE-scored (importance + max(imp−sat,0)), ranked, numbers-less skipped", () => {
     writeJobs(root);
     const odi = readOdi(root);
