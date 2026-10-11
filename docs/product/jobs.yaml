@@ -3,7 +3,7 @@
 # This file is the canonical JTBD reference for all product decisions.
 # Changes require a changelog entry. Do not modify without updating changelog below.
 
-version: "1.2.0"
+version: "1.3.0"
 created: "2026-05-05"
 feature_ref: "agentic-loop-thesis"
 
@@ -230,6 +230,68 @@ jobs:
     social_job: >
       Show a living, evidenced design system to the team and to clients.
 
+  - id: "JOB-008"
+    name: "agent-ready-design-system"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    validation_note: "Desk research only (2026-10-11): agent-built UI drift observed in Vero, its desktop consumer, and a shadcn client prototype (drift within 48h). Tests H1/H5 in docs/feature/ai-native-ds-kit-beta/discover/interview-log.md. Builds on JOB-002/003/004/007."
+    abstraction_level: "physical"
+    feature_ref: "ai-native-ds-kit-beta"
+    functional_job: >
+      Set up, inside my existing repo, a design system my coding agents actually
+      build with — tokens, components, rules and context they can read and that
+      checks itself — so agent-built UI stays consistent without me policing it.
+    emotional_job: >
+      Stop feeling that every agent session quietly erodes the product's look and feel.
+    social_job: >
+      Ship a product that looks deliberate, not "vibe-coded".
+
+  - id: "JOB-009"
+    name: "scored-prioritized-ui-audit"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    validation_note: "Desk research only (2026-10-11): audits are a proven paid format ($1.5k–18k UX audits; automated scorecards as lead magnets). Tests H2. G1 requires ≥1 pre-paid report."
+    abstraction_level: "physical"
+    feature_ref: "ai-native-ds-kit-beta"
+    functional_job: >
+      Find out what is off in my product's UI and design system — consistency,
+      accessibility, AI-native trust patterns, monetization UX, evidence behind
+      decisions — scored against comparable products, with fixes ranked by impact.
+    emotional_job: >
+      Replace a vague sense that "the UI is getting messy" with a clear, credible list.
+    social_job: >
+      Show the team and investors an objective quality baseline and its trend.
+
+  - id: "JOB-010"
+    name: "done-for-you-ds-implementation"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    validation_note: "Desk research only (2026-10-11). Tests H3. Delivery method proven in Vero (bounded score loop 77→88 with a reviewer gate)."
+    abstraction_level: "physical"
+    feature_ref: "ai-native-ds-kit-beta"
+    functional_job: >
+      Get the audit's top fixes shipped as reviewed PRs in fixed-scope sprints,
+      without pulling my team off the roadmap, and keep the reasons recorded.
+    emotional_job: >
+      Trust that the fixes are real (merged, measured), not another report in a drawer.
+    social_job: >
+      Show measurable before/after improvement.
+
+  - id: "JOB-011"
+    name: "ai-native-monetization-ux"
+    status: "candidate-unvalidated"
+    confidence: "low"
+    validation_note: "Desk research only (2026-10-11): usage/credits billing is the 2026 norm for AI products; no MIT block set is themed + instrumented. Seed model exists in Vero's desktop app (entitlements, usage rows, AI-work trial). Tests H4."
+    abstraction_level: "physical"
+    feature_ref: "ai-native-ds-kit-beta"
+    functional_job: >
+      Ship usage meters, credits, top-ups, plan pickers and paywalls that match my
+      design system, cover every state, and are instrumented so I can test pricing UX.
+    emotional_job: >
+      Stop rebuilding billing UI from scratch for every AI product.
+    social_job: >
+      Charge for AI usage in a way customers find transparent and fair.
+
 changelog:
   - version: "1.0.0"
     date: "2026-05-05"
@@ -249,3 +311,9 @@ changelog:
     feature_ref: "systemix-v2"
     summary: "Promoted JOB-002, JOB-003, JOB-004, JOB-007 to validated-conditional based on the Connecta design-system build: npx systemix init into a foreign repo (JOB-002), @connecta/design-system published via tsup (JOB-003), Wisprflow×Connecta brand merged via tokens-only reskin (JOB-004), /docs living styleguide live with sync-docs-compatible registry (JOB-007). JOB-005 and JOB-006 remain candidate-unvalidated (PostHog EU + platform build not yet started)."
     gate: "G1 conditional — single design partner. Formal G1 requires 5+ customer interviews."
+  - version: "1.3.0"
+    date: "2026-10-11"
+    author: "DISCOVER desk research (ai-native-ds-kit-beta)"
+    feature_ref: "ai-native-ds-kit-beta"
+    summary: "Added JOB-008 (agent-ready design system), JOB-009 (scored, prioritized UI audit), JOB-010 (done-for-you DS implementation), JOB-011 (AI-native monetization UX) for the beta rethink. Desk research only — see docs/feature/ai-native-ds-kit-beta/discover/."
+    gate: "NOT validated — 0 interviews. status=candidate-unvalidated until G1 (5+ interviews, ≥1 commitment) in docs/feature/ai-native-ds-kit-beta/discover/interview-log.md."

@@ -8,6 +8,8 @@ Systemix is **the evidence / self-training layer for a design system**. A builde
 
 **Direction: out of alpha → public release.** The approved architecture is the **v5 plan** at `~/.claude/plans/help-me-plan-and-golden-seahorse.md` (and memory `project_public_release`). Read those before non-trivial work.
 
+**Beta rethink (DRAFT, 2026-10-11, not yet approved):** `docs/feature/ai-native-ds-kit-beta/README.md`. It proposes "Systemix = the design system agent": MIT AI-native DS kit + free scorecard + paid audit report + implementation sprints, with Design Hub + App Shell as two layouts of one app. It is an nWave feature: DISCOVER desk research done, the G1 interview gate is open, and decisions are listed in its §7. Read it before non-trivial work; don't act on its proposals until the ADRs it names are accepted.
+
 ## Current Status (2026-07-09)
 Public-release groundwork (Phase 0) in progress:
 - ✅ Landing tightened + artifact-forward (denser sections, live loop pulled up), marketing `/for/<persona>` routes removed (personas stay as a home section + `/docs` guides), docs pruned (dropped Deferred TokenGuard docs + stale `_archive`, moved superseded scratch)
@@ -15,7 +17,7 @@ Public-release groundwork (Phase 0) in progress:
 - ✅ `design/` instance template (`packages/cli/templates/design/`) — the spine
 - ✅ Hermes re-pointed Ollama → deterministic (engine = Claude Code)
 - ✅ `npx systemix init` scaffolds `design/` + a per-instance `CLAUDE.md`, ghost-at-init
-- ⬜ migrate the POC's own runtime-state readers (MCP/app) off `.systemix/` into `design/.state/`
+- ⏸ migrate the POC's own runtime-state readers (MCP/app) off `.systemix/` into `design/.state/`: **on hold**. It contradicts the v6 layout in `packages/cli/src/lib/layout.js` and its tests; see beta plan §7 decision 2.
 - Next: the validation loop (build-first), code-first drift + claude-design-sync, the scheduled routine, distribution + fumadocs docs.
 
 ## Model (v5)
