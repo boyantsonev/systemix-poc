@@ -336,3 +336,92 @@ describe("PATCH /api/queue — engagement-snapshot", () => {
     expect(res.status).toBe(500);
   });
 });
+
+describe("PATCH /api/queue — instrumentation-approval", () => {
+  const COMPONENT = [
+    "import React from 'react'",
+    "",
+    "export function Button(props: { label: string }) {",
+    "  return <button>{props.label}</button>",
+    "}",
+    "",
+  ].join("\n");
+
+  function instrumentationCard(over: Record<string, unknown> = {}) {
+    return {
+      id: "instr-1",
+      type: "instrumentation-approval",
+      status: "pending",
+      component: "Button",
+      filePath: path.join("src", "components", "Button.tsx"),
+      posthogEventKey: "button",
+      ...over,
+    };
+  }
+
+  function seedComponent(rel = path.join("src", "components", "Button.tsx")) {
+    const abs = path.join(tmp, rel);
+    fs.mkdirSync(path.dirname(abs), { recursive: true });
+    fs.writeFileSync(abs, COMPONENT, "utf8");
+    return abs;
+  }
+
+  it("instruments a component under src/ and resolves the card", async () => {
+    const abs = seedComponent();
+    seedQueue([instrumentationCard()]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+    expect(res.status).toBe(200);
+    const src = fs.readFileSync(abs, "utf8");
+    expect(src).toContain("component_name: 'button'");
+    expect(readQueue().cards[0].status).toBe("approved");
+  });
+
+  it("refuses a traversal filePath: the decoy outside the repo is untouched and the card stays pending", async () => {
+    // A decoy that matches `function name(...) {` one level above the repo root.
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), "queue-decoy-"));
+    const decoy = path.join(outside, "file.tsx");
+    fs.writeFileSync(decoy, COMPONENT, "utf8");
+    try {
+      const rel = path.relative(tmp, decoy); // ../queue-decoy-xxx/file.tsx
+      expect(rel.startsWith("..")).toBe(true);
+      seedQueue([instrumentationCard({ filePath: rel })]);
+      const { PATCH } = await routes();
+      const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+      expect(res.status).toBe(500);
+      expect((await res.json()).error).toMatch(/Invalid filePath/);
+      expect(fs.readFileSync(decoy, "utf8")).toBe(COMPONENT);
+      expect(readQueue().cards[0].status).toBe("pending");
+    } finally {
+      fs.rmSync(outside, { recursive: true, force: true });
+    }
+  });
+
+  it("refuses files inside the repo but outside src/ or without a .tsx/.jsx extension", async () => {
+    for (const rel of ["next.config.tsx", path.join("src", "lib", "x.ts"), path.join("src", "..", "evil.tsx")]) {
+      const abs = path.join(tmp, rel);
+      fs.mkdirSync(path.dirname(abs), { recursive: true });
+      fs.writeFileSync(abs, COMPONENT, "utf8");
+      seedQueue([instrumentationCard({ filePath: rel })]);
+      const { PATCH } = await routes();
+      const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+      expect(res.status).toBe(500);
+      expect(fs.readFileSync(abs, "utf8")).toBe(COMPONENT);
+      expect(readQueue().cards[0].status).toBe("pending");
+    }
+  });
+
+  it("refuses a posthogEventKey with a quote — nothing is injected into the component", async () => {
+    const abs = seedComponent();
+    const evil = "x', evil: (() => { require('child_process') })(), y: '";
+    seedQueue([instrumentationCard({ posthogEventKey: evil })]);
+    const { PATCH } = await routes();
+    const res = await PATCH(patchReq({ id: "instr-1", action: "approved" }));
+    expect(res.status).toBe(500);
+    expect((await res.json()).error).toMatch(/Invalid event key/);
+    const src = fs.readFileSync(abs, "utf8");
+    expect(src).toBe(COMPONENT);
+    expect(src).not.toContain("child_process");
+    expect(readQueue().cards[0].status).toBe("pending");
+  });
+});

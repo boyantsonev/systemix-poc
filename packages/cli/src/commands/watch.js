@@ -588,7 +588,14 @@ function checkInstrumentation(projectRoot) {
     if (!sourcePath) continue;
     if (alreadyQueued.has(componentName)) continue;
 
-    const fullSourcePath = path.join(projectRoot, sourcePath);
+    // `path:` and the event key end up in a source rewrite on approval — only
+    // queue a .tsx/.jsx file under src/ and a key that can't break a string literal.
+    const fullSourcePath = path.resolve(projectRoot, sourcePath);
+    const relToSrc = path.relative(path.join(projectRoot, "src"), fullSourcePath);
+    if (!relToSrc || relToSrc.startsWith("..") || path.isAbsolute(relToSrc)) continue;
+    if (!/\.(tsx|jsx)$/.test(fullSourcePath)) continue;
+    if (!/^[A-Za-z0-9_.:-]+$/.test(posthogEventKey ?? componentName)) continue;
+
     if (!fs.existsSync(fullSourcePath)) continue;
 
     const source = fs.readFileSync(fullSourcePath, "utf8");

@@ -179,9 +179,34 @@ function applyEngagementAck(
   return { ok: true };
 }
 
+// A card's filePath comes from .systemix/queue.json, so only a .tsx/.jsx file
+// under the repo's src/ is accepted — resolved (and symlinks followed) before
+// the check, so `../` or a link can't point the rewrite outside the repo.
+function instrumentableFile(rel: string): string | null {
+  const srcRoot = path.resolve(process.cwd(), "src");
+  const inSrc = (abs: string) => {
+    const r = path.relative(srcRoot, abs);
+    return r !== "" && !r.startsWith("..") && !path.isAbsolute(r);
+  };
+  const abs = path.resolve(process.cwd(), rel);
+  if (!inSrc(abs) || !/\.(tsx|jsx)$/.test(abs)) return null;
+  if (fs.existsSync(abs) && !inSrc(fs.realpathSync(abs))) return null;
+  return abs;
+}
+
+// The event key is emitted into the component's source as a string literal —
+// only a conservative identifier-ish key, never one that can close the quote.
+const EVENT_KEY_RE = /^[A-Za-z0-9_.:-]+$/;
+
 function applyInstrumentation(card: InstrumentationCard): { ok: boolean; error?: string } {
   if (!card.filePath) return { ok: false, error: "No filePath on card" };
-  const absPath = path.join(process.cwd(), card.filePath);
+  const absPath = instrumentableFile(card.filePath);
+  if (!absPath) {
+    return {
+      ok: false,
+      error: `Invalid filePath on card: ${JSON.stringify(card.filePath)} — expected a .tsx/.jsx file under src/`,
+    };
+  }
   if (!fs.existsSync(absPath)) return { ok: false, error: `File not found: ${card.filePath}` };
 
   let src = fs.readFileSync(absPath, "utf8");
@@ -192,6 +217,9 @@ function applyInstrumentation(card: InstrumentationCard): { ok: boolean; error?:
   }
 
   const eventKey = card.posthogEventKey ?? card.component ?? "unknown";
+  if (!EVENT_KEY_RE.test(eventKey)) {
+    return { ok: false, error: `Invalid event key on card: ${JSON.stringify(eventKey)}` };
+  }
 
   // Add "use client" if not present
   if (!src.startsWith('"use client"') && !src.startsWith("'use client'")) {
