@@ -3,7 +3,8 @@ title: "Systemix Beta — the design system agent (plan)"
 feature: ai-native-ds-kit-beta
 date: 2026-10-11
 status: >
-  DRAFT PLAN. DISCOVER desk research is complete; the G1 interview gate is OPEN (0/5).
+  DRAFT PLAN. DISCOVER desk research and the Phase 1–4 documents are drafted; the G1 interview
+  gate is OPEN (0/5), so G2–G4 are blocked.
   DIVERGE has a draft recommendation. DISCUSS / DESIGN / DELIVER come next.
   Nothing here supersedes an ADR until ADR-023 is accepted.
 owner: Boyan Tsonev
@@ -30,7 +31,10 @@ This plan comes from a parallel analysis of six inputs:
 | [`discover/strategy-history.md`](discover/strategy-history.md) | 15+ repositionings, ADR status, thrash, docs hygiene |
 | [`discover/reference-instances.md`](discover/reference-instances.md) | What Vero and the other builds teach the kit (public-safe summary) |
 | [`discover/market-landscape.md`](discover/market-landscape.md) | Design Studio teardown, AI-native DS tooling, billing infra, GTM patterns |
-| [`discover/interview-log.md`](discover/interview-log.md) | The G1 gate: who to talk to, the guide, the hypotheses |
+| [`discover/interview-log.md`](discover/interview-log.md) | The G1 gate: who to talk to, the guide, hypotheses, recruiting plan, screener, outreach kit, debrief template |
+| [`discover/problem-validation.md`](discover/problem-validation.md) | Phase 1: hypothesis verdicts after the desk round, assumption register, G1 check |
+| [`discover/opportunity-tree.md`](discover/opportunity-tree.md) · [`discover/solution-testing.md`](discover/solution-testing.md) · [`discover/lean-canvas.md`](discover/lean-canvas.md) | Phases 2–4: drafts and test plans; scores are desk estimates; nothing run yet |
+| [`discover/evidence/`](discover/evidence/README.md) | 90 public evidence rows plus the recruiting map (secondary; not interviews) |
 | [`diverge/options-raw.md`](diverge/options-raw.md) · [`diverge/recommendation.md`](diverge/recommendation.md) | Options scored; the recommended direction |
 | [`design/presentation-ia.md`](design/presentation-ia.md) | Design Hub + App Shell: one source, two layouts (IA draft) |
 | [`wave-decisions.md`](wave-decisions.md) | The decision log for this feature |
@@ -427,7 +431,7 @@ real public cycle is merged**. Marketing does not claim it before that.
 
 | Wave | Status | Artifacts |
 |---|---|---|
-| DISCOVER | **in progress** (desk research done, G1 open) | `discover/*` |
+| DISCOVER | **in progress** (desk research and Phase 1–4 drafts done, G1 open) | `discover/*` |
 | DIVERGE | **draft** | `diverge/options-raw.md`, `diverge/recommendation.md` |
 | DISCUSS | next, after G1 | user stories, journeys, outcome KPIs |
 | DESIGN | early IA draft only | `design/presentation-ia.md`; ADR-023/024 and `design/wave-decisions.md` pending |

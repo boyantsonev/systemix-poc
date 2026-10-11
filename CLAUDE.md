@@ -8,7 +8,7 @@ Systemix is **the evidence / self-training layer for a design system**. A builde
 
 **Direction: out of alpha → public release.** The approved architecture is the **v5 plan** at `~/.claude/plans/help-me-plan-and-golden-seahorse.md` (and memory `project_public_release`). Read those before non-trivial work.
 
-**Beta rethink (DRAFT, 2026-10-11, not yet approved):** `docs/feature/ai-native-ds-kit-beta/README.md`. It proposes "Systemix = the design system agent": MIT AI-native DS kit + free scorecard + paid audit report + implementation sprints, with Design Hub + App Shell as two layouts of one app. It is an nWave feature: DISCOVER desk research done, the G1 interview gate is open, and decisions are listed in its §7. Read it before non-trivial work; don't act on its proposals until the ADRs it names are accepted.
+**Beta rethink (DRAFT, 2026-10-11, not yet approved):** `docs/feature/ai-native-ds-kit-beta/README.md`. It proposes "Systemix = the design system agent": MIT AI-native DS kit + free scorecard + paid audit report + implementation sprints, with Design Hub + App Shell as two layouts of one app. It is an nWave feature: DISCOVER desk research and the Phase 1–4 drafts exist (scores are desk estimates), the G1 interview gate is open (0/5), and decisions are listed in its §7. Read it before non-trivial work; don't act on its proposals until the ADRs it names are accepted.
 
 ## Current Status (2026-07-09)
 Public-release groundwork (Phase 0) in progress:

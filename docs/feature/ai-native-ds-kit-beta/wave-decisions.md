@@ -23,6 +23,21 @@ Full log: `discover/wave-decisions.md`.
 
 **Gate G1: OPEN** (0/5 interviews · 0/1 commitments).
 
+Added 2026-10-11 (second DISCOVER pass: Phase 1–4 documents drafted; still desk-level):
+
+| Decision | Confidence | Status |
+|---|---|---|
+| DSC-8: H1 restated: drift is recurring and survives teams' own remedies ("weekly" and "no system" dropped) | MEDIUM | Test in G1 (H1) |
+| DSC-9: The loudest public drift voices are DS maintainers, not 2–20-person product teams; ICP stays a hypothesis | LOW-MEDIUM | Test both segments in G1 |
+| DSC-10: Audit value rests on prioritisation, a named decider and the decision record, not detection | MEDIUM | Test in G1 (H2) |
+| DSC-11: Sprint price is far above visible buyer budgets; test a smaller fix pack | LOW | Test (E6) |
+| DSC-12: Billing value is wiring and unit design, not a UI; respect BillingSDK's GPL-3.0 | MEDIUM | Desk-validated |
+| DSC-13: Decision memory has no demand evidence, for or against; test it first | HIGH (that none exists) | Test (A7, S5) |
+| DSC-14: Anthropic is the incumbent for scheduled/CI sync; position as the complement | MEDIUM | Watch; ask in G1 |
+| DSC-15: The G1 recruiting plan is fixed in advance (6 booked floor; hard check Fri 23 Oct; extend, do not lower) | HIGH (as a plan) | Plan only; nothing sent |
+
+Gates: **G1 OPEN · G2 not passed (blocked) · G3 not started · G4 not started.** No peer review requested.
+
 ## DIVERGE (draft)
 
 Full recommendation: `diverge/recommendation.md` · options: `diverge/options-raw.md`.
