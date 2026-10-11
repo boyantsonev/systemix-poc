@@ -9,6 +9,7 @@
 const fs = require("fs");
 const path = require("path");
 const matter = require("gray-matter");
+const { isValidExperimentId } = require("../lib/experiments");
 
 const TEMPLATES_DIR = path.join(__dirname, "..", "..", "templates", "docs");
 
@@ -27,8 +28,9 @@ const REQUIRED_KEYS = ["name", "slug", "group", "source"];
 const kebabCase = (name) =>
   String(name)
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/[\s_]+/g, "-")
-    .toLowerCase();
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 function parseFlags(args) {
   const flags = {};
@@ -146,6 +148,10 @@ function newDoc(root, name, { group, source, reference } = {}) {
     return false;
   }
   const slug = kebabCase(name);
+  if (!isValidExperimentId(slug)) {
+    console.error(`  ✗  ${JSON.stringify(name)} doesn't make a valid slug (a-z, 0-9, "-")`);
+    return false;
+  }
   const componentsDir = path.join(root, "docs", "components");
   const file = path.join(componentsDir, `${slug}.md`);
   if (fs.existsSync(file)) {

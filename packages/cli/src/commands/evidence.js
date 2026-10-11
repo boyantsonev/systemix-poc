@@ -12,7 +12,7 @@ const skillUpdate = require("./skill-update");
 const fs = require("fs");
 const path = require("path");
 const { fetchPosthogEvidence } = require("../lib/loop");
-const { assertExperimentId, EXPERIMENT_ID_RE } = require("../lib/experiments");
+const { assertExperimentId, isValidExperimentId, EXPERIMENT_ID_RE } = require("../lib/experiments");
 
 const QUEUE_PATH = path.join(process.cwd(), ".systemix", "queue.json");
 const EXPERIMENTS_DIR = path.join(process.cwd(), "experiments");
@@ -368,6 +368,7 @@ function synthesizeExperiment(ev, meta = {}) {
 // Byte-compatible with the app close-writer's ^evidence-posthog:...$ regex
 // (src/lib/contract/experiment-mdx.ts) so a later close collapses it cleanly.
 function writeExperimentSnapshot(id, ev) {
+  assertExperimentId(id);
   const filePath = path.join(EXPERIMENTS_DIR, `${id}.mdx`);
   if (!fs.existsSync(filePath)) throw new Error(`Experiment not found: ${filePath}`);
   const raw = fs.readFileSync(filePath, "utf8");
@@ -443,6 +444,12 @@ async function experimentPull(args) {
   console.log(`\n  systemix evidence experiment pull — ${candidates.length} experiment${candidates.length !== 1 ? "s" : ""} (${days}d)\n`);
 
   for (const { id, data } of candidates) {
+    // id comes from frontmatter — skip (like the runner's skipped:invalid-id)
+    // before it reaches a file path or a queue card.
+    if (!isValidExperimentId(id)) {
+      console.log(`  ── skipped:invalid-id — ${JSON.stringify(id)} is not a valid experiment id`);
+      continue;
+    }
     const event = String(data["posthog-event"]);
     process.stdout.write(`  ── ${id} · ${event}\n`);
     process.stdout.write("     querying PostHog... ");
