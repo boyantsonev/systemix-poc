@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { applyExperimentDecisionToMdx, experimentPath } from "@/lib/contract/experiment-mdx";
+import { applyExperimentDecisionToMdx, experimentPath, isValidSlug } from "@/lib/contract/experiment-mdx";
 import { experimentGoalMap } from "@/lib/contract/goal-map";
 import {
   appendMemoryEntry,
@@ -100,6 +100,11 @@ function applyExperimentDecision(
   decision: "promote" | "kill",
 ): { ok: boolean; error?: string } {
   if (!card.experimentId) return { ok: false, error: "No experimentId on card" };
+  // The id comes from .systemix/queue.json and becomes experiments/<id>.mdx —
+  // only a plain slug, never a path that resolves outside experiments/.
+  if (!isValidSlug(card.experimentId)) {
+    return { ok: false, error: `Invalid experimentId on card: ${JSON.stringify(card.experimentId)}` };
+  }
   const filePath = experimentPath(card.experimentId);
   if (!fs.existsSync(filePath)) return { ok: false, error: `Contract not found: ${filePath}` };
 
@@ -155,6 +160,16 @@ function applyMemoryFromDecision(
   fs.renameSync(tmp, LEARNINGS_PATH);
 }
 
+// A card's recordPath comes from .systemix/queue.json, so only a record directly
+// under contract/engagement/ is accepted — contract/engagement/<slug>.mdx, with
+// either separator (the CLI writes it with path.join, so `\` on Windows). The
+// path is rebuilt from the slug; null for anything else.
+function engagementRecordFile(rel: string): string | null {
+  const m = /^contract[\\/]engagement[\\/]([^\\/]+)\.mdx$/.exec(rel);
+  if (!m || !isValidSlug(m[1])) return null;
+  return path.join(process.cwd(), "contract", "engagement", `${m[1]}.mdx`);
+}
+
 // Engagement snapshots write to a standalone engagement record (NOT the
 // hypotheses dir): every resolution appends an entry to its ## Engagement Log.
 function applyEngagementAck(
@@ -163,7 +178,13 @@ function applyEngagementAck(
   note?: string | null,
 ): { ok: boolean; error?: string } {
   const rel = card.recordPath ?? path.join("contract", "engagement", "landing.mdx");
-  const filePath = path.join(process.cwd(), rel);
+  const filePath = engagementRecordFile(rel);
+  if (!filePath) {
+    return {
+      ok: false,
+      error: `Invalid recordPath on card: ${JSON.stringify(rel)} — expected contract/engagement/<id>.mdx`,
+    };
+  }
   if (!fs.existsSync(filePath)) return { ok: false, error: `Engagement record not found: ${rel}` };
   const verb =
     action === "approved" ? "acknowledged"
