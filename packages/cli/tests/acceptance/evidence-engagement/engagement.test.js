@@ -432,6 +432,16 @@ test("appendEngagementAck throws a path-bearing error when the record is missing
     .toThrow(/Engagement record not found:.*ghost\.mdx/);
 });
 
+test("appendEngagementAck rejects an unsafe record id before resolving a path", () => {
+  // contract/engagement/../decoy.mdx resolves to contract/decoy.mdx — outside the records
+  const decoy = path.join(root, "contract", "decoy.mdx");
+  fs.writeFileSync(decoy, "---\nid: decoy\n---\n", "utf8");
+  const { appendEngagementAck } = freshModule();
+  expect(() => appendEngagementAck("../decoy", { action: "acknowledged", note: null, by: "cli" }))
+    .toThrow(/^invalid engagement record id "\.\.\/decoy"/);
+  expect(fs.readFileSync(decoy, "utf8")).toBe("---\nid: decoy\n---\n");
+});
+
 test("appendEngagementAck trims trailing whitespace before appending (no blank gap)", () => {
   const { appendEngagementAck } = freshModule();
   // Give the record a noisy trailing blank-line block; the ack must sit on the
@@ -737,6 +747,25 @@ test("engagement close is a no-op when the record is missing", async () => {
   console.log.mockRestore();
   expect(logs.join("\n")).toMatch(/No engagement record: landing/);
 });
+
+// The record id becomes contract/engagement/<id>.mdx — "../decoy" would append
+// to contract/decoy.mdx, "../../decoy" to the repo root's decoy.mdx.
+test.each(["../decoy", "../../decoy", "nested/landing", "..", "Landing", "with space"])(
+  "engagement close rejects the unsafe record id %j and appends nowhere",
+  async (id) => {
+    const DECOY = "---\nid: decoy\n---\n\n# not an engagement record\n";
+    fs.writeFileSync(path.join(root, "contract", "decoy.mdx"), DECOY, "utf8");
+    fs.writeFileSync(path.join(root, "decoy.mdx"), DECOY, "utf8");
+    const { evidence } = freshModule();
+    await expect(evidence(["engagement", "close", id, "--note", "x"])).rejects.toThrow(
+      `invalid engagement record id ${JSON.stringify(id)}`
+    );
+    expect(fs.readFileSync(path.join(root, "contract", "decoy.mdx"), "utf8")).toBe(DECOY);
+    expect(fs.readFileSync(path.join(root, "decoy.mdx"), "utf8")).toBe(DECOY);
+    expect(readRecord()).toBe(RECORD_MDX);
+    expect(fs.existsSync(path.join(root, ".systemix", "queue.json"))).toBe(false);
+  }
+);
 
 // ── evidence check ────────────────────────────────────────────────────────────
 

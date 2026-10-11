@@ -17,7 +17,7 @@ const path = require("path");
 const matter = require("gray-matter");
 const layout = require("./layout");
 const exp = require("./experiments");
-const { listGoals, goalFile } = require("./goals");
+const { listGoals, goalFile, isValidGoalId } = require("./goals");
 
 const JOBS_FILE = path.join("docs", "product", "jobs.yaml");
 
@@ -88,7 +88,9 @@ function readProductWorkflows(root) {
 
 function readGoals(root) {
   return listGoals(root)
-    .filter((g) => g.status === "active")
+    // A goal is read back from experiments/goals/<id>.mdx; one whose (hand-edited)
+    // id isn't a safe slug is skipped — never resolved into a path, never a crash.
+    .filter((g) => g.status === "active" && isValidGoalId(g.id))
     .map((g) => {
       const parsed = matter(fs.readFileSync(goalFile(root, g.id), "utf8"));
       const d = parsed.data || {};
