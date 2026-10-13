@@ -22,6 +22,11 @@ export interface DriftSnapshot {
   warnings: number;
   componentsAudited: number;
   topOffenders: string[];  // file paths
+  /**
+   * Which formula produced `score`. Absent on snapshots written before the
+   * clean-files score ("clean-files/1"); their scores are not comparable with it.
+   */
+  scoreFormula?: string;
 }
 
 export interface DriftHistory {
@@ -95,4 +100,36 @@ export function getLatestSnapshot(): DriftSnapshot | null {
 export function getTrend(n: number): DriftSnapshot[] {
   const { snapshots } = readFile();
   return snapshots.slice(-n);
+}
+
+/**
+ * The formula a snapshot's score was computed with. Snapshots without the tag
+ * were written by the older per-hit CLI score or by scripts/drift-report.ts; they
+ * are all "legacy" here, which is enough to know they cannot be compared with a
+ * tagged one.
+ */
+export function scoreFormulaOf(s: Pick<DriftSnapshot, "scoreFormula">): string {
+  return s.scoreFormula || "legacy";
+}
+
+/**
+ * The newest run of snapshots whose scores can be compared with the latest one:
+ * the same scoreFormula, contiguous up to the latest. Oldest → newest. A trend,
+ * a delta or a sparkline over anything longer would draw a jump that is only a
+ * change of formula.
+ */
+export function comparableRun<T extends Pick<DriftSnapshot, "scoreFormula">>(snapshots: T[]): T[] {
+  if (snapshots.length === 0) return [];
+  const formula = scoreFormulaOf(snapshots[snapshots.length - 1]);
+  let start = snapshots.length - 1;
+  while (start > 0 && scoreFormulaOf(snapshots[start - 1]) === formula) start--;
+  return snapshots.slice(start);
+}
+
+/**
+ * Like getTrend, but only the part that shares the latest snapshot's score
+ * formula — what a score trend or "vs previous" arrow may honestly show.
+ */
+export function getComparableTrend(n: number): DriftSnapshot[] {
+  return comparableRun(getTrend(n));
 }
