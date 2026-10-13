@@ -126,3 +126,13 @@ what a buyer would be paying for):
   and ask for a price.
 - Success criterion E4 stays "each audit ≤1 working day by the third; ≥1 reader acts within 14
   days". Nothing here satisfies it.
+
+**Status 2026-10-13.** Built on `claude/gifted-goodall-3iib00`: the counters script
+(`systemix audit counters`, 354 mechanical counters, byte-identical across runs, about 0.4 s on this
+repo, see `packages/cli/src/lib/counters/README.md`) and the `drift` fix (runs without gray-matter,
+token source resolved and exempted, positional dirs honoured, clean-file score, `--dry-run`). Against
+the dry run's verified values it reproduces every one except the explained differences (HTML entities
+no longer counted, the ages move with HEAD, the repo grew). **Not done:** the three skills' SKILL.md files
+do not call the report yet, so formulas, importance weights and tie-breaks are still unpinned, and no
+second audit has been run. The ~29M-token verification pass is not what a customer audit would cost;
+it was the check on the dry run.

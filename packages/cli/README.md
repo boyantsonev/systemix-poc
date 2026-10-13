@@ -63,8 +63,27 @@ npx @getsystemix/cli list                    # installed skills + available work
 npx @getsystemix/cli doctor                  # health check (skills, MCP server, signals)
 npx @getsystemix/cli sync [--dry-run]        # design-token sync (optional design substrate)
 npx @getsystemix/cli tokens                  # convert globals.css → tokens bridge cache
+npx @getsystemix/cli audit counters [dir…]   # deterministic audit counters as JSON (see "Audit counters")
+npx @getsystemix/cli drift scan [dir…]       # raw colour / px tally + clean-file score (timeline snapshot)
 npx @getsystemix/cli update                  # check + apply npm / skill-pack updates
 ```
+
+## Audit counters
+
+```bash
+npx @getsystemix/cli audit counters --dirs src [--groups colour,tokens] [--out report.json] [--pretty] [--summary]
+```
+
+One deterministic JSON report of the repo's design system: files, tokens, colour and type literals, primitives,
+reachability, guardrails, docs, decisions, drift habit, agent legibility. Same tree and commit, same bytes; no
+model, no network, nothing written, no dependency to install. Every number carries its unit, regex, file set and
+a per-file breakdown. The audit skills are meant to quote it instead of recounting (their SKILL.md files do not
+call it yet). What each counter means, how to read
+one, the rule for skills, determinism, limits and versioning:
+[`src/lib/counters/README.md`](src/lib/counters/README.md).
+
+`npx @getsystemix/cli drift scan [dir…] [--dry-run] [--json]` is the same population with the cheap tally
+(colour literals and raw px, a clean-file score) and appends a snapshot to `.systemix/drift-history.json`.
 
 ## How it runs
 
