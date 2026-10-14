@@ -3,8 +3,8 @@
 `systemix audit counters` counts a repo's design system and prints **one JSON report**. It is a script: no
 model, no network, no clock, nothing written. The audit skills (`/design-audit`, `/readiness-audit`,
 `/drift-report`) are meant to quote this report instead of counting by hand; see [The rule for skills](#the-rule-for-skills).
-**Today none of the three SKILL.md files calls it yet** (the counters and the rule were built first); until they
-do, a skill that quotes it does so because its operator ran the command and handed it the JSON.
+Each of the three runs `audit counters` as its Step 0 (after a probe that stops it on a CLI that predates the command)
+and scores from the whole report with a rubric published inside the skill.
 
 ## Why it exists
 
@@ -189,8 +189,9 @@ edges, parsed css declarations, resolver results) has `regex: null` and no `rege
 ## The rule for skills
 
 > **A skill must not recompute a counter that is in the JSON. It fills only judged fields, and tags every
-> number it prints as `mechanical` (copied from this report, with the counter id) or `judged` (its own
-> reading).**
+> number it prints as `mechanical` (copied from this report, with the counter id, `[m:…]`), `rubric` (computed
+> from counters by the skill's published rubric, `[r:…]`) or `judged` (its own reading, `[j]`, never an input to a
+> rubric number).**
 
 - Run `audit counters` first (or read the file the user gives you), keep the JSON, and quote ids (slice it, see
   "Reading the report"). If the command cannot run, say so in the report ("execution mode") and label what you
