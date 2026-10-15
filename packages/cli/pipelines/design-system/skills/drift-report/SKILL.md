@@ -28,18 +28,21 @@ last line (in pages of about 400 lines) before you start.
 /drift-report                        # audit the product folders of the repo you are in
 /drift-report src/components/ui/     # scope to a directory (it becomes --dirs)
 ```
-Run it from the repo root, or pass `--root <dir>` to the counters command.
+Run it from the repo root, or pass `--root <dir>` to the counters command (`drift scan` has no `--root`: run it from that directory).
 
 ## Tags — every number the report prints carries exactly one
 Put the unit beside every count ("114 regex hits in 10 files", never "114 colours"). Where a clause holds several
-numbers their tags may follow it together: they map to the numbers before them, left to right. The two numbers of an
-"X of Y" have a tag each; a number that is a sum of counters takes one tag listing the ids (`[m:a, b]`); a number
-repeated in the same line or row is tagged once. `file:line` locators and line numbers read from a detail path are
-positions, not counts, and carry none, nor do constants copied from these rules (edges such as `20`, `N = 1`, the
-`of 6` of the spine). A counter of unit `ratio` is a fraction (4 decimals); printed as a percent it is the value × 100
-with 2 decimals and a `%`, tag unchanged. A measure printed at two scopes
-(all audited files; without the declared-exempt files) names its scope every time: "265 arbitrary sizes in all
-audited files", "247 outside the exempt files".
+numbers their tags may follow it together: they map to the numbers before them, left to right. A boolean printed as
+a value is 1 or 0 (never `true`); a fact told in words (an absence, a boolean) has its tag right after those words,
+never in a tag group with number tags. The two numbers of an "X of Y" have a tag each; a number that is a sum of
+counters takes one tag listing the ids (`[m:a, b]`); a number repeated in the same line or row is tagged once. The
+number of files that hold a raw colour literal is always [r:dirty_colour_files]; [m:colour.scanner.files_with_colour_hits]
+tags only the words "files with a colour regex hit".
+`file:line` locators and line numbers read from a detail path are positions, not counts, and carry none, nor do
+constants copied from these rules (edges such as `20`, `N = 1`, the `of 6` of the spine). A counter of unit `ratio`
+is a fraction (4 decimals); printed as a percent it is the value × 100 with 2 decimals and a `%`, tag unchanged. A
+measure printed at two scopes (all audited files; without the declared-exempt files) names its scope every time: "265 arbitrary font-size class
+matches in all audited files", "247 outside the exempt files".
 
 | Tag | Means |
 |---|---|
@@ -59,13 +62,16 @@ rm -f /tmp/audit-counters.json /tmp/drift-scan.json
 npx @getsystemix/cli audit counters --dirs <dirs> --out /tmp/audit-counters.json --pretty
 npx @getsystemix/cli drift scan --dry-run --json --dirs <dirs> > /tmp/drift-scan.json
 ```
+`<counters>` is the `--out` path: `/tmp/audit-counters.json` unless the operator names another outside the repo; the
+scan's file is `/tmp/drift-scan.json` unless the operator names another outside the repo. The blocks here spell the
+defaults; put your paths in their place everywhere (`rm -f`, `--out`, the redirect, each recipe, the cross-check).
 1. **Feature-detect, don't version-compare.** If either of the first two lines prints "too old", stop there (the
    `exit 1` ends a pasted block; if you run the lines one at a time, do not run the last three), go to
    *No counters, no score* and run neither of the last two commands. Probe only with the top-level `--help`. Never probe
    with `audit --help` or `audit counters --help`: an old CLI ignores arguments it does not know, installs a skill into
    the repo for `audit counters`, and writes a snapshot for `drift scan` without `--dry-run`. The `rm -f` removes reports from an earlier run, so a failed run leaves no file;
    read only a file the command just wrote.
-2. **Pick `--dirs`** (`<dirs>` above): `$ARGUMENTS` if given; else every one of `src`, `app`, `components` that exists at the root (`ls -d src app components 2>/dev/null`, passed as one comma list, `--dirs src,app`); if none of them exists but `apps/<name>/src` does, run once per app (`ls -d apps/*/src`) and write one report each; with nothing to go on ask the operator, do not guess. In a monorepo never leave it to
+2. **Pick `--dirs`** (`<dirs>` above): `$ARGUMENTS` if given (a folder list in the operator's task text counts as `$ARGUMENTS`); else every one of `src`, `app`, `components` that exists at the root (`ls -d src app components 2>/dev/null`, passed as one comma list, `--dirs src,app`); if none of them exists but `apps/<name>/src` does, run once per app (`ls -d apps/*/src`) and write one report each; with nothing to go on ask the operator, do not guess. In a monorepo never leave it to
    the default list. Give **both** commands the same folders and write them in the header: two reports compare only
    on the same folders.
 3. **The scan always carries `--dry-run`, never a writing scan.** Without it the scan appends a
@@ -78,7 +84,9 @@ npx @getsystemix/cli drift scan --dry-run --json --dirs <dirs> > /tmp/drift-scan
    audited root (it leaves the working tree and the index alone; any output means not clean, an untracked
    `.claude/skills/` included), or read `repo.dirty` if you passed `--dirty`. Both run the repo's git clean filters:
    only on a repo you trust; with no git repository, or a repo you do not trust, print `checkout: not checked`.
-   Print at most 5 of the paths git lists, with their status marks. It is a statement, not a flag.
+   Only the operator's own statement that this repo is trusted counts as trust; naming the repo or running you in it does not. The skills installed for this
+   audit (untracked `.claude/skills/<name>/`) are listed like any other path. Print at most 5 of the paths git lists,
+   with their status marks. It is a statement, not a flag.
 4. **Read by id, never whole** (the counters file is about 500 KB; recipes at the end). Never cut the
    run with `--ids`, `--groups` or `--brief`: the score needs the whole report.
 5. **Withhold when the report cannot be trusted.** Print the header and the reason, then stop: no
@@ -105,14 +113,15 @@ npx @getsystemix/cli drift scan --dry-run --json --dirs <dirs> > /tmp/drift-scan
    same major, so compare two reports only when their `countersVersion` is the same in all three parts, or say that
    they differ. The header's second line names `toolVersion`: repeat a run with the same CLI
    (`@getsystemix/cli@<version>` in place of `@getsystemix/cli`).
-9. **Header** — first four lines of the report:
+9. **Header** — the four lines under the title:
    ```
    skill: drift-report@0.2.0 · rubric: v1 · counters: <countersVersion> (<schema>) · commit: <12 chars> (<commitDate>) · token source: <path> via <via> · dirs: <list> · execution: counters-cli
-   population: <audited> files audited = <census> − <tests> tests − <declarations> .d.ts − <token source> token source · coverage: <census> of <source-looking> files · exemption: <files> of <audited> files, applied|ignored · skipped dirs · missing dirs · warnings · counters tool <toolVersion> [m:toolVersion]
+   population: <audited> files audited = <census> − <tests> tests − <declarations> .d.ts − <token source> token source · coverage: <census> of <S> source-looking files · exemption: <files> of <audited> files, applied|ignored · skipped dirs · missing dirs · warnings · counters tool <toolVersion> [m:toolVersion]
    scan: drift scan --dry-run · ok · no snapshot written
    checkout: clean | not clean (<the paths git lists, at most 5>) | not checked [j]
    ```
-   Print `scope.skippedDirs`, `missingDirs`, `rejectedDirs` and every entry of `warnings` as they are.
+   The header is exactly these four lines: add no other line and no `reason` text. Print
+   `scope.skippedDirs`, `missingDirs`, `rejectedDirs` and every entry of `warnings` as they are.
    If the scan failed (`ok` false or a non-zero exit), print `scan: not run (<its error>)` and go on:
    the counters carry the same tally.
 
@@ -341,7 +350,7 @@ Info is decided by the path: 30 hits in brand data, 14 in components/ui [r:sever
 - "Status is icon + text" (line 47) — manual — needs review.
 
 ## Proposed next step   (printed, nothing is written)
-→ guardrail for unruled drift [awaiting approval, /hermes]: "Type sizes come from the --font-size-* tokens; no text-[Npx]" — 247 class matches in 38 files [m:typography.arbitrary_size.matches!] [m:typography.arbitrary_size.files!]; 176 of the 265 arbitrary sizes in all audited files equal a token [m:typography.arbitrary_size.equals_token] [m:typography.arbitrary_size.matches]
+→ guardrail for unruled drift [awaiting approval, /hermes]: "Type sizes come from the --font-size-* tokens; no text-[Npx]" — 247 class matches in 38 files [m:typography.arbitrary_size.matches!] [m:typography.arbitrary_size.files!]; 176 of the 265 arbitrary font-size class matches in all audited files equal a token [m:typography.arbitrary_size.equals_token] [m:typography.arbitrary_size.matches]
 → tokens for the Warnings you keep, e.g. #241304 in system-graph.ts [j]   [awaiting approval, /hermes]
 
 ## Appendix — how these numbers were made
@@ -352,7 +361,7 @@ Info is decided by the path: 30 hits in brand data, 14 in components/ui [r:sever
 | drift_control | (193 [m:colour.scanner.files_audited] − 10) × 100 ÷ 193 = 94.82, rounded half-up once | 95 |
 Scan score: 82 [m:scan.score] (clean-files/1, the number the timeline stores; not drift control).
 Near-threshold (one counter moved by one unit changes a flag or a guard): none. Nearest: 10 dirty colour files against the 20-file flag.
-Zero or missing because an input does not exist: design/tokens.css (spine 2 of 6 [m:docs.spine.members_present]); no type-size rule and no spacing-scale rule. Missing counters: none.
+Counters missing or null: none missing, none null. Spine: no design/tokens.css [m:docs.spine.tokens_css] (its n of 6 is printed above).
 Sensitivity: one more dirty file lowers drift control by 0.52 points (100 ÷ 193) [r:sensitivity].
 Validity: <the block's validity sentence> · Limits: <the block's three limits>
 ```
@@ -361,7 +370,8 @@ Validity: <the block's validity sentence> · Limits: <the block's three limits>
 Per score: the derived values and the arithmetic with their counter ids and values, enough for a reviewer to re-add
 it. Then the **near-threshold** list (mechanical: move the one counter behind a threshold by 1, never below 0, and
 list the flags and guards that flip: 20 dirty files, the two token-source edges, tests ≥ audited, coverage 0.8, the
-10% exemption cap), the counters that were missing or zero because an input did not exist, and the sensitivity
+10% exemption cap), the counters that are missing or null with the note of each part left not rated,
+`docs.spine.tokens_css` when it is 0 (a 0 that is a measured finding is not listed), and the sensitivity
 (`[r:sensitivity]`: one file is 100 ÷ `colour.scanner.files_audited` points). **Footer:** the block's `validity` sentence
 and its `limits`, word for word. Never present a score as a measurement of quality; scores compare only within the same
 `rubric_version`, the same `countersVersion` (the same major at least, the same minor and patch when you can) and the
@@ -383,11 +393,13 @@ same `--dirs`.
   token, a tighter guardrail or a rule for unruled drift is a separate, always-HITL path (`/hermes` if it is installed): writing
   `design/tokens.css` or `design/guardrails.mdx` is a `guardrail` artifact, HITL even in autonomous mode.
 - **Cross-check (a Systemix checkout only).**
-  `node packages/cli/tests/acceptance/skills/rubric-eval.js /tmp/audit-counters.json --skills packages/cli/pipelines/design-system/skills`
-  computes the same drift control, classes and lines from the block below.
+  `node packages/cli/tests/acceptance/skills/rubric-eval.js <counters> --skills packages/cli/pipelines/design-system/skills`
+  computes the same drift control, classes and lines from the block below. Run it only when that script exists under
+  the audited root or the operator names it; skipping it is not an error and is not reported as one.
 
 ## Recipes (copy, run, paste the numbers)
-Every counter, one line each (id, unit, value; about 15 KB), and the header fields:
+The recipes below spell `<counters>` as `/tmp/audit-counters.json` and the scan's file as `/tmp/drift-scan.json`. Every counter, one
+line each (id, unit, value; about 15 KB), and the header fields:
 ```
 jq -r '.counters[] | [.id, .unit, (.value | tostring)] | @tsv' /tmp/audit-counters.json
 jq '{countersVersion, schema, repo, slice, skipped: .groups.skipped, scope: (.scope | {dirs, missingDirs, rejectedDirs, skippedDirs, tokenSource, population}), warnings}' /tmp/audit-counters.json

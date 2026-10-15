@@ -58,22 +58,25 @@ rm -f /tmp/audit-counters.json
 npx @getsystemix/cli audit counters --dirs <dirs> --out /tmp/audit-counters.json --pretty
 ```
 
+`<counters>` is the `--out` path: `/tmp/audit-counters.json` unless the operator names another outside the repo. The
+blocks here spell the default; put your path in its place everywhere (`rm -f`, `--out`, each recipe, the cross-check).
+
 1. **Feature-detect, do not compare versions.** "CLI too old" means the installed CLI predates
    `audit counters`: stop there (the `exit 1` ends a pasted block; if you run the lines one at a time, do
    not run the next two) and go to *No counters, no score*. Never probe with `audit --help` or
    `audit counters --help`: a CLI that old ignores arguments and installs a skill into the repo. The `rm -f`
    removes a report from an earlier run, so a failed run leaves no file; read only a file the command just wrote.
-2. **Choose `--dirs`** (`<dirs>` above): `$ARGUMENTS` if given; else every one of `src`, `app`, `components` that exists at the root (`ls -d src app components 2>/dev/null`, passed as one comma list, `--dirs src,app`); if none of them exists but `apps/<name>/src` does, run once per app (`ls -d apps/*/src`) and write one report each; with nothing to go on ask the operator, do not guess. In a monorepo
+2. **Choose `--dirs`** (`<dirs>` above): `$ARGUMENTS` if given (a folder list in the operator's task text counts as `$ARGUMENTS`); else every one of `src`, `app`, `components` that exists at the root (`ls -d src app components 2>/dev/null`, passed as one comma list, `--dirs src,app`); if none of them exists but `apps/<name>/src` does, run once per app (`ls -d apps/*/src`) and write one report each; with nothing to go on ask the operator, do not guess. In a monorepo
    never leave it to the default list (`packages/` would pull in every package). Write the folders in the header:
    two reports compare only on the same folders. A folder that does not exist withholds the report.
-3. **`--out` goes outside the repo** (any path outside it; use the same path in every recipe below): this skill
-   writes nothing into the audited repo. The counters read the working tree, not the commit, so say
-   whether the checkout is clean: run `git --no-optional-locks -c core.fsmonitor=false status --porcelain -- .`
+3. **`--out` goes outside the repo**: this skill writes nothing into the audited repo. The counters read the
+   working tree, not the commit, so say whether the checkout is clean: run `git --no-optional-locks -c core.fsmonitor=false status --porcelain -- .`
    from the audited root (it leaves the working tree and the index alone; any output means not clean, an
    untracked `.claude/skills/` included), or read `repo.dirty` if you passed `--dirty`. Both run the repo's git
    clean filters: only on a repo you trust; with no git repository, or a repo you do not trust, print
-   `checkout: not checked`. Print the answer as the `checkout:` line (see the template), with at most 5 of the
-   paths git lists and their status marks, never as a flag.
+   `checkout: not checked`. Only the operator's own statement that this repo is trusted counts as trust; naming the repo or running you in it does not. The skills
+   installed for this audit (untracked `.claude/skills/<name>/`) are listed like any other path. Print the answer as
+   the `checkout:` line (see the template), with at most 5 of the paths git lists and their status marks, never as a flag.
 4. **Read by slice, score from the whole file.** The file is about 500 KB: never read it whole,
    look numbers up by id (`jq`, or any JSON reader).
 
@@ -117,18 +120,23 @@ skill: readiness-audit@0.2.0 · rubric: v1 · counters: <countersVersion> (<sche
 Line 2 echoes what the scores are scores of: the population, `skippedDirs`, `missingDirs`,
 `rejectedDirs`, the coverage, the warning count and the counters' `toolVersion`; line 3 is the `checkout:`
 statement (see the template). Quote the counters' own words: the token source and how it was found (`via`), the
-population (census, tests, `.d.ts`, token source, audited), the unit. Ages are days to the HEAD commit date, never today's.
+population (census, tests, `.d.ts`, token source, audited), the unit. The header is exactly these three lines: add
+no other line and no `reason` text. Ages are days to the HEAD commit date, never today's.
 
 Every number the report prints carries exactly one tag, placed after it:
 
 | Tag | Meaning |
 |---|---|
-| `[m:<counter id>]` | copied from the counters report. `id#a.b` is a field of its `detail`; `id!` is the counter without the guardrail-exempt files (print `id!` in the body; in the appendix write the counter it resolves to, `<id>_excluding_exempt` or `id#exempt.excludingExemptFiles`, so a reviewer can look it up); a number that is a sum takes one tag listing the ids, `[m:a, b]`. A report field that is not a counter is tagged by its JSON path (`[m:warnings]`, `[m:toolVersion]`) |
+| `[m:<counter id>]` | copied from the counters report. `id#a.b` is a field of its `detail`; `id!` is the counter without the guardrail-exempt files (print `id!` in the body; in the appendix write the counter it resolves to, `<id>_excluding_exempt` or `id#exempt.excludingExemptFiles`, so a reviewer can look it up, except in the near-threshold table, which names the base id); a number that is a sum takes one tag listing the ids, `[m:a, b]`. A report field that is not a counter is tagged by its JSON path (`[m:warnings]`, `[m:toolVersion]`) |
 | `[r:<score id>]` | computed by the rubric from counters; the breakdown is in the appendix. Ids: `overall`, `overall.per_point`, `importance`, `pts.<dimension>`, `pts.<dimension>.<item>`, `value.<dimension>.<item>`, `sat.<dimension>`, `opp.<dimension>`, `gap`, `drift_control`, `components`, `tokens`, `density`, `health`, `setup_class`, `tokens.colour`, `tokens.spacing`, `dirty_colour_files` |
 | `[j]` | your reading: narrative, wording of fixes, the setup line, the `checkout:` line. Allowed in prose, **never an input to an `[r:…]` number** |
 
 Where a clause holds several numbers, their tags may follow it together: they map to the numbers before them, left
-to right. The two numbers of an "X of Y" have a tag each; a number repeated in the same line or row is tagged once.
+to right. A boolean printed as a value is 1 or 0 (never `true`); a fact told in words (an absence, a boolean) has its
+tag right after those words, never in a tag group with number tags. The two numbers of an "X of Y" have a tag each;
+a number repeated in the same line or row is tagged once. The number of files that hold a raw colour literal is
+always [r:dirty_colour_files]; [m:colour.scanner.files_with_colour_hits] tags only the words "files with a colour
+regex hit".
 A tag in a table's column header covers that column (the row names the dimension and item); a
 computation written on one line (`6 + 7 = 13 → 10`), or the appendix line `<label>: <pts> points [r:pts.<dimension>]
 → satisfaction …, importance …, opportunity …`, takes one tag, after the points or at its end; in the appendix
@@ -138,8 +146,8 @@ list numbers. Integer locators (`file:line`, a line number read from a `detail` 
 carry none either. Every other number has its own tag. State the unit beside a count ("265 matches in 39 files",
 never "265 sizes"). A counter of unit `ratio` is a fraction (4 decimals); printed as a percent it is the value × 100
 with 2 decimals and a `%`, tag unchanged. A measure printed at two scopes (all audited files; without the
-declared-exempt files) names its scope every time: "247 arbitrary sizes outside the exempt files", "265 in all
-audited files".
+declared-exempt files) names its scope every time: "265 arbitrary font-size class
+matches in all audited files", "247 outside the exempt files".
 
 ## Reading the block
 
@@ -192,10 +200,10 @@ dimensions; it adds no points. Spine completeness is printed on its own line, no
 2. **Items.** For every item of every dimension, in `order`:
    1. `requires`: every gate must hold (`{gate: "name"}` points into `gates`). A failed gate earns 0 and its `note` goes on the appendix line `Gates that failed`.
    2. `measure`: evaluate it from the counters (*Reading the block*). A `null` counter earns 0 ("not computable"); an absent counter withholds the report (rule 1).
-   3. `bands`: the first band whose `when` holds for the **exact** value gives the points. Never band a rounded value. Print a count as an integer, a ratio item's value with 4 decimals (`0.0000`, `1.0000`) and a percent (an item whose `scale` is 100) with 2.
+   3. `bands`: the first band whose `when` holds for the **exact** value gives the points. Never band a rounded value. Print a count as an integer, a boolean as 1 or 0 (never `true`), a ratio item's value or a counter of unit `ratio` with 4 decimals (`0.0000`, `1.0000`) and a percent (an item whose `scale` is 100) with 2.
    4. `ceilings`: if the ceiling's `if` gate holds, points = the smaller of the points and `max_points`. Print a ceiling only when it fired.
-   5. **Nothing to rate** (the block's `zero_note`, `min_den_note` and gate `note` are the sentences to print, on the appendix lines `Gates that failed` and `Counters missing, null or zero …`). A violation share over an empty population (no font-size utilities, no radius utilities) earns full points wherever the item's gates hold (styling code; for the Tailwind-class items also a Tailwind vocabulary). A coverage share over an empty or too small population (fewer than 5 tags, 5 pointers or 3 named skills; no token records; no component file outside components/ui) earns 0 and says "not rated". Absence never earns points.
-   6. **What the appendix prints.** The `Counters = values` cell lists the counters the item's `measure` reads; a gate ratio (lines per ADR heading, for example) is not printed, only the `note` of a gate that failed.
+   5. **Nothing to rate** (two notes are printed: a failed gate's `note`, on the appendix line `Gates that failed`, and the `zero_note` or `min_den_note` of an item left not rated, on `Counters missing or null`; a `zero_note` on a numeric `zero`, such as "full points", is never printed). A violation share over an empty population (no font-size utilities, no radius utilities) earns full points wherever the item's gates hold (styling code; for the Tailwind-class items also a Tailwind vocabulary). A coverage share over an empty or too small population (fewer than 5 tags, 5 pointers or 3 named skills; no token records; no component file outside components/ui) earns 0 and says "not rated". Absence never earns points.
+   6. **What the appendix prints.** The `Counters = values` cell lists the counters the item's `measure` reads; a gate ratio (lines per ADR heading, for example) is not printed, only the `note` of a gate that failed. The line `Counters missing or null` lists (a) each counter an item reads whose value is null and (b) the `zero_note` or `min_den_note` of each item left not rated, or says "none missing, none null"; then, after a `;`, (c) `docs.spine.tokens_css=0` and its effect, only when it is 0. A 0 that is a measured finding (a rule, a workflow step, a theme mapping, an absent optional spine folder) is never listed.
 3. **Dimension points** = the sum of its item points. Then the `caps`: unless every `unless` condition holds, a dimension the cap names gets at most `max_points` (`docs_need_code`: Captured rationale and Codified rules at most 6, unless styling code exists and at least 60 % of the audited files hold no raw colour literal). A cap never raises a score; print the flag `capped_<dimension>`.
 4. **Satisfaction** = clamp(round-half-up(points), 1, 10). Round half up is floor(x + 0.5): 2.5 gives 3, 4.5 gives 5. One rounding, here.
 5. **Opportunity** = importance + max(importance − satisfaction, 0).
@@ -228,34 +236,42 @@ Drift control and component reuse are computed here, from this block, which copi
 `sub_scores`, `health` and `setup_class` rules), applied to **this** counters file. Its Step 0 (the counters and `drift scan --dry-run`) and its discovery
 stages are replaced by that file: run no `drift scan`, not even with `--dry-run`. Print the class, a
 `triggered by` line with the four values `/design-audit` Stage 5 prints, in its order, each with its edge and
-its tag, and the class recommendation. If `/design-audit` is not installed, print
+its tag, and the class recommendation (not its wizard sentence: the heading's "you confirm each" stands in for
+it). If `/design-audit` is not installed, print
 those lines as "not computed" (no readiness number depends on them). Never quote `drift scan`'s own score
 as drift control; quote `colour.scanner.*` as "regex hits".
 
-A drift class of `/drift-report` step 3 with hits above 0 and no declaring rule (type sizes when
-`guardrails.rules.type_size` is false, for example) is *unruled drift*: name every such class inside the
-Codified rules entry of the opportunities, as a proposal for the rule (never written); there is no separate
-section. When `tokens.source.via` is not `design/tokens.css`, the point of item `tokens_css` stays lost and is
-not pursued with a second token file: propose `design.source: <tokens.source.path>` in `systemix.config.yaml`.
+A drift class of `/drift-report` step 3 with hits above 0 that it labels *unruled drift* (its rule flag is false:
+`guardrails.rules.type_size`, `guardrails.rules.spacing_scale`; radii always, as no counter reads a radius rule) is
+named inside the Codified rules entry of the opportunities, as a proposal for the rule (never written); there is no
+separate section. A class it labels "regex hits against a guardrails file that has rules" (colour literals, palette
+classes) is not named; with no guardrails file, or none with rule bullets, those two are unruled drift and are named
+like the rest. When `tokens.source.via` is not `design/tokens.css`, the point of item `tokens_css`
+stays lost and is not pursued with a second token file: propose `design.source: <tokens.source.path>` in `systemix.config.yaml`.
 
 ## Step 3 — Near-threshold list
 
 A mechanical list of the awards that are knife-edge; it goes in the appendix. For every item (scored, gated
 or unrated), step each term it reads, in its measure, its gates and its ceilings (numerators, denominators,
 gate counters, `id#path` terms and `@derived` values), by **+1 and by −1** (never below 0), and re-apply Step 1
-to that item: does its points change? Do it by hand or with a throwaway script written outside the repo (under
-`/tmp`) that implements *Reading the block* and Step 1 rules 2 and 3 for one item, nothing more.
+to that item: does its points change? Do it by hand or with a throwaway script outside the repo (any scratch
+folder) that reads only the counters file and the rubric block and implements *Reading the block* and Step 1
+rules 2 to 8 (it loops over every item); re-add the dimension totals by hand as a check.
 **Cross-check (a Systemix checkout only):**
-`node packages/cli/tests/acceptance/skills/rubric-eval.js /tmp/audit-counters.json --skills packages/cli/pipelines/design-system/skills`
-computes the same scores, ranking and one-unit moves from the three blocks.
+`node packages/cli/tests/acceptance/skills/rubric-eval.js <counters> --skills packages/cli/pipelines/design-system/skills`
+computes the same scores, ranking and one-unit moves from the three blocks. Run it only when that script exists
+under the audited root or the operator names it; skipping it is not an error and is not reported as one.
 
 - A boolean term is never stepped, even when its 1 enters a sum. A counter of unit `ratio` steps by one
-  numerator unit (`detail.numerator`). A derived value steps too (`@dirty_colour_files`: one more dirty file).
-- Print one row per item, `item · move · points a → b`. List a counter once under its id, whatever its
-  sub-terms (`#to_package`, `#to_other_file`), and write `primitives.<p>.…` for the same move on the four
-  primitives.
-- Items that earned nothing because a gate failed or a denominator was too small are probed too and marked
-  `unrated` (the unit that would let them be rated).
+  numerator unit (`detail.numerator`). Step every leaf counter and every `@derived` value on its own, never together.
+- Print one row per item whose points change under some move (`item · move · points a → b`); an item no move
+  changes gets no row and no mention. Name counters by id: a `!` term by its base id, an `@derived` value by the
+  counters it reads (`@dirty_colour_files` as `colour.scanner.files_with_colour_hits`). List a counter once
+  whatever its sub-terms (`#to_package`, `#to_other_file`), write `primitives.<p>.…` for the same move on the four
+  primitives, and join one item's moves with "or": moves with the same result share one `a → b`, another result
+  gets its own after ", or".
+- Items that earned nothing because a gate failed or a denominator was too small are probed too; one that some
+  move would let rate gets a row marked `unrated` (the unit that would let it be rated).
 - Below the table print `Rounding edges:`, one line per dimension whose points end in .5 (half a point lower
   rounds down), or `Rounding edges: none`; and `Cap edges:`, one line per move (±1, never below 0) of a counter
   in a cap's `unless` conditions that changes the points of a dimension the cap names (the cap starts or
@@ -265,7 +281,7 @@ computes the same scores, ranking and one-unit moves from the three blocks.
 
 ```
 skill: readiness-audit@0.2.0 · rubric: v1 · counters: <countersVersion> (<schema>) · commit: <12 chars> (<commitDate>) · token source: <path> via <via> · dirs: <list> · execution: counters-cli
-population: census <n> files [m:census.files.total] · tests <n> [m:census.files.tests] · .d.ts <n> [m:census.files.declarations] · token source <0|1> [m:census.files.token_source] · audited <n> [m:census.files.audited] · coverage: <n> of <n> source-looking files seen [m:census.files.total] [m:census.files.any_type#byExt] · skipped dirs: <list|none> · missing or refused dirs: <list|none> · counters warnings: <n> [m:warnings] · counters tool <toolVersion> [m:toolVersion]
+population: census <n> files [m:census.files.total] · tests <n> [m:census.files.tests] · .d.ts <n> [m:census.files.declarations] · token source <0|1> [m:census.files.token_source] · audited <n> [m:census.files.audited] · coverage: <n> of <S> source-looking files seen [m:census.files.total] [m:census.files.any_type#byExt] · skipped dirs: <list|none> · missing or refused dirs: <list|none> · counters warnings: <n> [m:warnings] · counters tool <toolVersion> [m:toolVersion]
 checkout: clean | not clean (<the paths git lists, at most 5>) | not checked [j]
 
 # AI-native Readiness Audit — <repo/path>
@@ -301,7 +317,7 @@ Arithmetic: <s1> + … + <s6> = <sum>; <sum> × 10 / 6 = <exact>; rounded half u
 
 ---
 Validity: <the block's `validity` sentence, verbatim>
-Limits: <the block's `limits`, one per line, verbatim>
+Limits: <the block's `limits`, one line each, every line starting `Limits: `, verbatim>
 
 ## Appendix — How these numbers were made
 <label>: <pts> points [r:pts.<dimension>] → satisfaction <n>, importance <n>, opportunity <n>
@@ -309,7 +325,7 @@ Limits: <the block's `limits`, one per line, verbatim>
 |---|---|---|---|---|
 | <item id> | <id=value, …> | <value> | <band> | <pts> / <max> |
 Limit: <the dimension's `limit` sentence, verbatim>
-   (the three parts above once per dimension, in the block's `order`)
+   (the three parts above once per dimension, in the block's `order`: six `Limit:` lines in all; a report without them is missing a required line)
 Gates that failed: <dimension>.<item>: <the gate's note>; …  |  none
 Near-threshold awards (a counter within 1 unit of an edge)
 | Item | One-unit move | Points [r:pts] |
@@ -317,12 +333,14 @@ Near-threshold awards (a counter within 1 unit of an edge)
 | <item id> | <+1 or −1> <counter id> … | <a> → <b> |
 Rounding edges: <label> ends in .5 (<pts> points), half a point lower gives satisfaction <n>, not <n> [r:sat.<dimension>]   (one line per such dimension)  |  Rounding edges: none
 Cap edges: <the move and the points it changes>  |  Cap edges: none
-Counters missing, null or zero because an input did not exist: <list, or "none missing, none null">
+Counters missing or null: <(a) and (b) of Step 1 rule 2.6, or "none missing, none null">  (then "; <(c)>", only when docs.spine.tokens_css is 0)
 ```
 
 `<repo/path>` is the base name of the project root (the `--root` value, else the working directory) followed
 by the audited dirs, for example `my-app (src)`. It is not in the counters: do not copy it from the worked
-example and do not read `package.json`.
+example and do not read `package.json`. `<S>` is the S of Step 1 rule 1: the sum over the ten listed extensions,
+not over every entry of `census.files.any_type#byExt`. Print each `##` heading as the template shows it,
+parenthetical included (the Top opportunities heading too); only its `<…>` fields change.
 
 `Satisfied (not ranked)` has one line per dimension whose satisfaction is not below its importance; with none,
 print exactly `Satisfied (not ranked): none` and list nothing else. `Tied for the top` and `Tie break` are
@@ -336,7 +354,7 @@ A sample report for the Systemix repository itself (systemix-poc, `--dirs src`, 
 1.0.0), computed by the reference evaluator, not by hand. Every name, path and number below is that repository's; the
 `checkout:` line and the wording of the opportunities are readings, not evaluator output. Your numbers will differ;
 the layout will not. To re-run it in a Systemix checkout (the evaluator reads the rubric out of the three SKILL.md files):
-`node packages/cli/tests/acceptance/skills/rubric-eval.js /tmp/audit-counters.json --skills packages/cli/pipelines/design-system/skills`
+`node packages/cli/tests/acceptance/skills/rubric-eval.js <counters> --skills packages/cli/pipelines/design-system/skills`
 
 ```
 skill: readiness-audit@0.2.0 · rubric: v1 · counters: 1.0.0 (systemix.audit-counters/1) · commit: 986a92fca0cb (2026-10-13T22:26:41+00:00) · token source: src/app/globals.css via doc:design/DESIGN.md · dirs: src · execution: counters-cli
@@ -355,8 +373,8 @@ Prose/block mismatch: none
 | 1 | Component consistency | 8 | 2.5 | 3 | 13 | 8 Badge tags render a local copy [m:primitives.badge.resolved.to_local_definition] among 3 Badge definitions [m:primitives.badge.definitions.total]; 25 raw button tags outside components/ui [m:primitives.button.raw.outside_ui]; 13 of 53 other component files have no importer [m:reachability.components.other.no_importer] [m:reachability.components.other.total] |
 | 2 | Captured rationale | 9 | 6 | 6 | 12 | 22 ADR headings [m:decisions.adr.headings], newest 116 days before HEAD [m:decisions.adr.newest_age_days]; DESIGN.md has 10 sections [m:decisions.design_md.h2] and 10 colours that match the dark theme [m:decisions.design_md.colors_equal_dark]; token records cover 0.0103 of the custom properties [m:docs.coverage.token_records_per_custom_property] and 0 of 2 keyed records match [m:docs.token_records.matches] [m:docs.token_records.keyed]; 1 oklch claim without a declaration [m:docs.oklch.docs_claim_without_declaration] and 1 generator output missing [m:decisions.design_md.generator_outputs_missing] |
 | 3 | Codified rules | 9 | 7 | 7 | 11 | guardrails.mdx has 52 lines [m:guardrails.file.lines], 12 rule bullets [m:guardrails.structure.rule_bullets], 5 sections [m:guardrails.structure.h2_sections], 2 starred [m:guardrails.structure.starred_rules], 0 contrast pairs below 4.5:1 [m:guardrails.contrast.pairs_below_4_5]; no type-size rule [m:guardrails.rules.type_size] and no spacing-scale rule [m:guardrails.rules.spacing_scale]; no design/tokens.css [m:docs.spine.tokens_css] |
-| 4 | Token discipline | 8 | 5 | 5 | 11 | 247 arbitrary font sizes outside the exempt files [m:typography.arbitrary_size.matches!] and 208 named [m:typography.named_size.matches!], all off-token because the theme maps no font-size name [m:tokens.theme.maps_font_size#names]; 9 --font-size-* and 10 --space-* tokens with no consumer and no mapping [m:tokens.font_size.unconsumed] [m:tokens.space.unconsumed]; 0 palette classes [m:colour.palette_class.matches]; 3 hard-coded radii [m:scale.radius.hardcoded_uses!] |
-| 5 | Drift control | 7 | 4.5 | 5 | 9 | 10 of 193 audited files hold a raw colour literal, 94.82 % clean [r:value.drift_control.drift_control_score] [m:colour.scanner.files_with_colour_hits] [m:colour.scanner.files_audited]; a drift script exists [m:habit.scripts.drift_files], 1 snapshot day [m:habit.snapshots.distinct_days], newest 97 days old [m:habit.snapshots.last_age_days], no CI step [m:habit.workflows.drift_noncomment_lines], the script cannot fail a build [m:habit.drift_script.exits_nonzero] |
+| 4 | Token discipline | 8 | 5 | 5 | 11 | 247 arbitrary font-size class matches outside the exempt files [m:typography.arbitrary_size.matches!] and 208 named ones [m:typography.named_size.matches!], all off-token because the theme maps no font-size name [m:tokens.theme.maps_font_size#names]; 9 --font-size-* and 10 --space-* tokens with no consumer and no mapping [m:tokens.font_size.unconsumed] [m:tokens.space.unconsumed]; 0 palette classes [m:colour.palette_class.matches]; 3 hard-coded radius uses [m:scale.radius.hardcoded_uses!] |
+| 5 | Drift control | 7 | 4.5 | 5 | 9 | 10 [r:dirty_colour_files] of 193 [m:colour.scanner.files_audited] audited files hold a raw colour literal, 94.82 % clean [r:value.drift_control.drift_control_score]; a drift script exists [m:habit.scripts.drift_files], 1 snapshot day [m:habit.snapshots.distinct_days], newest 97 days old [m:habit.snapshots.last_age_days], no CI step [m:habit.workflows.drift_noncomment_lines], the script cannot fail a build [m:habit.drift_script.exits_nonzero] |
 Satisfied (not ranked): Agent legibility, satisfaction 6 [r:sat.agent_legibility] against importance 6 [r:importance]
 Tied for the top: Component consistency and Captured rationale (opportunity 13 [r:opp.component_consistency] and 12 [r:opp.captured_rationale], within 1)
 Most underserved: none named: the gap to the next is 1 [r:gap], 2 are needed
@@ -373,10 +391,10 @@ Arithmetic: 6 + 7 + 5 + 3 + 5 + 6 = 32; 32 × 10 / 6 = 53.33; rounded half up = 
 
 ## Top opportunities   (one entry per ranked dimension, in rank order, never merged; the wording is yours, so each is tagged [j])
 1. Component consistency [j] — one Badge, one Button: point the 8 local Badge tags at the components/ui Badge and replace the 25 raw buttons outside components/ui with it; 13 other component files that nothing imports are candidates to delete or wire in [m:primitives.badge.resolved.to_local_definition] [m:primitives.button.raw.outside_ui] [m:reachability.components.other.no_importer].
-2. Captured rationale [j] — the rationale exists but is not tied to the code: refresh the 2 token records (0 of 2 match), correct the oklch claim, write one ADR; the newest is 116 days old [m:docs.token_records.matches] [m:docs.token_records.keyed] [m:decisions.adr.newest_age_days].
-3. Codified rules [j] — three drift classes have no rule, so they are unruled drift: 247 arbitrary font sizes outside the exempt files with no type-size rule, 3 raw spacing values with no spacing-scale rule, 3 raw radii that no counter reads a rule for; propose the rules (a proposal for approval, nothing written) [m:typography.arbitrary_size.matches!] [m:guardrails.rules.type_size] [m:scale.spacing_arbitrary.length_literal_matches!] [m:guardrails.rules.spacing_scale] [m:scale.radius.hardcoded_uses!]. There is no design/tokens.css (spine 2 of 6) [m:docs.spine.tokens_css] [m:docs.spine.members_present] but a token source resolves: propose `design.source: src/app/globals.css` in systemix.config.yaml, not a second token file.
-4. Token discipline [j] — the theme maps no font-size name [m:tokens.theme.maps_font_size#names], so the 208 named sizes outside the exempt files count as off-token [m:typography.named_size.matches!]: map the type scale in @theme and wire the 9 --font-size-* and 10 --space-* tokens that nothing uses [m:tokens.font_size.unconsumed] [m:tokens.space.unconsumed].
-5. Drift control [j] — 10 audited files hold a raw colour literal [m:colour.scanner.files_with_colour_hits]; no workflow step runs the drift script [m:habit.workflows.drift_noncomment_lines] and it cannot fail a build [m:habit.drift_script.exits_nonzero]; the newest snapshot is 97 days old [m:habit.snapshots.last_age_days]. Taking a snapshot is the operator's call; this audit writes none.
+2. Captured rationale [j] — the rationale exists but is not tied to the code: refresh the token records (0 [m:docs.token_records.matches] of 2 [m:docs.token_records.keyed] match), correct the oklch claim, write one ADR; the newest is 116 days old [m:decisions.adr.newest_age_days].
+3. Codified rules [j] — three drift classes have no rule, so they are unruled drift: font sizes (247 class matches outside the exempt files [m:typography.arbitrary_size.matches!], no type-size rule [m:guardrails.rules.type_size]), spacing (3 raw class matches [m:scale.spacing_arbitrary.length_literal_matches!], no spacing-scale rule [m:guardrails.rules.spacing_scale]), radii (3 uses [m:scale.radius.hardcoded_uses!], no counter reads a radius rule); propose the rules (a proposal for approval, nothing written). There is no design/tokens.css [m:docs.spine.tokens_css] (spine 2 of 6 [m:docs.spine.members_present]) but a token source resolves: propose `design.source: src/app/globals.css` in systemix.config.yaml, not a second token file.
+4. Token discipline [j] — the theme maps no font-size name [m:tokens.theme.maps_font_size#names], so the 208 named font-size class matches outside the exempt files count as off-token [m:typography.named_size.matches!]: map the type scale in @theme and wire the 9 --font-size-* and 10 --space-* tokens that nothing uses [m:tokens.font_size.unconsumed] [m:tokens.space.unconsumed].
+5. Drift control [j] — 10 audited files hold a raw colour literal [r:dirty_colour_files]; no workflow step runs the drift script [m:habit.workflows.drift_noncomment_lines] and it cannot fail a build [m:habit.drift_script.exits_nonzero]; the newest snapshot is 97 days old [m:habit.snapshots.last_age_days]. Taking a snapshot is the operator's call; this audit writes none.
 
 ## Recommended setup   (class: mature [r:setup_class] → systemix init — you confirm each)
    triggered by: token source found (1 [m:tokens.source.found]) · colour 94.82 ≥ 90 [r:tokens.colour] · spacing 98.45 ≥ 90 [r:tokens.spacing] · dirty colour files 10 < 20 [r:dirty_colour_files]
@@ -476,7 +494,7 @@ Rounding edges: Component consistency ends in .5 (2.5 points), half a point lowe
 Rounding edges: Drift control ends in .5 (4.5 points), half a point lower gives satisfaction 4, not 5 [r:sat.drift_control]
 Rounding edges: Agent legibility ends in .5 (5.5 points), half a point lower gives satisfaction 5, not 6 [r:sat.agent_legibility]
 Cap edges: none
-Counters missing, null or zero because an input did not exist: none missing, none null; docs.spine.tokens_css=0 (no design/tokens.css): 1 point in Codified rules, deducted once.
+Counters missing or null: none missing, none null; docs.spine.tokens_css=0 (no design/tokens.css): 1 point in Codified rules, deducted once.
 ```
 
 ## Validity

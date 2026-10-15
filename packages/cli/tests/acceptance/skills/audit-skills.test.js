@@ -1098,6 +1098,34 @@ describe("9. the rules every skill states the same way: untrusted text, missing 
     expect(prose).not.toMatch(/--dirs src --out|--dirs src >/); // no hard-coded folder in a command
   });
 
+  test.each(SKILLS)("%s: the rules the blind runs needed (booleans, dirty files, ratios, scopes, trust, the exact header, the task text, the optional cross-check) are worded the same", (name) => {
+    mustSay(TEXT[name].replace(/\s+/g, " "), [
+      "A boolean printed as a value is 1 or 0 (never `true`); a fact told in words (an absence, a boolean) has its tag right after those words, never in a tag group with number tags.",
+      'The number of files that hold a raw colour literal is always [r:dirty_colour_files]; [m:colour.scanner.files_with_colour_hits] tags only the words "files with a colour regex hit".',
+      "A counter of unit `ratio` is a fraction (4 decimals); printed as a percent it is the value × 100 with 2 decimals and a `%`, tag unchanged.",
+      'names its scope every time: "265 arbitrary font-size class matches in all audited files", "247 outside the exempt files".',
+      "Only the operator's own statement that this repo is trusted counts as trust; naming the repo or running you in it does not. The skills installed for this audit (untracked `.claude/skills/<name>/`) are listed like any other path.",
+      "add no other line and no `reason` text.",
+      "(a folder list in the operator's task text counts as `$ARGUMENTS`)",
+      "`<counters>` is the `--out` path",
+      "skipping it is not an error and is not reported as one",
+    ]);
+  });
+
+  test("/readiness-audit names the appendix line, the Limit lines and the wizard sentence the way the blind runs need", () => {
+    const src = TEXT["readiness-audit"].replace(/\s+/g, " ");
+    mustSay(src, [
+      "Counters missing or null: <(a) and (b) of Step 1 rule 2.6",
+      "six `Limit:` lines in all; a report without them is missing a required line",
+      "every line starting `Limits: `",
+      "(not its wizard sentence: the heading's \"you confirm each\" stands in for it)",
+      "rules 2 to 8 (it loops over every item)",
+      "labels *unruled drift*",
+      "with no guardrails file, or none with rule bullets, those two are unruled drift",
+    ]);
+    expect(src).not.toContain("Counters missing, null or zero");
+  });
+
   test.each(SKILLS)("%s: the version to compare is named, and the claim of reproducibility is conditional", (name) => {
     const prose = TEXT[name].replace(/\s+/g, " ");
     mustSay(prose, ["`countersVersion` is the same in all three parts", "`toolVersion`", "the same working tree"]);

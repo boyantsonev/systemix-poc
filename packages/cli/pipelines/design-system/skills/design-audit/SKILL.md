@@ -33,12 +33,17 @@ Run it from the repo root, or pass `--root <dir>` to the counters command.
 ## Tags — every number the report prints carries exactly one
 Put the unit beside every count ("114 regex hits in 10 files", never "114 colours"). A tag covers the number before
 it, or a list read from one counter. Where a clause holds several numbers their tags may follow it together: they map
-to the numbers before them, left to right. The two numbers of an "X of Y" have a tag each; a number that is a sum of
-counters takes one tag listing the ids (`[m:a, b]`); a number repeated in the same line or row is tagged once.
+to the numbers before them, left to right. A boolean printed as a value is 1 or 0 (never `true`); a fact told in
+words (an absence, a boolean) has its tag right after those words, never in a tag group with number tags. The two
+numbers of an "X of Y" have a tag each; a number that is a sum of counters takes one tag listing the ids (`[m:a, b]`);
+a number repeated in the same line or row is tagged once. The number of files that hold a raw colour literal is
+always [r:dirty_colour_files]; [m:colour.scanner.files_with_colour_hits] tags only the words "files with a colour
+regex hit".
 `file:line` locators and line numbers read from a detail path are positions, not counts, and carry none, nor do
-constants copied from these rules (edges such as `≥ 90`, `N = 1`, the `of 6` of the spine). A measure printed at two
-scopes (all audited files; without the declared-exempt files) names its scope every time: "265 arbitrary sizes in all
-audited files", "247 outside the exempt files".
+constants copied from these rules (edges such as `≥ 90`, `N = 1`, the `of 6` of the spine). A counter of unit `ratio`
+is a fraction (4 decimals); printed as a percent it is the value × 100 with 2 decimals and a `%`, tag unchanged. A
+measure printed at two scopes (all audited files; without the declared-exempt files) names its scope every time:
+"265 arbitrary font-size class matches in all audited files", "247 outside the exempt files".
 
 | Tag | Means |
 |---|---|
@@ -56,12 +61,14 @@ npx @getsystemix/cli --help | grep -q "audit counters" || { echo "CLI too old: n
 rm -f /tmp/audit-counters.json
 npx @getsystemix/cli audit counters --dirs <dirs> --out /tmp/audit-counters.json --pretty
 ```
+`<counters>` is the `--out` path: `/tmp/audit-counters.json` unless the operator names another outside the repo. The
+blocks here spell the default; put your path in its place everywhere (`rm -f`, `--out`, each recipe, the cross-check).
 1. **Feature-detect, don't version-compare.** "CLI too old" means the installed CLI predates `audit counters`: stop
    there (the `exit 1` ends a pasted block; if you run the lines one at a time, do not run the next two) and go to
    *No counters, no score*. Never probe with `audit --help` or `audit counters --help`: a CLI that old ignores
    arguments and installs a skill into the repo. The `rm -f` removes a report from an earlier run, so a failed run
    leaves no file; read only a file the command just wrote.
-2. **Pick `--dirs`** (`<dirs>` above): `$ARGUMENTS` if given; else every one of `src`, `app`, `components` that exists at the root (`ls -d src app components 2>/dev/null`, passed as one comma list, `--dirs src,app`); if none of them exists but `apps/<name>/src` does, run once per app (`ls -d apps/*/src`) and write one report each; with nothing to go on ask the operator, do not guess. In a monorepo never leave it to
+2. **Pick `--dirs`** (`<dirs>` above): `$ARGUMENTS` if given (a folder list in the operator's task text counts as `$ARGUMENTS`); else every one of `src`, `app`, `components` that exists at the root (`ls -d src app components 2>/dev/null`, passed as one comma list, `--dirs src,app`); if none of them exists but `apps/<name>/src` does, run once per app (`ls -d apps/*/src`) and write one report each; with nothing to go on ask the operator, do not guess. In a monorepo never leave it to
    the default list. Write the folders in the header: two reports compare only on the same folders. A folder that
    does not exist withholds the report.
 3. **Read it by id, never whole** (hundreds of KB): recipes at the end. Never slice it with `--ids`,
@@ -89,19 +96,20 @@ npx @getsystemix/cli audit counters --dirs <dirs> --out /tmp/audit-counters.json
    same major, so compare two reports only when their `countersVersion` is the same in all three parts, or say that
    they differ. The header's second line names `toolVersion`: repeat a run with the same CLI
    (`@getsystemix/cli@<version>` in place of `@getsystemix/cli`).
-8. **Header** — the first three lines of the report:
+8. **Header** — the three lines under the title:
    ```
    skill: design-audit@0.2.0 · rubric: v1 · counters: <countersVersion> (<schema>) · commit: <12 chars> (<commitDate>) · token source: <path> via <via> · dirs: <list> · execution: counters-cli
-   population: <audited> files audited = <census> − <tests> tests − <declarations> .d.ts − <token source> token source · coverage: <census> of <source-looking> files · exemption: <files> of <audited> files, applied|ignored · skipped, missing and rejected dirs · warnings · counters tool <toolVersion> [m:toolVersion]
+   population: <audited> files audited = <census> − <tests> tests − <declarations> .d.ts − <token source> token source · coverage: <census> of <S> source-looking files · exemption: <files> of <audited> files, applied|ignored · skipped, missing and rejected dirs · warnings · counters tool <toolVersion> [m:toolVersion]
    checkout: clean | not clean (<the paths git lists, at most 5>) | not checked [j]
    ```
-   Print `scope.skippedDirs`, `missingDirs`, `rejectedDirs` and every entry of `warnings` as they are. The counters
+   The header is exactly these three lines: add no other line and no `reason` text. Print
+   `scope.skippedDirs`, `missingDirs`, `rejectedDirs` and every entry of `warnings` as they are. The counters
    read the working tree, not the commit, so say whether the checkout is clean: run
    `git --no-optional-locks -c core.fsmonitor=false status --porcelain -- .` from the audited root (it leaves the
    working tree and the index alone; any output means not clean, an untracked `.claude/skills/` included), or read
    `repo.dirty` if you passed `--dirty`. Both run the repo's git clean filters: only on a repo you trust; with no git
-   repository, or a repo you do not trust, print `checkout: not checked`. Print at most 5 of the paths git lists, with
-   their status marks. It is a statement, not a flag.
+   repository, or a repo you do not trust, print `checkout: not checked`. Only the operator's own statement that this repo is trusted counts as trust; naming the repo or running you in it does not. The skills installed for this audit (untracked `.claude/skills/<name>/`) are
+   listed like any other path. Print at most 5 of the paths git lists, with their status marks. It is a statement, not a flag.
 
 **No counters, no score.** If the command cannot run, print `execution: hand-counted`, the findings of
 Stages 1–3 with your own counts labelled `hand-counted regex hits`, and **no** health, sub-score,
@@ -217,9 +225,11 @@ than once is a duplicate-definition tag. Scoring uses all files; the two reachab
 
 A rule is `grep` or `arithmetic` only if you can name the counter id that tests it; otherwise it is `manual`. Contrast
 covers only the pairs the file names: with `guardrails.contrast.pairs` at 0, a contrast rule is `manual`. A family with
-drift and no rule (`guardrails.rules.type_size` or `guardrails.rules.spacing_scale` false while
-`typography.arbitrary_size.matches` or `scale.spacing_arbitrary.length_literal_matches` is above 0) is **unruled
-drift**: report it and propose the rule in Stage 4.
+drift and no rule is **unruled drift**: type (`guardrails.rules.type_size` false while `typography.arbitrary_size.matches`
+is above 0), spacing (`guardrails.rules.spacing_scale` false while `scale.spacing_arbitrary.length_literal_matches` is
+above 0) and radii (`scale.radius.hardcoded_uses` above 0: no counter reads a radius rule); colour literals and palette
+classes only with no guardrails file or none with rule bullets (otherwise `/drift-report` labels them "regex hits
+against a guardrails file that has rules"). Report every unruled family and propose its rule in Stage 4.
 
 ### 4. Score + propose the fix
 - Compute the **design-system health score** (0–100) and its three sub-scores (tokens · density · components) from
@@ -314,7 +324,7 @@ Flags: exemption_applied — a declared exemption removes 1 of 193 audited files
 | --color-purple   | #a855f7 | 4 [j] | — |
 | --color-teal     | #14b8a6 | 4 [j] | — |
 | unclustered      | 65 values [j] | 78 [j] of 86 hex hits [m:colour.hex_scanner.outside_token_source] | 67 distinct in all [m:colour.hex_scanner.outside_token_source_distinct] |
-Type scale in use (265 arbitrary sizes in all audited files [m:typography.arbitrary_size.matches]): 13px 58 uses → --font-size-sm · 11px 54 → --font-size-2xs · 10px 48 → no token [m:typography.arbitrary_size.matches#byValue]
+Type scale in use (265 arbitrary font-size class matches in all audited files [m:typography.arbitrary_size.matches]): 13px 58 uses → --font-size-sm · 11px 54 → --font-size-2xs · 10px 48 → no token [m:typography.arbitrary_size.matches#byValue]
 
 ## Drift   (Critical 185 [r:severity.critical] · Warning 131 [r:severity.warning] · Info 44 [r:severity.info] · Exempt 19 [r:severity.exempt])
 Token source: 139 colour hits [m:colour.token_source.colour_hits] = 54.94% of all colour hits [m:colour.token_source.colour_share], exempt from the scan.
@@ -337,7 +347,7 @@ Undocumented exemptions: 6 [m:habit.drift_script.exclusions_not_named_in_guardra
 | No raw Tailwind palette classes (16) | grep | 0 matches [m:colour.palette_class.matches]: holds |
 | Body text ≥ 4.5:1 (43) | arithmetic | 2 pairs [m:guardrails.contrast.pairs], 0 below 4.5:1 [m:guardrails.contrast.pairs_below_4_5], lowest 7.04 [m:guardrails.contrast.lowest_ratio]: holds for those pairs |
 | Status is icon + text (47) | manual | needs review |
-Unruled drift: no type-size rule [m:guardrails.rules.type_size] while 265 arbitrary sizes exist in all audited files [m:typography.arbitrary_size.matches].
+Unruled drift: no type-size rule [m:guardrails.rules.type_size] while 265 arbitrary font-size class matches exist in all audited files [m:typography.arbitrary_size.matches]; no spacing-scale rule [m:guardrails.rules.spacing_scale] while 3 raw spacing class matches exist [m:scale.spacing_arbitrary.length_literal_matches]; no counter reads a radius rule while 3 hard-coded radius uses exist [m:scale.radius.hardcoded_uses].
 
 ## Proposed next step
 → design/tokens.css: not proposed, a token source is resolved (src/app/globals.css); add 2 tokens to it [j]   [awaiting approval]
@@ -363,14 +373,15 @@ Unruled drift: no type-size rule [m:guardrails.rules.type_size] while 265 arbitr
 | components | 33 × 100 ÷ 67 — canonical tags 22 + 3 + 1 + 7; the denominator adds 8 local copies, 0 duplicate-definition tags, 25 raw buttons, 1 raw input | 49.25 |
 | health | (72.93 + 75.13 + 49.25) ÷ 3 = 65.77, rounded half-up once | 66 |
 Near-threshold (one counter moved by one unit changes an award): none. Nearest: dirty colour files 10 [r:dirty_colour_files] against the 20-file edge.
-Zero or missing because an input does not exist: design/tokens.css (spine 2 of 6 [m:docs.spine.members_present]); no font-size name mapped in @theme, hence type 0. Missing counters: none.
+Counters missing or null: none missing, none null. Spine: no design/tokens.css [m:docs.spine.tokens_css] (spine 2 of 6 [m:docs.spine.members_present]).
 Sensitivity: one file moves colour and density by 0.52 [r:sensitivity]; one more raw tag lowers components by 0.72 [r:sensitivity].
 Validity: <block.validity, word for word> · Limits: <block.limits, word for word>
 ```
 **Appendix rules.** Per score: item, counter ids, values, award, so a reviewer can re-add it. Then the **near-threshold**
 list (mechanical: move the one counter behind a threshold by 1, never below 0, and list the thresholds that flip: the
 class edges 60 and 90 on colour and spacing, 20 dirty files, 5 tags for `components`, coverage 0.8, the 10% exemption
-cap), the counters that were missing or zero because an input did not exist, and the **sensitivity** `[r:sensitivity]`:
+cap), the counters that are missing or null with the note of each part left not rated, `docs.spine.tokens_css` when
+it is 0 (a 0 that is a measured finding is not listed), and the **sensitivity** `[r:sensitivity]`:
 one file moves colour and density by 100 ÷ `census.files.audited` points; one more raw tag lowers components by
 canonical × 100 ÷ den − canonical × 100 ÷ (den + 1), canonical and den being the numerator and denominator of the
 components line. **Footer:** the block's `validity` sentence and its `limits`, word for word. Never present a score as a
@@ -395,11 +406,12 @@ major at least, the same minor and patch when you can) and the same `--dirs`.
   build from this audit — both land in `design/`.
 - **Recommend, don't just diagnose.** Stage 5 turns the findings into a concrete `systemix init` recommendation
   (scaffold / adopt / consolidate). It never runs the wizard for the operator — it pre-answers it, and the wizard still asks.
-- **Cross-check (a Systemix checkout only).** `node packages/cli/tests/acceptance/skills/rubric-eval.js /tmp/audit-counters.json --skills packages/cli/pipelines/design-system/skills`
-  computes the same scores, severity and class from the block below.
+- **Cross-check (a Systemix checkout only).** `node packages/cli/tests/acceptance/skills/rubric-eval.js <counters> --skills packages/cli/pipelines/design-system/skills`
+  computes the same scores, severity and class from the block below. Run it only when that script exists under the
+  audited root or the operator names it; skipping it is not an error and is not reported as one.
 
 ## Recipes (copy, run, paste the numbers)
-Every counter, one line each (id, unit, value; about 15 KB):
+The recipes below spell `<counters>` as `/tmp/audit-counters.json`. Every counter, one line each (id, unit, value; about 15 KB):
 ```
 jq -r '.counters[] | [.id, .unit, (.value | tostring)] | @tsv' /tmp/audit-counters.json
 ```
