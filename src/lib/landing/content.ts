@@ -226,7 +226,7 @@ export const pricing = {
       cta: { label: "Book a call →", href: CALL_MAILTO, event: "book_a_call" },
       highlight: false,
     },
-  ] satisfies PricingTier[],
+  ] satisfies PricingTier[] as PricingTier[],
 };
 
 // ── Per-persona value — what each role actually gets (expandable rows) ────────
