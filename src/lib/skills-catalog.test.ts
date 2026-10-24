@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { resolveSkillFile } from "./skills-catalog";
+import { SKILL_BODY_MDX_OPTIONS, loadSkillBySlug, loadSkillPacks, resolveSkillFile } from "./skills-catalog";
 
 // resolveSkillFile() turns a URL slug into a path under process.cwd(), so the
 // slug must stay a slug — "../x" must not read a SKILL.md outside the skills dirs.
@@ -37,4 +37,19 @@ describe("resolveSkillFile", () => {
       expect(resolveSkillFile(slug)).toBeNull();
     },
   );
+});
+
+describe("every shipped skill renders on its dossier page", () => {
+  // Regression: the audit skills carry HTML comments and <placeholders>, which MDX
+  // rejects; compiled as MDX they failed `next build` on the /skills/[slug] prerender.
+  it("compiles each pack skill body with the page's options", async () => {
+    const { compile } = await import("@mdx-js/mdx");
+    const slugs = loadSkillPacks().flatMap((p) => p.skills.map((s) => s.slug));
+    expect(slugs.length).toBeGreaterThan(0);
+    for (const slug of slugs) {
+      const skill = loadSkillBySlug(slug);
+      if (!skill) continue;
+      await expect(compile(skill.body, SKILL_BODY_MDX_OPTIONS), slug).resolves.toBeDefined();
+    }
+  });
 });

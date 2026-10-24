@@ -70,6 +70,13 @@ export type SkillDossier = {
   body: string;
 };
 
+/**
+ * How a SKILL.md body is compiled for its dossier page. Skills are Markdown written
+ * for agents, not MDX: they hold HTML comments (the audit skills' data markers),
+ * `<placeholders>` and `{ }` in examples, all of which MDX rejects and fails the build.
+ */
+export const SKILL_BODY_MDX_OPTIONS = { format: "md" } as const;
+
 /** Full frontmatter + body for a skill's detail ("dossier") page. */
 export function loadSkillBySlug(slug: string): SkillDossier | null {
   const found = resolveSkillFile(slug);
