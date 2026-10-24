@@ -86,6 +86,15 @@ function git(root, args) {
 }
 
 /**
+ * One spelling of the commit date whatever the git version: newer git prints a UTC
+ * offset as "Z", older git as "+00:00". The report must be byte-identical across machines.
+ */
+function isoDate(s) {
+  if (!s) return s;
+  return s.endsWith("Z") ? `${s.slice(0, -1)}+00:00` : s;
+}
+
+/**
  * HEAD of the repository that contains `root`. `prefix` is where `root` sits inside it
  * ("" at the repository top level, "packages/web" for a subfolder, null without git), so
  * a report auditing a subfolder says that its commit and date are the enclosing repo's.
@@ -103,7 +112,7 @@ function gitInfo(root, { wantDirty = false } = {}) {
   }
   return {
     commit,
-    commitDate: git(root, ["log", "-1", "--format=%cI"]),
+    commitDate: isoDate(git(root, ["log", "-1", "--format=%cI"])),
     dirty,
     prefix: (git(root, ["rev-parse", "--show-prefix"]) ?? "").replace(/\/$/, ""),
   };
