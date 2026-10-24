@@ -74,7 +74,7 @@ This plan comes from a parallel analysis of six inputs:
 5. **The beta:**
    - an **MIT AI-native DS kit** (on-ramp);
    - a free **scorecard** (lead magnet);
-   - a paid, **customized audit report** (wedge, about €490);
+   - a paid, **customized audit report** (wedge, about €490; **superseded 2026-10-24**: €19.99 quick report + €499 human-reviewed audit in 24 h, see `discover/wave-decisions.md` DSC-16/17);
    - **implementation sprints** run by the agent with human gates (from about €4.5k per 2 weeks);
    - later, the **scheduled evidence loop** (subscription).
 6. **Two presentations, one source:**

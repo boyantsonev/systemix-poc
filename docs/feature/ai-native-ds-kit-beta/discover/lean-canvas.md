@@ -24,8 +24,8 @@ not a go decision.
 | **Unique value proposition** | "The design system agent for AI-native products: your agents follow your system, and it remembers why." Single sentence still to be tested in customers' words | untested; positioning not frozen (ADR-023 pending) |
 | **Solution** (top 3) | 1. Free MIT kit and a free scorecard (**not built yet**: `systemix audit` only installs a skill; the first audits are concierge and model-judged). 2. A paid, scored audit report with a named-decider decision session. 3. Implementation sprints and, later, a scheduled loop with decision memory | the kit and scorecard exist; report and sprint are concierge only |
 | **Channels** | Existing partners and introductions; personal LinkedIn sequences; Claude and Cursor communities by moderator permission; design-systems communities; the open-source repo | **0 validated.** Ranked and costed in `evidence/R4`; repo has 1★ and about 100 visits a month |
-| **Revenue streams** | Audit report €490 (first five at €0–290 for case-study rights); sprint from €4.5k per two weeks; later a loop subscription; a wired, instrumented AI-native pack. **Never UI code** (DSC-5) | price points are hypotheses; R2 puts €490 inside the freelance band and €4.5k about 6x to 45x above visible buyer budgets |
-| **Cost structure** | Founder time (the binding cost); model usage; hosting; a merchant-of-record fee once checkout exists | not quantified. Hours per audit come from experiment E4 |
+| **Revenue streams** | **Superseded 2026-10-24 by DSC-16:** quick report €19.99 or lower (automatic, runs on the client's side through the agent, DSC-17); full audit €499 in 24 h (AI-drafted, human-reviewed); fix sprints quoted per job; later a loop subscription. **Never UI code** (DSC-5). (Was: report €490, first five €0–290; sprint from €4.5k per two weeks) | price points are founder hypotheses; R2 puts €499 inside the freelance band; €19.99 sits at the marketplace floor ($25) |
+| **Cost structure** | Founder/reviewer time on the €499 audit (the binding cost: target 3+ audits a day); model usage (paid by the client on the quick report, DSC-17; ours on the full audit); hosting of a report service if the quick report is gated that way; payment fees (about €1 to €1.50 on €19.99) and VAT | review time untimed; model cost per audit to be measured on the public-repo test |
 | **Key metrics** | Interviews held · highest commitment rung · scorecards run · review calls booked · pre-pays · audit → fix-pack conversion · hours per audit | defined in `interview-log.md` and `solution-testing.md` |
 | **Unfair advantage** | A worked method (a scored loop that raised a real design system's quality score with conventions only; DSC-4) and a public repo that runs on its own contract. **Not** the tooling: its commodity share is high (DSC-2). Decision memory becomes an advantage only after cycles exist | partly real, partly unproven; no public cycle exists yet |
 
@@ -46,8 +46,8 @@ nWave's G4 needs **all four green or yellow**. Two are red and one is untested.
   undated, automated). Eight bookings need about 186 invites. The conversion from *interview* to
   *pre-pay* is unknown, so CAC per paying customer is unknowable today.
 - **LTV:** zero buyers. Only E2 (a price accepted) and E6 (a second purchase) produce a number.
-- **Cost to serve:** hours per audit from E4. The report must be near-automatic, or founder time makes
-  €490 a loss.
+- **Cost to serve:** hours per audit from E4. The €499 audit needs about 2.5 h or less of human time to reach
+  3 a day; the quick report must be fully automatic (DSC-17), so only payment fees and any hosting remain.
 - nWave bar: **LTV > 3× CAC (estimated)**. Recompute after E2, E4 and E6.
 
 ## 4. Pre-registered pivot and kill options
