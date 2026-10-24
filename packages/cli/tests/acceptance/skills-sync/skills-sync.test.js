@@ -103,3 +103,40 @@ describe("skills sync — vendor the loop skills in place", () => {
     expect(fs.existsSync(skillFile(home, "init-experiment"))).toBe(false);
   });
 });
+
+describe("skills sync — a skill is a folder, not only its SKILL.md", () => {
+  let tmp, pipelines, proj;
+  const skillSrc = () => path.join(pipelines, "p", "skills", "demo");
+  const run = () => syncSkills({ pipeline: "p" }, { pipelinesDir: pipelines, projectRoot: proj });
+  beforeEach(() => {
+    tmp = tmpRoot();
+    pipelines = path.join(tmp, "pipelines");
+    proj = path.join(tmp, "proj");
+    fs.mkdirSync(skillSrc(), { recursive: true });
+    fs.mkdirSync(proj);
+    fs.writeFileSync(path.join(pipelines, "p", "manifest.json"), JSON.stringify({ name: "p", skills: ["demo"] }));
+    fs.writeFileSync(path.join(skillSrc(), "SKILL.md"), "---\nname: demo\nversion: \"1.0.0\"\n---\nbody\n");
+    fs.writeFileSync(path.join(skillSrc(), "rubric.json"), "{\"a\":1}\n");
+  });
+  afterEach(() => { fs.rmSync(tmp, { recursive: true, force: true }); });
+
+  it("copies the sibling files and then reports in-sync", () => {
+    expect(run().results[0].state).toBe("create");
+    expect(fs.readFileSync(path.join(proj, ".claude", "skills", "demo", "rubric.json"), "utf8")).toBe("{\"a\":1}\n");
+    expect(run().results[0].state).toBe("in-sync");
+  });
+
+  it("a changed sibling alone (SKILL.md untouched) is an update, not in-sync", () => {
+    run();
+    fs.writeFileSync(path.join(skillSrc(), "rubric.json"), "{\"a\":2}\n");
+    expect(run().results[0].state).toBe("update");
+    expect(fs.readFileSync(path.join(proj, ".claude", "skills", "demo", "rubric.json"), "utf8")).toBe("{\"a\":2}\n");
+  });
+
+  it("a sibling missing from the install is restored", () => {
+    run();
+    fs.rmSync(path.join(proj, ".claude", "skills", "demo", "rubric.json"));
+    expect(run().results[0].state).toBe("update");
+    expect(fs.existsSync(path.join(proj, ".claude", "skills", "demo", "rubric.json"))).toBe(true);
+  });
+});

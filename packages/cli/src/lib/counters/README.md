@@ -4,7 +4,7 @@
 model, no network, no clock, nothing written. The audit skills (`/design-audit`, `/readiness-audit`,
 `/drift-report`) are meant to quote this report instead of counting by hand; see [The rule for skills](#the-rule-for-skills).
 Each of the three runs `audit counters` as its Step 0 (after a probe that stops it on a CLI that predates the command)
-and scores from the whole report with a rubric published inside the skill.
+and scores from the whole report with a `rubric.json` published next to the skill.
 
 ## Why it exists
 

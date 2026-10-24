@@ -41,25 +41,56 @@ function skillDescription(packDir: string, slug: string): string {
  * (packages/cli/pipelines/*\/skills/<slug>). Shared by the /api/skills/[name]
  * route and the /skills/[slug] detail page so there's one resolution order.
  */
-export function resolveSkillFile(slug: string): { path: string; raw: string } | null {
+export function resolveSkillFile(
+  slug: string,
+): { path: string; raw: string; siblings: string[]; pipeline: string | null } | null {
   // The slug comes from the URL and becomes a path segment — slug rule only.
   if (!isValidSlug(slug)) return null;
   const root = process.cwd();
   const candidates = [path.join(root, ".claude", "skills", slug, "SKILL.md")];
 
   const pipelinesDir = path.join(root, "packages", "cli", "pipelines");
+  let pipeline: string | null = null;
   if (fs.existsSync(pipelinesDir)) {
-    for (const pipeline of fs.readdirSync(pipelinesDir)) {
-      candidates.push(path.join(pipelinesDir, pipeline, "skills", slug, "SKILL.md"));
+    for (const p of fs.readdirSync(pipelinesDir)) {
+      const file = path.join(pipelinesDir, p, "skills", slug, "SKILL.md");
+      candidates.push(file);
+      if (pipeline === null && fs.existsSync(file)) pipeline = p;
     }
   }
 
   for (const file of candidates) {
     if (fs.existsSync(file)) {
-      return { path: path.relative(root, file), raw: fs.readFileSync(file, "utf8") };
+      return {
+        path: path.relative(root, file),
+        raw: fs.readFileSync(file, "utf8"),
+        siblings: listSiblings(path.dirname(file)),
+        pipeline,
+      };
     }
   }
   return null;
+}
+
+/** Files next to a SKILL.md (recursive, relative paths). A skill with any is a folder skill. */
+function listSiblings(dir: string, prefix = ""): string[] {
+  const out: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const rel = prefix + entry.name;
+    if (entry.isDirectory()) out.push(...listSiblings(path.join(dir, entry.name), rel + "/"));
+    else if (rel !== "SKILL.md") out.push(rel);
+  }
+  return out.sort();
+}
+
+/**
+ * What the "Copy skill" button puts on the clipboard. A SKILL.md alone is
+ * self-contained only when the skill has no sibling files; a folder skill pasted
+ * as SKILL.md would lose its rubric and recipes, so the install command is copied.
+ */
+export function skillCopyText(found: { raw: string; siblings: string[]; pipeline: string | null }): string {
+  if (found.siblings.length === 0) return found.raw;
+  return `npx @getsystemix/cli workflow add ${found.pipeline ?? "design-system"}`;
 }
 
 export type SkillDossier = {

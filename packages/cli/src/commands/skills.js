@@ -57,12 +57,35 @@ function copyDir(src, dest) {
   }
 }
 
-/** Classify a skill's dest SKILL.md against the bundled source (by content). */
+function listFiles(dir, prefix = "") {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const rel = prefix + entry.name;
+    if (entry.isDirectory()) out.push(...listFiles(path.join(dir, entry.name), rel + "/"));
+    else out.push(rel);
+  }
+  return out;
+}
+
+/** True when every file of the source skill folder exists in the dest folder with the same bytes. */
+function folderInSync(srcDir, destDir) {
+  return listFiles(srcDir).every((rel) => {
+    const d = path.join(destDir, rel);
+    return fs.existsSync(d) && fs.readFileSync(path.join(srcDir, rel)).equals(fs.readFileSync(d));
+  });
+}
+
+/**
+ * Classify a skill folder against the bundled source (by content). The version shown is
+ * SKILL.md's, but a changed sibling file (rubric.json, recipes.md, ...) alone is an update too.
+ */
 function skillState(srcFile, destFile) {
-  if (!fs.existsSync(destFile)) return { state: "create", to: parseVersion(fs.readFileSync(srcFile, "utf8")) };
   const srcTxt = fs.readFileSync(srcFile, "utf8");
+  if (!fs.existsSync(destFile)) return { state: "create", to: parseVersion(srcTxt) };
   const destTxt = fs.readFileSync(destFile, "utf8");
-  if (srcTxt === destTxt) return { state: "in-sync", to: parseVersion(srcTxt) };
+  if (srcTxt === destTxt && folderInSync(path.dirname(srcFile), path.dirname(destFile))) {
+    return { state: "in-sync", to: parseVersion(srcTxt) };
+  }
   return { state: "update", from: parseVersion(destTxt), to: parseVersion(srcTxt) };
 }
 

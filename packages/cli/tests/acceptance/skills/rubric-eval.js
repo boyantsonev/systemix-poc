@@ -3,8 +3,8 @@
 /**
  * rubric-eval.js: the reference evaluator for rubric v1 (rubric-language/2).
  *
- * The three audit skills publish their scoring as data (a fenced JSON block between HTML-comment markers inside the
- * SKILL.md that owns it). This file reads those blocks and computes every score from a counters report
+ * The three audit skills publish their scoring as data (a pure JSON file, rubric.json, in the skill folder next to the
+ * SKILL.md that owns it). This file reads those files and computes every score from a counters report
  * (`systemix audit counters`), so the skill text is provably computable. Nothing here reads a repo, a clock or a
  * model: scores are a pure function of (counters report, rubric).
  *
@@ -888,41 +888,36 @@ function evaluate(report, rubric) {
 
 // ---------------------------------------------------------------------------------------------------- rubric loading
 
-/** Which marker pair holds which owner block, and in which SKILL.md. */
-const RUBRIC_MARKERS = [
-  { owner: "readiness-audit", file: path.join("readiness-audit", "SKILL.md"), marker: "rubric-v1" },
-  { owner: "design-audit", file: path.join("design-audit", "SKILL.md"), marker: "scores-v1" },
-  { owner: "drift-report", file: path.join("drift-report", "SKILL.md"), marker: "drift-v1" },
+/** Which rubric file holds which owner block: <skillsDir>/<skill>/rubric.json, a pure JSON file next to the SKILL.md (package copy or installed `.claude/skills/<skill>/`). */
+const RUBRIC_FILES = [
+  { owner: "readiness-audit", file: path.join("readiness-audit", "rubric.json") },
+  { owner: "design-audit", file: path.join("design-audit", "rubric.json") },
+  { owner: "drift-report", file: path.join("drift-report", "rubric.json") },
 ];
 
-function extractBlock(text, marker, where) {
-  const begin = `<!-- ${marker}:begin -->`;
-  const end = `<!-- ${marker}:end -->`;
-  const count = (s) => text.split(s).length - 1;
-  if (count(begin) === 0 && count(end) === 0) {
-    const e = new Error(`${where}: no ${begin} ... ${end} block`);
-    e.code = "NO_BLOCK";
-    throw e;
-  }
-  if (count(begin) !== 1 || count(end) !== 1) throw new Error(`${where}: expected exactly one ${begin} and one ${end}`);
-  const from = text.indexOf(begin) + begin.length;
-  const to = text.indexOf(end);
-  if (to < from) throw new Error(`${where}: ${end} comes before ${begin}`);
-  const m = /```json[^\n]*\n([\s\S]*?)\n```/.exec(text.slice(from, to));
-  if (!m) throw new Error(`${where}: no fenced json block between the ${marker} markers`);
+function readRubricFile(where) {
+  let text;
   try {
-    return JSON.parse(m[1]);
+    text = fs.readFileSync(where, "utf8");
   } catch (e) {
-    throw new Error(`${where}: the ${marker} block is not valid JSON (${e.message})`);
+    const err = new Error(`${where}: cannot read the rubric file (${e.code || e.message})`);
+    err.code = "NO_RUBRIC";
+    throw err;
+  }
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error(`${where}: not valid JSON (${e.message})`);
   }
 }
 
-/** Read the three owner blocks out of `<skillsDir>/<skill>/SKILL.md`; the skill text is the source of truth. */
+/** Read the three owner blocks out of `<skillsDir>/<skill>/rubric.json`; those files are the source of truth. A missing or broken file throws. */
 function loadRubric(skillsDir) {
   const rubric = {};
-  for (const { owner, file, marker } of RUBRIC_MARKERS) {
+  for (const { owner, file } of RUBRIC_FILES) {
     const where = path.join(skillsDir, file);
-    const block = extractBlock(fs.readFileSync(where, "utf8"), marker, where);
+    const block = readRubricFile(where);
+    if (block === null || typeof block !== "object" || Array.isArray(block)) throw new Error(`${where}: not a JSON object`);
     if (block.owner !== owner) throw new Error(`${where}: block says owner "${block.owner}", expected "${owner}"`);
     if (block.language !== LANGUAGE) throw new Error(`${where}: the block is written in ${block.language}, this evaluator reads ${LANGUAGE}`);
     rubric[owner] = block;
@@ -1065,7 +1060,7 @@ function validateRubric(rubric, { knownIds } = {}) {
 }
 
 module.exports = {
-  LANGUAGE, evaluate, evaluateAll, loadRubric, loadRubricFile, validateRubric, extractBlock, RUBRIC_MARKERS, roundHalfUp, collectSpecs, leafSpecs, specIds,
+  LANGUAGE, evaluate, evaluateAll, loadRubric, loadRubricFile, validateRubric, RUBRIC_FILES, roundHalfUp, collectSpecs, leafSpecs, specIds,
   evalItem, evalDimension, makeCtx, pathWords, ownedSpecs, probeSpecs, ALIASES,
 };
 

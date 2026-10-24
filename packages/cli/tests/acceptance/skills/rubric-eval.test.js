@@ -12,12 +12,12 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const {
-  LANGUAGE, evaluate, evaluateAll, loadRubric, validateRubric, extractBlock, RUBRIC_MARKERS, roundHalfUp, collectSpecs, leafSpecs, specIds,
+  LANGUAGE, evaluate, evaluateAll, loadRubric, validateRubric, RUBRIC_FILES, roundHalfUp, collectSpecs, leafSpecs, specIds,
   evalItem, makeCtx, pathWords, ownedSpecs,
 } = require("./rubric-eval");
 
 const SKILLS_DIR = path.join(__dirname, "..", "..", "..", "pipelines", "design-system", "skills");
-// the skill text is the source of truth: the rubric is read out of the three SKILL.md files
+// the rubric.json files are the source of truth: the rubric is read out of the three skill folders
 const rubric = loadRubric(SKILLS_DIR);
 const ra = rubric["readiness-audit"];
 const da = rubric["design-audit"];
@@ -1980,28 +1980,32 @@ describe("monotonicity: making a counter worse never raises a score", () => {
 
 // ------------------------------------------------------------------------------------------------ loading the rubric from the skills
 
-describe("loadRubric reads the owner blocks out of the SKILL.md files", () => {
+describe("loadRubric reads the owner blocks out of the rubric.json files", () => {
   const dirs = [];
   afterAll(() => dirs.forEach((d) => fs.rmSync(d, { recursive: true, force: true })));
-  const block = (marker, obj, pad = "") => `${pad}<!-- ${marker}:begin -->\n\`\`\`json\n${JSON.stringify(obj, null, 2)}\n\`\`\`\n<!-- ${marker}:end -->\n`;
 
+  // `mutate[owner]` returns the text of that owner's rubric.json instead of the real block
   function writeSkills(mutate = {}) {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sx-rubric-"));
     dirs.push(dir);
-    for (const { owner, file, marker } of RUBRIC_MARKERS) {
+    for (const { owner, file } of RUBRIC_FILES) {
       const abs = path.join(dir, file);
       fs.mkdirSync(path.dirname(abs), { recursive: true });
-      const text = mutate[owner] ? mutate[owner]() : `---\nname: ${owner}\n---\n\n# /${owner}\n\nSome prose that mentions the markers in passing is fine.\n\n${block(marker, rubric[owner])}\nMore prose after the block.\n`;
-      fs.writeFileSync(abs, text);
+      fs.writeFileSync(abs, mutate[owner] ? mutate[owner]() : `${JSON.stringify(rubric[owner], null, 1)}\n`);
     }
     return dir;
   }
+  const json = (obj) => `${JSON.stringify(obj, null, 1)}\n`;
 
-  test("the three markers are rubric-v1 (readiness-audit), scores-v1 (design-audit) and drift-v1 (drift-report)", () => {
-    expect(RUBRIC_MARKERS.map((m) => [m.owner, m.marker])).toEqual([["readiness-audit", "rubric-v1"], ["design-audit", "scores-v1"], ["drift-report", "drift-v1"]]);
+  test("the three files are readiness-audit, design-audit and drift-report, each a rubric.json next to its SKILL.md", () => {
+    expect(RUBRIC_FILES.map((f) => [f.owner, f.file])).toEqual([
+      ["readiness-audit", path.join("readiness-audit", "rubric.json")],
+      ["design-audit", path.join("design-audit", "rubric.json")],
+      ["drift-report", path.join("drift-report", "rubric.json")],
+    ]);
   });
 
-  test("blocks written into three SKILL.md files load back as the same rubric and score the same", () => {
+  test("files written to three skill folders load back as the same rubric and score the same", () => {
     const loaded = loadRubric(writeSkills());
     expect(loaded["design-audit"]).toEqual(rubric["design-audit"]);
     expect(loaded["drift-report"]).toEqual(rubric["drift-report"]);
@@ -2010,24 +2014,23 @@ describe("loadRubric reads the owner blocks out of the SKILL.md files", () => {
     expect(JSON.stringify(evaluate(mk(midMap()), loaded))).toBe(JSON.stringify(evaluate(mk(midMap()), rubric)));
   });
 
-  test("a missing marker pair is reported as NO_BLOCK so a caller can fall back", () => {
-    const dir = writeSkills({ "design-audit": () => "# no block here\n" });
-    expect(() => loadRubric(dir)).toThrow(expect.objectContaining({ code: "NO_BLOCK" }));
+  test("a missing file is reported as NO_RUBRIC and names the path", () => {
+    const dir = writeSkills();
+    fs.rmSync(path.join(dir, "design-audit", "rubric.json"));
+    expect(() => loadRubric(dir)).toThrow(expect.objectContaining({ code: "NO_RUBRIC", message: expect.stringContaining(path.join("design-audit", "rubric.json")) }));
   });
 
-  test("a block that exists but is broken fails loudly", () => {
+  test("a file that exists but is broken fails loudly", () => {
     const bad = (text) => writeSkills({ "drift-report": () => text });
-    expect(() => loadRubric(bad("<!-- drift-v1:begin -->\n```json\n{ not json }\n```\n<!-- drift-v1:end -->\n"))).toThrow(/not valid JSON/);
-    expect(() => loadRubric(bad(`${block("drift-v1", rubric["drift-report"])}${block("drift-v1", rubric["drift-report"])}`))).toThrow(/exactly one/);
-    expect(() => loadRubric(bad("<!-- drift-v1:begin -->\nno fence\n<!-- drift-v1:end -->\n"))).toThrow(/no fenced json block/);
-    expect(() => loadRubric(bad("<!-- drift-v1:end -->\n<!-- drift-v1:begin -->\n"))).toThrow(/comes before/);
-    expect(() => loadRubric(bad(block("drift-v1", { ...rubric["drift-report"], owner: "design-audit" })))).toThrow(/expected "drift-report"/);
+    expect(() => loadRubric(bad("{ not json }"))).toThrow(/not valid JSON/);
+    expect(() => loadRubric(bad(""))).toThrow(/not valid JSON/);
+    expect(() => loadRubric(bad(json({ ...rubric["drift-report"], owner: "design-audit" })))).toThrow(/expected "drift-report"/);
   });
 
   test("a block in another language (the previous one included), or scoring another counters major, is refused", () => {
-    const lang = writeSkills({ "design-audit": () => block("scores-v1", { ...rubric["design-audit"], language: "rubric-language/1" }) });
+    const lang = writeSkills({ "design-audit": () => json({ ...rubric["design-audit"], language: "rubric-language/1" }) });
     expect(() => loadRubric(lang)).toThrow(/written in rubric-language\/1, this evaluator reads rubric-language\/2/);
-    const major = writeSkills({ "drift-report": () => block("drift-v1", { ...rubric["drift-report"], counters: { schema: "systemix.audit-counters/1", major: 2 } }) });
+    const major = writeSkills({ "drift-report": () => json({ ...rubric["drift-report"], counters: { schema: "systemix.audit-counters/1", major: 2 } }) });
     expect(() => loadRubric(major)).toThrow(/disagree on which counters/);
   });
 
@@ -2037,22 +2040,12 @@ describe("loadRubric reads the owner blocks out of the SKILL.md files", () => {
   });
 
   test("the skills must agree on the rubric version", () => {
-    const dir = writeSkills({ "drift-report": () => block("drift-v1", { ...rubric["drift-report"], rubric_version: "v2" }) });
+    const dir = writeSkills({ "drift-report": () => json({ ...rubric["drift-report"], rubric_version: "v2" }) });
     expect(() => loadRubric(dir)).toThrow(/rubric_version differs/);
   });
 
-  test("extractBlock ignores prose around the markers", () => {
-    expect(extractBlock(`intro\n<!-- x-v1:begin -->\n\`\`\`json\n{"a": 1}\n\`\`\`\n<!-- x-v1:end -->\noutro`, "x-v1", "t")).toEqual({ a: 1 });
-  });
-
-  test("the real skills, when they carry their blocks, load and validate", () => {
-    let loaded = null;
-    try {
-      loaded = loadRubric(SKILLS_DIR);
-    } catch (e) {
-      if (e.code !== "NO_BLOCK") throw e;
-    }
-    if (loaded) expect(validateRubric(loaded)).toEqual([]);
+  test("the real skills load and validate", () => {
+    expect(validateRubric(loadRubric(SKILLS_DIR))).toEqual([]);
   });
 });
 
