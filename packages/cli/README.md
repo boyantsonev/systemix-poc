@@ -64,6 +64,7 @@ npx @getsystemix/cli doctor                  # health check (skills, MCP server,
 npx @getsystemix/cli sync [--dry-run]        # design-token sync (optional design substrate)
 npx @getsystemix/cli tokens                  # convert globals.css → tokens bridge cache
 npx @getsystemix/cli audit counters [dir…]   # deterministic audit counters as JSON (see "Audit counters")
+npx @getsystemix/cli audit report [dir…]     # the paid quick report (see "Quick report")
 npx @getsystemix/cli drift scan [dir…]       # raw colour / px tally + clean-file score (timeline snapshot)
 npx @getsystemix/cli update                  # check + apply npm / skill-pack updates
 ```
@@ -84,6 +85,21 @@ one, the rule for skills, determinism, limits and versioning:
 
 `npx @getsystemix/cli drift scan [dir…] [--dry-run] [--json]` is the same population with the cheap tally
 (colour literals and raw px, a clean-file score) and appends a snapshot to `.systemix/drift-history.json`.
+
+## Quick report
+
+```bash
+npx @getsystemix/cli audit report --dirs src                 # shows what would be sent, sends nothing
+npx @getsystemix/cli audit report --dirs src --key <license key> --yes --out report.md
+```
+
+The scan runs on your machine. Only the results file (the `audit counters` JSON: counts, counter
+definitions, file and folder paths, and short identifiers such as token names) goes to the Systemix
+report service, never your source code, and only when you pass `--yes`. `--redact-paths` replaces every
+file and folder name with a hash first (the score is the same). `--dry-run --payload-out file` writes
+the exact payload so you can read it. The report is deterministic: a score out of 100 from the same
+rubric the audit skills publish, a score per area, the caveats that cost the most points, and one
+recommendation for each. The service stores nothing.
 
 ## How it runs
 

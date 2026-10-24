@@ -63,12 +63,149 @@ const AUDIT_USAGE = [
   "",
   "  Usage: npx @getsystemix/cli audit                     install the design-audit skill into .claude/skills/",
   "         npx @getsystemix/cli audit counters [dir…] …   print the audit counters as JSON (audit counters --help)",
+  "         npx @getsystemix/cli audit report [dir…] …     get the paid quick report (audit report --help)",
   "",
 ].join("\n");
 
 function fail(message) {
   console.error(`\n  ✗  ${message}`);
   process.exitCode = 1;
+}
+
+const REPORT_USAGE = [
+  "",
+  "  Usage: npx @getsystemix/cli audit report [dir…] [--dirs a,b] [--key <license key>] [--yes]",
+  "                                           [--out report.md] [--redact-paths] [--dry-run] [--payload-out file]",
+  "",
+  "    Runs the counters on this machine and sends ONLY the results file (counts, counter definitions,",
+  "    file and folder paths, short identifiers such as token names; never source code) to the",
+  "    Systemix report service, which returns the quick report. Nothing is sent without --yes:",
+  "    without it the command shows what would be sent and stops.",
+  "",
+  "    --key            the license key from your purchase (or set SYSTEMIX_REPORT_KEY)",
+  "    --redact-paths   replace every file and folder name with a hash before sending; the score is",
+  "                     the same, the report names files as path-1a2b3c… instead",
+  "    --dry-run        build and describe the payload, never send it (--payload-out writes it to a file)",
+  "    --out            write the report there (default: print it)",
+  "    --root           the project to audit (default: the current folder)",
+  "    The service is https://getsystemix.vercel.app unless SYSTEMIX_REPORT_SERVICE says otherwise.",
+  "",
+].join("\n");
+
+const DEFAULT_SERVICE = "https://getsystemix.vercel.app";
+
+/** The service URL, refusing anything but https (http only for localhost, for development). */
+function serviceUrl(raw) {
+  let u;
+  try {
+    u = new URL(raw);
+  } catch {
+    return null;
+  }
+  const local = u.hostname === "localhost" || u.hostname === "127.0.0.1";
+  if (u.protocol !== "https:" && !(u.protocol === "http:" && local)) return null;
+  return new URL("/api/report", u).toString();
+}
+
+/**
+ * `systemix audit report` — the paid quick report. The scan runs here; only the counters
+ * JSON leaves the machine, and only with --yes.
+ * @returns {Promise<object|null>} the service's answer, or null when nothing was sent
+ */
+async function reportCommand(args, opts = {}) {
+  const { parseFlags, splitList } = require("./drift");
+  const parsed = parseFlags(args, {
+    valueFlags: ["--dirs", "--root", "--key", "--out", "--payload-out"],
+    boolFlags: ["--yes", "--dry-run", "--redact-paths"],
+  });
+  if (parsed.help) {
+    console.log(REPORT_USAGE);
+    return null;
+  }
+  const { runCounters } = require("../lib/counters");
+  const { redactPaths, payloadSummary } = require("../lib/quick-report");
+  const { safeJoin } = require("../lib/design-source");
+  const env = opts.env ?? process.env;
+  const last = (key) => (parsed.values[key] ?? []).slice(-1)[0];
+  const problems = [...parsed.errors, ...parsed.unknown.map((f) => `unknown flag ${f}`)];
+
+  const root = path.resolve(last("--root") ?? opts.projectRoot ?? process.cwd());
+  try {
+    fs.readdirSync(root);
+  } catch (e) {
+    problems.push(`cannot read the project root ${root} (${e && e.code ? e.code : "error"})`);
+  }
+  const dirs = [...new Set([...splitList(parsed.values["--dirs"] ?? []), ...splitList(parsed.positional)])];
+  for (const d of dirs) if (!safeJoin(root, d)) problems.push(`folder ${d} is outside the project root`);
+  const endpoint = serviceUrl(env.SYSTEMIX_REPORT_SERVICE || DEFAULT_SERVICE);
+  if (!endpoint) problems.push("SYSTEMIX_REPORT_SERVICE must be an https URL (http only for localhost)");
+  if (problems.length) {
+    for (const p of problems) fail(p);
+    console.error("     (see: audit report --help)\n");
+    return null;
+  }
+
+  let report;
+  try {
+    report = runCounters(root, { dirs });
+  } catch (e) {
+    fail(e.message);
+    return null;
+  }
+  const payload = parsed.bools.has("--redact-paths") ? redactPaths(report) : report;
+  const s = payloadSummary(payload);
+  console.error(`\n  The results file: ${s.counters} counters, ${Math.round(s.bytes / 1024)} KB, ${s.redacted ? "file names hashed" : `${s.paths} file and folder paths`}. No source code.`);
+  console.error(`  Folders scanned: ${(report.scope.dirs || []).join(", ") || "(default list)"}`);
+
+  const payloadOut = last("--payload-out");
+  if (payloadOut) {
+    fs.writeFileSync(path.resolve(payloadOut), JSON.stringify(payload, null, 2) + "\n");
+    console.error(`  Wrote the exact payload to ${payloadOut}`);
+  }
+  if (parsed.bools.has("--dry-run")) {
+    console.error("  Dry run: nothing was sent.\n");
+    return null;
+  }
+  if (!parsed.bools.has("--yes")) {
+    console.error(`  Nothing was sent. Re-run with --yes to send it to ${new URL(endpoint).host}.\n`);
+    return null;
+  }
+  const key = last("--key") ?? env.SYSTEMIX_REPORT_KEY;
+
+  const doFetch = opts.fetch ?? globalThis.fetch;
+  let res;
+  try {
+    res = await doFetch(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ counters: payload, licenseKey: key ?? null }),
+    });
+  } catch (e) {
+    fail(`could not reach the report service (${e && e.message ? e.message : "network error"})`);
+    return null;
+  }
+  let body = null;
+  try {
+    body = await res.json();
+  } catch {
+    /* not JSON */
+  }
+  if (!res.ok) {
+    const why = body && body.error ? body.error : `HTTP ${res.status}`;
+    if (res.status === 402 || res.status === 403) fail(`the license key was not accepted: ${why}`);
+    else if (res.status === 503) fail(`the report service is not open yet: ${why}`);
+    else fail(`the report service refused the results file: ${why}`);
+    console.error();
+    return null;
+  }
+  const out = last("--out");
+  if (out) {
+    fs.writeFileSync(path.resolve(out), body.markdown);
+    console.error(`  ✓  quick report written to ${out} (score ${body.overall ?? "none"})\n`);
+  } else {
+    process.stdout.write(body.markdown);
+  }
+  return body;
 }
 
 /**
@@ -176,13 +313,14 @@ function countersCommand(args, opts = {}) {
 async function audit(args = [], opts = {}) {
   const sub = args[0];
   if (sub === "counters") return countersCommand(args.slice(1), opts);
+  if (sub === "report") return reportCommand(args.slice(1), opts);
   if (sub === "help" || sub === "--help" || sub === "-h") {
     console.log(AUDIT_USAGE);
     return null;
   }
   // an install writes files, so a mistyped subcommand must not fall through to it
   if (sub !== undefined) {
-    fail(`unknown audit subcommand: ${sub} (the only one is "counters"; "audit" alone installs the skill)`);
+    fail(`unknown audit subcommand: ${sub} (the subcommands are "counters" and "report"; "audit" alone installs the skill)`);
     console.error(AUDIT_USAGE);
     return null;
   }

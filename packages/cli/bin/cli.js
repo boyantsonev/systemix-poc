@@ -12,6 +12,7 @@ const HELP = `
   Usage:
     npx @getsystemix/cli audit                   Install the zero-setup design-system audit skill
     npx @getsystemix/cli audit counters [dir…]   Audit counters as JSON: [--groups g] [--ids i] [--brief] [--out file] [--pretty] [--summary] [--dirty]
+    npx @getsystemix/cli audit report [dir…]     Paid quick report: sends only the counters JSON (never code) with --yes [--key k] [--redact-paths] [--dry-run]
     npx @getsystemix/cli design [show|feed|init] Read the design system + HITL feed; init = greenfield interview
     npx @getsystemix/cli init                    Interactive setup wizard (run once per project)
     npx @getsystemix/cli init --reconfigure      Re-run the wizard, overwrite systemix.config.yaml
