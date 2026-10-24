@@ -11,13 +11,14 @@ import {
 import { SectionTrack, TrackedLink } from "@/components/systemix/LandingEvents";
 import { AuditRequestForm } from "@/components/landing/AuditRequestForm";
 import { Button } from "@/components/ui/button";
+import { FULL_AUDIT, quickReportPrice } from "@/lib/pricing";
 
-// The €249 AI-Readiness Audit — an automated, me-in-the-loop readiness report
-// (the readiness-audit skill is the engine), scored 0–100 and emailed in 24–48h.
+// The full AI-Readiness Audit (price in src/lib/pricing.ts): the readiness-audit skill
+// drafts it, a person reviews and rewrites the judged parts, delivered in 24h.
 export const metadata: Metadata = {
   title: "AI-Readiness Audit — is your design system AI-ready? | Systemix",
   description:
-    "Send your repo. Get back a scored AI-native readiness report — drift, slop, an opportunity ranking, and the exact setup to fix it. €249, emailed in 24–48h.",
+    `A scored AI-readiness report for your design system, drafted by AI and reviewed by a person: drift, duplicates, what to fix first, and how. ${FULL_AUDIT.price}, delivered in ${FULL_AUDIT.turnaround}.`,
   alternates: { canonical: "/audit" },
 };
 
@@ -30,13 +31,13 @@ export default function AuditPage() {
         <SectionTrack name="audit-hero">
           <section className="border-b border-border/60 py-24 sm:py-28">
             <div className="mx-auto max-w-5xl px-6 text-center">
-              <Eyebrow>AI-Readiness Audit · €249 · emailed in 24–48h</Eyebrow>
+              <Eyebrow>Full audit · {FULL_AUDIT.price} · delivered in {FULL_AUDIT.turnaround}</Eyebrow>
               <h1 className="mx-auto max-w-3xl text-[2rem] font-bold leading-[1.12] sm:text-[3rem] sm:leading-[1.1] [text-shadow:var(--glow-head)]">
                 Is your design system AI-ready?
               </h1>
               <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-muted-foreground">
-                Send us your repo. You get back a scored readiness report — the drift, the slop, an
-                opportunity ranking, and the exact setup to make your agents follow a system.
+                Send us your repo. You get back a scored readiness report, drafted by AI and reviewed
+                and rewritten by a person: the drift, the duplicates, what to fix first, and how.
               </p>
               <Button variant="secondary" size="lg" className="mt-9" asChild>
                 <a href="#form">Request the audit</a>
@@ -53,10 +54,10 @@ export default function AuditPage() {
             </div>
             <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5">
               <div className="flex flex-col rounded-[var(--radius-screen)] border border-primary bg-card p-7 shadow-[var(--shadow-panel)]">
-                <p className="tva-label mb-3 text-[10px] text-muted-foreground">AI-Readiness Audit</p>
-                <p className="text-[2rem] font-bold leading-none">€249</p>
+                <p className="tva-label mb-3 text-[10px] text-muted-foreground">Full audit</p>
+                <p className="text-[2rem] font-bold leading-none">{FULL_AUDIT.price}</p>
                 <p className="mt-1 font-mono text-[11px] text-muted-foreground">
-                  automated · emailed in 24–48h
+                  reviewed by a person · delivered in {FULL_AUDIT.turnaround}
                 </p>
                 <p className="mt-4 flex-1 text-[14px] leading-relaxed text-muted-foreground">
                   A readiness score 0–100 across six dimensions, the drift + slop map, an opportunity
@@ -67,16 +68,16 @@ export default function AuditPage() {
                 </Button>
               </div>
               <div className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-7 shadow-[var(--shadow-panel)]">
-                <p className="tva-label mb-3 text-[10px] text-muted-foreground">Learning Kit</p>
-                <p className="text-[2rem] font-bold leading-none">€99</p>
-                <p className="mt-1 font-mono text-[11px] text-muted-foreground">download · pay once</p>
+                <p className="tva-label mb-3 text-[10px] text-muted-foreground">Quick report</p>
+                <p className="text-[2rem] font-bold leading-none">{quickReportPrice()}</p>
+                <p className="mt-1 font-mono text-[11px] text-muted-foreground">instant · no person involved</p>
                 <p className="mt-4 flex-1 text-[14px] leading-relaxed text-muted-foreground">
-                  Want to fix it yourself? The Learning Kit is the whole context engine, downloadable —
-                  files yours to keep.
+                  Not sure yet? Get your score free, then the caveats and recommendations for{" "}
+                  {quickReportPrice()}. It runs on your machine; your code is never sent.
                 </p>
                 <Button variant="outline" size="sm" className="mt-6 w-full" asChild>
-                  <TrackedLink href="/kit" event="cross_promo_click" location="audit-to-kit">
-                    Get the Learning Kit →
+                  <TrackedLink href="/report" event="cross_promo_click" location="audit-to-report">
+                    Start with the free score →
                   </TrackedLink>
                 </Button>
               </div>
@@ -91,11 +92,11 @@ export default function AuditPage() {
                 <Eyebrow>The form</Eyebrow>
                 <SectionHeading>Send it. Get the report.</SectionHeading>
                 <Lead>
-                  Read-only — nothing written to your repo. We run the readiness audit with a human in
-                  the loop and email your scored report within 24–48 hours.
+                  Read-only: nothing is written to your repo. AI drafts the readiness audit, a person
+                  reviews and rewrites it, and you get your scored report within {FULL_AUDIT.turnaround}.
                 </Lead>
                 <p className="mt-6 font-mono text-[12px] text-muted-foreground">
-                  €249, one-time. A real report, reviewed by a human — not a bot dump.
+                  {FULL_AUDIT.price}, one-time. A real report, reviewed by a person, not a bot dump.
                 </p>
               </div>
               <AuditRequestForm />

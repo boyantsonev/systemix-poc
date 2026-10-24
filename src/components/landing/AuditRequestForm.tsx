@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FULL_AUDIT } from "@/lib/pricing";
 import { usePostHog } from "posthog-js/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,7 +103,7 @@ export function AuditRequestForm() {
         Request the report →
       </Button>
       <p className="text-center font-mono text-[11px] text-muted-foreground/50">
-        €249 · one-time · emailed in 24–48h
+        {FULL_AUDIT.price} · one-time · delivered in {FULL_AUDIT.turnaround}
       </p>
     </form>
   );

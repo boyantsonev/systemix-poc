@@ -61,11 +61,31 @@ describe("POST /api/report", () => {
       vi.stubEnv("LEMONSQUEEZY_PRODUCT_ID", "22");
     });
 
-    it("needs a key", async () => {
+    it("without a key returns the free score and never calls the payment provider", async () => {
       const fetchMock = vi.fn();
       vi.stubGlobal("fetch", fetchMock);
-      expect((await post({ counters: counters() })).status).toBe(402);
+      vi.stubEnv("NEXT_PUBLIC_QUICK_REPORT_CHECKOUT_URL", "https://shop.example/buy/1");
+      const res = await post({ counters: counters() });
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body).toMatchObject({ scored: true, preview: true, overall: 53, buyUrl: "https://shop.example/buy/1", price: "€9.99" });
+      expect(body.markdown).not.toContain("## Recommendations");
       expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("gives the free score even before the store is configured", async () => {
+      vi.stubEnv("LEMONSQUEEZY_STORE_ID", "");
+      vi.stubGlobal("fetch", vi.fn());
+      const body = await (await post({ counters: counters(), licenseKey: "" })).json();
+      expect(body).toMatchObject({ preview: true, buyUrl: null });
+    });
+
+    it("a refusal names the buy link", async () => {
+      vi.stubEnv("NEXT_PUBLIC_QUICK_REPORT_CHECKOUT_URL", "https://shop.example/buy/1");
+      vi.stubGlobal("fetch", vi.fn(async () => lsResponse({ valid: false }, 404)));
+      const res = await post({ counters: counters(), licenseKey: "ABCD-1234-EFGH" });
+      expect(res.status).toBe(403);
+      expect((await res.json()).buyUrl).toBe("https://shop.example/buy/1");
     });
 
     it("validates, builds, then uses one activation", async () => {
@@ -73,6 +93,9 @@ describe("POST /api/report", () => {
       vi.stubGlobal("fetch", fetchMock);
       const res = await post({ counters: counters(), licenseKey: "ABCD-1234-EFGH" });
       expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.preview).toBe(false);
+      expect(body.markdown).toContain("## Recommendations, in this order");
       expect(fetchMock.mock.calls.map((c) => String(c[0]).split("/").pop())).toEqual(["validate", "activate"]);
     });
 

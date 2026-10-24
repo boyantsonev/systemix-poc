@@ -10,6 +10,8 @@
 // surfaces keep the concrete nouns (experiments, learnings, decisions).
 // Copy decks: docs/feature/rebrand-hifi/ · SEO: seo-gtm-brief.md
 
+import { FULL_AUDIT, quickReportPrice } from "@/lib/pricing";
+
 export const GITHUB_URL = "https://github.com/boyantsonev/systemix-poc";
 export const AUDIT_COMMAND = "npx @getsystemix/cli audit";
 export const INIT_COMMAND = "npx @getsystemix/cli init";
@@ -179,7 +181,7 @@ export type PricingTier = {
   priceAnchor?: string; // strike-through anchor (e.g. €299 → €99)
   priceNote?: string;
   body: string;
-  cta: { label: string; href: string; event: "kit_requested" | "audit_requested" | "book_a_call" } | { label: string; command: string };
+  cta: { label: string; href: string; event: "kit_requested" | "audit_requested" | "book_a_call" | "quick_report_clicked" | "free_score_clicked" } | { label: string; command: string };
   highlight: boolean;
 };
 
@@ -190,37 +192,37 @@ export const pricing = {
   tiers: [
     {
       key: "free",
-      name: "Free",
+      name: "Free score",
       price: "€0",
-      priceNote: INIT_COMMAND,
-      body: "Every skill, in ghost mode. Your files, your repo — no account.",
-      cta: { label: INIT_COMMAND, command: INIT_COMMAND },
+      priceNote: "runs on your machine",
+      body: "Your design system's AI-readiness score out of 100, per area. Only the results file is sent, never your code. Every skill stays free and MIT.",
+      cta: { label: "Get your free score →", href: "/report", event: "free_score_clicked" },
       highlight: false,
     },
     {
-      key: "kit",
-      name: "Learning Kit",
-      price: "€99",
-      priceNote: "download · pay once",
-      body: "The complete AI-native design system that learns — engine, docs, app setup, skills, workflows. Downloadable, yours to keep.",
-      cta: { label: "Get the Learning Kit →", href: "/kit", event: "kit_requested" },
+      key: "quick-report",
+      name: "Quick report",
+      price: quickReportPrice(),
+      priceNote: "instant · pay per report",
+      body: "What costs you points, biggest first, with one recommendation for each. No AI guesswork in the numbers: the same code gives the same report.",
+      cta: { label: "See the quick report →", href: "/report", event: "quick_report_clicked" },
       highlight: true,
     },
     {
       key: "audit",
-      name: "Readiness Audit",
-      price: "€249",
-      priceNote: "emailed in 24–48h",
-      body: "An automated, me-in-the-loop AI-native readiness audit — scored 0–100, with the exact setup to fix it. Delivered to your inbox.",
+      name: "Full audit",
+      price: FULL_AUDIT.price,
+      priceNote: `delivered in ${FULL_AUDIT.turnaround}`,
+      body: "The same scan, written up by AI and reviewed and rewritten by a person: what to fix, in what order, and why.",
       cta: { label: "Request the audit →", href: "/audit", event: "audit_requested" },
       highlight: false,
     },
     {
       key: "sprint",
-      name: "Wiring service",
+      name: "Fix sprint",
       price: "Custom",
-      priceNote: "2-week sprint",
-      body: "We wire your Learning Kit into your stack — a discovery + implementation sprint, with you.",
+      priceNote: "quoted per job",
+      body: "We make the fixes with you: tokens, guardrails, components, and the checks that keep them in place.",
       cta: { label: "Book a call →", href: CALL_MAILTO, event: "book_a_call" },
       highlight: false,
     },
@@ -291,6 +293,10 @@ export const faq = {
       a: "Yes — every skill is on GitHub, MIT. Start free; the €99 Learning Kit is the whole thing packaged to download and own.",
     },
     {
+      q: "What leaves my machine when I get a score?",
+      a: "Only the results file: numbers, counter definitions, file and folder paths, and short names such as token names. Never your source code. Add --redact-paths to hash the file names, or --dry-run to read the file before anything is sent.",
+    },
+    {
       q: "Which AI tools does it work with?",
       a: "Claude Code, Cursor, Codex — a slash command, the CLI, or MCP.",
     },
@@ -320,8 +326,9 @@ export const bottomCta = {
 export const nav = {
   links: [
     { label: "How it works", href: "/#deep-dives" },
-    { label: "Learning Kit", href: "/kit" },
+    { label: "Free score", href: "/report" },
     { label: "Audit", href: "/audit" },
+    { label: "Learning Kit", href: "/kit" },
     { label: "Docs", href: "/docs" },
   ],
   cta: { label: "Star on GitHub", href: GITHUB_URL },
@@ -332,8 +339,9 @@ export const footer = {
   links: [
     { label: "GitHub", href: GITHUB_URL },
     { label: "Docs", href: "/docs" },
-    { label: "Learning Kit", href: "/kit" },
+    { label: "Free score", href: "/report" },
     { label: "Audit", href: "/audit" },
+    { label: "Learning Kit", href: "/kit" },
   ],
   badge: "Open source",
 };

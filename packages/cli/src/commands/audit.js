@@ -82,7 +82,7 @@ const REPORT_USAGE = [
   "    Systemix report service, which returns the quick report. Nothing is sent without --yes:",
   "    without it the command shows what would be sent and stops.",
   "",
-  "    --key            the license key from your purchase (or set SYSTEMIX_REPORT_KEY)",
+  "    --key            the license key from your purchase, for the full report (or set SYSTEMIX_REPORT_KEY)",
   "    --redact-paths   replace every file and folder name with a hash before sending; the score is",
   "                     the same, the report names files as path-1a2b3c… instead",
   "    --dry-run        build and describe the payload, never send it (--payload-out writes it to a file)",
@@ -195,16 +195,24 @@ async function reportCommand(args, opts = {}) {
     if (res.status === 402 || res.status === 403) fail(`the license key was not accepted: ${why}`);
     else if (res.status === 503) fail(`the report service is not open yet: ${why}`);
     else fail(`the report service refused the results file: ${why}`);
+    if ((res.status === 402 || res.status === 403) && body && body.buyUrl) console.error(`     Buy a quick report: ${body.buyUrl}`);
     console.error();
     return null;
   }
   const out = last("--out");
+  const what = body.preview ? "free score" : "quick report";
   if (out) {
     fs.writeFileSync(path.resolve(out), body.markdown);
-    console.error(`  ✓  quick report written to ${out} (score ${body.overall ?? "none"})\n`);
+    console.error(`  ✓  ${what} written to ${out} (score ${body.overall ?? "none"})`);
   } else {
     process.stdout.write(body.markdown);
   }
+  if (body.preview) {
+    console.error(body.buyUrl
+      ? `  This is the free score. For the caveats and recommendations, buy the full report${body.price ? ` (${body.price})` : ""} at ${body.buyUrl}\n  and run the same command with --key <license key>.`
+      : "  This is the free score. The full report is not on sale yet.");
+  }
+  if (out || body.preview) console.error();
   return body;
 }
 

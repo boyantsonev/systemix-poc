@@ -7,6 +7,8 @@
 @import "fumadocs-ui/css/shadcn.css";
 @import "fumadocs-ui/css/preset.css";
 @source "../../node_modules/fumadocs-ui/dist/**/*.js";
+/* the CLI tests hold deliberately malformed class strings; never generate CSS from them */
+@source not "../../packages/cli/tests";
 
 @custom-variant dark (&:is(.dark *));
 

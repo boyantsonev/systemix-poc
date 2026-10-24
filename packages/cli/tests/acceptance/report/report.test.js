@@ -58,6 +58,20 @@ describe("quick report builder", () => {
     expect(Object.keys(RECOMMENDATIONS).sort()).toEqual([...ids].sort());
   });
 
+  test("the free score has the scores and the caveat count, but no caveats or recommendations", () => {
+    const full = build(counters());
+    const free = build(counters(), { preview: true, buyUrl: "https://shop.example/buy/1" });
+    expect(free).toMatchObject({ scored: true, preview: true, overall: full.overall, caveats: [], caveatCount: full.caveatCount });
+    expect(free.areas).toEqual(full.areas);
+    expect(free.markdown).toContain(`## Score: ${full.overall} / 100`);
+    expect(free.markdown).toContain(`lists the ${full.caveatCount} caveats`);
+    expect(free.markdown).toContain("https://shop.example/buy/1");
+    expect(free.markdown).not.toContain("## Caveats");
+    expect(free.markdown).not.toContain("## Recommendations");
+    for (const c of full.caveats) if (c.recommendation) expect(free.markdown).not.toContain(c.recommendation);
+    expect(build(counters(), { preview: true }).markdown).toContain("not on sale yet");
+  });
+
   test("an incomplete (sliced) report gets no score", () => {
     const c = counters();
     c.slice = { brief: true, ids: [], definitions: true, perFile: true, counters: 10, of: 354 };
@@ -130,11 +144,36 @@ describe("systemix audit report", () => {
     expect(payloadSummary(sent.counters)).toMatchObject({ paths: 0, redacted: true });
   });
 
-  test("a refused key is an error, not a report", async () => {
-    const fetch = jest.fn(async () => ({ ok: false, status: 402, json: async () => ({ error: "a license key is required" }) }));
-    const r = await quiet(() => audit(["report", "--dirs", "src", "--yes"], { projectRoot: root, env, fetch }));
+  test("a refused key is an error that names the buy link", async () => {
+    const fetch = jest.fn(async () => ({ ok: false, status: 402, json: async () => ({ error: "this license key has been used", buyUrl: "https://shop.example/buy/1" }) }));
+    const errors = [];
+    const spy = jest.spyOn(console, "error").mockImplementation((...a) => errors.push(a.join(" ")));
+    let r;
+    try {
+      r = await audit(["report", "--dirs", "src", "--yes", "--key", "ABCD-1234"], { projectRoot: root, env, fetch });
+    } finally {
+      spy.mockRestore();
+    }
     expect(r).toBeNull();
     expect(process.exitCode).toBe(1);
+    expect(errors.join("\n")).toContain("https://shop.example/buy/1");
+  });
+
+  test("without a key prints the free score and says how to get the full report", async () => {
+    const fetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => ({ scored: true, preview: true, overall: 40, markdown: "# free\n", buyUrl: "https://shop.example/buy/1", price: "€9.99" }) }));
+    const errors = [];
+    const spy = jest.spyOn(console, "error").mockImplementation((...a) => errors.push(a.join(" ")));
+    const out = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+    let r;
+    try {
+      r = await audit(["report", "--dirs", "src", "--yes"], { projectRoot: root, env, fetch });
+    } finally {
+      spy.mockRestore();
+      out.mockRestore();
+    }
+    expect(r.preview).toBe(true);
+    expect(JSON.parse(fetch.mock.calls[0][1].body).licenseKey).toBeNull();
+    expect(errors.join("\n")).toMatch(/free score.*€9\.99.*https:\/\/shop\.example\/buy\/1/s);
   });
 
   test("refuses a non-https service", async () => {
