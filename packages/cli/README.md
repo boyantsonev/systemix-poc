@@ -63,8 +63,43 @@ npx @getsystemix/cli list                    # installed skills + available work
 npx @getsystemix/cli doctor                  # health check (skills, MCP server, signals)
 npx @getsystemix/cli sync [--dry-run]        # design-token sync (optional design substrate)
 npx @getsystemix/cli tokens                  # convert globals.css → tokens bridge cache
+npx @getsystemix/cli audit counters [dir…]   # deterministic audit counters as JSON (see "Audit counters")
+npx @getsystemix/cli audit report [dir…]     # the paid quick report (see "Quick report")
+npx @getsystemix/cli drift scan [dir…]       # raw colour / px tally + clean-file score (timeline snapshot)
 npx @getsystemix/cli update                  # check + apply npm / skill-pack updates
 ```
+
+## Audit counters
+
+```bash
+npx @getsystemix/cli audit counters --dirs src [--groups colour,tokens] [--out report.json] [--pretty] [--summary]
+```
+
+One deterministic JSON report of the repo's design system: files, tokens, colour and type literals, primitives,
+reachability, guardrails, docs, decisions, drift habit, agent legibility. Same tree and commit, same bytes; no
+model, no network, nothing written, no dependency to install. Every number carries its unit, regex, file set and
+a per-file breakdown. The audit skills are meant to quote it instead of recounting (their SKILL.md files do not
+call it yet). What each counter means, how to read
+one, the rule for skills, determinism, limits and versioning:
+[`src/lib/counters/README.md`](src/lib/counters/README.md).
+
+`npx @getsystemix/cli drift scan [dir…] [--dry-run] [--json]` is the same population with the cheap tally
+(colour literals and raw px, a clean-file score) and appends a snapshot to `.systemix/drift-history.json`.
+
+## Quick report
+
+```bash
+npx @getsystemix/cli audit report --dirs src                 # shows what would be sent, sends nothing
+npx @getsystemix/cli audit report --dirs src --key <license key> --yes --out report.md
+```
+
+The scan runs on your machine. Only the results file (the `audit counters` JSON: counts, counter
+definitions, file and folder paths, and short identifiers such as token names) goes to the Systemix
+report service, never your source code, and only when you pass `--yes`. `--redact-paths` replaces every
+file and folder name with a hash first (the score is the same). `--dry-run --payload-out file` writes
+the exact payload so you can read it. The report is deterministic: a score out of 100 from the same
+rubric the audit skills publish, a score per area, the caveats that cost the most points, and one
+recommendation for each. The service stores nothing.
 
 ## How it runs
 

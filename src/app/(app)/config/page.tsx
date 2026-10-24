@@ -2,7 +2,7 @@ import { loadInstanceConfig, signalStatus } from "@/lib/state/instance-config";
 import { buildInstanceTopology } from "@/lib/state/instance-topology";
 import { loadRuntimeState } from "@/lib/state/runtime-state";
 import { loadLearnings } from "@/lib/contract/learnings";
-import { getTrend } from "@/lib/state/drift-history";
+import { getComparableTrend } from "@/lib/state/drift-history";
 import { listSkills } from "@/lib/skill-map";
 import { ConfigView } from "./ConfigView";
 
@@ -17,7 +17,8 @@ export default function ConfigPage() {
   const topology = buildInstanceTopology(cfg);
   const signals = signalStatus(cfg);
   const learnings = loadLearnings();
-  const driftTrend = getTrend(30);
+  // scores from different formulas are not comparable: Home trends only the newest same-formula run
+  const driftTrend = getComparableTrend(30);
   const skills = listSkills();
   // Skill runs spawn processes — a local-app capability, not a Vercel one.
   const runsEnabled = !process.env.VERCEL;

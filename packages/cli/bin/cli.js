@@ -1,30 +1,8 @@
 #!/usr/bin/env node
 
-const { add } = require("../src/add");
-const { list } = require("../src/list");
-const { doctor } = require("../src/doctor");
-const { init } = require("../src/init");
-const { sync } = require("../src/commands/sync");
-const { tokenProfile } = require("../src/commands/token-profile");
-const { schedule } = require("../src/commands/schedule");
-const { tokenGuard } = require("../src/commands/token-guard");
-const { update } = require("../src/commands/update");
-const { tokens } = require("../src/commands/tokens");
-const { watch } = require("../src/commands/watch");
-const { socialSignal } = require("../src/commands/social-signal");
-const { evidence } = require("../src/commands/evidence");
-const { config } = require("../src/commands/config");
-const { experiment } = require("../src/commands/experiment");
-const { goal } = require("../src/commands/goal");
-const { loop } = require("../src/commands/loop");
-const { propose } = require("../src/commands/propose");
-const { skills } = require("../src/commands/skills");
-const { mcp } = require("../src/commands/mcp");
-const { audit } = require("../src/commands/audit");
-const { design } = require("../src/commands/design");
-const { docs } = require("../src/commands/docs");
-const { app } = require("../src/commands/app");
-const { drift } = require("../src/commands/drift");
+// Commands are required lazily, inside their own `case`. A command's dependencies
+// (gray-matter, systemix-mcp-server, ...) are then needed only by the commands
+// that use them, so `drift` runs in a checkout where nothing else is installed.
 
 const [, , command, ...args] = process.argv;
 
@@ -33,6 +11,8 @@ const HELP = `
 
   Usage:
     npx @getsystemix/cli audit                   Install the zero-setup design-system audit skill
+    npx @getsystemix/cli audit counters [dir…]   Audit counters as JSON: [--groups g] [--ids i] [--brief] [--out file] [--pretty] [--summary] [--dirty]
+    npx @getsystemix/cli audit report [dir…]     Paid quick report: sends only the counters JSON (never code) with --yes [--key k] [--redact-paths] [--dry-run]
     npx @getsystemix/cli design [show|feed|init] Read the design system + HITL feed; init = greenfield interview
     npx @getsystemix/cli init                    Interactive setup wizard (run once per project)
     npx @getsystemix/cli init --reconfigure      Re-run the wizard, overwrite systemix.config.yaml
@@ -59,7 +39,7 @@ const HELP = `
     npx @getsystemix/cli goal <sub>              Declare what experiments are for: new|list (experiments/goals/)
     npx @getsystemix/cli app [--port 4400] [--open]  The local instance app: docs (human/machine) · tokens · experiments · HITL queue
     npx @getsystemix/cli docs <sub>              Component docs contract: sync [--check] | new <Name> --group <g>
-    npx @getsystemix/cli drift <sub>             Sacred timeline: scan (append a drift snapshot) | history [--last 10]
+    npx @getsystemix/cli drift <sub>             Sacred timeline: scan [dir…] [--dry-run] [--json] | history [--last 10]
     npx @getsystemix/cli loop [<id>]             Ralph runner — advance running experiments to decision-ready (HITL close)
     npx @getsystemix/cli propose <sub>           Engine generate stage: context|queue — propose the next bet (HITL approve)
     npx @getsystemix/cli skills sync [--global]  Refresh installed loop skills from the CLI's bundled source
@@ -94,13 +74,18 @@ const HELP = `
 
 async function main() {
   switch (command) {
-    case "audit":
+    case "audit": {
+      const { audit } = require("../src/commands/audit");
       await audit(args);
       break;
-    case "design":
+    }
+    case "design": {
+      const { design } = require("../src/commands/design");
       await design(args);
       break;
-    case "init":
+    }
+    case "init": {
+      const { init } = require("../src/init");
       await init({
         reconfigure: args.includes("--reconfigure"),
         defaults: args.includes("--defaults"),
@@ -108,13 +93,19 @@ async function main() {
         forceMcp: args.includes("--force-mcp"),
       });
       break;
-    case "config":
+    }
+    case "config": {
+      const { config } = require("../src/commands/config");
       await config(args);
       break;
-    case "add":
+    }
+    case "add": {
+      const { add } = require("../src/add");
       await add(args[0]);
       break;
-    case "workflow":
+    }
+    case "workflow": {
+      const { add } = require("../src/add");
       if (args[0] === "add") {
         await add(args[1]);
       } else if (!args[0] || args[0] === "list") {
@@ -125,67 +116,108 @@ async function main() {
         process.exit(1);
       }
       break;
+    }
     case "list":
-    case "ls":
+    case "ls": {
+      const { list } = require("../src/list");
       list();
       break;
-    case "doctor":
+    }
+    case "doctor": {
+      const { doctor } = require("../src/doctor");
       await doctor();
       break;
-    case "sync":
+    }
+    case "sync": {
+      const { sync } = require("../src/commands/sync");
       await sync(args);
       break;
-    case "token-profile":
+    }
+    case "token-profile": {
+      const { tokenProfile } = require("../src/commands/token-profile");
       await tokenProfile(args);
       break;
-    case "schedule":
+    }
+    case "schedule": {
+      const { schedule } = require("../src/commands/schedule");
       await schedule(args);
       break;
-    case "token-guard":
+    }
+    case "token-guard": {
+      const { tokenGuard } = require("../src/commands/token-guard");
       await tokenGuard(args);
       break;
-    case "update":
+    }
+    case "update": {
+      const { update } = require("../src/commands/update");
       await update(args);
       break;
-    case "tokens":
+    }
+    case "tokens": {
+      const { tokens } = require("../src/commands/tokens");
       await tokens(args);
       break;
-    case "watch":
+    }
+    case "watch": {
+      const { watch } = require("../src/commands/watch");
       await watch(args);
       break;
-    case "social-signal":
+    }
+    case "social-signal": {
+      const { socialSignal } = require("../src/commands/social-signal");
       await socialSignal(args);
       break;
-    case "evidence":
+    }
+    case "evidence": {
+      const { evidence } = require("../src/commands/evidence");
       await evidence(args);
       break;
-    case "experiment":
+    }
+    case "experiment": {
+      const { experiment } = require("../src/commands/experiment");
       await experiment(args);
       break;
-    case "goal":
+    }
+    case "goal": {
+      const { goal } = require("../src/commands/goal");
       await goal(args);
       break;
-    case "drift":
+    }
+    case "drift": {
+      const { drift } = require("../src/commands/drift");
       await drift(args);
       break;
-    case "app":
+    }
+    case "app": {
+      const { app } = require("../src/commands/app");
       await app(args);
       break;
-    case "docs":
+    }
+    case "docs": {
+      const { docs } = require("../src/commands/docs");
       await docs(args);
       break;
-    case "loop":
+    }
+    case "loop": {
+      const { loop } = require("../src/commands/loop");
       await loop(args);
       break;
-    case "propose":
+    }
+    case "propose": {
+      const { propose } = require("../src/commands/propose");
       await propose(args);
       break;
-    case "skills":
+    }
+    case "skills": {
+      const { skills } = require("../src/commands/skills");
       await skills(args);
       break;
-    case "mcp":
+    }
+    case "mcp": {
+      const { mcp } = require("../src/commands/mcp");
       await mcp(args);
       break;
+    }
     case "help":
     case "--help":
     case "-h":

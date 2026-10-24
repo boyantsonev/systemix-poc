@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { DocsPage, DocsBody, DocsTitle } from "fumadocs-ui/page";
 import { loadLearnings } from "@/lib/contract/learnings";
-import { getTrend, type DriftSnapshot } from "@/lib/state/drift-history";
+import { comparableRun, getTrend, type DriftSnapshot } from "@/lib/state/drift-history";
 
 export const dynamic = "force-dynamic";
 
@@ -141,7 +141,7 @@ export default function MemoryPage() {
                   {latest.critical} critical · {latest.warnings} warnings ·{" "}
                   {latest.componentsAudited} components · {latest.runAt.slice(0, 10)}
                 </div>
-                <DriftSparkline snapshots={trend} />
+                <DriftSparkline snapshots={comparableRun(trend)} />
               </div>
               <div className="space-y-2">
                 {[...trend].reverse().map((s) => (

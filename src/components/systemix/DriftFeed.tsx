@@ -88,7 +88,7 @@ export function DriftFeed({ trend, className }: { trend: DriftSnapshot[]; classN
           )}
 
           <p className="mt-auto font-mono text-[11px] text-muted-foreground">
-            {trend.length} audit{trend.length === 1 ? "" : "s"} on record · triggered by{" "}
+            {trend.length} comparable audit{trend.length === 1 ? "" : "s"} · triggered by{" "}
             {latest.triggeredBy}
           </p>
         </div>

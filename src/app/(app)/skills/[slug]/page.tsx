@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { DocsBody } from "fumadocs-ui/page";
-import { loadSkillBySlug, loadSkillPacks, loadInstalledSkills } from "@/lib/skills-catalog";
+import { SKILL_BODY_MDX_OPTIONS, loadSkillBySlug, loadSkillPacks, loadInstalledSkills } from "@/lib/skills-catalog";
 import { getMDXComponents } from "@/mdx-components";
 import { CopySkillButton } from "@/components/skills/CopySkillButton";
 
@@ -42,7 +42,11 @@ export default async function SkillDossierPage({ params }: { params: Promise<{ s
           </div>
 
           <DocsBody>
-            <MDXRemote source={skill.body} components={getMDXComponents()} />
+            <MDXRemote
+              source={skill.body}
+              components={getMDXComponents()}
+              options={{ mdxOptions: SKILL_BODY_MDX_OPTIONS }}
+            />
           </DocsBody>
         </div>
       </div>

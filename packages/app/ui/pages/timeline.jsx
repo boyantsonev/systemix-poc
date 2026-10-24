@@ -12,6 +12,10 @@ const fmtDT = (v) => {
   return Number.isNaN(d.getTime()) ? String(v) : d.toISOString().slice(0, 16).replace('T', ' ')
 }
 
+// Scores from different formulas are not comparable: `drift scan` tags a snapshot with
+// scoreFormula, older ones carry none ("legacy"). Never take a delta or join a line across the two.
+const formulaOf = (s) => s.scoreFormula || 'legacy'
+
 const nodeState = (s) => (s.critical > 0 ? 'red' : s.warnings > 0 ? 'amber' : 'green')
 const nodeColor = { red: RED, amber: 'var(--amber)', green: 'var(--green)' }
 
@@ -39,6 +43,17 @@ function computeBranches(snapshots) {
   if (run) {
     run.open = true
     runs.push(run)
+  }
+  return runs
+}
+
+// Contiguous runs of points that share a score formula; the line is drawn per run.
+function formulaRuns(points) {
+  const runs = []
+  for (const p of points) {
+    const last = runs[runs.length - 1]
+    if (last && formulaOf(last[0].s) === formulaOf(p.s)) last.push(p)
+    else runs.push([p])
   }
   return runs
 }
@@ -141,13 +156,12 @@ export default function Timeline() {
 
   const branches = computeBranches(snapshots)
   const { snapX, commitX, width, t0, t1 } = layout(snapshots, commits)
-  const visibleSnaps = snapshots.filter((_, i) => snapX.has(i))
   const visibleCommits = commits.filter((_, i) => commitX.has(i))
   const pts = snapshots.map((s, i) => (snapX.has(i) ? { x: Math.round(snapX.get(i)), y: yForScore(s.score), s, i } : null))
 
   const latest = snapshots[snapshots.length - 1] ?? null
   const prev = snapshots[snapshots.length - 2] ?? null
-  const delta = latest && prev ? latest.score - prev.score : null
+  const delta = latest && prev && formulaOf(latest) === formulaOf(prev) ? latest.score - prev.score : null
   const openBranches = branches.filter((b) => b.open).length
   const latestState = latest ? nodeState(latest) : null
 
@@ -162,7 +176,7 @@ export default function Timeline() {
             <div className={`stat-value tl-score tl-${latestState}`}>{latest.score}</div>
             <div className="stat-label">Latest score</div>
             <div className="stat-hint">
-              {delta === null ? 'no previous scan' : delta === 0 ? '± 0 vs previous' : `${delta > 0 ? '▲ +' : '▼ '}${delta} vs previous`}
+              {delta === null ? (prev ? 'new score formula — not comparable with previous' : 'no previous scan') : delta === 0 ? '± 0 vs previous' : `${delta > 0 ? '▲ +' : '▼ '}${delta} vs previous`}
             </div>
           </div>
           <div className="stat card">
@@ -271,19 +285,19 @@ export default function Timeline() {
           })}
 
           {/* the sacred timeline */}
-          {visibleSnaps.length >= 2 ? (
-            <path d={smoothPath(pts.filter(Boolean), BAND_TOP, BAND_BOTTOM)} fill="none" stroke="var(--ink)" strokeWidth="2" />
-          ) : (
-            pts.filter(Boolean).map((p) => (
-              <line key={p.i} x1={p.x - 20} x2={p.x + 20} y1={p.y} y2={p.y} stroke="var(--ink)" strokeWidth="2" />
-            ))
+          {formulaRuns(pts.filter(Boolean)).map((run) =>
+            run.length >= 2 ? (
+              <path key={run[0].i} d={smoothPath(run, BAND_TOP, BAND_BOTTOM)} fill="none" stroke="var(--ink)" strokeWidth="2" />
+            ) : (
+              <line key={run[0].i} x1={run[0].x - 20} x2={run[0].x + 20} y1={run[0].y} y2={run[0].y} stroke="var(--ink)" strokeWidth="2" />
+            ),
           )}
 
           {/* snapshot nodes */}
           {pts.filter(Boolean).map((p) => (
             <circle key={p.i} cx={p.x} cy={p.y} r="4.5" fill={nodeColor[nodeState(p.s)]} stroke="var(--paper)" strokeWidth="1.5">
               <title>
-                {`${fmtDT(p.s.runAt)} · score ${p.s.score} · ${p.s.critical} critical / ${p.s.warnings} warnings · ${p.s.triggeredBy}` +
+                {`${fmtDT(p.s.runAt)} · score ${p.s.score}${p.s.scoreFormula ? '' : ' (legacy formula)'} · ${p.s.critical} critical / ${p.s.warnings} warnings · ${p.s.triggeredBy}` +
                   (p.s.topOffenders?.length ? `\ntop: ${p.s.topOffenders.slice(0, 3).join(', ')}` : '')}
               </title>
             </circle>
