@@ -4,7 +4,7 @@
   "description": "Local MCP server for Systemix state — bridges skills and dashboard",
   "license": "MIT",
   "bin": {
-    "systemix-mcp": "./dist/index.js"
+    "systemix-mcp": "dist/index.js"
   },
   "main": "./dist/index.js",
   "files": [
@@ -20,7 +20,9 @@
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js"
   },
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0"
   },
