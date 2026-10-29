@@ -161,3 +161,49 @@ The engine already exists: the weekly `/propose-experiment` cron, approval cards
 - The first price to show: one price, or two variants at once?
 - Does the €499 audit get a real request form and a deposit through Lemon Squeezy, or stay a call?
 - Who reads the weekly approval card, and on which day?
+
+## 8. Distribution: a Claude plugin first (added 2026-10-29)
+
+**Decision (founder): Claude's plugin marketplace is the main way in.** It replaces `npx` as the
+first thing a visitor copies. Plugin facts below are from code.claude.com/docs/en/plugins and
+claude.com/docs/plugins, read 2026-10-29.
+
+- **Two places to list it.**
+  - Our own marketplace in this repo, which works today:
+    `/plugin marketplace add boyantsonev/systemix-poc`, then `/plugin install systemix@systemix`.
+  - Anthropic's public directory (claude.ai/directory/manage, which needs a paid plan). Getting
+    in takes a review and a public repo, a README of at least 40 words, and a license. Install
+    counts show on claude.com/marketplace. The built-in `claude-plugins-official` marketplace is
+    partner-only.
+- **The plugin includes the scan.** Skills run `node ${CLAUDE_PLUGIN_ROOT}/…` instead of
+  `npx @getsystemix/cli`. So the free score no longer waits on an npm publish, and the review
+  doesn't hold us for unpinned `npx`. Don't use a top-level `bin/` folder: the claude.ai chat app
+  and org sync refuse plugins that have one.
+- **Where it runs.** Claude Code runs everything. Cowork runs it when the session is on the
+  user's computer. claude.ai chat loads only the skills and can't reach the repo, so it isn't a
+  target.
+- **Money.** Marketplaces have no payments. The plugin is free; the full report stays a Lemon
+  Squeezy key. The key is a plugin setting (`userConfig`, `sensitive: true`), which Claude Code
+  asks for on install and keeps in secure storage. It reaches our MCP server as an environment
+  variable, so the key never appears in chat. The network call to the report service must be
+  disclosed in the README and the review's data questions.
+- **Self-improving.**
+  - Approved changes reach users as plugin updates. If plugin.json has a version, it must be
+    bumped on every release.
+  - Auto-update is off by default for third-party marketplaces and on in the directory. That is
+    one more reason to get listed.
+  - `claude plugin eval` suites for the audit skills become the regression gate: no
+    skill change the engine proposes ships unless the evals pass. Each eval run costs model usage.
+- **Plugins.**
+  - `systemix`: free score, readiness-audit, design-audit, drift-report, design-interview,
+    claude-design-sync.
+  - Later: `systemix-loop` (experiments) and `systemix-figma` (the optional adapter).
+
+### Build order for the plugin
+1. Add `.claude-plugin/marketplace.json` at the repo root and `plugins/systemix/`, with skills
+   generated from `packages/cli/pipelines/design-system` by a script so they never drift apart.
+   Add a `/systemix:score` skill and the bundled scan code. Pass `claude plugin validate --strict`.
+2. Add a license-key setting and a `quick_report` tool on the MCP server.
+3. Change the site's main call to action to the two install lines and `/systemix:score`.
+4. Submit to the directory (founder, on a paid plan).
+5. Add evals for the audit skills, run in CI before any skill change merges.
