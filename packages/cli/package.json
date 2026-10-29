@@ -35,7 +35,8 @@
     "systemix-mcp-server": "^0.1.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build:plugin": "node scripts/build-plugin.js"
   },
   "devDependencies": {
     "@stryker-mutator/core": "^8.7.1",

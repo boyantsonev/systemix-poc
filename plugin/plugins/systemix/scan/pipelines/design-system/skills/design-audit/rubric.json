@@ -1,0 +1,274 @@
+{
+ "owner":"design-audit",
+ "rubric_version":"v1",
+ "language":"rubric-language/2",
+ "counters":{"schema":"systemix.audit-counters/1","major":1},
+ "validity":"Thresholds are conventions chosen for reproducibility, calibrated to nothing yet (there is no benchmark corpus): a score is a pure function of the counters, not a measurement of quality.",
+ "guards":{"evidence":"styling","exemption_cap":0.1,"population":["census.files.audited","colour.scanner.files_audited"],"coverage":{"any_type":"census.files.any_type","census":"census.files.total","source_ext":[".ts",".tsx",".js",".jsx",".css",".scss",".less",".vue",".svelte",".astro"],"min_share":0.8}},
+ "gates":{
+  "styling":{
+   "label":"styling code is present in the audited folders",
+   "evidence":true,
+   "sum_of":[
+    {"detail_sum":{"counter":"census.files.audited","path":"byExt","keys":[".tsx",".jsx",".vue",".svelte",".css"]}},
+    "typography.named_size.matches",
+    "typography.arbitrary_size.matches",
+    "scale.radius.named_classes",
+    "scale.radius.var_uses",
+    "scale.radius.hardcoded_uses",
+    "colour.palette_class.matches",
+    "colour.scanner.colour_hits",
+    "colour.scanner.px_hits",
+    "scale.spacing_arbitrary.matches",
+    "tokens.font_size.consumers",
+    "tokens.text.consumers",
+    "tokens.space.consumers",
+    "primitives.button.tags.total",
+    "primitives.badge.tags.total",
+    "primitives.card.tags.total",
+    "primitives.input.tags.total",
+    "census.routes.app_pages",
+    "reachability.components.ui.total",
+    "reachability.components.other.total"
+   ],
+   "when":">= 1",
+   "note":"no styling code in the audited folders: no markup or style files and no styling counter above 0"
+  },
+  "tailwind":{
+   "label":"a Tailwind class vocabulary is present",
+   "evidence":true,
+   "sum_of":["typography.named_size.matches","typography.arbitrary_size.matches","scale.spacing_arbitrary.matches","scale.radius.named_classes","colour.palette_class.matches","tokens.theme.present"],
+   "when":">= 1",
+   "note":"no Tailwind class vocabulary found (no font-size, spacing or radius utilities, no default-palette classes, no @theme rule): the items that read Tailwind classes are not rated"
+  },
+  "markup":{"label":"component source files are present","evidence":true,"sum_of":[{"detail_sum":{"counter":"census.files.audited","path":"byExt","keys":[".tsx",".jsx",".vue",".svelte"]}}],"when":">= 1","note":"no markup files (tsx, jsx, vue, svelte) among the audited files: the item is not rated"}
+ },
+ "derived":{
+  "var_colour_hits":{"sum":["colour.rgb_fn.outside_token_source#withVarArgument","colour.hsl_fn.outside_token_source#withVarArgument","colour.oklch_fn.outside_token_source#withVarArgument"]},
+  "literal_colour_hits":{"sub":["colour.scanner.colour_hits","@var_colour_hits"]},
+  "dirty_colour_files":{"min":["colour.scanner.files_with_colour_hits","@literal_colour_hits"]},
+  "mapped_named_sizes":{"mapped":{"counter":"typography.named_size.matches","path":"byClass","names":"tokens.theme.maps_font_size","class_prefix":"text-","name_prefixes":["--text-","--font-size-"]}},
+  "canonical_button":{"sum":["primitives.button.resolved.to_ui_definition","primitives.button.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.button.definitions.total"],"when":"<= 1"},"then":"primitives.button.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_button":{"if":{"sum_of":["primitives.button.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.button.resolved.to_ui_definition#to_other_file"},
+  "canonical_badge":{"sum":["primitives.badge.resolved.to_ui_definition","primitives.badge.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.badge.definitions.total"],"when":"<= 1"},"then":"primitives.badge.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_badge":{"if":{"sum_of":["primitives.badge.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.badge.resolved.to_ui_definition#to_other_file"},
+  "canonical_card":{"sum":["primitives.card.resolved.to_ui_definition","primitives.card.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.card.definitions.total"],"when":"<= 1"},"then":"primitives.card.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_card":{"if":{"sum_of":["primitives.card.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.card.resolved.to_ui_definition#to_other_file"},
+  "canonical_input":{"sum":["primitives.input.resolved.to_ui_definition","primitives.input.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.input.definitions.total"],"when":"<= 1"},"then":"primitives.input.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_input":{"if":{"sum_of":["primitives.input.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.input.resolved.to_ui_definition#to_other_file"}
+ },
+ "limits":[
+  "Every share divides by all audited files, so adding files with no styling raises it: the dirty-file count is printed beside each share, and the 20-file flag exists for this.",
+  "Density counts files whose only hits are raw px values (a file already counted for raw colour is not counted twice); font sizes written as px are in both density and the type axis.",
+  "The colour axis counts a file with both a raw colour and a default-palette class once (the larger of the two counts, a lower bound on dirty files); the line colour_axis_if_no_file_holds_both gives the other bound.",
+  "Palette classes and the spacing and type axes assume Tailwind; on a repo with no Tailwind vocabulary they are not rated and the report says so.",
+  "A declared exemption is applied to font-size, spacing and radius counts (the counters carry the split there) but not to colour literals (they carry none); an exemption that covers more than 10 percent of the audited files is ignored.",
+  "Severity Info is decided by path words (a components/ui/ folder, a path word brand or logo), not by what the file holds."
+ ],
+ "sub_scores":{
+  "tokens":{
+   "label":"Token conformance: mean of colour, spacing, type, radius (each 0-100; an axis with nothing to rate, or no Tailwind where it needs it, is left out)",
+   "requires":[{"gate":"styling"}],
+   "floor":{"sum_of":["tokens.source.found"],"when":">= 1","floor_note":"no token source resolved: nothing can conform, tokens scores 0"},
+   "measure":{
+    "mean_ratio":{
+     "parts":[
+      {
+       "id":"colour",
+       "label":"Colour: audited files without a raw colour (literal not in var(), or default-palette class); a file with both counts once",
+       "unit":"files",
+       "num":["@dirty_colour_files","colour.palette_class.files"],
+       "num_op":"max",
+       "den":["colour.scanner.files_audited"],
+       "one_minus":true,
+       "scale":100,
+       "clamp":[0,100],
+       "zero":null,
+       "zero_note":"the scanner audited no files: colour axis not rated"
+      },
+      {
+       "id":"spacing",
+       "label":"Spacing: 1 - raw px/rem/em spacing values per audited file",
+       "unit":"values per file",
+       "requires":[{"gate":"tailwind"}],
+       "num":["scale.spacing_arbitrary.length_literal_matches!"],
+       "den":["census.files.audited"],
+       "one_minus":true,
+       "scale":100,
+       "clamp":[0,100],
+       "zero":null,
+       "zero_note":"no audited files: spacing axis not rated"
+      },
+      {
+       "id":"type",
+       "label":"Type: font-size utilities that resolve to a declared token (a named size counts only when the theme maps that very size)",
+       "unit":"font-size utilities",
+       "requires":[{"gate":"tailwind"}],
+       "num":[{"min":["@mapped_named_sizes","typography.named_size.matches!"]}],
+       "den":["typography.named_size.matches!","typography.arbitrary_size.matches!"],
+       "scale":100,
+       "clamp":[0,100],
+       "zero":null,
+       "zero_note":"no font-size utilities found: type axis not rated"
+      },
+      {
+       "id":"radius",
+       "label":"Radius: named or var() radius classes / all radius utilities",
+       "unit":"radius utilities",
+       "num":["scale.radius.named_classes!","scale.radius.var_uses!"],
+       "den":["scale.radius.named_classes!","scale.radius.var_uses!","scale.radius.hardcoded_uses!"],
+       "scale":100,
+       "zero":null,
+       "zero_note":"no radius utilities found: radius axis not rated"
+      }
+     ],
+     "zero":null,
+     "zero_note":"no axis could be rated: tokens not rated"
+    }
+   }
+  },
+  "density":{
+   "label":"Density: audited files with no raw px value (a file whose hits include a colour is already counted in the colour axis)",
+   "requires":[{"gate":"styling"}],
+   "measure":{"ratio":{"num":["colour.scanner.files_with_px_only_hits"],"den":["colour.scanner.files_audited"],"one_minus":true,"scale":100,"clamp":[0,100],"zero":null,"zero_note":"the scanner audited no files: density not rated"}}
+  },
+  "components":{
+   "label":"Components: tag-weighted canonical reuse over Button, Badge, Card, Input (a canonical tag renders components/ui, a package, or the only definition of its name); 5 tags or more",
+   "measure":{
+    "ratio":{
+     "num":["@canonical_button","@canonical_badge","@canonical_card","@canonical_input"],
+     "den":[
+      "@canonical_button",
+      "@canonical_badge",
+      "@canonical_card",
+      "@canonical_input",
+      "primitives.button.resolved.to_local_definition",
+      "primitives.badge.resolved.to_local_definition",
+      "primitives.card.resolved.to_local_definition",
+      "primitives.input.resolved.to_local_definition",
+      "@duplicate_use_button",
+      "@duplicate_use_badge",
+      "@duplicate_use_card",
+      "@duplicate_use_input",
+      "primitives.button.raw.outside_ui",
+      "primitives.input.raw.outside_ui"
+     ],
+     "scale":100,
+     "min_den":5,
+     "min_den_note":"fewer than 5 Button, Badge, Card or Input tags outside components/ui/: too few to rate, components not rated",
+     "zero":null,
+     "zero_note":"no Button, Badge, Card or Input usage found: components not rated"
+    }
+   }
+  }
+ },
+ "health":{"mean_of":["tokens","density","components"],"none_note":"no sub-score could be rated: health not rated"},
+ "lines":[
+  {
+   "id":"type_default_scale",
+   "label":"Tailwind default named font sizes as a share of all font-size utilities (a named size is credited in tokens.type only when the theme maps it)",
+   "unit":"percent of font-size utilities",
+   "requires":[{"gate":"tailwind"}],
+   "measure":{"ratio":{"num":["typography.named_size.matches!"],"den":["typography.named_size.matches!","typography.arbitrary_size.matches!"],"scale":100,"zero":null,"zero_note":"no font-size utilities found"}}
+  },
+  {
+   "id":"named_sizes_mapped_share",
+   "label":"Named font sizes whose very name the theme maps (--text-<name> or --font-size-<name>)",
+   "unit":"percent of named font sizes",
+   "requires":[{"gate":"tailwind"}],
+   "measure":{"ratio":{"num":["@mapped_named_sizes"],"den":["typography.named_size.matches"],"scale":100,"zero":null,"zero_note":"no named font sizes found"}}
+  },
+  {
+   "id":"colour_hits_unreachable_share",
+   "label":"Scanner colour hits that sit in files unreachable from any entry point",
+   "unit":"percent of colour hits",
+   "measure":{"ratio":{"num":["reachability.colour_hits.in_unreachable_files"],"den":["reachability.colour_hits.assessed"],"scale":100,"zero":null,"zero_note":"no colour hits in parsed files"}}
+  },
+  {
+   "id":"canonical_users_without_importer",
+   "label":"Files that use a canonical primitive but that no file imports (reuse in dead code)",
+   "unit":"percent of canonical-user files",
+   "measure":{
+    "ratio":{
+     "num":["primitives.button.canonical_users.no_importer_files","primitives.badge.canonical_users.no_importer_files","primitives.card.canonical_users.no_importer_files","primitives.input.canonical_users.no_importer_files"],
+     "den":["primitives.button.canonical_users.files","primitives.badge.canonical_users.files","primitives.card.canonical_users.files","primitives.input.canonical_users.files"],
+     "scale":100,
+     "zero":null,
+     "zero_note":"no file uses a canonical primitive"
+    }
+   }
+  },
+  {
+   "id":"var_colour_hit_share",
+   "label":"Scanner colour hits that are colour calls with a var() argument (token references, left out of the dirty-file count)",
+   "unit":"percent of colour hits",
+   "measure":{"ratio":{"num":["@var_colour_hits"],"den":["colour.scanner.colour_hits"],"scale":100,"zero":null,"zero_note":"no colour hits"}}
+  },
+  {
+   "id":"colour_axis_if_no_file_holds_both",
+   "label":"Colour axis if no file held both a raw colour and a default-palette class (the other bound of the colour axis)",
+   "unit":"percent of audited files",
+   "measure":{"ratio":{"num":[{"min":["colour.scanner.files_audited",{"sum":["@dirty_colour_files","colour.palette_class.files"]}]}],"den":["colour.scanner.files_audited"],"one_minus":true,"scale":100,"clamp":[0,100],"zero":null,"zero_note":"the scanner audited no files"}}
+  }
+ ],
+ "flags":[
+  {
+   "id":"tests_outnumber_audited",
+   "text":"the audited folders hold as many test files as audited files: test files are left out of every share, so a file renamed *.test.* or moved under __tests__/ is not audited",
+   "measure":{"ratio":{"num":["census.files.tests"],"den":["census.files.audited"],"zero":null,"zero_note":"no audited files"}},
+   "when":">= 1"
+  },
+  {"id":"var_colour_calls","text":"colour calls whose argument is var() are token references: they are left out of the dirty-file count, which is therefore the upper bound min(files with colour hits, literal colour hits)","measure":"@var_colour_hits","when":"> 0"},
+  {"id":"many_dirty_files","text":"20 or more audited files hold raw colour literals: a high clean share over a large population does not mean few files drift, read the file count beside the share","measure":"@dirty_colour_files","when":">= 20"},
+  {
+   "id":"token_source_holds_rules",
+   "text":"the token source holds more than 2 raw colour literals per custom-property declaration: it may hold ordinary rules, which the scan exempts and no score sees",
+   "measure":{"ratio":{"num":["colour.token_source.colour_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}},
+   "when":"> 2"
+  },
+  {
+   "id":"token_source_holds_px",
+   "text":"the token source holds more than 2 raw px values per custom-property declaration: it may hold ordinary rules, which the scan exempts and no score sees",
+   "measure":{"ratio":{"num":["colour.token_source.px_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}},
+   "when":"> 2"
+  },
+  {
+   "id":"no_tailwind_vocabulary",
+   "text":"no Tailwind class vocabulary found: the spacing and type axes and the default-palette check are not rated",
+   "requires":[{"gate":"styling"}],
+   "measure":{"sum":["typography.named_size.matches","typography.arbitrary_size.matches","scale.spacing_arbitrary.matches","scale.radius.named_classes","colour.palette_class.matches","tokens.theme.present"]},
+   "when":"== 0"
+  }
+ ],
+ "severity":{
+  "n":1,
+  "critical":[{"family":"colour","counter":"colour.hex_scanner.equals_token"},{"family":"type","counter":"typography.arbitrary_size.equals_token"}],
+  "warning":[
+   {"family":"colour","counter":"colour.hex_scanner.not_token"},
+   {"family":"colour","counter":"colour.rgb_fn.outside_token_source"},
+   {"family":"colour","counter":"colour.hsl_fn.outside_token_source"},
+   {"family":"colour","counter":"colour.oklch_fn.outside_token_source"},
+   {"family":"type","counter":"typography.arbitrary_size.not_token"}
+  ],
+  "info_rules":[
+   {"id":"vendored_ui","label":"a components/ui/ folder (a vendored UI kit)","pattern":"(^|/)components/ui/","flags":"i"},
+   {"id":"brand_data","label":"a path word brand or brands (brand data)","words":["brand","brands"]},
+   {"id":"official_logo","label":"a path word logo or logos (official logos)","words":["logo","logos"]}
+  ],
+  "exempt_files":{"counter":"typography.exempt.files","detail":"files"},
+  "checks":[
+   {"total":"colour.scanner.colour_hits","parts":["colour.hex_scanner.outside_token_source","colour.rgb_fn.outside_token_source","colour.hsl_fn.outside_token_source","colour.oklch_fn.outside_token_source"]},
+   {"total":"typography.arbitrary_size.matches","parts":["typography.arbitrary_size.equals_token","typography.arbitrary_size.not_token"]}
+  ]
+ },
+ "setup_class":{
+  "values":{"token_source_found":{"counter":"tokens.source.found","if_undefined":0},"colour":{"axis":"colour","if_undefined":-1},"spacing":{"axis":"spacing","if_undefined":-1},"dirty_colour_files":{"counter":"@dirty_colour_files","if_undefined":0}},
+  "rules":[
+   {"class":"fresh","reason":"no token source resolved","all":[{"value":"token_source_found","when":"< 1"}],"recommend":"scaffold a fresh code-first design/"},
+   {"class":"fresh","reason":"colour conformance below 60","all":[{"value":"colour","when":"< 60"}],"recommend":"adopt the resolved token source and consolidate raw colours into it (do not scaffold a second token file)"},
+   {"class":"mature","all":[{"value":"colour","when":">= 90"},{"value":"spacing","when":">= 90"},{"value":"dirty_colour_files","when":"< 20"}]},
+   {"class":"partial","else":true}
+  ],
+  "recommend":{"partial":"scaffold, seeded from the inferred tokens, then consolidate","mature":"existing: adopt the resolved token source and wire drift-only"}
+ }
+}

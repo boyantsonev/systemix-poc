@@ -132,7 +132,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, p
       : "This is the free score. Every scored item is already at its maximum.");
     if (caveats.length) {
       lines.push("");
-      lines.push(buyUrl ? `Get it at ${buyUrl} and run the same command again with --key <your license key>.` : "The full report is not on sale yet.");
+      lines.push(buyUrl ? `Get it at ${buyUrl}, then run it again with your license key (in the Systemix plugin settings, or --key on the command line).` : "The full report is not on sale yet.");
     }
     lines.push("");
     lines.push("---");

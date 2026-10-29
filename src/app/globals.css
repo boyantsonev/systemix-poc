@@ -9,6 +9,7 @@
 @source "../../node_modules/fumadocs-ui/dist/**/*.js";
 /* the CLI tests hold deliberately malformed class strings; never generate CSS from them */
 @source not "../../packages/cli/tests";
+@source not "../../plugin";
 
 @custom-variant dark (&:is(.dark *));
 

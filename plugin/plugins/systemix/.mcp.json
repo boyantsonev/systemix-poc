@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "systemix": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scan/mcp.js"],
+      "env": {
+        "SYSTEMIX_PROJECT_DIR": "${CLAUDE_PROJECT_DIR}",
+        "SYSTEMIX_REPORT_KEY": "${user_config.license_key}"
+      }
+    }
+  }
+}

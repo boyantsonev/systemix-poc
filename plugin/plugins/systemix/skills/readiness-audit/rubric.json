@@ -1,0 +1,507 @@
+{
+ "owner":"readiness-audit",
+ "rubric_version":"v1",
+ "language":"rubric-language/2",
+ "counters":{"schema":"systemix.audit-counters/1","major":1},
+ "validity":"Thresholds are conventions chosen for reproducibility, calibrated to nothing yet (there is no benchmark corpus): a score is a pure function of the counters, not a measurement of quality.",
+ "guards":{"evidence":"styling","exemption_cap":0.1,"population":["census.files.audited","colour.scanner.files_audited"],"coverage":{"any_type":"census.files.any_type","census":"census.files.total","source_ext":[".ts",".tsx",".js",".jsx",".css",".scss",".less",".vue",".svelte",".astro"],"min_share":0.8}},
+ "gates":{
+  "styling":{
+   "label":"styling code is present in the audited folders",
+   "evidence":true,
+   "sum_of":[
+    {"detail_sum":{"counter":"census.files.audited","path":"byExt","keys":[".tsx",".jsx",".vue",".svelte",".css"]}},
+    "typography.named_size.matches",
+    "typography.arbitrary_size.matches",
+    "scale.radius.named_classes",
+    "scale.radius.var_uses",
+    "scale.radius.hardcoded_uses",
+    "colour.palette_class.matches",
+    "colour.scanner.colour_hits",
+    "colour.scanner.px_hits",
+    "scale.spacing_arbitrary.matches",
+    "tokens.font_size.consumers",
+    "tokens.text.consumers",
+    "tokens.space.consumers",
+    "primitives.button.tags.total",
+    "primitives.badge.tags.total",
+    "primitives.card.tags.total",
+    "primitives.input.tags.total",
+    "census.routes.app_pages",
+    "reachability.components.ui.total",
+    "reachability.components.other.total"
+   ],
+   "when":">= 1",
+   "note":"no styling code in the audited folders: no markup or style files and no styling counter above 0"
+  },
+  "tailwind":{
+   "label":"a Tailwind class vocabulary is present",
+   "evidence":true,
+   "sum_of":["typography.named_size.matches","typography.arbitrary_size.matches","scale.spacing_arbitrary.matches","scale.radius.named_classes","colour.palette_class.matches","tokens.theme.present"],
+   "when":">= 1",
+   "note":"no Tailwind class vocabulary found (no font-size, spacing or radius utilities, no default-palette classes, no @theme rule): the items that read Tailwind classes are not rated"
+  },
+  "markup":{"label":"component source files are present","evidence":true,"sum_of":[{"detail_sum":{"counter":"census.files.audited","path":"byExt","keys":[".tsx",".jsx",".vue",".svelte"]}}],"when":">= 1","note":"no markup files (tsx, jsx, vue, svelte) among the audited files: the item is not rated"},
+  "components_dir":{"label":"a components/ folder is present","evidence":true,"sum_of":["reachability.components.ui.total","reachability.components.other.total"],"when":">= 1","note":"no component files under a components/ folder: the item is not rated"},
+  "instruction_body":{
+   "label":"the root instruction files hold at least 10 lines",
+   "sum_of":["legibility.claude_md.lines","legibility.agents_md.lines","legibility.cursor_rules.lines","legibility.copilot_instructions.lines"],
+   "when":">= 10",
+   "note":"the root instruction files hold fewer than 10 lines in all: an empty or stub file is not credited"
+  },
+  "instruction_headings":{
+   "label":"the root instruction files hold at least 2 headings",
+   "sum_of":["legibility.claude_md.headings","legibility.agents_md.headings","legibility.cursor_rules.headings","legibility.copilot_instructions.headings"],
+   "when":">= 2",
+   "note":"the root instruction files hold fewer than 2 headings: lines without structure are not credited"
+  }
+ },
+ "derived":{
+  "var_colour_hits":{"sum":["colour.rgb_fn.outside_token_source#withVarArgument","colour.hsl_fn.outside_token_source#withVarArgument","colour.oklch_fn.outside_token_source#withVarArgument"]},
+  "literal_colour_hits":{"sub":["colour.scanner.colour_hits","@var_colour_hits"]},
+  "dirty_colour_files":{"min":["colour.scanner.files_with_colour_hits","@literal_colour_hits"]},
+  "mapped_named_sizes":{"mapped":{"counter":"typography.named_size.matches","path":"byClass","names":"tokens.theme.maps_font_size","class_prefix":"text-","name_prefixes":["--text-","--font-size-"]}},
+  "unmapped_named_sizes":{"sub":["typography.named_size.matches!","@mapped_named_sizes"]},
+  "font_size_names_mapped":{"detail_count":{"counter":"tokens.theme.maps_font_size","path":"names"}},
+  "space_names_mapped":{"detail_count":{"counter":"tokens.theme.maps_space","path":"names"}},
+  "type_tokens_declared":{"max":[{"sum":["tokens.font_size.unconsumed#declared","tokens.text.unconsumed#declared"]},"@font_size_names_mapped"]},
+  "type_tokens_unwired":{"sub":[{"sum":["tokens.font_size.unconsumed","tokens.text.unconsumed"]},"@font_size_names_mapped"]},
+  "space_tokens_declared":{"max":["tokens.space.unconsumed#declared","@space_names_mapped"]},
+  "space_tokens_unwired":{"sub":["tokens.space.unconsumed","@space_names_mapped"]},
+  "canonical_button":{"sum":["primitives.button.resolved.to_ui_definition","primitives.button.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.button.definitions.total"],"when":"<= 1"},"then":"primitives.button.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_button":{"if":{"sum_of":["primitives.button.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.button.resolved.to_ui_definition#to_other_file"},
+  "canonical_badge":{"sum":["primitives.badge.resolved.to_ui_definition","primitives.badge.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.badge.definitions.total"],"when":"<= 1"},"then":"primitives.badge.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_badge":{"if":{"sum_of":["primitives.badge.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.badge.resolved.to_ui_definition#to_other_file"},
+  "canonical_card":{"sum":["primitives.card.resolved.to_ui_definition","primitives.card.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.card.definitions.total"],"when":"<= 1"},"then":"primitives.card.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_card":{"if":{"sum_of":["primitives.card.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.card.resolved.to_ui_definition#to_other_file"},
+  "canonical_input":{"sum":["primitives.input.resolved.to_ui_definition","primitives.input.resolved.to_ui_definition#to_package",{"if":{"sum_of":["primitives.input.definitions.total"],"when":"<= 1"},"then":"primitives.input.resolved.to_ui_definition#to_other_file","else":0}]},
+  "duplicate_use_input":{"if":{"sum_of":["primitives.input.definitions.total"],"when":"<= 1"},"then":0,"else":"primitives.input.resolved.to_ui_definition#to_other_file"}
+ },
+ "limits":[
+  "The overall is a rubric score over documentation and code signals, not a readiness measurement: documentation items count structure and length, so filler files can earn them. The docs_need_code cap bounds that only when the code ignores the documents.",
+  "27 of 60 points read names or files that only a Systemix-style repo has (design/guardrails.mdx, design/DESIGN.md, design/tokens.css, decisions/ and design/decisions/, contract/tokens records, .systemix/drift-history.json, scripts/*drift*, a workflow that mentions drift, slash-named skills): a repo with other conventions loses them whatever its practice, and Captured rationale and Codified rules read nothing else.",
+  "Every share divides by all audited files; adding files with no styling raises it."
+ ],
+ "order":["captured_rationale","codified_rules","token_discipline","component_consistency","drift_control","agent_legibility"],
+ "importance":{"captured_rationale":9,"codified_rules":9,"token_discipline":8,"component_consistency":8,"drift_control":7,"agent_legibility":6},
+ "satisfaction":{"points_per_dimension":10,"rounding":"half_up","clamp":[1,10]},
+ "opportunity":"importance + max(importance - satisfaction, 0)",
+ "overall":{"formula":"mean(satisfaction) * 10","rounding":"half_up","label":"rubric score (not a measurement of readiness)"},
+ "ranking":["opportunity desc","importance desc","satisfaction asc","order asc"],
+ "underserved":"only dimensions with satisfaction below importance are ranked; the others are listed as satisfied",
+ "tie":{"within_opportunity_points_of_top":1},
+ "named_underserved":{"min_gap_to_next":2},
+ "caps":[
+  {
+   "id":"docs_need_code",
+   "dimensions":["captured_rationale","codified_rules"],
+   "max_points":6,
+   "unless":[
+    {"gate":"styling"},
+    {
+     "measure":{"ratio":{"num":["@dirty_colour_files"],"den":["colour.scanner.files_audited"],"one_minus":true,"scale":100,"clamp":[0,100],"zero":null,"zero_note":"the scanner audited no files: drift control not rated"}},
+     "when":">= 60",
+     "note":"fewer than 60 percent of the audited files are free of raw colour literals, or the scanner audited none"
+    }
+   ],
+   "text":"documents are credited above 6 of 10 only when the code follows them: styling code is present and at least 60 percent of the audited files hold no raw colour literal"
+  }
+ ],
+ "inputs":[
+  {"from":"design-audit:sub_scores.components","to":"component_consistency.canonical_reuse","relation":"the same measure, banded here"},
+  {"from":"drift-report:drift_control","to":"drift_control.drift_control_score","relation":"the same measure, banded here"},
+  {"from":"design-audit:sub_scores.tokens","to":"token_discipline","relation":"same counters for spacing, type, radius; colour literals belong to drift_control; not a score input"},
+  {"from":"design-audit:sub_scores.density","to":null,"relation":"not an input: it reads raw px values, which belong to token_discipline"},
+  {"from":"design-audit:health","to":null,"relation":"not an input: health is a separate line, so that nothing is counted twice (drift control and components enter through their own items)"}
+ ],
+ "dimensions":[
+  {
+   "key":"captured_rationale",
+   "label":"Captured rationale",
+   "limit":"Documentation items count structure and length, not truth: a file of filler can earn them, which is why the docs_need_code cap exists. Every item reads a Systemix-style path: decisions/ and design/decisions/ (the ADR items), design/DESIGN.md or a root DESIGN.md (the DESIGN.md items), contract/tokens records (the two token-record items); a repo that keeps its rationale elsewhere scores 0 here whatever its practice.",
+   "items":[
+    {
+     "id":"adr_corpus",
+     "label":"Decision records: ADR headings (with at least 4 lines of record per heading)",
+     "max":2,
+     "direction":"higher",
+     "unit":"ADR headings",
+     "systemix_paths":true,
+     "requires":[{"measure":{"ratio":{"num":["decisions.files.lines"],"den":["decisions.adr.headings"],"zero":4,"zero_note":"nothing to credit"}},"when":">= 4","note":"the decision-record files hold under 4 lines per ADR heading: headings without bodies are not credited"}],
+     "measure":{"counter":"decisions.adr.headings"},
+     "bands":[{"when":">= 10","pts":2},{"when":">= 3","pts":1},{"when":">= 1","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"design_md_sections",
+     "label":"DESIGN.md: level-2 sections (with at least 4 lines per section)",
+     "max":2,
+     "direction":"higher",
+     "unit":"H2 headings",
+     "systemix_paths":true,
+     "requires":[{"measure":{"ratio":{"num":["decisions.design_md.lines"],"den":["decisions.design_md.h2"],"zero":4,"zero_note":"nothing to credit"}},"when":">= 4","note":"DESIGN.md holds under 4 lines per level-2 section: empty sections are not credited"}],
+     "measure":{"counter":"decisions.design_md.h2"},
+     "bands":[{"when":">= 5","pts":2},{"when":">= 3","pts":1.5},{"when":">= 1","pts":1},{"when":"else","pts":0}]
+    },
+    {
+     "id":"token_record_coverage",
+     "label":"Token records: distinct tokens with a record / declared custom properties",
+     "max":1,
+     "direction":"higher",
+     "unit":"ratio",
+     "systemix_paths":true,
+     "measure":{"counter":"docs.coverage.token_records_per_custom_property"},
+     "bands":[{"when":">= 0.5","pts":1},{"when":">= 0.1","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"adr_recency",
+     "label":"Newest ADR: days before the HEAD commit",
+     "max":2,
+     "direction":"lower",
+     "unit":"days",
+     "systemix_paths":true,
+     "requires":[{"sum_of":["decisions.adr.headings"],"when":">= 1"},{"sum_of":["decisions.adr.newest_age_days"],"when":">= 0","note":"the newest ADR date is after the HEAD commit date: a future date earns no freshness, not rated"}],
+     "measure":{"counter":"decisions.adr.newest_age_days"},
+     "bands":[{"when":"<= 90","pts":2},{"when":"<= 180","pts":1},{"when":"<= 365","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"token_record_currency",
+     "label":"Token records whose value matches the token source",
+     "max":1,
+     "direction":"higher",
+     "unit":"ratio",
+     "systemix_paths":true,
+     "measure":{"ratio":{"num":["docs.token_records.matches"],"den":["docs.token_records.keyed"],"zero":null,"zero_note":"no token record carries a token name and a value: currency not rated"}},
+     "bands":[{"when":">= 0.9","pts":1},{"when":">= 0.5","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"design_md_currency",
+     "label":"DESIGN.md front-matter colours equal to the token source (best of light and dark)",
+     "max":1,
+     "direction":"higher",
+     "unit":"ratio",
+     "systemix_paths":true,
+     "measure":{"ratio":{"num":["decisions.design_md.colors_equal_light","decisions.design_md.colors_equal_dark"],"num_op":"max","den":["decisions.design_md.front_matter_colors"],"zero":null,"zero_note":"DESIGN.md lists no front-matter colours: currency not rated"}},
+     "bands":[{"when":">= 0.9","pts":1},{"when":">= 0.5","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"no_contradictions",
+     "label":"Doc claims the code contradicts (oklch claimed but not declared; generator output missing)",
+     "max":1,
+     "direction":"lower",
+     "unit":"contradictions",
+     "systemix_paths":true,
+     "requires":[{"sum_of":["decisions.adr.headings","decisions.design_md.h2"],"when":">= 1"}],
+     "measure":{"sum":["docs.oklch.docs_claim_without_declaration","decisions.design_md.generator_outputs_missing"]},
+     "bands":[{"when":"== 0","pts":1},{"when":"<= 1","pts":0.5},{"when":"else","pts":0}]
+    }
+   ]
+  },
+  {
+   "key":"codified_rules",
+   "label":"Codified rules",
+   "limit":"Items count the structure and vocabulary of design/guardrails.mdx (lines, bullets, sections, words) and the existence of design/tokens.css, not whether the rules are sound or followed. A repo that keeps its rules elsewhere (CLAUDE.md, a lint config) scores 0 here whatever its practice.",
+   "items":[
+    {"id":"guardrails_file","label":"design/guardrails.mdx has substance (lines)","max":2,"direction":"higher","unit":"lines","systemix_paths":true,"measure":{"counter":"guardrails.file.lines"},"bands":[{"when":">= 20","pts":2},{"when":">= 8","pts":1},{"when":"else","pts":0}]},
+    {
+     "id":"rule_count",
+     "label":"Rules: top-level bullets in guardrails.mdx (an average rule is at least 30 bytes)",
+     "max":2,
+     "direction":"higher",
+     "unit":"rule bullets",
+     "systemix_paths":true,
+     "requires":[{"measure":{"ratio":{"num":["guardrails.file.bytes"],"den":["guardrails.structure.rule_bullets"],"zero":30,"zero_note":"no rule bullets: nothing to credit"}},"when":">= 30","note":"the rule bullets average under 30 bytes of file each: one-word bullets are not credited"}],
+     "measure":{"counter":"guardrails.structure.rule_bullets"},
+     "bands":[{"when":">= 8","pts":2},{"when":">= 3","pts":1},{"when":">= 1","pts":0.5},{"when":"else","pts":0}]
+    },
+    {"id":"starred_rules","label":"Rules the file marks as enforced (starred): a self-declaration, not enforcement","max":0.5,"direction":"higher","unit":"starred rules","systemix_paths":true,"measure":{"counter":"guardrails.structure.starred_rules"},"bands":[{"when":">= 1","pts":0.5},{"when":"else","pts":0}]},
+    {"id":"type_size_rule","label":"A rule mentions type sizes","max":1,"direction":"boolean","unit":"boolean","systemix_paths":true,"measure":{"counter":"guardrails.rules.type_size"},"bands":[{"when":"true","pts":1},{"when":"else","pts":0}]},
+    {"id":"spacing_scale_rule","label":"A rule mentions the spacing scale","max":1,"direction":"boolean","unit":"boolean","systemix_paths":true,"measure":{"counter":"guardrails.rules.spacing_scale"},"bands":[{"when":"true","pts":1},{"when":"else","pts":0}]},
+    {"id":"sections","label":"Rules grouped under level-2 sections","max":1,"direction":"higher","unit":"H2 headings","systemix_paths":true,"measure":{"counter":"guardrails.structure.h2_sections"},"bands":[{"when":">= 3","pts":1},{"when":">= 1","pts":0.5},{"when":"else","pts":0}]},
+    {
+     "id":"contrast_checked",
+     "label":"Contrast pairs named in the rules that fail AA (4.5:1)",
+     "max":1.5,
+     "direction":"lower",
+     "unit":"pairs",
+     "systemix_paths":true,
+     "requires":[{"sum_of":["guardrails.contrast.pairs"],"when":">= 1"}],
+     "measure":{"counter":"guardrails.contrast.pairs_below_4_5"},
+     "bands":[{"when":"== 0","pts":1.5},{"when":"else","pts":0}]
+    },
+    {"id":"tokens_css","label":"design/tokens.css exists (spine completeness is printed as n of 6; its absence is deducted here, once)","max":1,"direction":"boolean","unit":"boolean","systemix_paths":true,"measure":{"counter":"docs.spine.tokens_css"},"bands":[{"when":"true","pts":1},{"when":"else","pts":0}]}
+   ]
+  },
+  {
+   "key":"token_discipline",
+   "label":"Token discipline",
+   "limit":"A missing token source zeroes token_source and both wiring items together (3 of 10 points), because wiring is measured against the source; renormalising instead would raise the score when the token file is deleted. A named size such as text-sm counts as on-token only when the theme maps that very name, in both this dimension and design-audit tokens.type. Font-size, spacing, palette and radius items read Tailwind class spellings and are not rated without a Tailwind vocabulary; a token reached only through var() outside the --font-size-*, --text-* and --space-* families is invisible here. When a measure has nothing to count (no font-size utilities, no radius utilities) it earns full points, but only where styling code exists. type_scale_wired and spacing_scale_wired subtract the number of names the theme maps from the number of tokens with no var() consumer without intersecting the two lists (the language has no set operator): a mapped token that is also consumed hides a token that is really unwired, so the two items can over-award.",
+   "items":[
+    {"id":"token_source","label":"A token source resolves","max":1,"direction":"boolean","unit":"boolean","requires":[{"gate":"styling"}],"measure":{"counter":"tokens.source.found"},"bands":[{"when":"true","pts":1},{"when":"else","pts":0}]},
+    {
+     "id":"palette_classes",
+     "label":"Default-palette colour classes per audited file",
+     "max":2,
+     "direction":"lower",
+     "unit":"class matches per file",
+     "requires":[{"gate":"styling"},{"gate":"tailwind"}],
+     "measure":{"ratio":{"num":["colour.palette_class.matches","colour.palette_class.extra_matches"],"den":["census.files.audited"],"zero":null,"zero_note":"no audited files: palette classes not rated"}},
+     "bands":[{"when":"== 0","pts":2},{"when":"<= 0.05","pts":1},{"when":"else","pts":0}]
+    },
+    {
+     "id":"font_size_off_token",
+     "label":"Font-size utilities that are arbitrary or a named size the theme does not map / all font-size utilities",
+     "max":3,
+     "direction":"lower",
+     "unit":"ratio",
+     "requires":[{"gate":"styling"},{"gate":"tailwind"}],
+     "measure":{"ratio":{"num":["typography.arbitrary_size.matches!","@unmapped_named_sizes"],"den":["typography.arbitrary_size.matches!","typography.named_size.matches!"],"zero":0,"zero_note":"no font-size utilities: nothing to conform, full points"}},
+     "bands":[{"when":"<= 0.05","pts":3},{"when":"<= 0.15","pts":2},{"when":"<= 0.35","pts":1},{"when":"else","pts":0}]
+    },
+    {
+     "id":"type_scale_wired",
+     "label":"Type tokens unwired (declared --font-size-* / --text-* tokens with no var() consumer and no @theme mapping) / declared",
+     "max":1,
+     "direction":"lower",
+     "unit":"ratio",
+     "requires":[{"gate":"styling"}],
+     "measure":{"ratio":{"num":["@type_tokens_unwired"],"den":["@type_tokens_declared"],"zero":null,"zero_note":"no type tokens declared or mapped: wiring not rated"}},
+     "bands":[{"when":"<= 0.2","pts":1},{"when":"<= 0.6","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"spacing_literals",
+     "label":"Raw px/rem/em spacing values per audited file",
+     "max":1,
+     "direction":"lower",
+     "unit":"values per file",
+     "requires":[{"gate":"styling"},{"gate":"tailwind"}],
+     "measure":{"ratio":{"num":["scale.spacing_arbitrary.length_literal_matches!"],"den":["census.files.audited"],"zero":null,"zero_note":"no audited files: spacing not rated"}},
+     "bands":[{"when":"<= 0.02","pts":1},{"when":"<= 0.1","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"spacing_scale_wired",
+     "label":"Space tokens unwired (declared --space-* tokens with no var() consumer and no @theme mapping) / declared",
+     "max":1,
+     "direction":"lower",
+     "unit":"ratio",
+     "requires":[{"gate":"styling"}],
+     "measure":{"ratio":{"num":["@space_tokens_unwired"],"den":["@space_tokens_declared"],"zero":null,"zero_note":"no space tokens declared or mapped: wiring not rated"}},
+     "bands":[{"when":"<= 0.2","pts":1},{"when":"<= 0.6","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"radius_share",
+     "label":"Hard-coded px/rem radii / all radius utilities",
+     "max":1,
+     "direction":"lower",
+     "unit":"ratio",
+     "requires":[{"gate":"styling"},{"gate":"tailwind"}],
+     "measure":{"ratio":{"num":["scale.radius.hardcoded_uses!"],"den":["scale.radius.named_classes!","scale.radius.var_uses!","scale.radius.hardcoded_uses!"],"zero":0,"zero_note":"no radius utilities: nothing to conform, full points"}},
+     "bands":[{"when":"<= 0.05","pts":1},{"when":"<= 0.2","pts":0.5},{"when":"else","pts":0}]
+    }
+   ]
+  },
+  {
+   "key":"component_consistency",
+   "label":"Component consistency",
+   "limit":"A canonical tag renders the components/ui definition, a package, or the only definition of its name in the project; Button, Badge, Card and Input are the only primitives. The ratio weighs every tag the same and needs 5 tags before it is rated. Live reuse (canonical users that no file imports) is a report line, not an item: it overlaps dead_components. dead_components is not rated (0 points) when no component file outside components/ui is seen, because a layout that keeps components elsewhere (src/features/) is invisible to the counter.",
+   "items":[
+    {
+     "id":"canonical_reuse",
+     "label":"Tag-weighted canonical reuse over Button, Badge, Card, Input (same measure as design-audit sub-score components)",
+     "max":5,
+     "direction":"higher",
+     "unit":"percent",
+     "measure":{
+      "ratio":{
+       "num":["@canonical_button","@canonical_badge","@canonical_card","@canonical_input"],
+       "den":[
+        "@canonical_button",
+        "@canonical_badge",
+        "@canonical_card",
+        "@canonical_input",
+        "primitives.button.resolved.to_local_definition",
+        "primitives.badge.resolved.to_local_definition",
+        "primitives.card.resolved.to_local_definition",
+        "primitives.input.resolved.to_local_definition",
+        "@duplicate_use_button",
+        "@duplicate_use_badge",
+        "@duplicate_use_card",
+        "@duplicate_use_input",
+        "primitives.button.raw.outside_ui",
+        "primitives.input.raw.outside_ui"
+       ],
+       "scale":100,
+       "min_den":5,
+       "min_den_note":"fewer than 5 Button, Badge, Card or Input tags outside components/ui/: too few to rate, components not rated",
+       "zero":null,
+       "zero_note":"no Button, Badge, Card or Input usage found: components not rated"
+      }
+     },
+     "bands":[{"when":">= 95","pts":5},{"when":">= 85","pts":4},{"when":">= 70","pts":3},{"when":">= 50","pts":2},{"when":">= 30","pts":1},{"when":"else","pts":0}],
+     "same_as":"design-audit:sub_scores.components"
+    },
+    {
+     "id":"identical_definitions",
+     "label":"Copy-pasted component definitions (identical bodies in two or more files)",
+     "max":1,
+     "direction":"lower",
+     "unit":"groups",
+     "requires":[{"gate":"markup"}],
+     "measure":{"counter":"primitives.definitions.identical_groups"},
+     "bands":[{"when":"== 0","pts":1},{"when":"<= 2","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"single_definitions",
+     "label":"Definitions of the most-defined of Button, Badge, Card, Input",
+     "max":1,
+     "direction":"lower",
+     "unit":"definitions",
+     "requires":[{"gate":"markup"},{"sum_of":["primitives.button.definitions.total","primitives.badge.definitions.total","primitives.card.definitions.total","primitives.input.definitions.total"],"when":">= 1","note":"none of Button, Badge, Card, Input is defined: there is nothing to duplicate, not rated"}],
+     "measure":{"max":["primitives.button.definitions.total","primitives.badge.definitions.total","primitives.card.definitions.total","primitives.input.definitions.total"]},
+     "bands":[{"when":"<= 1","pts":1},{"when":"<= 2","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"dead_components",
+     "label":"Components outside components/ui/ that no file imports",
+     "max":3,
+     "direction":"lower",
+     "unit":"ratio",
+     "requires":[{"gate":"components_dir"}],
+     "measure":{"ratio":{"num":["reachability.components.other.no_importer"],"den":["reachability.components.other.total"],"zero":null,"zero_note":"no component files outside components/ui/ were seen: dead components not rated (components kept in another layout, such as src/features/, are invisible to this counter)"}},
+     "bands":[{"when":"<= 0.05","pts":3},{"when":"<= 0.15","pts":2},{"when":"<= 0.3","pts":1},{"when":"else","pts":0}]
+    }
+   ]
+  },
+  {
+   "key":"drift_control",
+   "label":"Drift control",
+   "limit":"Five of the ten points read Systemix drift tooling (.systemix/drift-history.json, scripts/*drift*, a workflow that mentions drift, a script that exits non-zero): a repo without those names cannot exceed 5 here, whatever its practice.",
+   "items":[
+    {
+     "id":"drift_control_score",
+     "label":"Drift control score: audited files with no raw colour literal (same measure as drift-report drift_control)",
+     "max":5,
+     "direction":"higher",
+     "unit":"percent",
+     "requires":[{"gate":"styling"}],
+     "ceilings":[{"if":{"sum_of":["@dirty_colour_files"],"when":">= 20"},"max_points":3,"text":"20 or more audited files hold raw colour literals: the top two bands need fewer dirty files, whatever the share"}],
+     "measure":{"ratio":{"num":["@dirty_colour_files"],"den":["colour.scanner.files_audited"],"one_minus":true,"scale":100,"clamp":[0,100],"zero":null,"zero_note":"the scanner audited no files: drift control not rated"}},
+     "bands":[{"when":">= 98","pts":5},{"when":">= 95","pts":4},{"when":">= 90","pts":3},{"when":">= 80","pts":2},{"when":">= 60","pts":1},{"when":"else","pts":0}],
+     "same_as":"drift-report:drift_control"
+    },
+    {"id":"script_exists","label":"A drift script exists (scripts/*drift* or an npm script)","max":1,"direction":"higher","unit":"files + scripts","systemix_paths":true,"measure":{"sum":["habit.scripts.drift_files","habit.npm_scripts.drift"]},"bands":[{"when":">= 1","pts":1},{"when":"else","pts":0}]},
+    {"id":"history_recurring","label":"Drift history spans distinct days","max":1,"direction":"higher","unit":"days","systemix_paths":true,"measure":{"counter":"habit.snapshots.distinct_days"},"bands":[{"when":">= 2","pts":1},{"when":">= 1","pts":0.5},{"when":"else","pts":0}]},
+    {"id":"ci_wired","label":"A workflow runs something drift-related (non-comment lines)","max":1,"direction":"higher","unit":"lines","systemix_paths":true,"measure":{"counter":"habit.workflows.drift_noncomment_lines"},"bands":[{"when":">= 1","pts":1},{"when":"else","pts":0}]},
+    {
+     "id":"recent_snapshot",
+     "label":"Newest snapshot: days before the HEAD commit",
+     "max":1,
+     "direction":"lower",
+     "unit":"days",
+     "systemix_paths":true,
+     "requires":[{"sum_of":["habit.snapshots.count"],"when":">= 1"},{"sum_of":["habit.snapshots.last_age_days"],"when":">= 0","note":"the newest snapshot is dated after the HEAD commit date (an uncommitted snapshot): not rated"}],
+     "measure":{"counter":"habit.snapshots.last_age_days"},
+     "bands":[{"when":"<= 30","pts":1},{"when":"<= 90","pts":0.5},{"when":"else","pts":0}]
+    },
+    {"id":"can_fail_build","label":"The drift script can exit non-zero","max":1,"direction":"boolean","unit":"boolean","systemix_paths":true,"measure":{"counter":"habit.drift_script.exits_nonzero"},"bands":[{"when":"true","pts":1},{"when":"else","pts":0}]}
+   ]
+  },
+  {
+   "key":"agent_legibility",
+   "label":"Agent legibility",
+   "limit":"The instruction items count length, headings and pointers, not whether the instructions are right. guardrails_pointer is worth 0.5 because the counter only sees a mention of the word, not an instruction to read the guardrails before UI work.",
+   "items":[
+    {
+     "id":"instruction_file",
+     "label":"A root instruction file exists (CLAUDE.md, AGENTS.md, .cursor/rules, copilot-instructions) with at least 10 lines and 2 headings",
+     "max":2,
+     "direction":"higher",
+     "unit":"files",
+     "requires":[{"gate":"instruction_body"},{"gate":"instruction_headings"}],
+     "measure":{"counter":"legibility.instructions.present"},
+     "bands":[{"when":">= 1","pts":2},{"when":"else","pts":0}]
+    },
+    {
+     "id":"substance",
+     "label":"Instruction lines across the root instruction files (with at least 2 headings)",
+     "max":1.5,
+     "direction":"higher",
+     "unit":"lines",
+     "requires":[{"gate":"instruction_headings"}],
+     "measure":{"sum":["legibility.claude_md.lines","legibility.agents_md.lines","legibility.cursor_rules.lines","legibility.copilot_instructions.lines"]},
+     "bands":[{"when":">= 30","pts":1.5},{"when":">= 15","pts":1},{"when":">= 10","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"guardrails_pointer",
+     "label":"Root instruction files that mention the guardrails (a mention is not an instruction)",
+     "max":0.5,
+     "direction":"higher",
+     "unit":"files",
+     "requires":[{"gate":"instruction_body"},{"gate":"instruction_headings"}],
+     "measure":{"counter":"legibility.guardrails.files_mentioning"},
+     "bands":[{"when":">= 1","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"pointers_resolve",
+     "label":"Path pointers in the instruction files that resolve in the repo (5 pointers or more)",
+     "max":2,
+     "direction":"higher",
+     "unit":"ratio",
+     "measure":{"ratio":{"num":["legibility.path_refs.resolved"],"den":["legibility.path_refs.distinct"],"min_den":5,"zero":null,"zero_note":"the instruction files hold fewer than 5 repo-relative path pointers: too few to rate, not rated"}},
+     "bands":[{"when":">= 0.95","pts":2},{"when":">= 0.8","pts":1},{"when":"else","pts":0}]
+    },
+    {
+     "id":"no_machine_paths",
+     "label":"Machine-specific paths (~/, /Users/, /home/) in the instruction files",
+     "max":1,
+     "direction":"lower",
+     "unit":"matches",
+     "requires":[{"gate":"instruction_body"},{"gate":"instruction_headings"}],
+     "measure":{"counter":"legibility.machine_paths.matches"},
+     "bands":[{"when":"== 0","pts":1},{"when":"<= 1","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"fresh_status",
+     "label":"Status heading in the instruction files: days before the HEAD commit",
+     "max":1,
+     "direction":"lower",
+     "unit":"days",
+     "requires":[{"sum_of":["legibility.freshness.status_heading_age_days"],"when":">= 0","note":"the status date is after the HEAD commit date: a future date earns no freshness, not rated"}],
+     "measure":{"counter":"legibility.freshness.status_heading_age_days"},
+     "bands":[{"when":"<= 60","pts":1},{"when":"<= 120","pts":0.5},{"when":"else","pts":0}]
+    },
+    {
+     "id":"skills_installed",
+     "label":"Skills the instruction files name that are installed in .claude/skills (3 named skills or more)",
+     "max":2,
+     "direction":"higher",
+     "unit":"ratio",
+     "systemix_paths":true,
+     "measure":{"ratio":{"num":["legibility.skills.named_installed"],"den":["legibility.skills.named_with_skill_md_in_repo"],"min_den":3,"zero":null,"zero_note":"the instruction files name fewer than 3 slash-commands that are skills: too few to rate, not rated"}},
+     "bands":[{"when":">= 0.8","pts":2},{"when":">= 0.4","pts":1},{"when":"else","pts":0}]
+    }
+   ]
+  }
+ ],
+ "flags":[
+  {
+   "id":"tests_outnumber_audited",
+   "text":"the audited folders hold as many test files as audited files: test files are left out of every share, so a file renamed *.test.* or moved under __tests__/ is not audited",
+   "measure":{"ratio":{"num":["census.files.tests"],"den":["census.files.audited"],"zero":null,"zero_note":"no audited files"}},
+   "when":">= 1"
+  },
+  {"id":"var_colour_calls","text":"colour calls whose argument is var() are token references: they are left out of the dirty-file count, which is therefore the upper bound min(files with colour hits, literal colour hits)","measure":"@var_colour_hits","when":"> 0"},
+  {"id":"many_dirty_files","text":"20 or more audited files hold raw colour literals: a high clean share over a large population does not mean few files drift, read the file count beside the share","measure":"@dirty_colour_files","when":">= 20"},
+  {
+   "id":"token_source_holds_rules",
+   "text":"the token source holds more than 2 raw colour literals per custom-property declaration: it may hold ordinary rules, which the scan exempts and no score sees",
+   "measure":{"ratio":{"num":["colour.token_source.colour_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}},
+   "when":"> 2"
+  },
+  {
+   "id":"token_source_holds_px",
+   "text":"the token source holds more than 2 raw px values per custom-property declaration: it may hold ordinary rules, which the scan exempts and no score sees",
+   "measure":{"ratio":{"num":["colour.token_source.px_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}},
+   "when":"> 2"
+  }
+ ]
+}
