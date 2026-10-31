@@ -19,6 +19,8 @@ const EXPERIMENT_HELP = `
     systemix experiment learnings [--recent <n>] [--for <id>]   Loop memory — full, or scoped recall
     systemix experiment used <prior-id> --by <id>               Backlink: mark a prior learning Used by <id>
     systemix experiment audit            Running experiments + whether they're measured
+    systemix experiment ack <card-id|experiment-id> [--decline] [--note "…"] [--by <name>]
+                                         A person's typed ruling on a queue card (the only way to approve one)
 `;
 
 function parseFlags(args) {
@@ -84,6 +86,19 @@ async function experiment(args = [], opts = {}) {
       const r = exp.setMeasurement(root, id, { event: str(flags.event), metric: str(flags.metric) });
       console.log(`  ✓  ${id}: posthog-event=${r["posthog-event"] ?? "—"} metric=${r.metric ?? "—"}`);
       break;
+    }
+
+    case "ack": {
+      const { ack } = require("../lib/queue-ack");
+      const r = ack(root, positional[0] ?? str(flags.id), { decline: flags.decline === true, note: str(flags.note), by: str(flags.by) });
+      if (!r.ok) {
+        console.error(`  ✗  ${r.error}`);
+        process.exitCode = 1;
+        return r;
+      }
+      console.log(`  ✓  ${r.item.id} ${r.item.resolution.action === "approve" ? "approved" : "declined"} by ${r.item.resolution.resolvedBy.replace(/^human:/, "")}`);
+      if (r.nextHint) console.log(`     next: ${r.nextHint}`);
+      return r;
     }
 
     case "close": {

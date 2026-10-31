@@ -22,6 +22,8 @@ export function rejectNonLocal(
   req: Request,
   { json = true }: { json?: boolean } = {},
 ): NextResponse | null {
+  // a deployed site is never local, whatever Host a request claims
+  if (process.env.VERCEL) return deny(403, "This route only answers on localhost.");
   const host = (req.headers.get("host") ?? new URL(req.url).host).toLowerCase();
   if (!LOOPBACK.has(hostname(host))) return deny(403, "This route only answers on localhost.");
 
@@ -46,4 +48,12 @@ export function rejectNonLocal(
     if (type !== "application/json") return deny(415, "Expected Content-Type: application/json.");
   }
   return null;
+}
+
+/**
+ * For the read routes that serve repo state (queue cards, runs, events, paths):
+ * on a deployed site they answer 404, as if they did not exist. null locally.
+ */
+export function refuseOnDeploy(): NextResponse | null {
+  return process.env.VERCEL ? deny(404, "This route only answers on localhost.") : null;
 }

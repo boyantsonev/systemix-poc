@@ -85,29 +85,66 @@ const MCP_CLIENTS = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** A client config that exists but is not valid JSON. It is never overwritten. */
+class UnreadableConfigError extends Error {
+  constructor(configPath, cause) {
+    super(`${configPath} is not valid JSON (${cause && cause.message ? cause.message : "parse error"}); left untouched. Fix or move it, then run this again.`);
+    this.name = "UnreadableConfigError";
+    this.configPath = configPath;
+  }
+}
+
 /**
- * Safely read and parse a JSON config file.
- * Returns {} when the file does not exist or cannot be parsed.
+ * Read and parse a JSON config file. A missing file reads as {}; a file that exists
+ * but does not parse throws, because writing back {} plus our entry would erase
+ * every other setting in it (a user's whole ~/.claude.json).
  * @param {string} configPath
  * @returns {object}
  */
 function readConfig(configPath) {
   if (!fs.existsSync(configPath)) return {};
+  const text = fs.readFileSync(configPath, "utf8");
+  if (!text.trim()) return {};
+  let data;
   try {
-    return JSON.parse(fs.readFileSync(configPath, "utf8"));
-  } catch {
-    return {};
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new UnreadableConfigError(configPath, e);
   }
+  if (!data || typeof data !== "object" || Array.isArray(data)) throw new UnreadableConfigError(configPath, new Error("not a JSON object"));
+  return data;
 }
 
 /**
- * Atomically write a JSON config file, creating parent directories as needed.
+ * Write a JSON config file atomically: a temp file beside it, then a rename, so a
+ * crash or a full disk leaves the old file whole. Keeps the file's mode.
  * @param {string} configPath
  * @param {object} data
  */
 function writeConfig(configPath, data) {
   fs.mkdirSync(path.dirname(configPath), { recursive: true });
-  fs.writeFileSync(configPath, JSON.stringify(data, null, 2) + "\n", "utf8");
+  const mode = fs.existsSync(configPath) ? fs.statSync(configPath).mode & 0o777 : 0o600;
+  const tmp = `${configPath}.${process.pid}.${Date.now()}.tmp`;
+  try {
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + "\n", { encoding: "utf8", mode });
+    fs.renameSync(tmp, configPath);
+  } catch (e) {
+    fs.rmSync(tmp, { force: true });
+    throw e;
+  }
+}
+
+/** Run a config change; an unreadable config is reported and skipped, never replaced. */
+function guarded(fn) {
+  try {
+    return fn();
+  } catch (e) {
+    if (e instanceof UnreadableConfigError) {
+      console.log(`  ✗ ${e.message}`);
+      return false;
+    }
+    throw e;
+  }
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -138,8 +175,10 @@ function detectClients() {
  * @returns {boolean}
  */
 function isRegistered(configPath) {
-  const config = readConfig(configPath);
-  return !!(config.mcpServers && config.mcpServers[SERVER_NAME]);
+  return guarded(() => {
+    const config = readConfig(configPath);
+    return !!(config.mcpServers && config.mcpServers[SERVER_NAME]);
+  });
 }
 
 /**
@@ -169,6 +208,10 @@ function projectRootOf(entry) {
  * @param {{ force?: boolean, projectRoot?: string }} [opts]
  */
 function registerServer(configPath, opts = {}) {
+  return guarded(() => registerServerUnguarded(configPath, opts));
+}
+
+function registerServerUnguarded(configPath, opts) {
   const { force = false, projectRoot = process.cwd() } = opts;
   const config = readConfig(configPath);
 
@@ -194,6 +237,7 @@ function registerServer(configPath, opts = {}) {
   writeConfig(configPath, config);
   const verb = existing ? "Re-registered" : "Registered";
   console.log(`  ✓ ${verb} "${SERVER_NAME}" in ${configPath}`);
+  return true;
 }
 
 /**
@@ -208,15 +252,17 @@ function unregisterServer(configPath) {
     return;
   }
 
-  const config = readConfig(configPath);
-  if (!config.mcpServers || !config.mcpServers[SERVER_NAME]) {
-    console.log(`  ⚠ "${SERVER_NAME}" not found in ${path.basename(configPath)} — skipped`);
-    return;
-  }
-
-  delete config.mcpServers[SERVER_NAME];
-  writeConfig(configPath, config);
-  console.log(`  ✓ Unregistered "${SERVER_NAME}" from ${configPath}`);
+  return guarded(() => {
+    const config = readConfig(configPath);
+    if (!config.mcpServers || !config.mcpServers[SERVER_NAME]) {
+      console.log(`  ⚠ "${SERVER_NAME}" not found in ${path.basename(configPath)} — skipped`);
+      return false;
+    }
+    delete config.mcpServers[SERVER_NAME];
+    writeConfig(configPath, config);
+    console.log(`  ✓ Unregistered "${SERVER_NAME}" from ${configPath}`);
+    return true;
+  });
 }
 
 /**
@@ -239,4 +285,7 @@ module.exports = {
   projectRootOf,
   SERVER_NAME,
   getServerConfig,
+  readConfig,
+  writeConfig,
+  UnreadableConfigError,
 };

@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "/",
     "/audit",
-    "/kit",
+    "/report",
     ...source.getPages().map((page) => page.url),
     ...experimentsSource.getPages().map((page) => page.url),
   ];

@@ -105,7 +105,9 @@ function ensureClaudeMd(projectRoot) {
   console.log("  ✓  CLAUDE.md — appended Systemix loop block (your content preserved)");
 }
 
-function installPipeline(name, skillsDir) {
+const FIGMA_SKILLS = ["figma", "tokens", "sync-to-figma", "check-parity"];
+
+function installPipeline(name, skillsDir, { exclude = [] } = {}) {
   const dir = path.join(PIPELINES_DIR, name);
   if (!fs.existsSync(dir)) {
     console.log(`  ⚠  Pipeline "${name}" not found — skipping.`);
@@ -115,7 +117,7 @@ function installPipeline(name, skillsDir) {
   const skillsSrc = path.join(dir, "skills");
   fs.mkdirSync(skillsDir, { recursive: true });
   let keptAny = false;
-  for (const skill of manifest.skills) {
+  for (const skill of manifest.skills.filter((s) => !exclude.includes(s))) {
     const src  = path.join(skillsSrc, skill);
     const dest = path.join(skillsDir, skill);
     if (!fs.existsSync(src)) { console.log(`  -  ${skill.padEnd(20)} (missing, skipped)`); continue; }
@@ -306,27 +308,10 @@ async function init(opts = {}) {
     designSource = layout.rel.design;  // the local scaffolded substrate
   }
 
-  let fileKey = null;
-  if (doDesign) {
-    let raw = "";
-    while (!fileKey) {
-      raw = await ask("  Figma file URL or key (or press Enter to skip): ");
-      if (!raw.trim()) { console.log("  -  Skipped. Set later in .systemix/project-context.json\n"); break; }
-      fileKey = extractFileKey(raw);
-      if (!fileKey) console.log("  ✗  Couldn't read a file key — paste the full Figma URL or bare key.\n");
-    }
-    if (fileKey) console.log(`  ✓  File key: ${fileKey}`);
-  }
-
-  let figmaToken = null;
-  if (doDesign) {
-    console.log("  Figma Personal Access Token — needed for /sync-to-figma and /drift-report");
-    console.log("    (figma.com → Account → Security → Personal access tokens)");
-    const ftAns = await ask("  FIGMA_ACCESS_TOKEN (or press Enter to skip): ");
-    figmaToken = ftAns.trim() || null;
-    if (figmaToken) console.log("  ✓  Token saved to ~/.systemix/config.json");
-    else            console.log("  -  Skipped. Set FIGMA_ACCESS_TOKEN env var before using sync skills.");
-  }
+  // Figma is an optional, deferred adapter (code-first, DSC-22 D5): init no longer asks
+  // for a Figma file or token; `systemix labs` sets it up for those who want it.
+  const fileKey = null;
+  const figmaToken = null;
 
   let posthogKey = null;
   {
@@ -337,11 +322,13 @@ async function init(opts = {}) {
     else            console.log("  -  Skipped. Set POSTHOG_API_KEY env var when you're ready.");
   }
 
+  // A signal is on only when it can work: PostHog with a key; Vercel and the rest
+  // stay off until /connect-signal has checked them (`systemix evidence check`).
   const signals = {
-    posthog: { enabled: true,     poll_interval_sec: 300 },  // the loop always measures
-    vercel:  { enabled: true },                   // deploy timing for measurement windows
-    figma:   { enabled: doDesign },
-    social:  { enabled: false },                  // opt-in later
+    posthog: { enabled: Boolean(posthogKey), poll_interval_sec: 300 },
+    vercel:  { enabled: false },
+    figma:   { enabled: false },
+    social:  { enabled: false },
   };
 
   console.log();
@@ -384,11 +371,19 @@ async function init(opts = {}) {
   else console.log("\n  -  Skipped. Add it under `context:` in systemix.config.yaml (or re-run init --reconfigure) — the engine reasons from it.");
   console.log();
 
+  // ── The weekly engine — a CI workflow that runs a model; only with a yes ───
+  console.log("  The weekly engine is a GitHub workflow (.github/workflows/systemix-engine.yml) that");
+  console.log("  runs Claude in CI with your ANTHROPIC_API_KEY to propose the next experiment.\n");
+  const engineAns = ((await ask("  Add it? [y/N]: ")) || "").trim().toLowerCase();
+  const addEngine = engineAns === "y" || engineAns === "yes";
+  console.log();
+
   // ── Install skills (project-scoped) ───────────────────────────────────────
   const projectSkillsDir = projectSkillsDirFor(projectRoot);
   console.log("  Installing skills into .claude/skills/ ...\n");
   let keptSkills = installPipeline("hypothesis-validation", projectSkillsDir);  // the loop — always
-  if (doDesign) keptSkills = installPipeline("design-system", projectSkillsDir) || keptSkills;
+  // the Figma adapter skills are deferred (DSC-22 D5); `systemix labs` installs them
+  if (doDesign) keptSkills = installPipeline("design-system", projectSkillsDir, { exclude: FIGMA_SKILLS }) || keptSkills;
   // A skill can carry the loop's own edits (skill-update appends Past Decisions),
   // so init never refreshes one — `skills sync` is the explicit, dry-runnable update.
   if (keptSkills) {
@@ -401,7 +396,8 @@ async function init(opts = {}) {
   console.log("  Setting up experiments/ (the loop)...\n");
   scaffoldExperiments(projectRoot, siMode !== "off");
   seedGoalFromContext(projectRoot, context);
-  scaffoldEngineWorkflow(projectRoot);
+  if (addEngine) scaffoldEngineWorkflow(projectRoot);
+  else console.log("  -  .github/workflows/systemix-engine.yml: not added (re-run init --reconfigure to add it)");
   if (designMode === "scaffold") {
     const freshDesignMd = !fs.existsSync(layout.abs(projectRoot).designFile);
     scaffoldDesign(projectRoot);
@@ -411,6 +407,16 @@ async function init(opts = {}) {
     console.log(`  -  design/: using your existing design system${designSource ? ` at ${designSource}` : " (set design.source later)"}`);
   } else {
     console.log("  -  design/: skipped (loop only)");
+  }
+  // The product and build loops (goals, evals, gates) live in design/: set up with the
+  // scaffold, new files only; a repo without a scaffolded design/ adds them on purpose.
+  if (designMode === "scaffold") {
+    const loopFiles = require("./commands/loops").init(projectRoot, layout.rel.design);
+    console.log(loopFiles.written.length
+      ? `  ✓  ${layout.rel.design}/loops, goals, context, briefs  (the product and build loops — put your people in ${layout.rel.design}/loops/roster.md)`
+      : `  -  ${layout.rel.design}/loops: exists — left as-is`);
+  } else {
+    console.log("  -  product and build loops: add them with `npx @getsystemix/cli loops init` when you want them");
   }
   console.log();
 
@@ -474,21 +480,20 @@ async function init(opts = {}) {
   if (fs.existsSync(userConfigPath)) { try { cfg = JSON.parse(fs.readFileSync(userConfigPath, "utf8")); } catch {} }
   if (figmaToken)  cfg.figmaToken  = figmaToken;
   if (posthogKey)  cfg.posthogKey  = posthogKey;
-  fs.writeFileSync(userConfigPath, JSON.stringify(cfg, null, 2) + "\n", "utf8");
+  // keys stay readable by this user only
+  fs.writeFileSync(userConfigPath, JSON.stringify(cfg, null, 2) + "\n", { encoding: "utf8", mode: 0o600 });
+  fs.chmodSync(userConfigPath, 0o600);
 
   // ── Done ──────────────────────────────────────────────────────────────────
   console.log("\n  Instance ready. Skills live in this repo's .claude/skills/ —");
   console.log("  Claude Code picks them up automatically when run from here. Then:\n");
   if (doDesign) {
-    const figmaHint = fileKey
-      ? `https://www.figma.com/design/${fileKey}`
-      : "[your-figma-url]";
-    console.log(`    design-system         /figma ${figmaHint}`);
-    console.log(`                          /drift-report`);
+    console.log(`    design-system         /design-audit · /drift-report`);
   }
   if (doHypo) {
     console.log(`    hypothesis-validation /init-experiment <experiment-id>`);
   }
+  console.log(`    product + build loops /systemix:goal <one sentence>   (the Claude Code plugin; check with systemix loops check)`);
   console.log(`    config                systemix.config.yaml (your topology)`);
   console.log(`    local app             npx @getsystemix/cli app   (docs · tokens · experiments · HITL queue)`);
   console.log(`    the loop              experiments/ — LEARNINGS.md is the synthesized memory`);

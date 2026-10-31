@@ -4,6 +4,7 @@
 import { NextResponse } from "next/server";
 import { existsSync, readFileSync } from "fs";
 import path from "path";
+import { refuseOnDeploy } from "@/lib/local-request";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +15,8 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   const { id } = await params;
 
   if (!id || typeof id !== "string") {

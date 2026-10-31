@@ -22,7 +22,7 @@
     {
       "name": "figma-console-mcp-skills",
       "source": "github:southleft/figma-console-mcp-skills",
-      "ref": "main",
+      "ref": "807fcc1c4ca4b12176be7633b70db5849e54de60",
       "skills": [
         "figma-export-tokens",
         "figma-import-tokens",

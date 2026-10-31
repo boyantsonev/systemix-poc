@@ -19,7 +19,7 @@ export function NowStrip() {
 
   useEffect(() => {
     fetch("/api/instance")
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then(setD)
       .catch(() => {});
   }, []);

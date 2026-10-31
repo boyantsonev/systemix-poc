@@ -1,5 +1,5 @@
 // Instance readers — plain-fs views over a systemix instance's files.
-// The app is a VIEWER + HITL actuator over the SAME files the skills, CLI and
+// The app is a VIEWER (it never rules) over the SAME files the skills, CLI and
 // MCP use (three-doors parity): no new state, no new semantics. Fresh
 // projectRoot-scoped ports of the POC's src/lib readers (queue-store,
 // drift-history, learnings) — follow-up: extract a shared instance-lib.
@@ -318,56 +318,6 @@ export function loadQueue(root) {
     return String(bt).localeCompare(String(at))
   })
   return { items, pendingCount: items.filter((i) => i.status === 'pending').length }
-}
-
-function atomicWrite(file, data) {
-  fs.mkdirSync(path.dirname(file), { recursive: true })
-  const tmp = file + '.tmp'
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2))
-  fs.renameSync(tmp, file)
-}
-
-/**
- * Resolve an item in whichever queue holds it. v1 deliberately writes ONLY
- * status + resolution (same shape as the POC dashboard/MCP) and returns a
- * nextHint — applying an experiment decision to MDX stays with the CLI/skills
- * so the app never grows write semantics of its own.
- */
-export function resolveQueueItem(root, id, { action, note, resolvedBy }) {
-  if (!action) return { error: 'action required', status: 400 }
-  if (action !== 'approve' && action !== 'decline') return { error: 'action must be approve or decline', status: 400 }
-  if (note != null && typeof note !== 'string') return { error: 'note must be a string', status: 400 }
-  const now = new Date().toISOString()
-
-  const queueData = readJson(QUEUE(root), null)
-  const card = queueData?.cards?.find((c) => c.id === id)
-  if (card) {
-    if (card.status !== 'pending') return { error: 'already resolved', status: 409 }
-    card.status = action === 'approve' ? 'approved' : 'declined'
-    card.resolvedAt = now
-    card.resolution = { action, note: note ?? null, resolvedBy: resolvedBy ?? 'human:app' }
-    atomicWrite(QUEUE(root), queueData)
-    const nextHint =
-      card.type === 'close-proposal' && action === 'approve' && card.experimentId
-        ? `apply the decision: npx @getsystemix/cli experiment close ${card.experimentId}`
-        : card.type === 'hypothesis-proposal' && action === 'approve'
-          ? 'scaffold it: npx @getsystemix/cli experiment new <id> (or /init-experiment)'
-          : null
-    return { item: card, nextHint }
-  }
-
-  const hitlData = readJson(HITL(root), null)
-  const task = hitlData?.tasks?.find((t) => t.id === id)
-  if (task) {
-    if (task.status !== 'pending') return { error: 'already resolved', status: 409 }
-    task.status = 'resolved'
-    task.resolvedAt = now
-    task.resolution = { action, note: note ?? null, resolvedBy: resolvedBy ?? 'human:app' }
-    atomicWrite(HITL(root), hitlData)
-    return { item: task, nextHint: null }
-  }
-
-  return { error: 'not found', status: 404 }
 }
 
 export function loadDrift(root) {

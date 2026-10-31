@@ -14,14 +14,13 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/systemix/ThemeToggle";
-import { InstallCommand, TrackedLink } from "@/components/systemix/LandingEvents";
+import { InstallCommand, PluginInstall, TrackedLink } from "@/components/systemix/LandingEvents";
 import { LiveLoopProof } from "@/components/landing/LiveLoopProof";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { DeepDiveMockup } from "@/components/landing/DeepDiveMockups";
 import {
   GITHUB_URL,
-  INIT_COMMAND,
   announcement,
   audiences,
   bottomCta,
@@ -626,7 +625,7 @@ export function BottomCTA() {
           {bottomCta.body}
         </p>
         <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-          <InstallCommand cmd={INIT_COMMAND} location="bottom-cta" />
+          <PluginInstall location="bottom-cta" className="items-center" />
           <TrackedLink
             href={GITHUB_URL}
             event="github_star_click"

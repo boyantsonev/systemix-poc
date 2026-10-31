@@ -17,14 +17,18 @@ const SKILL_SRC = path.join(
 );
 const SKILLS_DIR = path.join(process.cwd(), ".claude", "skills");
 
+/** Copy a skill folder, never overwriting a file that exists (it may carry the user's edits). Returns files kept. */
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
+  let kept = 0;
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
     const s = path.join(src, entry.name);
     const d = path.join(dest, entry.name);
-    if (entry.isDirectory()) copyDir(s, d);
+    if (entry.isDirectory()) kept += copyDir(s, d);
+    else if (fs.existsSync(d)) kept++;
     else fs.copyFileSync(s, d);
   }
+  return kept;
 }
 
 const COUNTERS_USAGE = [
@@ -74,23 +78,25 @@ function fail(message) {
 
 const REPORT_USAGE = [
   "",
-  "  Usage: npx @getsystemix/cli audit report [dir…] [--dirs a,b] [--key <license key>] [--yes]",
+  "  Usage: npx @getsystemix/cli audit report [dir…] [--dirs a,b] [--key <license key> --yes]",
   "                                           [--out report.md] [--redact-paths] [--dry-run] [--payload-out file]",
   "",
-  "    Runs the counters on this machine and sends ONLY the results file (counts, counter definitions,",
-  "    file and folder paths, short identifiers such as token names; never source code) to the",
-  "    Systemix report service, which returns the quick report. Nothing is sent without --yes:",
-  "    without it the command shows what would be sent and stops.",
+  "    Without a key: the free score (overall and per area), computed on this machine. Nothing is sent.",
+  "    With a key: the full quick report (caveats and recommendations). The counters run here and ONLY the",
+  "    results file (counts, counter definitions, file and folder paths, short identifiers such as token",
+  "    names; never source code) goes to the Systemix report service, and only with --yes.",
   "",
   "    --key            the license key from your purchase (or set SYSTEMIX_REPORT_KEY)",
-  "    --redact-paths   replace every file and folder name with a hash before sending; the score is",
-  "                     the same, the report names files as path-1a2b3c… instead",
+  "    --yes            send the results file (needed for the full report)",
+  "    --redact-paths   replace every file and folder name with a hash before sending; the score is the same",
   "    --dry-run        build and describe the payload, never send it (--payload-out writes it to a file)",
-  "    --out            write the report there (default: print it)",
+  "    --out            write the score or report there (default: print it)",
   "    --root           the project to audit (default: the current folder)",
   "    The service is https://getsystemix.vercel.app unless SYSTEMIX_REPORT_SERVICE says otherwise.",
   "",
 ].join("\n");
+
+const BUY_URL = "https://getsystemix.vercel.app/report?utm_source=cli&utm_medium=free-score";
 
 const DEFAULT_SERVICE = "https://getsystemix.vercel.app";
 
@@ -152,6 +158,34 @@ async function reportCommand(args, opts = {}) {
     fail(e.message);
     return null;
   }
+  const key = last("--key") ?? env.SYSTEMIX_REPORT_KEY;
+  const out = last("--out");
+
+  // the free score is computed here: no key, nothing to send (DSC-22 D1)
+  if (!key && !parsed.bools.has("--dry-run") && !last("--payload-out")) {
+    const { build } = require("../lib/quick-report");
+    let free;
+    try {
+      free = build(report, { preview: true, buyUrl: BUY_URL, local: true });
+    } catch (e) {
+      fail(`the results could not be scored (${e.message})`);
+      return null;
+    }
+    if (out) {
+      fs.writeFileSync(path.resolve(out), free.markdown);
+      console.error(`  ✓  free score written to ${out} (score ${free.overall ?? "none"})`);
+    } else {
+      process.stdout.write(free.markdown);
+    }
+    if (free.scored) {
+      console.error("  Computed on this machine; nothing was sent. For the caveats and recommendations, buy the full report");
+      console.error(`  at ${BUY_URL} and run again with --key <license key> --yes.\n`);
+    } else {
+      console.error("  Computed on this machine; nothing was sent. Name the folders that hold your UI with --dirs (e.g. --dirs src).\n");
+    }
+    return { ...free, local: true, buyUrl: BUY_URL };
+  }
+
   const payload = parsed.bools.has("--redact-paths") ? redactPaths(report) : report;
   const s = payloadSummary(payload);
   console.error(`\n  The results file: ${s.counters} counters, ${Math.round(s.bytes / 1024)} KB, ${s.redacted ? "file names hashed" : `${s.paths} file and folder paths`}. No source code.`);
@@ -170,8 +204,6 @@ async function reportCommand(args, opts = {}) {
     console.error(`  Nothing was sent. Re-run with --yes to send it to ${new URL(endpoint).host}.\n`);
     return null;
   }
-  const key = last("--key") ?? env.SYSTEMIX_REPORT_KEY;
-
   const doFetch = opts.fetch ?? globalThis.fetch;
   let res;
   try {
@@ -195,16 +227,23 @@ async function reportCommand(args, opts = {}) {
     if (res.status === 402 || res.status === 403) fail(`the license key was not accepted: ${why}`);
     else if (res.status === 503) fail(`the report service is not open yet: ${why}`);
     else fail(`the report service refused the results file: ${why}`);
+    if ((res.status === 402 || res.status === 403) && body && body.buyUrl) console.error(`     Buy a quick report: ${body.buyUrl}`);
     console.error();
     return null;
   }
-  const out = last("--out");
+  const what = body.preview ? "free score" : "quick report";
   if (out) {
     fs.writeFileSync(path.resolve(out), body.markdown);
-    console.error(`  ✓  quick report written to ${out} (score ${body.overall ?? "none"})\n`);
+    console.error(`  ✓  ${what} written to ${out} (score ${body.overall ?? "none"})`);
   } else {
     process.stdout.write(body.markdown);
   }
+  if (body.preview) {
+    console.error(body.buyUrl
+      ? `  This is the free score. For the caveats and recommendations, buy the full report${body.price ? ` (${body.price})` : ""} at ${body.buyUrl}\n  and run the same command with --key <license key>.`
+      : "  This is the free score. The full report is not on sale yet.");
+  }
+  if (out || body.preview) console.error();
   return body;
 }
 
@@ -329,9 +368,11 @@ async function audit(args = [], opts = {}) {
   }
 
   const dest = path.join(SKILLS_DIR, "design-audit");
-  copyDir(SKILL_SRC, dest);
+  const kept = copyDir(SKILL_SRC, dest);
 
-  console.log("\n✓ design-audit installed → .claude/skills/design-audit/\n");
+  console.log(kept
+    ? `\n- design-audit exists → .claude/skills/design-audit/ left as-is (${kept} file${kept === 1 ? "" : "s"} kept). Preview a refresh: npx @getsystemix/cli skills sync --dry-run\n`
+    : "\n✓ design-audit installed → .claude/skills/design-audit/\n");
   console.log("  Zero setup. Read-only. It infers your de-facto design system,");
   console.log("  flags drift + inconsistent components, and proposes a starter");
   console.log("  design/ — writing nothing without your approval.\n");

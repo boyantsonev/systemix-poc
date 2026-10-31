@@ -9,8 +9,8 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import * as experimentTools from "../src/tools/experiment";
 import {
-  experimentCloseHandler,
   experimentGetHandler,
   experimentMeasureHandler,
   experimentNewHandler,
@@ -51,7 +51,7 @@ describe("MCP experiment_* tools — path-safe ids", () => {
     expect(text(r)).toBe("an experiment id is required");
   });
 
-  it("experiment_get / measure / close refuse a traversal id and never touch the file it points at", async () => {
+  it("experiment_get / measure refuse a traversal id and never touch the file it points at", async () => {
     // experiments/../decoy.mdx resolves to <root>/decoy.mdx — a file OUTSIDE the loop
     const decoy = path.join(root, "decoy.mdx");
     const original = "---\nid: decoy\nstatus: running\n---\n\n# not an experiment\n";
@@ -60,7 +60,6 @@ describe("MCP experiment_* tools — path-safe ids", () => {
     const results = [
       await experimentGetHandler({ id: "../decoy" }, root),
       await experimentMeasureHandler({ id: "../decoy", event: "x" }, root),
-      await experimentCloseHandler({ id: "../decoy", result: "r", decision: "promote" }, root),
     ];
     for (const r of results) {
       expect(r.isError).toBe(true);
@@ -72,11 +71,14 @@ describe("MCP experiment_* tools — path-safe ids", () => {
     expect(fs.existsSync(path.join(root, ".systemix"))).toBe(false); // no queue card
   });
 
-  it("a kebab-case id still works end to end (new → measure → close)", async () => {
+  it("a kebab-case id still works end to end (new → measure)", async () => {
     const id = "hero-cta-2026-10";
     expect((await experimentNewHandler({ id }, root)).isError).toBeFalsy();
     expect((await experimentMeasureHandler({ id, event: "cta_clicked" }, root)).isError).toBeFalsy();
-    expect((await experimentCloseHandler({ id, result: "won", decision: "promote" }, root)).isError).toBeFalsy();
-    expect(fs.readFileSync(path.join(root, "experiments", `${id}.mdx`), "utf8")).toContain("status: complete");
+    expect(fs.readFileSync(path.join(root, "experiments", `${id}.mdx`), "utf8")).toContain("cta_clicked");
+  });
+
+  it("there is no MCP close tool: a person closes an experiment (G-003 E7)", () => {
+    expect(Object.keys(experimentTools).filter((k) => /close/i.test(k))).toEqual([]);
   });
 });

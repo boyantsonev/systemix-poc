@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listWorkflows, saveWorkflow } from '@/lib/workflow/persistence';
-import { rejectNonLocal } from '@/lib/local-request';
+import { rejectNonLocal, refuseOnDeploy } from '@/lib/local-request';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   try {
     return NextResponse.json({ workflows: listWorkflows() });
   } catch {

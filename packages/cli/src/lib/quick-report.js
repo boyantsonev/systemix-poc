@@ -10,7 +10,8 @@
  *
  * What it prints: the readiness score from the published rubric (the same
  * evaluator the skills use), a score per area, the caveats that cost the most
- * points, and one recommendation per caveat in priority order.
+ * points, and one recommendation per caveat in priority order. With `preview` (the free
+ * score) it stops after the area scores and says how many caveats the full report holds.
  */
 
 const crypto = require("crypto");
@@ -19,6 +20,8 @@ const { evaluate, rubricFromBlocks, DEFAULT_SKILLS_DIR } = require("./rubric-eva
 const RECOMMENDATIONS = require("./quick-report-recommendations.json");
 
 const MAX_CAVEATS = 10;
+// the referral link every report carries (utm tags: src/lib/analytics/funnel.ts in the app)
+const SHARE_URL = "https://getsystemix.vercel.app/report?utm_source=quick-report&utm_medium=report";
 
 let cachedRubric = null;
 function defaultRubric() {
@@ -73,10 +76,20 @@ function caveatsOf(result) {
 }
 
 /**
- * Build the quick report from a counters report.
- * @returns {{scored: boolean, overall: number|null, areas: object[], caveats: object[], markdown: string}}
+ * @typedef {{key: string, label: string, score: number, importance: number}} Area
+ * @typedef {{area: string, areaKey: string, id: string, label: string, value: string, points: number,
+ *   max: number, lost: number, weight: number, recommendation: string|null}} Caveat
  */
-function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS } = {}) {
+
+/**
+ * Build the quick report (or, with `preview`, the free score) from a counters report.
+ * @param {object} counters an `audit counters` report
+ * @param {{rubric?: object, maxCaveats?: number, preview?: boolean, buyUrl?: string|null, local?: boolean}} [options]
+ *   local: built on the user's machine (the free score), so the footer says nothing was sent
+ * @returns {{scored: boolean, preview?: boolean, overall: number|null, areas: Area[], caveats: Caveat[],
+ *   caveatCount?: number, markdown: string}}
+ */
+function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, preview = false, buyUrl = null, local = false } = {}) {
   const result = evaluate(counters, rubric);
   const h = result.header || {};
   const lines = [];
@@ -90,7 +103,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS } 
     lines.push("**No score.** The results file is incomplete, so a score would be misleading:");
     for (const r of reasons) lines.push(`- ${typeof r === "string" ? r : JSON.stringify(r)}`);
     lines.push("");
-    lines.push("Run `npx @getsystemix/cli audit counters` again without slicing options and send the full file.");
+    lines.push("Run the scan again on the folders that hold your UI (for example `--dirs src`), without slicing options.");
     return { scored: false, overall: null, areas: [], caveats: [], markdown: lines.join("\n") + "\n" };
   }
 
@@ -112,6 +125,25 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS } 
   lines.push("");
   lines.push("Areas are listed with the biggest opportunity first: what matters most for agent-built UI and is weakest today.");
   lines.push("");
+
+  // the free score: the numbers above, the caveats and recommendations only in the paid report
+  if (preview) {
+    lines.push("## The full report");
+    lines.push("");
+    lines.push(caveats.length
+      ? `This is the free score. The full report lists the ${caveats.length} caveats that cost points, the biggest first, with one recommendation for each.`
+      : "This is the free score. Every scored item is already at its maximum.");
+    if (caveats.length) {
+      lines.push("");
+      lines.push(buyUrl ? `Get it at ${buyUrl}, then run it again with your license key (in the Systemix plugin settings, or --key on the command line).` : "The full report is not on sale yet.");
+    }
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+    lines.push(`Scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. ${local ? "Computed on this machine; nothing was sent." : "No source code was sent, only counts and file names."}`);
+    lines.push(`Score another repo: ${SHARE_URL}`);
+    return { scored: true, preview: true, overall, areas, caveats: [], caveatCount: caveats.length, markdown: lines.join("\n") + "\n" };
+  }
 
   lines.push("## Caveats");
   lines.push("");
@@ -137,9 +169,10 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS } 
   lines.push("---");
   lines.push("");
   lines.push(`How this was made: a deterministic scan of the code (no AI judgement in the numbers), scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. ${result.validity}`);
-  lines.push("No source code was sent to produce this report, only counts and file names.");
+  lines.push(local ? "Computed on this machine; nothing was sent." : "No source code was sent to produce this report, only counts and file names.");
+  lines.push(`Score another repo: ${SHARE_URL}`);
 
-  return { scored: true, overall, areas, caveats: shown, markdown: lines.join("\n") + "\n" };
+  return { scored: true, preview: false, overall, areas, caveats: shown, caveatCount: caveats.length, markdown: lines.join("\n") + "\n" };
 }
 
 // ---------------------------------------------------------------------------------------------------- redaction

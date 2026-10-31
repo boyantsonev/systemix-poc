@@ -89,17 +89,20 @@ one, the rule for skills, determinism, limits and versioning:
 ## Quick report
 
 ```bash
-npx @getsystemix/cli audit report --dirs src                 # shows what would be sent, sends nothing
-npx @getsystemix/cli audit report --dirs src --key <license key> --yes --out report.md
+npx @getsystemix/cli audit report --dirs src                       # the free score, computed here; nothing sent
+npx @getsystemix/cli audit report --dirs src --key <license key> --yes --out report.md   # the full report
 ```
 
-The scan runs on your machine. Only the results file (the `audit counters` JSON: counts, counter
-definitions, file and folder paths, and short identifiers such as token names) goes to the Systemix
-report service, never your source code, and only when you pass `--yes`. `--redact-paths` replaces every
-file and folder name with a hash first (the score is the same). `--dry-run --payload-out file` writes
-the exact payload so you can read it. The report is deterministic: a score out of 100 from the same
-rubric the audit skills publish, a score per area, the caveats that cost the most points, and one
-recommendation for each. The service stores nothing.
+The free score (overall and per area) is computed on your machine and nothing is sent. The full
+report needs a license key: the scan still runs here, and only the results file (the `audit counters`
+JSON: counts, counter definitions, file and folder paths, and short identifiers such as token names)
+goes to the Systemix report service, never your source code, and only when you pass `--yes`.
+`--redact-paths` replaces every file and folder name with a hash first (the score is the same).
+`--dry-run --payload-out file` writes the exact payload so you can read it. The report is
+deterministic: a score out of 100 from the same rubric the audit skills publish, a score per area, the
+caveats that cost the most points, and one recommendation for each. The service keeps no copy of the
+file; it records one anonymous count per request (score band, size band) for its own analytics, with
+no names, paths or keys.
 
 ## How it runs
 

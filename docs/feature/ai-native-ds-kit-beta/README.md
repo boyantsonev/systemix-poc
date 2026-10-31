@@ -15,6 +15,11 @@ owner: Boyan Tsonev
 > **One line (proposed, to freeze for 10 weeks):** *Systemix is the design system agent for
 > AI-native products. It sets up an open-source design system your agents build with, audits what
 > they ship, and improves it in loops that remember why.*
+>
+> **Founder's elevator pitch (2026-10-31, DSC-19), which replaces the line above:** *"Systemix is an
+> AI-native design system agent which deploys AI-native product design systems, keeps them from
+> rotting and orchestrates design sprints."* What each of the three pillars ships today:
+> `launch-review.md`.
 
 This plan comes from a parallel analysis of six inputs:
 - this repo's surfaces;
@@ -74,8 +79,8 @@ This plan comes from a parallel analysis of six inputs:
 5. **The beta:**
    - an **MIT AI-native DS kit** (on-ramp);
    - a free **scorecard** (lead magnet);
-   - a paid, **customized audit report** (wedge, about €490; **superseded 2026-10-24**: €19.99 quick report + €499 human-reviewed audit in 24 h, see `discover/wave-decisions.md` DSC-16/17);
-   - **implementation sprints** run by the agent with human gates (from about €4.5k per 2 weeks);
+   - a paid, **customized audit report** (wedge, about €490; **superseded 2026-10-24**: quick report at €9.99 (DSC-16, DSC-22) + €499 human-reviewed audit in 24 h, see `discover/wave-decisions.md` DSC-16/17);
+   - **implementation sprints** run by the agent with human gates (from about €4.5k per 2 weeks; **superseded 2026-10-31**: a fixed 3-day design sprint at €990, DSC-20);
    - later, the **scheduled evidence loop** (subscription).
 6. **Two presentations, one source:**
    - the **Design Hub** (floating navbar; static; also how audit reports are delivered);
@@ -290,8 +295,8 @@ See [`design/presentation-ia.md`](design/presentation-ia.md).
 |---|---|---|---|
 | 0 | Kit + CLI + App Shell + Hub + skills | Free (MIT) | Distribution; the on-ramp |
 | 1 | `systemix audit` scorecard: deterministic, a badge, a baseline | Free | Lead magnet; shareable |
-| 2 | **Audit Report**: custom, benchmarked, human-reviewed, with a prioritized PR plan and an AI-native UX + monetization review | **€490** (first 5: €0–290 for case-study rights) | The wedge; automated + customized = scalable revenue |
-| 3 | **Implementation sprint**: fixed scope from the report; agent-run; human-gated | **from €4,500 per 2 weeks** | Cash, case studies, and where the paid pack gets built |
+| 2 | **Audit Report**: custom, benchmarked, human-reviewed, with a prioritized PR plan and an AI-native UX + monetization review | **€490** (*superseded: €9.99 quick report and €499 full audit, DSC-16*) | The wedge; automated + customized = scalable revenue |
+| 3 | **Implementation sprint**: fixed scope from the report; agent-run; human-gated | **from €4,500 per 2 weeks** (*superseded: €990 fixed 3-day sprint, DSC-20*) | Cash, case studies, and where the paid pack gets built |
 | 4 | AI SaaS pack: wired billing/usage/credits + entitlements + instrumentation + experiment templates | Bundled into rung 3 in the beta | Productize after G3 if ≥3 ask |
 | 5 | Scheduled evidence loop + benchmark data | Post-beta subscription | The long-term moat (reopens ADR-006) |
 
@@ -402,7 +407,7 @@ real public cycle is merged**. Marketing does not claim it before that.
 3. **Reference stack:** Next + Tailwind v4 + shadcn, with Tamagui as a token emitter only?
 4. **Licence boundary:** an MIT monorepo, plus a private repo (or `ee/`) for the report generator
    internals and the wired pack?
-5. **Launch prices and checkout:** Report €490 / Sprint from €4.5k; LemonSqueezy (decided earlier)
+5. **Launch prices and checkout:** Report €490 / Sprint from €4.5k; LemonSqueezy (decided earlier). *Superseded: €9.99 quick report, €499 audit, €990 sprint (DSC-16, DSC-20).*
    or Polar?
 6. **Case studies:** these docs name Vero as the reference instance, using method-level facts only
    (no private code, numbers from private evals, or people). Is that OK to keep public, and may

@@ -2,8 +2,8 @@
 
 import { usePostHog } from "posthog-js/react";
 import { useVariant } from "@/lib/useVariant";
-import { hero, GITHUB_URL, INIT_COMMAND } from "@/lib/landing/content";
-import { InstallCommand } from "@/components/systemix/LandingEvents";
+import { hero, GITHUB_URL } from "@/lib/landing/content";
+import { PluginInstall } from "@/components/systemix/LandingEvents";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,8 +25,8 @@ export function LandingHero() {
       <p className="mb-9 max-w-lg text-[16px] leading-relaxed text-muted-foreground">{v.body}</p>
 
       <div className="flex flex-col items-start gap-4">
-        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <InstallCommand cmd={INIT_COMMAND} />
+        <div className="flex flex-col items-start gap-3">
+          <PluginInstall location="hero" />
           <a
             href={GITHUB_URL}
             target="_blank"

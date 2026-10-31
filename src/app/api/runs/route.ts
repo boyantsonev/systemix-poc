@@ -4,6 +4,7 @@
 import { NextResponse } from "next/server";
 import { existsSync, readdirSync, readFileSync } from "fs";
 import path from "path";
+import { refuseOnDeploy } from "@/lib/local-request";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,8 @@ const RUNS_DIR = path.join(process.cwd(), ".systemix", "runs");
 const MAX_RUNS = 50;
 
 export async function GET() {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   if (!existsSync(RUNS_DIR)) {
     return NextResponse.json({ runs: [], total: 0 });
   }

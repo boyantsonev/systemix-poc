@@ -41,10 +41,14 @@ export const experiments = defineDocs({
 });
 
 // The POC's own design-system-as-object (the instance spine `init` vendors),
-// dogfooded and rendered at /design: DESIGN.md · guardrails · tokens.
+// dogfooded and rendered at /design: DESIGN.md · guardrails · tokens. Only these
+// files: design/ also holds the loops' internal notes (context packs, goals,
+// briefs, artifacts), which must never be published.
+const DESIGN_PUBLIC_FILES = ["index.mdx", "DESIGN.md", "guardrails.mdx", "tokens.mdx"];
 export const design = defineDocs({
   dir: "design",
-  docs: { schema: recordSchema },
+  docs: { schema: recordSchema, files: DESIGN_PUBLIC_FILES },
+  meta: { files: ["meta.json"] },
 });
 
 export default defineConfig();

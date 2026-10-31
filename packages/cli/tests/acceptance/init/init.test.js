@@ -16,7 +16,7 @@
  *   AC-01b Design choice: none → loop skills only, no design-system skills, no design/
  *   AC-01c Surfaces YAML: loop-only writes [landing, onboarding], not [design-system]
  *   AC-01d Design choice: existing → design.source set, no design/, design skills installed
- *   AC-02a Figma key: full figma.com/design URL extracts file key, writes project-context.json
+ *   AC-02a Figma is deferred: no Figma question, no Figma state or skill
  *   AC-02b Figma key: bare key accepted without re-prompting
  *   AC-02c Figma key: invalid input loops then Enter skips — no project-context.json created
  *   AC-03a Idempotency: re-running without --reconfigure preserves existing systemix.config.yaml
@@ -33,7 +33,6 @@
  *   AC-06b Self-improvement audit: siMode=audit → contract/meta dir exists and meta_contract in YAML
  *   AC-07a MCP fallback: no MCP client found — manual snippet printed, all file writes still complete
  *   AC-08a Skip flow: skipping Figma key leaves no project-context.json and no systemix.json
- *   AC-08b Skip flow: providing a Figma key writes both project-context.json and systemix.json figma block
  *   AC-08c Skip flow: skipping PAT means no figmaToken in ~/.systemix/config.json
  *   AC-09a CLAUDE.md: loop orchestrator scaffolded at root when none exists
  *   AC-09b CLAUDE.md: existing file preserved, Systemix block appended once (idempotent)
@@ -177,13 +176,12 @@ const DESIGN_SYSTEM_SKILLS = [
   "design-interview",
   "claude-design-sync",
   "scaffold-surface",
-  "figma",
-  "tokens",
-  "sync-to-figma",
   "drift-report",
-  "check-parity",
   "contract-query",
 ];
+
+// the Figma adapter is deferred (DSC-22 D5): init never installs these
+const FIGMA_SKILLS = ["figma", "tokens", "sync-to-figma", "check-parity"];
 
 const HYPOTHESIS_VALIDATION_SKILLS = [
   "init-experiment",
@@ -219,8 +217,6 @@ describe("systemix init — acceptance tests", () => {
       // Given
       const prompt = makePrompt([
         "",  // Q1: design — Enter = "1" = scaffold
-        "",  // Q2: Figma URL — Enter = skip
-        "",  // Q3: Figma PAT — Enter = skip
         "",  // Q4: PostHog key — Enter = skip
         "",  // Q5: autonomy — Enter = "2" = balanced
         "",  // Q6: self-improvement — Enter = "2" = audit
@@ -260,7 +256,12 @@ describe("systemix init — acceptance tests", () => {
       expect(ws.exists("design", "guardrails.mdx")).toBe(true);
       expect(ws.exists("design", "tokens.css")).toBe(true);
       expect(ws.exists("design", "decisions")).toBe(false);  // moved → experiments/
-      expect(ws.exists("design", "goals")).toBe(false);      // moved → experiments/goals/
+      // design/goals holds the loops' work goals (G-NNN folders); north-star goals stay in experiments/goals/
+      expect(ws.exists("design", "goals", "README.md")).toBe(true);
+      expect(fs.readdirSync(path.join(ws.projectRoot, "design", "goals")).filter((f) => f.endsWith(".mdx"))).toEqual([]);
+      expect(ws.exists("design", "loops", "product-loop.md")).toBe(true);
+      // the weekly engine workflow runs a model in CI: only with a yes, and the default is no
+      expect(ws.exists(".github", "workflows", "systemix-engine.yml")).toBe(false);
 
       // Then — experiments/meta/ exists because siMode=audit (not off)
       expect(ws.exists("experiments", "meta")).toBe(true);
@@ -311,8 +312,6 @@ describe("systemix init — acceptance tests", () => {
       // Given
       const prompt = makePrompt([
         "1",  // Q1: design — scaffold
-        "",   // Figma URL — skip
-        "",   // Figma PAT — skip
         "",   // PostHog key — skip
         "",   // autonomy — default
         "",   // self-improvement — default
@@ -426,8 +425,6 @@ describe("systemix init — acceptance tests", () => {
       const prompt = makePrompt([
         "2",          // Q1: design — existing
         "../my-ds",   // existing design system path
-        "",           // Figma URL — skip
-        "",           // Figma PAT — skip
         "",           // PostHog key — skip
         "",           // autonomy — default
         "",           // self-improvement — default
@@ -455,76 +452,21 @@ describe("systemix init — acceptance tests", () => {
     }
   );
 
-  // ── AC-02a: Figma key — full URL extracts file key ────────────────────────
+  // ── AC-02a: Figma is deferred — init asks nothing about it ───────────────
 
   it(
-    // Given the user pastes a full figma.com/design URL containing the file key
-    // When init processes the Figma URL question
-    // Then project-context.json contains the extracted fileKey and systemix.json has figma.fileKey
-    "AC-02a (figma key): full figma.com/design URL extracts file key and writes project-context.json",
+    // Given a scaffold run with every question answered
+    // When init asks its questions
+    // Then none mentions Figma, and no Figma state or skill is written (DSC-22 D5)
+    "AC-02a (figma deferred): init asks no Figma question and writes no Figma state or skill",
     async () => {
-      // Given
-      const prompt = makePrompt([
-        "1",                                                           // Q1: design — scaffold
-        "https://www.figma.com/design/h1m7dfFILe1wGSfxwQ6U02/MyDS",  // Figma URL
-        "",                                                            // Figma PAT — skip
-        "",                                                            // PostHog key — skip
-        "",                                                            // autonomy — default
-        "",                                                            // self-improvement — default
-      ]);
-
-      // When
-      await init({
-        projectRoot:    ws.projectRoot,
-        homeDir:        ws.homeDir,
-        prompt,
-        detectClients:  noClients,
-        registerServer: noopRegister,
-      });
-
-      // Then — project-context.json contains the extracted fileKey
-      expect(ws.exists(".systemix", "project-context.json")).toBe(true);
-      const ctx = JSON.parse(ws.read(".systemix", "project-context.json"));
-      expect(ctx.fileKey).toBe("h1m7dfFILe1wGSfxwQ6U02");
-
-      // Then — systemix.json has the figma.fileKey field
-      expect(ws.exists(".systemix", "systemix.json")).toBe(true);
-      const sx = JSON.parse(ws.read(".systemix", "systemix.json"));
-      expect(sx.figma.fileKey).toBe("h1m7dfFILe1wGSfxwQ6U02");
-    }
-  );
-
-  // ── AC-02b: Figma key — bare key accepted ─────────────────────────────────
-
-  it(
-    // Given the user enters a bare Figma file key (no URL)
-    // When init processes the Figma URL question
-    // Then project-context.json contains the fileKey without re-prompting
-    "AC-02b (figma key): bare key accepted without re-prompting",
-    async () => {
-      // Given
-      const prompt = makePrompt([
-        "1",                      // Q1: design — scaffold
-        "h1m7dfFILe1wGSfxwQ6U02", // Figma bare key
-        "",                       // Figma PAT — skip
-        "",                       // PostHog key — skip
-        "",                       // autonomy — default
-        "",                       // self-improvement — default
-      ]);
-
-      // When
-      await init({
-        projectRoot:    ws.projectRoot,
-        homeDir:        ws.homeDir,
-        prompt,
-        detectClients:  noClients,
-        registerServer: noopRegister,
-      });
-
-      // Then
-      expect(ws.exists(".systemix", "project-context.json")).toBe(true);
-      const ctx = JSON.parse(ws.read(".systemix", "project-context.json"));
-      expect(ctx.fileKey).toBe("h1m7dfFILe1wGSfxwQ6U02");
+      const asked = [];
+      const prompt = { ask: (q) => { asked.push(q); return Promise.resolve(""); }, close: () => {} };
+      await runInit(ws, { prompt });
+      expect(asked.filter((q) => /figma/i.test(q))).toEqual([]);
+      expect(ws.exists(".systemix", "project-context.json")).toBe(false);
+      for (const skill of FIGMA_SKILLS) expect(ws.exists(".claude", "skills", skill)).toBe(false);
+      expect(ws.read("systemix.config.yaml")).toMatch(/figma:\s*\n\s*enabled: false/);
     }
   );
 
@@ -539,9 +481,6 @@ describe("systemix init — acceptance tests", () => {
       // Given — first answer is an invalid non-Figma URL; second is Enter (skip)
       const prompt = makePrompt([
         "1",                             // Q1: design — scaffold
-        "https://www.notion.so/mypage",  // Figma URL — invalid, triggers re-prompt
-        "",                              // Figma URL — Enter to skip after invalid
-        "",                              // Figma PAT — skip
         "",                              // PostHog key — skip
         "",                              // autonomy — default
         "",                              // self-improvement — default
@@ -570,7 +509,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-03a (idempotency): re-running init without --reconfigure preserves existing systemix.config.yaml",
     async () => {
       // Given — first run: conservative autonomy
-      const firstPrompt = makePrompt(["", "", "", "", "1", ""]);
+      const firstPrompt = makePrompt(["", "", "1", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -581,7 +520,7 @@ describe("systemix init — acceptance tests", () => {
       expect(ws.read("systemix.config.yaml")).toContain("autonomy: ghost");
 
       // When — second run: balanced autonomy, no reconfigure flag
-      const secondPrompt = makePrompt(["", "", "", "", "2", ""]);
+      const secondPrompt = makePrompt(["", "", "2", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -604,7 +543,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-03b (reconfigure): --reconfigure flag overwrites systemix.config.yaml",
     async () => {
       // Given — first run: conservative autonomy
-      const firstPrompt = makePrompt(["", "", "", "", "1", ""]);
+      const firstPrompt = makePrompt(["", "", "1", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -615,7 +554,7 @@ describe("systemix init — acceptance tests", () => {
       expect(ws.read("systemix.config.yaml")).toContain("autonomy: ghost");
 
       // When — second run: reconfigure = true, balanced autonomy
-      const secondPrompt = makePrompt(["", "", "", "", "2", ""]);
+      const secondPrompt = makePrompt(["", "", "2", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -681,7 +620,7 @@ describe("systemix init — acceptance tests", () => {
       }
 
       // When — reconfigure with autonomy "2" (assisted)
-      await runInit(ws, { prompt: makePrompt(["", "", "", "", "2", ""]), reconfigure: true });
+      await runInit(ws, { prompt: makePrompt(["", "", "2", ""]), reconfigure: true });
 
       // Then — the config was reconfigured…
       expect(ws.read("systemix.config.yaml")).toContain("autonomy: assisted");
@@ -729,7 +668,7 @@ describe("systemix init — acceptance tests", () => {
       // Given — pre-existing .gitignore
       fs.writeFileSync(ws.file(".gitignore"), "node_modules/\n", "utf8");
 
-      const prompt = makePrompt(["", "", "", "", "", ""]);
+      const prompt = makePrompt(["", "", "", ""]);
 
       // When
       await init({
@@ -760,7 +699,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-04b (gitignore): re-running init does not duplicate gitignore entries",
     async () => {
       // Given — first run
-      const firstPrompt = makePrompt(["", "", "", "", "", ""]);
+      const firstPrompt = makePrompt(["", "", "", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -770,7 +709,7 @@ describe("systemix init — acceptance tests", () => {
       });
 
       // When — second run
-      const secondPrompt = makePrompt(["", "", "", "", "", ""]);
+      const secondPrompt = makePrompt(["", "", "", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -799,7 +738,7 @@ describe("systemix init — acceptance tests", () => {
       // Given — only one systemix entry pre-written
       fs.writeFileSync(ws.file(".gitignore"), ".systemix/handoffs/\n", "utf8");
 
-      const prompt = makePrompt(["", "", "", "", "", ""]);
+      const prompt = makePrompt(["", "", "", ""]);
 
       // When
       await init({
@@ -830,7 +769,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-05a (trust tier): conservative autonomy produces orchestrator_tier: 0 and hermes_tier: 0",
     async () => {
       // Given
-      const prompt = makePrompt(["", "", "", "", "1", ""]);  // autonomy = conservative
+      const prompt = makePrompt(["", "", "1", ""]);  // autonomy = conservative
 
       // When
       await init({
@@ -858,7 +797,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-05b (trust tier): progressive autonomy still produces orchestrator_tier: 0 and hermes_tier: 0",
     async () => {
       // Given
-      const prompt = makePrompt(["", "", "", "", "3", ""]);  // autonomy = progressive
+      const prompt = makePrompt(["", "", "3", ""]);  // autonomy = progressive
 
       // When
       await init({
@@ -886,7 +825,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-06a (self-improvement off): siMode=off → no contract/meta dir, no meta_contract in YAML",
     async () => {
       // Given
-      const prompt = makePrompt(["", "", "", "", "", "1"]);  // SI = off
+      const prompt = makePrompt(["", "", "", "1"]);  // SI = off
 
       // When
       await init({
@@ -916,7 +855,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-06b (self-improvement audit): siMode=audit → contract/meta dir exists and meta_contract in YAML",
     async () => {
       // Given
-      const prompt = makePrompt(["", "", "", "", "", "2"]);  // SI = audit
+      const prompt = makePrompt(["", "", "", "2"]);  // SI = audit
 
       // When
       await init({
@@ -945,7 +884,7 @@ describe("systemix init — acceptance tests", () => {
     "AC-07a (MCP fallback): no MCP client found — manual snippet printed, all file writes still complete",
     async () => {
       // Given
-      const prompt     = makePrompt(["", "", "", "", "", ""]);
+      const prompt     = makePrompt(["", "", "", ""]);
       const logLines   = [];
       const origLog    = console.log;
       console.log      = (...args) => logLines.push(args.join(" "));
@@ -985,8 +924,6 @@ describe("systemix init — acceptance tests", () => {
       // Given
       const prompt = makePrompt([
         "1",  // Q1: design — scaffold
-        "",   // Figma URL — skip
-        "",   // Figma PAT — skip
         "",   // PostHog key — skip
         "",   // autonomy — default
         "",   // self-improvement — default
@@ -1007,45 +944,6 @@ describe("systemix init — acceptance tests", () => {
     }
   );
 
-  // ── AC-08b: Skip flow — key provided → both files written ─────────────────
-
-  it(
-    // Given the user provides a bare Figma file key and skips the PAT
-    // When init completes
-    // Then project-context.json exists with the fileKey and systemix.json has figma.fileKey
-    "AC-08b (skip flow): providing a Figma key writes both project-context.json and systemix.json figma block",
-    async () => {
-      // Given
-      const prompt = makePrompt([
-        "1",                      // Q1: design — scaffold
-        "h1m7dfFILe1wGSfxwQ6U02", // Figma key
-        "",                       // Figma PAT — skip
-        "",                       // PostHog key — skip
-        "",                       // autonomy — default
-        "",                       // self-improvement — default
-      ]);
-
-      // When
-      await init({
-        projectRoot:    ws.projectRoot,
-        homeDir:        ws.homeDir,
-        prompt,
-        detectClients:  noClients,
-        registerServer: noopRegister,
-      });
-
-      // Then — project-context.json written with fileKey
-      expect(ws.exists(".systemix", "project-context.json")).toBe(true);
-      const ctx = JSON.parse(ws.read(".systemix", "project-context.json"));
-      expect(ctx.fileKey).toBe("h1m7dfFILe1wGSfxwQ6U02");
-
-      // Then — systemix.json written with figma.fileKey
-      expect(ws.exists(".systemix", "systemix.json")).toBe(true);
-      const sx = JSON.parse(ws.read(".systemix", "systemix.json"));
-      expect(sx.figma.fileKey).toBe("h1m7dfFILe1wGSfxwQ6U02");
-    }
-  );
-
   // ── AC-08c: Skip flow — no PAT → no figmaToken in home config ─────────────
 
   it(
@@ -1058,7 +956,6 @@ describe("systemix init — acceptance tests", () => {
       const prompt = makePrompt([
         "1",                      // Q1: design — scaffold
         "h1m7dfFILe1wGSfxwQ6U02", // Figma key
-        "",                       // Figma PAT — skip
         "",                       // PostHog key — skip
         "",                       // autonomy — default
         "",                       // self-improvement — default
@@ -1088,7 +985,7 @@ describe("systemix init — acceptance tests", () => {
     // Then a root CLAUDE.md is created with the Systemix loop block + a design/ pointer
     "AC-09a (CLAUDE.md): scaffolds the loop orchestrator at root when none exists",
     async () => {
-      const prompt = makePrompt(["", "", "", "", "", ""]);
+      const prompt = makePrompt(["", "", "", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -1116,7 +1013,7 @@ describe("systemix init — acceptance tests", () => {
     async () => {
       fs.writeFileSync(ws.file("CLAUDE.md"), "# My Project\n\nClient instructions.\n", "utf8");
 
-      const firstPrompt = makePrompt(["", "", "", "", "", ""]);
+      const firstPrompt = makePrompt(["", "", "", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,
@@ -1131,7 +1028,7 @@ describe("systemix init — acceptance tests", () => {
       expect(md).toContain("<!-- systemix:start -->"); // Systemix block appended
 
       // Re-run — idempotent: the block appears exactly once
-      const secondPrompt = makePrompt(["", "", "", "", "", ""]);
+      const secondPrompt = makePrompt(["", "", "", ""]);
       await init({
         projectRoot:    ws.projectRoot,
         homeDir:        ws.homeDir,

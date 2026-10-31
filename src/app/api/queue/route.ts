@@ -10,7 +10,7 @@ import {
 } from "@/lib/contract/memory-mdx";
 import { assertWriteAllowed } from "@/lib/contract/write-policy";
 import { loadInstanceConfig } from "@/lib/state/instance-config";
-import { rejectNonLocal } from "@/lib/local-request";
+import { rejectNonLocal, refuseOnDeploy } from "@/lib/local-request";
 import { resolveProjectFile } from "@/lib/project-path";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +46,8 @@ function writeQueue(data: unknown) {
 }
 
 export async function GET(req: NextRequest) {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   const { searchParams } = new URL(req.url);
   const projectSlug = searchParams.get("project") ?? null;
   const experimentSlug = searchParams.get("experiment") ?? null;

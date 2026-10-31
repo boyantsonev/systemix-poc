@@ -822,59 +822,20 @@ a.stat:hover {
 
 .queue-actions {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 4px;
   margin-top: 12px;
+}
+
+.queue-command {
+  font-family: var(--mono);
+  user-select: all;
+  overflow-wrap: anywhere;
 }
 
 .queue-resolution {
   margin-top: 10px;
   font-size: 12.5px;
-}
-
-.btn {
-  font: inherit;
-  font-size: 13px;
-  border-radius: var(--radius-sm);
-  padding: 6px 16px;
-  cursor: pointer;
-  border: 1px solid var(--hairline);
-  background: var(--card);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.btn-approve {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
-
-.btn-approve:not(:disabled):hover {
-  background: color-mix(in oklab, var(--ink) 88%, var(--paper));
-}
-
-.btn-decline:not(:disabled):hover {
-  border-color: var(--muted);
-}
-
-.toast {
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin: 0 0 14px;
-  font-size: 13px;
-}
-
-.toast-ok {
-  background: var(--green-soft);
-  color: var(--green-deep);
-}
-
-.toast-err {
-  background: var(--amber-soft);
-  color: var(--amber);
 }
 
 /* ---- timeline ---- */

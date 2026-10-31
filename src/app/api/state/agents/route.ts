@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { refuseOnDeploy } from '@/lib/local-request';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   try {
     // Dynamic require to avoid build-time fs errors
     const { getAgentState } = await import('@/lib/state/agent-state');

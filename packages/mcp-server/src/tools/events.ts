@@ -14,7 +14,6 @@ import * as fs from "fs";
 import * as path from "path";
 import * as crypto from "crypto";
 import type { ToolDefinition, ToolHandler, SystemixEvent, SystemixEventType } from "../types.js";
-import { dualWriteEvent } from "../supabase-client.js";
 
 const EVENTS_DIR = ".systemix/events";
 const SYNC_LOG_PATH = ".systemix/sync-log.json";
@@ -123,15 +122,6 @@ export const emitEventHandler: ToolHandler<{
 
   fs.writeFileSync(filePath, JSON.stringify(event, null, 2) + "\n", "utf-8");
 
-  // Dual-write to Supabase (best-effort, fire-and-forget)
-  void dualWriteEvent({
-    id: event.id,
-    type: event.type,
-    agent: event.agent,
-    data: event.data,
-    runId: event.runId,
-    timestamp: event.timestamp,
-  });
 
   // Append compact entry to sync-log.json
   let syncLogUpdated = false;

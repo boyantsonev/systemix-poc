@@ -1,0 +1,125 @@
+{
+ "owner":"drift-report",
+ "rubric_version":"v1",
+ "language":"rubric-language/2",
+ "counters":{"schema":"systemix.audit-counters/1","major":1},
+ "validity":"Thresholds are conventions chosen for reproducibility, calibrated to nothing yet (there is no benchmark corpus): a score is a pure function of the counters, not a measurement of quality.",
+ "guards":{"evidence":"styling","exemption_cap":0.1,"population":["census.files.audited","colour.scanner.files_audited"],"coverage":{"any_type":"census.files.any_type","census":"census.files.total","source_ext":[".ts",".tsx",".js",".jsx",".css",".scss",".less",".vue",".svelte",".astro"],"min_share":0.8}},
+ "gates":{
+  "styling":{
+   "label":"styling code is present in the audited folders",
+   "evidence":true,
+   "sum_of":[
+    {"detail_sum":{"counter":"census.files.audited","path":"byExt","keys":[".tsx",".jsx",".vue",".svelte",".css"]}},
+    "typography.named_size.matches",
+    "typography.arbitrary_size.matches",
+    "scale.radius.named_classes",
+    "scale.radius.var_uses",
+    "scale.radius.hardcoded_uses",
+    "colour.palette_class.matches",
+    "colour.scanner.colour_hits",
+    "colour.scanner.px_hits",
+    "scale.spacing_arbitrary.matches",
+    "tokens.font_size.consumers",
+    "tokens.text.consumers",
+    "tokens.space.consumers",
+    "primitives.button.tags.total",
+    "primitives.badge.tags.total",
+    "primitives.card.tags.total",
+    "primitives.input.tags.total",
+    "census.routes.app_pages",
+    "reachability.components.ui.total",
+    "reachability.components.other.total"
+   ],
+   "when":">= 1",
+   "note":"no styling code in the audited folders: no markup or style files and no styling counter above 0"
+  }
+ },
+ "derived":{
+  "var_colour_hits":{"sum":["colour.rgb_fn.outside_token_source#withVarArgument","colour.hsl_fn.outside_token_source#withVarArgument","colour.oklch_fn.outside_token_source#withVarArgument"]},
+  "literal_colour_hits":{"sub":["colour.scanner.colour_hits","@var_colour_hits"]},
+  "dirty_colour_files":{"min":["colour.scanner.files_with_colour_hits","@literal_colour_hits"]}
+ },
+ "limits":[
+  "Drift control is the clean-file share over all audited files, so adding files with no styling raises it: the dirty-file count is printed beside it and flagged from 20 files.",
+  "Dirty files are an upper bound: min(files with colour hits, literal colour hits); calls with a var() argument are token references and are not counted as literals.",
+  "A declared exemption is not applied to colour hits (the counters carry no such split), though it is applied to font-size, spacing and radius counts elsewhere; the with and without mockup colour hits are separate lines."
+ ],
+ "drift_control":{
+  "id":"drift_control",
+  "label":"Drift control: audited files with no raw colour-literal hit (a colour call with a var() argument is not a literal)",
+  "unit":"percent of audited files",
+  "direction":"higher",
+  "requires":[{"gate":"styling"}],
+  "dirty_files":"@dirty_colour_files",
+  "audited_files":"colour.scanner.files_audited",
+  "measure":{"ratio":{"num":["@dirty_colour_files"],"den":["colour.scanner.files_audited"],"one_minus":true,"scale":100,"clamp":[0,100],"zero":null,"zero_note":"the scanner audited no files: drift control not rated"}}
+ },
+ "classes":[
+  {
+   "id":"colour_literals",
+   "label":"Colour literals (hex, rgb/hsl/oklch calls) outside the token source",
+   "unit":"regex hits",
+   "hits":["colour.scanner.colour_hits"],
+   "files":"colour.scanner.files_with_colour_hits",
+   "declared_when":[{"sum_of":["guardrails.file.exists"],"when":">= 1"},{"sum_of":["guardrails.structure.rule_bullets"],"when":">= 1"}],
+   "declared_basis":"proxy",
+   "feeds":"drift_control"
+  },
+  {
+   "id":"palette_classes",
+   "label":"Tailwind default-palette colour classes",
+   "unit":"class matches",
+   "hits":["colour.palette_class.matches","colour.palette_class.extra_matches"],
+   "files":"colour.palette_class.files",
+   "declared_when":[{"sum_of":["guardrails.file.exists"],"when":">= 1"},{"sum_of":["guardrails.structure.rule_bullets"],"when":">= 1"}],
+   "declared_basis":"proxy",
+   "feeds":"token_discipline.palette_classes"
+  },
+  {"id":"type_sizes","label":"Arbitrary font sizes","unit":"class matches","hits":["typography.arbitrary_size.matches!"],"files":"typography.arbitrary_size.files!","declared_when":[{"sum_of":["guardrails.rules.type_size"],"when":">= 1"}],"feeds":"token_discipline.font_size_off_token"},
+  {"id":"spacing_literals","label":"Raw px/rem/em spacing values","unit":"class matches","hits":["scale.spacing_arbitrary.length_literal_matches!"],"files":"scale.spacing_arbitrary.files","declared_when":[{"sum_of":["guardrails.rules.spacing_scale"],"when":">= 1"}],"feeds":"token_discipline.spacing_literals"},
+  {"id":"radius_literals","label":"Raw px/rem radii","unit":"uses","hits":["scale.radius.hardcoded_uses!"],"files":"scale.radius.hardcoded_files","declared_when":null,"feeds":"token_discipline.radius_share"}
+ ],
+ "scanner_tally":["colour.scanner.colour_hits","colour.scanner.px_hits","colour.scanner.files_with_hits","colour.scanner.files_audited"],
+ "lines":[
+  {"id":"token_source_colour_hits","label":"Colour hits inside the token source (exempt from the scan)","unit":"regex hits","measure":{"counter":"colour.token_source.colour_hits"}},
+  {"id":"token_source_colour_share","label":"Share of all colour hits that sit in the token source","unit":"ratio","measure":{"counter":"colour.token_source.colour_share"}},
+  {"id":"token_source_px_hits","label":"Raw px hits inside the token source (exempt from the scan)","unit":"regex hits","measure":{"counter":"colour.token_source.px_hits"}},
+  {"id":"token_source_px_share","label":"Share of all px hits that sit in the token source","unit":"ratio","measure":{"counter":"colour.token_source.px_share"}},
+  {
+   "id":"token_source_colour_hits_per_declaration",
+   "label":"Colour hits in the token source per custom-property declaration (above 2 the token source may hold ordinary rules)",
+   "unit":"hits per declaration",
+   "measure":{"ratio":{"num":["colour.token_source.colour_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}}
+  },
+  {"id":"colour_hits_in_mockup_files","label":"Colour hits in files whose path contains 'mockup'","unit":"regex hits","measure":{"counter":"colour.scanner.colour_hits#mockups.inMockupFiles"}},
+  {"id":"colour_hits_excluding_mockup_files","label":"Colour hits excluding files whose path contains 'mockup'","unit":"regex hits","measure":{"counter":"colour.scanner.colour_hits#mockups.excludingMockupFiles"}},
+  {"id":"colour_hits_var_based","label":"Colour hits that are calls with a var() argument (token references, not counted as literals)","unit":"regex hits","measure":"@var_colour_hits"},
+  {"id":"colour_hits_literal","label":"Colour hits that are raw literals (total minus var()-based)","unit":"regex hits","measure":"@literal_colour_hits"},
+  {"id":"dirty_colour_files_bound","label":"Audited files with a raw colour literal, upper bound min(files with colour hits, literal hits)","unit":"files","measure":"@dirty_colour_files"},
+  {"id":"colour_hits_unreachable","label":"Colour hits in files unreachable from any entry point","unit":"regex hits","measure":{"counter":"reachability.colour_hits.in_unreachable_files"}},
+  {"id":"undocumented_exemptions","label":"Exemptions the drift script applies that guardrails.mdx never names (reported, not applied)","unit":"exclusion entries","measure":{"counter":"habit.drift_script.exclusions_not_named_in_guardrails"}}
+ ],
+ "flags":[
+  {
+   "id":"tests_outnumber_audited",
+   "text":"the audited folders hold as many test files as audited files: test files are left out of every share, so a file renamed *.test.* or moved under __tests__/ is not audited",
+   "measure":{"ratio":{"num":["census.files.tests"],"den":["census.files.audited"],"zero":null,"zero_note":"no audited files"}},
+   "when":">= 1"
+  },
+  {"id":"var_colour_calls","text":"colour calls whose argument is var() are token references: they are left out of the dirty-file count, which is therefore the upper bound min(files with colour hits, literal colour hits)","measure":"@var_colour_hits","when":"> 0"},
+  {"id":"many_dirty_files","text":"20 or more audited files hold raw colour literals: a high clean share over a large population does not mean few files drift, read the file count beside the share","measure":"@dirty_colour_files","when":">= 20"},
+  {
+   "id":"token_source_holds_rules",
+   "text":"the token source holds more than 2 raw colour literals per custom-property declaration: it may hold ordinary rules, which the scan exempts and no score sees",
+   "measure":{"ratio":{"num":["colour.token_source.colour_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}},
+   "when":"> 2"
+  },
+  {
+   "id":"token_source_holds_px",
+   "text":"the token source holds more than 2 raw px values per custom-property declaration: it may hold ordinary rules, which the scan exempts and no score sees",
+   "measure":{"ratio":{"num":["colour.token_source.px_hits"],"den":["tokens.declarations.total"],"zero":null,"zero_note":"the token source declares no custom property"}},
+   "when":"> 2"
+  }
+ ]
+}

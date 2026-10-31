@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G-002 Landing Pictures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Pictures for G-002 (product.design): the landing page rebuilt on the pitch, frames B1–B6,
+   in the site's dark theme (src/app/globals.css .dark). Motion is annotated, not played:
+   amber "motion" chips name the transition, its tokens and its trigger. Single theme by choice. */
+:root {
+  --bg: #16100A;
+  --fg: #EFE5D3;
+  --card: #1E1710;
+  --primary: #FF9E3D;
+  --highlight: #FFC24D;
+  --muted: #B39B6E;
+  --border: #3A2A12;
+  --track: #2c2114;
+  --display: "Chakra Petch", "Arial Narrow", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #0f0b06; color: var(--fg); font: 15px/1.55 var(--display); }
+.page { max-width: 1180px; margin: 0 auto; padding: 32px 16px 64px; display: grid; gap: 36px; }
+.intro { display: grid; gap: 8px; max-width: 74ch; }
+.intro h1 { margin: 0; font-size: 26px; line-height: 1.2; }
+.intro p { margin: 0; color: var(--muted); }
+.frame { display: grid; gap: 10px; }
+.label { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.label b { font: 600 12px var(--mono); color: var(--primary); }
+.label em { font: 12px var(--mono); color: var(--muted); font-style: normal; }
+.screen { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.bar { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; text-align: center; padding: 7px; background: #e8dcc3; color: #241a0c; }
+.navx { display: flex; justify-content: space-between; align-items: center; padding: 12px 28px; border-bottom: 1px solid var(--border); font-size: 13px; gap: 16px; flex-wrap: wrap; }
+.navx .links { display: flex; gap: 18px; color: var(--muted); flex-wrap: wrap; }
+.btn { font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--border); padding: 8px 12px; border-radius: 4px; background: #24190d; color: var(--fg); white-space: nowrap; }
+.btn.primary { border-color: var(--primary); color: var(--primary); }
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); border-bottom: 1px solid var(--border); }
+@media (max-width: 820px) { .hero { grid-template-columns: 1fr; } }
+.hero .copy { padding: 48px 36px; display: grid; gap: 18px; align-content: center; border-right: 1px solid var(--border); }
+.hero h2 { font: 700 44px/1.05 var(--display); margin: 0; text-wrap: balance; text-shadow: 0 0 18px rgba(255,158,61,.18); }
+.hero p { margin: 0; color: var(--muted); font-size: 16px; max-width: 46ch; }
+.cmd { font: 13px var(--mono); background: #24190d; border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px 9px 14px; display: flex; justify-content: space-between; gap: 10px; align-items: center; overflow-x: auto; white-space: nowrap; }
+.cmd .p { color: #7d6a47; margin-right: 8px; }
+.cmd .c { font: 600 10px var(--mono); border: 1px solid #6b5533; padding: 3px 7px; border-radius: 3px; }
+.cmds { display: grid; gap: 8px; max-width: 470px; }
+.fine { font: 11px var(--mono); color: var(--muted); }
+.gen { padding: 32px; display: grid; gap: 12px; align-content: center; position: relative; }
+.gencard { border: 1px dashed #7a5a2a; border-radius: 10px; padding: 16px; display: grid; gap: 10px; background: repeating-linear-gradient(0deg, transparent 0 11px, rgba(255,158,61,.06) 11px 12px), repeating-linear-gradient(90deg, transparent 0 11px, rgba(255,158,61,.06) 11px 12px); }
+.row { display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px dotted #4a3719; padding: 6px 0; gap: 10px; }
+.row b { font: 600 13px var(--mono); color: var(--highlight); }
+.log { font: 11px/1.6 var(--mono); color: var(--muted); }
+.log .ok { color: #8fd3a5; }
+.motion { display: inline-flex; max-width: 100%; flex-wrap: wrap; gap: 6px; align-items: center; font: 500 10.5px/1.3 var(--mono); color: #1b1206; background: var(--highlight); padding: 3px 7px; border-radius: 3px; width: fit-content; }
+.sect { padding: 36px; display: grid; gap: 20px; border-bottom: 1px solid var(--border); }
+.eyebrow { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.sect h3 { font: 700 30px/1.1 var(--display); margin: 0; text-wrap: balance; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.cards.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 820px) { .cards, .cards.four { grid-template-columns: 1fr; } }
+.cardx { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.cardx.hi { border-color: var(--primary); }
+.cardx h4 { margin: 0; font: 700 19px/1.2 var(--display); }
+.cardx p { margin: 0; color: var(--muted); font-size: 14px; }
+.tag { font: 600 10.5px var(--mono); padding: 3px 7px; border-radius: 999px; border: 1px solid currentColor; width: fit-content; }
+.tag.in { color: #8fd3a5; } .tag.beta { color: var(--highlight); } .tag.part { color: #f0a073; }
+.price { font: 700 28px/1 var(--display); }
+.k { font: 11px var(--mono); color: var(--muted); }
+.proof { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; align-items: center; }
+@media (max-width: 820px) { .proof { grid-template-columns: 1fr; } }
+.donut { position: relative; width: 180px; height: 180px; }
+.donut .n { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+.donut .n b { font: 700 40px/1 var(--display); display: block; }
+.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; font-size: 13px; }
+.legend div { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--border); padding-bottom: 4px; }
+.legend b { font: 600 13px var(--mono); }
+.phone { width: 100%; max-width: 390px; margin: 0 auto; border: 1px solid var(--border); border-radius: 24px; overflow: hidden; }
+.phone .copy { padding: 32px 22px; display: grid; gap: 14px; }
+.phone h2 { font: 700 32px/1.06 var(--display); margin: 0; }
+.tw { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font: 600 10px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; padding: 8px; border-bottom: 1px solid var(--border); }
+td { padding: 9px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+td.m { font: 12px var(--mono); white-space: nowrap; }
+.notes { font-size: 14px; color: var(--muted); display: grid; gap: 4px; max-width: 80ch; }
+.notes li { margin-left: 18px; }
+code { font: 12.5px var(--mono); color: var(--highlight); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="intro">
+  <h1>G-002 · pictures: the landing page on the pitch</h1>
+  <p>Six frames, shaped with the design lead on 2026-10-31, in the site's dark theme. Copy as approved on 2026-10-31. Motion is annotated with amber chips (transition · tokens · trigger), not played; PR 2 adds it. Answers E1 and E2 as far as a picture can.</p>
+</header>
+
+<section class="frame" id="b1">
+  <div class="label"><b>B1</b><span>Hero, desktop</span><em>E1 · the pitch in the first screen</em></div>
+  <div class="screen">
+    <div class="bar">Claude Code plugin · Open source · Free AI-readiness score →</div>
+    <div class="navx"><b>systemix</b><div class="links"><span>How it works</span><span>Free score</span><span>Audit</span><span>Sprints</span><span>Docs</span></div><span class="btn">★ Star on GitHub</span></div>
+    <div class="hero">
+      <div class="copy">
+        <span class="motion">texts reveal · 500 ms · 12 px · blur 3 px · 40 ms stagger · on load</span>
+        <h2>The design system agent for AI-native products.</h2>
+        <p>Systemix sets up your design system, keeps it from rotting, and runs your design sprints, inside Claude Code.</p>
+        <div class="cmds">
+          <div class="cmd"><span><span class="p">&gt;</span>/plugin marketplace add boyantsonev/systemix-poc</span><span class="c">COPY</span></div>
+          <div class="cmd"><span><span class="p">&gt;</span>/plugin install systemix@systemix</span><span class="c">COPY</span></div>
+        </div>
+        <span class="fine">in Claude Code, then run <code>/systemix:score</code> · <b style="color:var(--fg)">free AI-readiness score in two minutes</b></span>
+        <span class="motion">text morph · Copy → Copied · 150 ms</span>
+      </div>
+      <div class="gen">
+        <span class="motion">UI generation · skeleton + agent log · ~2.6 s · once per visit</span>
+        <div class="gencard">
+          <span class="eyebrow">What you get</span>
+          <div class="row"><span>Monthly fee</span><b>€0</b></div>
+          <div class="row"><span>Runs on</span><b>Claude Code</b></div>
+          <div class="row"><span>Your code leaves your machine</span><b>never</b></div>
+          <div class="row"><span>A person approves</span><b>every gate</b></div>
+          <div class="log">› planning layout · 4 rows<br>› tracing outline 412×236<br>› motion: --ease-smooth-out 400 ms<br><span class="ok">› ready</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="frame" id="b2">
+  <div class="label"><b>B2</b><span>The three pillars</span><em>E2 · every claim tagged with what ships today</em></div>
+  <div class="screen"><div class="sect">
+    <span class="eyebrow">What Systemix does</span>
+    <h3>Deploy it. Keep it. Grow it in sprints.</h3>
+    <span class="motion">skeleton reveal · 400 ms · cross-blur 2 px · when the cards enter</span>
+    <div class="cards">
+      <div class="cardx"><span class="tag part">in the plugin · partial</span><h4>Deploys your design system</h4><p>A short interview drafts DESIGN.md, tokens and guardrails in your voice, or the audit proposes a starter from the code you have. Every file waits for your yes.</p><span class="k">/systemix:design-interview · /systemix:design-audit</span></div>
+      <div class="cardx hi"><span class="tag in">in the plugin</span><h4>Keeps it from rotting</h4><p>A free, deterministic AI-readiness score, and audits that find raw colours, ad-hoc sizes and duplicate components. Same code, same numbers, every run.</p><span class="k">/systemix:score · /systemix:drift-report</span></div>
+      <div class="cardx"><span class="tag beta">in the plugin · beta</span><h4>Runs your design sprints</h4><p>One sentence becomes a goal with evals, then pictures, a prototype in your components, system updates, a release and a measurement. You rule at every gate.</p><span class="k">/systemix:goal · /systemix:next · /systemix:gate</span></div>
+    </div>
+  </div></div>
+</section>
+
+<section class="frame" id="b3">
+  <div class="label"><b>B3</b><span>Live proof: this site's own score</span><em>E2 · real numbers from the committed results file</em></div>
+  <div class="screen"><div class="sect">
+    <span class="eyebrow">A real score</span>
+    <h3>This is what our own repo scores.</h3>
+    <div class="proof">
+      <div class="donut">
+        <svg viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Six area scores">
+<path d="M92.4 20.0 A70 70 0 0 1 149.4 52.9 L135.8 61.4 A54 54 0 0 0 91.9 36.0 Z" fill="var(--track)"/>
+<path d="M92.4 20.0 A70 70 0 0 1 112.6 23.7 L107.4 38.9 A54 54 0 0 0 91.9 36.0 Z" fill="var(--primary)"><title>Component consistency: 3 of 10</title></path>
+<path d="M151.8 57.1 A70 70 0 0 1 151.8 122.9 L137.7 115.4 A54 54 0 0 0 137.7 64.6 Z" fill="var(--track)"/>
+<path d="M151.8 57.1 A70 70 0 0 1 159.7 96.8 L143.7 95.3 A54 54 0 0 0 137.7 64.6 Z" fill="var(--primary)"><title>Captured rationale: 6 of 10</title></path>
+<path d="M149.4 127.1 A70 70 0 0 1 92.4 160.0 L91.9 144.0 A54 54 0 0 0 135.8 118.6 Z" fill="var(--track)"/>
+<path d="M149.4 127.1 A70 70 0 0 1 112.6 156.3 L107.4 141.1 A54 54 0 0 0 135.8 118.6 Z" fill="var(--primary)"><title>Codified rules: 7 of 10</title></path>
+<path d="M87.6 160.0 A70 70 0 0 1 30.6 127.1 L44.2 118.6 A54 54 0 0 0 88.1 144.0 Z" fill="var(--track)"/>
+<path d="M87.6 160.0 A70 70 0 0 1 55.0 150.6 L63.0 136.8 A54 54 0 0 0 88.1 144.0 Z" fill="var(--primary)"><title>Token discipline: 5 of 10</title></path>
+<path d="M28.2 122.9 A70 70 0 0 1 28.2 57.1 L42.3 64.6 A54 54 0 0 0 42.3 115.4 Z" fill="var(--track)"/>
+<path d="M28.2 122.9 A70 70 0 0 1 20.0 90.0 L36.0 90.0 A54 54 0 0 0 42.3 115.4 Z" fill="var(--primary)"><title>Drift control: 5 of 10</title></path>
+<path d="M30.6 52.9 A70 70 0 0 1 87.6 20.0 L88.1 36.0 A54 54 0 0 0 44.2 61.4 Z" fill="var(--track)"/>
+<path d="M30.6 52.9 A70 70 0 0 1 61.1 26.3 L67.7 40.8 A54 54 0 0 0 44.2 61.4 Z" fill="var(--primary)"><title>Agent legibility: 6 of 10</title></path>
+        </svg>
+        <div class="n"><span><b>53</b><span class="k">/ 100</span></span></div>
+      </div>
+      <div style="display:grid;gap:12px">
+        <span class="motion">donut chart · segments morph in · number pop-in 500 ms, 70 ms digit stagger · when in view</span>
+        <div class="legend">
+          <div><span>Component consistency</span><b>3</b></div><div><span>Captured rationale</span><b>6</b></div>
+          <div><span>Codified rules</span><b>7</b></div><div><span>Token discipline</span><b>5</b></div>
+          <div><span>Drift control</span><b>5</b></div><div><span>Agent legibility</span><b>6</b></div>
+        </div>
+        <span class="fine">commit 986a92fc · rubric v1 · counters 1.0.0 · we dogfood it, so the score isn't flattering</span>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<section class="frame" id="b4">
+  <div class="label"><b>B4</b><span>Pricing</span><em>E2 · the ladder as decided (DSC-16, DSC-20) · shaped: the Learning Kit is retired, /kit redirects here</em></div>
+  <div class="screen"><div class="sect">
+    <span class="eyebrow">Pick your tier</span>
+    <h3>Start free. Pay when it earns it.</h3>
+    <div class="cards four">
+      <div class="cardx"><span class="k">FREE SCORE</span><span class="price">€0</span><p>The plugin, every skill, and your AI-readiness score per area.</p><span class="btn">Get your free score →</span></div>
+      <div class="cardx hi"><span class="k">QUICK REPORT</span><span class="price">€9.99</span><p>Every caveat that costs points, biggest first, with a fix for each.</p><span class="btn primary">See the quick report →</span></div>
+      <div class="cardx"><span class="k">FULL AUDIT · 24H</span><span class="price">€499</span><p>Drafted by AI, reviewed and rewritten by a person: what to fix, in what order, why.</p><span class="btn">Request the audit →</span></div>
+      <div class="cardx"><span class="k">DESIGN SPRINT · 3 DAYS</span><span class="price">€990</span><p>We run the build loop with you: plan, prototype in your components, system updates.</p><span class="btn">Book a sprint →</span></div>
+    </div>
+  </div></div>
+</section>
+
+<section class="frame" id="b5">
+  <div class="label"><b>B5</b><span>Hero at phone width (390 px)</span><em>E7 · nothing clipped, no sideways scroll</em></div>
+  <div class="phone screen">
+    <div class="bar">Claude Code plugin · Free score →</div>
+    <div class="copy">
+      <h2>The design system agent for AI-native products.</h2>
+      <p style="margin:0;color:var(--muted)">Systemix sets up your design system, keeps it from rotting, and runs your design sprints, inside Claude Code.</p>
+      <div class="cmd" style="white-space:normal"><span><span class="p">&gt;</span>/plugin marketplace add boyantsonev/systemix-poc</span><span class="c">COPY</span></div>
+      <div class="cmd"><span><span class="p">&gt;</span>/plugin install systemix@systemix</span><span class="c">COPY</span></div>
+      <span class="fine">then /systemix:score in your repo</span>
+      <span class="motion">no generation moment on phones · texts reveal only</span>
+    </div>
+  </div>
+</section>
+
+<section class="frame" id="b6">
+  <div class="label"><b>B6</b><span>Motion map</span><em>E3, E4, E6 · what moves, on which tokens, and the rules</em></div>
+  <div class="screen"><div class="sect">
+    <div class="tw"><table>
+      <thead><tr><th>Where</th><th>Transition (transitions.dev)</th><th>Tokens</th><th>Trigger</th></tr></thead>
+      <tbody>
+        <tr><td>Hero text</td><td>Texts reveal</td><td class="m">--duration-very-slow · --ease-smooth-out · 12 px · blur 3 px</td><td>on load</td></tr>
+        <tr><td>Hero card</td><td>UI generation (skeleton + agent log)</td><td class="m">~2.6 s · --ease-smooth-out</td><td>once per visit, desktop only, lazy-loaded</td></tr>
+        <tr><td>Section headings</td><td>Texts reveal</td><td class="m">same as hero</td><td>the existing section observer</td></tr>
+        <tr><td>Pillar cards</td><td>Skeleton reveal</td><td class="m">--duration-slow · blur 2 px</td><td>when in view</td></tr>
+        <tr><td>Score</td><td>Donut chart + number pop-in</td><td class="m">500 ms · 70 ms digit stagger</td><td>when in view</td></tr>
+        <tr><td>Copy buttons</td><td>Text morph</td><td class="m">--duration-quick</td><td>on click</td></tr>
+        <tr><td>FAQ</td><td>Accordion</td><td class="m">--duration-fast</td><td>on click</td></tr>
+      </tbody>
+    </table></div>
+    <span class="fine">Rules: content is visible without JavaScript (hidden only after html.motion-ready); prefers-reduced-motion turns all of it off; the tokens land in globals.css first; transitions.dev comments kept; nothing goes into plugin/ or the kit.</span>
+  </div></div>
+</section>
+
+<section class="notes">
+  <b>Shaped on 2026-10-31 (decision lines in design/goals/G-002-pitch-landing/decisions.md)</b>
+  <ul>
+    <li>B1: the headline stays; the free score is in the subline and the button.</li>
+    <li>B2: the pillar tags stay as drawn; each flips to "in the plugin" the day its feature ships.</li>
+    <li>B4: the Learning Kit is retired: /kit redirects to the pricing section and leaves the sitemap.</li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

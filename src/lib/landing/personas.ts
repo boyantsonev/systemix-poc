@@ -384,7 +384,6 @@ export const MCP_TOOL_NAMES = [
   "experiment_list",
   "experiment_get",
   "experiment_measure",
-  "experiment_close",
   "experiment_learnings",
   "contract_get_token",
   "contract_get_component",
@@ -394,6 +393,5 @@ export const MCP_TOOL_NAMES = [
   "get_workflow",
   "list_hitl_tasks",
   "push_hitl_task",
-  "resolve_hitl_task",
   "emit_event",
 ] as const;

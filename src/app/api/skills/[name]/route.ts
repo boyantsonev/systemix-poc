@@ -20,7 +20,7 @@ export async function GET(
   if (!found) {
     return NextResponse.json({ error: "skill not found" }, { status: 404 });
   }
-  return NextResponse.json({ name, path: found.path, body: found.raw,
+  return NextResponse.json({ name, body: found.raw,
     siblings: found.siblings,
     copyText: skillCopyText(found),
   });

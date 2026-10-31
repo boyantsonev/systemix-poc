@@ -1,0 +1,33 @@
+{
+  "name": "systemix",
+  "displayName": "Systemix",
+  "description": "The design system agent for Claude Code: deploys an AI-native design system, keeps it from rotting (a free deterministic AI-readiness score, drift and duplicate audits) and runs the product and build loops a design sprint needs, with a person ruling at every gate. The scan runs locally; your code never leaves your machine.",
+  "author": {
+    "name": "Systemix",
+    "url": "https://getsystemix.vercel.app"
+  },
+  "homepage": "https://getsystemix.vercel.app",
+  "repository": "https://github.com/getsystemix/systemix",
+  "license": "MIT",
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "audit",
+    "drift",
+    "ai-readiness",
+    "design-sprint",
+    "product-loop",
+    "tailwind",
+    "frontend"
+  ],
+  "userConfig": {
+    "license_key": {
+      "type": "string",
+      "title": "Quick report license key",
+      "description": "Optional. The license key from your quick report purchase; leave empty for the free score. Stored in secure storage and never shown in the chat.",
+      "required": false,
+      "sensitive": true
+    }
+  },
+  "version": "0.3.0"
+}

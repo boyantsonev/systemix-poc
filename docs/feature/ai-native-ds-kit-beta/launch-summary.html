@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Systemix Launch Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a launch board. Status strip first, then four panels (plugin, site, funnel,
+   money), then the founder's to-do list. Palette follows getsystemix.vercel.app. */
+:root {
+  --bg: #f6f2ea;
+  --panel: #fffdf8;
+  --ink: #241d14;
+  --muted: #6e6352;
+  --line: #e3dccd;
+  --accent: #b86a12;
+  --ok: #2f7a45;
+  --warn: #a8650a;
+  --todo: #8a3b2a;
+  --code-bg: #efe8da;
+  --display: "Chakra Petch", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17120c; --panel: #1f1810; --ink: #f1e9da; --muted: #b3a48a; --line: #3a2f22;
+    --accent: #f0a23a; --ok: #6cc489; --warn: #f0b04a; --todo: #f08a72; --code-bg: #2a2117;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17120c; --panel: #1f1810; --ink: #f1e9da; --muted: #b3a48a; --line: #3a2f22;
+  --accent: #f0a23a; --ok: #6cc489; --warn: #f0b04a; --todo: #f08a72; --code-bg: #2a2117;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 40px 20px 64px; display: grid; gap: 28px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 700 clamp(28px, 4.4vw, 44px)/1.08 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 600 22px/1.2 var(--display); margin: 0; text-wrap: balance; }
+h3 { font: 600 15px/1.3 var(--body); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); font-size: 16px; }
+code, .cmd { font-family: var(--mono); font-size: 13px; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; }
+.tile .k { font: 500 11px/1.2 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.tile .v { font: 600 18px/1.25 var(--display); }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/1 var(--mono); padding: 4px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ok { color: var(--ok); } .warn { color: var(--warn); } .todo { color: var(--todo); }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: grid; gap: 16px; align-content: start; }
+.panel.wide { grid-column: 1 / -1; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+
+ul.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+ul.list li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+ul.list li .pill { margin-top: 2px; }
+
+.cmds { display: grid; gap: 6px; }
+.cmd { background: var(--code-bg); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: nowrap; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+th { font: 500 11px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-top: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stage { font: 600 12px/1 var(--mono); color: var(--accent); white-space: nowrap; }
+
+.ladder { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 820px) { .ladder { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .ladder { grid-template-columns: 1fr; } }
+.rung { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.rung.hi { border-color: var(--accent); }
+.rung .price { font: 700 24px/1 var(--display); font-variant-numeric: tabular-nums; }
+.rung .role { font: 500 11px/1.3 var(--mono); color: var(--muted); }
+.note { font-size: 13px; color: var(--muted); }
+.pitch { font: 600 clamp(18px, 2.4vw, 22px)/1.35 var(--display); max-width: 60ch; border-left: 3px solid var(--accent); padding-left: 14px; text-wrap: balance; }
+.pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 820px) { .pillars { grid-template-columns: 1fr; } }
+.pillars .pill { justify-self: start; }
+.next { font: 500 12px/1.4 var(--mono); color: var(--ink); }
+ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+
+ol.todo-list { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+ol.todo-list li::marker { font: 600 13px var(--mono); color: var(--accent); }
+.who { font: 500 11px/1 var(--mono); color: var(--muted); margin-left: 6px; }
+footer { color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Systemix · launch board · 31 Oct 2026 · branch claude/gifted-goodall-3iib00</span>
+  <h1>Systemix Launch Plan</h1>
+  <p class="pitch">&ldquo;Systemix is an AI-native design system agent which deploys AI-native product design systems, keeps them from rotting and orchestrates design sprints.&rdquo;</p>
+  <p class="lead">Today it ships as a Claude Code plugin that scores how well AI agents can follow a design system. The score is free, the full report costs €9.99, and the €499 audit and design sprints are where the money is. Everything below is built on the branch; nothing is live yet.</p>
+</header>
+
+<section class="panel" aria-label="The pitch against the product">
+  <div class="panel-head"><h2>The pitch against the product</h2><span class="pill warn">1 complete · 2 in progress</span></div>
+  <div class="pillars">
+    <div class="rung"><span class="role">deploy</span><span class="pill warn">partial</span><p class="note">Interview, audit proposals and Claude Design sync ship. The one-step scaffold (<code>init</code>) is CLI-only, and npm still serves the unsafe 0.2.0.</p><p class="next">Next: <code>/systemix:init</code>, about 1 day</p></div>
+    <div class="rung hi"><span class="role">keep from rotting</span><span class="pill ok">strong, on demand</span><p class="note">Score, readiness audit, design audit, drift report. Deterministic: 18 blind runs, same score. Nothing runs while the agent writes UI.</p><p class="next">Next: drift guard hook, about 1–2 days</p></div>
+    <div class="rung"><span class="role">orchestrate sprints</span><span class="pill warn">loops shipped, beta</span><p class="note">The product and build loops now ship in the plugin: goal, evals, pictures, validate, then plan, hub, system (the sprint), code, test, ship, measure. A person rules at every gate.</p><p class="next">Next: the hub's loop views, G-001</p></div>
+  </div>
+  <p class="note">Sprint price decided as the one to test: a fixed 3-day sprint at €990 (DSC-20).</p>
+</section>
+
+<section class="panel" aria-label="Goals waiting on you">
+  <div class="panel-head"><h2>Goals waiting on you</h2><span class="pill todo">2 at the Evals gate</span></div>
+  <p class="note">This repo now runs on its own product and build loops. Each goal stops for your ruling; type the ruling as a command. Briefs are in <code>design/briefs/</code>.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Goal</th><th>What it is</th><th>Step</th><th>Brief</th></tr></thead>
+    <tbody>
+      <tr><td><code>G-001</code></td><td>Systemix as a self-improving design system agent: one plugin with the loops, published pictures, a local design hub, a drift guard, measurement and gated self-improvement. 10 evals.</td><td>product.evals</td><td>B-001</td></tr>
+      <tr><td><code>G-002</code></td><td>The landing page rebuilt on the pitch: hero, three pillars, live proof, transitions.dev motion. 9 evals.</td><td>product.evals</td><td>B-002</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="cmds">
+    <div class="cmd">/systemix:gate approve G-001</div>
+    <div class="cmd">/systemix:gate approve G-002</div>
+    <div class="cmd">/systemix:gate rework G-001 &lt;what to change&gt;</div>
+  </div>
+  <h3>The self-improving agent, piece by piece</h3>
+  <ul class="list">
+    <li><span class="pill ok">done</span><p>Plugin runtime, the loops and gates (<code>/systemix:loops</code>, <code>goal</code>, <code>next</code>, <code>gate</code>, <code>decide</code>), checker with tests.</p></li>
+    <li><span class="pill warn">next</span><p>The local design hub inside the plugin, with goals, loops, briefs, artifacts and evaluations views; pictures published as artifacts.</p></li>
+    <li><span class="pill warn">next</span><p>A drift guard that checks the agent's own UI edits; <code>/systemix:init</code>; measurement through PostHog's own plugin.</p></li>
+    <li><span class="pill warn">next</span><p>Self-improvement: learnings propose the next goal; skill changes arrive as approval cards and ship only after their evals pass.</p></li>
+    <li><span class="pill todo">risk</span><p>The interviews are still 0 of 5. Run them alongside; the loops make "decision memory" demonstrable.</p></li>
+  </ul>
+  <p class="note">PostHog: integrate through its official Claude Code plugin and MCP (insights, surveys, signals); don't rebuild its Self-driving fixes.</p>
+</section>
+
+<section class="strip" aria-label="Status at a glance">
+  <div class="tile"><span class="k">Plugin</span><span class="v">Built, validates</span><span class="pill ok">installs in Claude Code</span></div>
+  <div class="tile"><span class="k">Public repo</span><span class="v">Not reachable yet</span><span class="pill todo">needs access</span></div>
+  <div class="tile"><span class="k">Free score service</span><span class="v">Closed in production</span><span class="pill todo">1 Vercel setting</span></div>
+  <div class="tile"><span class="k">Payments</span><span class="v">Code ready, no shop</span><span class="pill todo">Lemon Squeezy</span></div>
+  <div class="tile"><span class="k">Funnel tracking</span><span class="v">Events in code</span><span class="pill warn">dashboard script not run</span></div>
+</section>
+
+<div class="grid">
+
+  <section class="panel">
+    <div class="panel-head"><h2>What the plugin does</h2><span class="pill ok">0.1.0</span></div>
+    <div class="cmds">
+      <div class="cmd">/plugin marketplace add boyantsonev/systemix-poc</div>
+      <div class="cmd">/plugin install systemix@systemix</div>
+      <div class="cmd">/systemix:score</div>
+    </div>
+    <ul class="list">
+      <li><span class="pill ok">score</span><p>Shows what the results file holds, asks before sending, then returns the free score (out of 100, per area) or, with a license key, the full report.</p></li>
+      <li><span class="pill ok">audits</span><p><code>readiness-audit</code>, <code>design-audit</code>, <code>drift-report</code>: read-only, scored from the published rubric, same numbers every run.</p></li>
+      <li><span class="pill ok">setup</span><p><code>design-interview</code> builds a design system from scratch; <code>claude-design-sync</code> brings a Claude Design output into tokens. Both propose and wait for a yes.</p></li>
+      <li><span class="pill ok">privacy</span><p>The scan runs locally. Only the results file leaves, after a yes: counts, definitions, file paths, short names, no source code. Paths can be hashed. The license key sits in the plugin's secure settings, never in the chat.</p></li>
+    </ul>
+    <h3>Review findings</h3>
+    <ul class="list">
+      <li><span class="pill todo">fix</span><p><code>design-audit</code> tells users to run <code>npx @getsystemix/cli init</code>. On npm that is still 0.2.0, the unsafe version. Publish 0.3.0 before launch.</p></li>
+      <li><span class="pill warn">gap</span><p>Not yet run end to end by Claude itself. The parts were tested directly: validator, install, MCP connection, a free score of 55/100 on this repo.</p></li>
+      <li><span class="pill warn">gap</span><p>A few skills mention loop skills (<code>/init-experiment</code>, <code>/hermes</code>) that ship in a later plugin.</p></li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Landing page</h2><span class="pill ok">on the branch</span></div>
+    <ul class="list">
+      <li><span class="pill ok">done</span><p>Hero, bottom call to action and the free-score page show the two plugin install lines and <code>/systemix:score</code>. The npm command stays as the fallback.</p></li>
+      <li><span class="pill ok">done</span><p>Pricing shows the new ladder (€0 · €9.99 · €499 · custom), the "how it works" section explains the plugin, and the FAQ says what leaves the machine.</p></li>
+      <li><span class="pill ok">done</span><p>One setting switches the install line to the public repo when it exists.</p></li>
+      <li><span class="pill todo">your call</span><p>The hero headline is a running experiment (<code>landing-rebrand-hifi-2026-07</code>). The site's own learning says close it before a new bet on the same spot. Proposed replacement, built on the pitch:</p></li>
+    </ul>
+    <div class="rung hi">
+      <span class="role">proposed hero</span>
+      <h3>The design system agent for AI-native products.</h3>
+      <p class="note">Systemix sets up your design system, keeps it from rotting, and runs your design sprints, inside Claude Code. Free AI-readiness score in two minutes.</p>
+    </div>
+    <h3>Planned page, top to bottom</h3>
+    <ol class="steps">
+      <li>Hero: pitch, plugin install, free score</li>
+      <li>Three pillars (Deploy · Keep · Sprint), each tagged <em>in the plugin</em> or <em>with us, plugin soon</em></li>
+      <li>Live proof: this repo's own score</li>
+      <li>How it works, with the privacy line</li>
+      <li>Pricing: €0 · €9.99 · €499 · sprint</li>
+      <li>Credibility and FAQ, trimmed; bottom call to action</li>
+    </ol>
+  </section>
+
+  <section class="panel wide">
+    <div class="panel-head"><h2>AARRR funnel in PostHog</h2><span class="pill warn">run npm run posthog:funnel</span></div>
+    <p class="note">One definition in <code>src/lib/analytics/funnel.ts</code> feeds the code and the dashboard script, which creates 6 charts. The plugin sends no user id, so web steps form a person funnel and server steps are counted weekly beside them.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Event</th><th>From</th><th>Means</th><th>State</th></tr></thead>
+      <tbody>
+        <tr><td class="stage">Acquisition</td><td><code>$pageview</code>, <code>section_viewed</code></td><td>web</td><td>a visit, and which sections were seen</td><td><span class="pill ok">live</span></td></tr>
+        <tr><td class="stage">Activation</td><td><code>install_command_copied</code> (channel plugin)</td><td>web</td><td>copied a plugin install line</td><td><span class="pill ok">new</span></td></tr>
+        <tr><td class="stage">Activation</td><td><code>score_served</code></td><td>server</td><td>a free score was produced; carries score band and size band only</td><td><span class="pill ok">new</span></td></tr>
+        <tr><td class="stage">Revenue</td><td><code>report_notify_requested</code></td><td>web</td><td>wants the full report before it is on sale</td><td><span class="pill ok">new</span></td></tr>
+        <tr><td class="stage">Revenue</td><td><code>checkout_clicked</code> → <code>report_delivered</code></td><td>web → server</td><td>opened checkout, then a paid report was produced</td><td><span class="pill ok">new</span></td></tr>
+        <tr><td class="stage">Revenue</td><td><code>audit_requested</code>, <code>book_a_call</code></td><td>web</td><td>€499 audit and sprint interest</td><td><span class="pill ok">live</span></td></tr>
+        <tr><td class="stage">Referral</td><td><code>$pageview</code> with <code>utm_source</code> quick-report or plugin</td><td>web</td><td>every report and the plugin README link back, tagged</td><td><span class="pill ok">new</span></td></tr>
+        <tr><td class="stage">Retention</td><td>returning <code>$pageview</code></td><td>web</td><td>visitors who come back; repeat scores can't be tied to a person</td><td><span class="pill warn">partial</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="panel wide">
+    <div class="panel-head"><h2>Motion with transitions.dev</h2><span class="pill warn">planned</span></div>
+    <p class="note">Free to use on our own site. Not allowed: shipping the snippets inside the Systemix kit or plugin without a Business plan, so they stay on the website. Content stays visible without JavaScript, every effect respects reduced motion, values become motion tokens in <code>globals.css</code>, and there is one generation moment per page.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Where</th><th>Transition</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Hero, right column</td><td>UI generation: dotted wireframe + agent log, then the real card</td><td>shows "an agent deploys your design system" without a word</td></tr>
+        <tr><td>Hero text, section headings</td><td>Texts reveal (staggered blurred rise), on the existing section observer</td><td>calm entrances; analytics and reveals share one observer</td></tr>
+        <tr><td>Live proof score</td><td>Donut chart + number pop-in</td><td>the score is the first output; make it land</td></tr>
+        <tr><td>/report run</td><td>Thinking states + reasoning stream</td><td>shows the local scan step by step</td></tr>
+        <tr><td>Copy buttons, FAQ, pillar cards</td><td>Text morph · accordion · skeleton reveal</td><td>small, quiet polish</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="panel wide">
+    <div class="panel-head"><h2>Business model</h2><span class="pill warn">prices are hypotheses</span></div>
+    <div class="ladder">
+      <div class="rung"><span class="role">magnet · free</span><span class="price">€0</span><h3>Plugin + score</h3><p class="note">Free and MIT. It runs on the client's own Claude, so a score costs us one short server call.</p></div>
+      <div class="rung hi"><span class="role">first money · self-serve</span><span class="price">€9.99</span><h3>Quick report</h3><p class="note">Instant, no person. After VAT and Lemon Squeezy fees (about 5% + $0.50), roughly €7–9 per sale.</p></div>
+      <div class="rung"><span class="role">main revenue · human-reviewed</span><span class="price">€499</span><h3>Full audit, 24h</h3><p class="note">AI drafts, a person rewrites the judged parts. Estimated 45–90 min each, so 3 a day per reviewer is plausible, not measured.</p></div>
+      <div class="rung"><span class="role">expansion · orchestrated</span><span class="price">€990</span><h3>Design sprint</h3><p class="note">A fixed 3-day sprint run through the build loop: plan, hub, system. The price to test (DSC-20); budgets seen so far are $100–$720.</p></div>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>What €1,000 a month takes</th><th>Count</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Quick reports alone</td><td class="num">about 125</td><td>at about €8 net each: needs real traffic</td></tr>
+        <tr><td>Full audits alone</td><td class="num">2</td><td>the report's job is to find these buyers</td></tr>
+        <tr><td>Mix</td><td class="num">1 audit + 60 reports</td><td>a realistic first-quarter shape, still unproven</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Success: the first 10 paid reports, with at least 60% rated useful. Kill-if: 300 free scores and no sale means the offer is wrong, not the funnel. No buyer has seen a price yet, and 0 of 5 interviews are done.</p>
+  </section>
+
+</div>
+
+<section class="panel">
+  <div class="panel-head"><h2>Your to-do list, in order</h2><span class="pill todo">9 items</span></div>
+  <ol class="todo-list">
+    <li>Tell me the exact repo name for <strong>systemix-agent</strong> (organization or repo?) and install the Claude GitHub App on it. I'll push the plugin and switch the install line.<span class="who">you → me</span></li>
+    <li>Rule on G-001 and G-002 at the Evals gate (above). Then I draw the pictures for each and stop for you again.<span class="who">you → me</span></li>
+    <li>Vercel: set <code>SYSTEMIX_REPORT_ACCESS=lemonsqueezy</code>. This alone opens the free score.<span class="who">you</span></li>
+    <li>Publish CLI 0.3.0 on npm and deprecate 0.2.0.<span class="who">you</span></li>
+    <li>Lemon Squeezy: create the €9.99 product with single-use license keys, then add the store ID, product ID and checkout link to Vercel.<span class="who">you</span></li>
+    <li>PostHog: create a personal API key and run <code>npm run posthog:funnel</code> to build the dashboard.<span class="who">you</span></li>
+    <li>Close the hero experiment and approve the new hero copy, or keep the current one.<span class="who">you</span></li>
+    <li>Decide the €99 Learning Kit page: keep it, make it free, or remove it.<span class="who">you</span></li>
+    <li>Merge the branch, then submit the plugin to Anthropic's directory from claude.ai.<span class="who">you + me</span></li>
+  </ol>
+</section>
+
+<footer>Sources: the branch's code and tests (CLI 2,003 tests, app 218, all passing), <code>launch-review.md</code> and <code>funnel-plan.md</code> in <code>docs/feature/ai-native-ds-kit-beta/</code>, decisions DSC-16, DSC-19, DSC-20 and DSC-21, <code>self-improving-agent.md</code>, and the transitions.dev license. Lemon Squeezy fees are third-party estimates.</footer>
+
+</div>
+</body>
+</html>

@@ -29,10 +29,11 @@ close.
    |---|---|
    | `experiment_new` | author an experiment file |
    | `experiment_measure` | write evidence into the frontmatter |
-   | `experiment_close` | record result · decision · confidence, append the learning |
-   | `push_hitl_task` / `resolve_hitl_task` | queue and resolve decision cards |
+   | `push_hitl_task` / `list_hitl_tasks` | queue a decision card, read the queue |
    | `contract_write_evidence` | attach evidence to a contract record |
    | `emit_event` | leave a trace in the event log |
+
+   No tool closes an experiment or resolves a card. A person types the ruling: `systemix experiment close <id>` and `systemix experiment ack <card> [--decline]`.
 
 4. **Respect the gates.** Writes that matter route through the HITL queue
    (`.systemix/queue.json`). If a tool returns a queued card instead of a

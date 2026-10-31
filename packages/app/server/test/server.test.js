@@ -43,8 +43,7 @@ function request({ method = 'GET', path: urlPath, headers = {}, body }) {
 
 const queueFile = () => path.join(root, '.systemix', 'queue.json')
 const cardStatus = () => JSON.parse(fs.readFileSync(queueFile(), 'utf8')).cards[0].status
-const sameOrigin = () => ({ 'content-type': 'application/json', origin: `http://localhost:${port}` })
-const resolveCard = (headers, body = JSON.stringify({ action: 'approve' })) =>
+const resolveCard = (headers = { 'content-type': 'application/json' }, body = JSON.stringify({ action: 'approve' })) =>
   request({ method: 'POST', path: '/api/queue/card-1/resolve', headers, body })
 
 before(async () => {
@@ -72,60 +71,24 @@ beforeEach(() => {
   )
 })
 
-describe('POST /api/queue/:id/resolve', () => {
-  it('resolves a card for a same-origin JSON request (control)', async () => {
-    const res = await resolveCard(sameOrigin())
-    assert.equal(res.status, 200)
-    assert.equal(cardStatus(), 'approved')
-  })
-
-  it('accepts the 127.0.0.1 address of the app too', async () => {
-    const res = await resolveCard({
-      host: `127.0.0.1:${port}`,
-      origin: `http://127.0.0.1:${port}`,
-      'content-type': 'application/json',
-    })
-    assert.equal(res.status, 200)
-  })
-
-  it('rejects a text/plain body (the no-preflight cross-site shape)', async () => {
-    const res = await resolveCard({ ...sameOrigin(), 'content-type': 'text/plain' })
-    assert.equal(res.status, 415)
+describe('POST /api/queue/:id/resolve (the hub never rules)', () => {
+  it('refuses even a same-origin JSON approve, and the card stays pending', async () => {
+    const res = await resolveCard({ 'content-type': 'application/json', origin: `http://localhost:${port}` })
+    assert.equal(res.status, 410)
+    assert.equal(res.body.command, 'npx @getsystemix/cli experiment ack card-1')
+    assert.equal(res.body.decline, 'npx @getsystemix/cli experiment ack card-1 --decline')
     assert.equal(cardStatus(), 'pending')
   })
 
-  it('rejects a foreign Origin', async () => {
-    const res = await resolveCard({ ...sameOrigin(), origin: 'https://evil.example' })
+  it('refuses a decline too', async () => {
+    const res = await resolveCard(undefined, JSON.stringify({ action: 'decline' }))
+    assert.equal(res.status, 410)
+    assert.equal(cardStatus(), 'pending')
+  })
+
+  it('still checks the Host first (DNS rebinding)', async () => {
+    const res = await resolveCard({ host: `rebound.example:${port}`, 'content-type': 'application/json' })
     assert.equal(res.status, 403)
-    assert.equal(cardStatus(), 'pending')
-  })
-
-  it('rejects another localhost port as Origin', async () => {
-    const res = await resolveCard({ ...sameOrigin(), origin: `http://localhost:${port + 1}` })
-    assert.equal(res.status, 403)
-    assert.equal(cardStatus(), 'pending')
-  })
-
-  it('rejects Sec-Fetch-Site: cross-site', async () => {
-    const res = await resolveCard({ 'content-type': 'application/json', 'sec-fetch-site': 'cross-site' })
-    assert.equal(res.status, 403)
-    assert.equal(cardStatus(), 'pending')
-  })
-
-  it('rejects a Host that is not the app (DNS rebinding)', async () => {
-    const res = await resolveCard({
-      host: `rebound.example:${port}`,
-      origin: `http://rebound.example:${port}`,
-      'content-type': 'application/json',
-    })
-    assert.equal(res.status, 403)
-    assert.equal(cardStatus(), 'pending')
-  })
-
-  it('rejects malformed JSON and unknown actions', async () => {
-    assert.equal((await resolveCard(sameOrigin(), '{ nope')).status, 400)
-    assert.equal((await resolveCard(sameOrigin(), 'null')).status, 400)
-    assert.equal((await resolveCard(sameOrigin(), JSON.stringify({ action: 'nuke' }))).status, 400)
     assert.equal(cardStatus(), 'pending')
   })
 })

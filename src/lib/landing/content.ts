@@ -10,18 +10,25 @@
 // surfaces keep the concrete nouns (experiments, learnings, decisions).
 // Copy decks: docs/feature/rebrand-hifi/ · SEO: seo-gtm-brief.md
 
+import { FULL_AUDIT, quickReportPrice } from "@/lib/pricing";
+
 export const GITHUB_URL = "https://github.com/boyantsonev/systemix-poc";
 export const AUDIT_COMMAND = "npx @getsystemix/cli audit";
+
+// The Claude Code plugin is the front door. PLUGIN_MARKETPLACE is the GitHub repo that holds
+// .claude-plugin/marketplace.json: this repo today (its root marketplace points at plugin/),
+// the public plugin repo once it is published. One line to switch.
+export const PLUGIN_MARKETPLACE = "boyantsonev/systemix-poc";
+export const PLUGIN_ADD_COMMAND = `/plugin marketplace add ${PLUGIN_MARKETPLACE}`;
+export const PLUGIN_INSTALL_COMMAND = "/plugin install systemix@systemix";
+export const PLUGIN_SCORE_COMMAND = "/systemix:score";
 export const INIT_COMMAND = "npx @getsystemix/cli init";
 export const BRAND_CLONE_MAILTO =
   "mailto:boyan.works@gmail.com?subject=Brand%20clone%20request";
-export const KIT_MAILTO = "mailto:boyan.works@gmail.com?subject=Systemix%20AI%20Kit";
 export const CALL_MAILTO = "mailto:boyan.works@gmail.com?subject=Systemix%20scoping%20call";
 
-// Checkout seam — flip these to the LemonSqueezy product URLs once the store is
-// live (e.g. "https://<store>.lemonsqueezy.com/buy/<id>"). Until then they fall
-// back to the existing mailto/form so nothing breaks. One-line change per tier.
-export const KIT_CHECKOUT_URL = KIT_MAILTO;
+// The audit request falls back to email until a checkout exists for it. The quick
+// report's checkout link and price live in src/lib/pricing.ts.
 export const AUDIT_CHECKOUT_URL = "mailto:boyan.works@gmail.com?subject=Systemix%20AI-Readiness%20Audit";
 
 /** The positioning line — say this before any jargon (SEO brief §1). */
@@ -30,7 +37,7 @@ export const POSITIONING = "Systemix keeps your design system from rotting.";
 // ── Announcement strip ────────────────────────────────────────────────────────
 
 export const announcement = {
-  text: "Open source · Runs on your AI coding tool · Free to start",
+  text: "Claude Code plugin · Open source · Free AI-readiness score",
   href: GITHUB_URL,
 };
 
@@ -70,7 +77,7 @@ export const heroFacts = {
     { label: "Monthly fee", value: "$0" },
     { label: "Runs on", value: "your AI coding tool" },
     { label: "Touches your code", value: "never uninvited" },
-    { label: "Ways in", value: "skills · CLI · MCP" },
+    { label: "Ways in", value: "Claude Code plugin · CLI · MCP" },
     // + a dynamic row derived at build time from experiments/ + LEARNINGS.md
   ] satisfies HeroFact[],
 };
@@ -115,8 +122,8 @@ export const deepDives: DeepDive[] = [
   },
   {
     key: "doors",
-    headline: "Three ways to run it.",
-    body: "A slash command in Claude Code, the terminal CLI, or your AI agent over MCP. Same files underneath — pick whichever way your team already works.",
+    headline: "Install it like any Claude Code plugin.",
+    body: "Two commands in Claude Code and /systemix:score tells you how well your agents can follow your design system. The same scan runs from the terminal CLI or over MCP, on the same files, for teams on Cursor or Codex.",
     mockup: "doors-code",
   },
   {
@@ -179,7 +186,7 @@ export type PricingTier = {
   priceAnchor?: string; // strike-through anchor (e.g. €299 → €99)
   priceNote?: string;
   body: string;
-  cta: { label: string; href: string; event: "kit_requested" | "audit_requested" | "book_a_call" } | { label: string; command: string };
+  cta: { label: string; href: string; event: "kit_requested" | "audit_requested" | "book_a_call" | "quick_report_clicked" | "free_score_clicked" } | { label: string; command: string };
   highlight: boolean;
 };
 
@@ -190,41 +197,41 @@ export const pricing = {
   tiers: [
     {
       key: "free",
-      name: "Free",
+      name: "Free score",
       price: "€0",
-      priceNote: INIT_COMMAND,
-      body: "Every skill, in ghost mode. Your files, your repo — no account.",
-      cta: { label: INIT_COMMAND, command: INIT_COMMAND },
+      priceNote: "runs on your machine",
+      body: "Your design system's AI-readiness score out of 100, per area, computed on your machine. Nothing is sent. Every skill stays free and MIT.",
+      cta: { label: "Get your free score →", href: "/report", event: "free_score_clicked" },
       highlight: false,
     },
     {
-      key: "kit",
-      name: "Learning Kit",
-      price: "€99",
-      priceNote: "download · pay once",
-      body: "The complete AI-native design system that learns — engine, docs, app setup, skills, workflows. Downloadable, yours to keep.",
-      cta: { label: "Get the Learning Kit →", href: "/kit", event: "kit_requested" },
+      key: "quick-report",
+      name: "Quick report",
+      price: quickReportPrice(),
+      priceNote: "instant · pay per report",
+      body: "What costs you points, biggest first, with one recommendation for each. No AI guesswork in the numbers: the same code gives the same report.",
+      cta: { label: "See the quick report →", href: "/report", event: "quick_report_clicked" },
       highlight: true,
     },
     {
       key: "audit",
-      name: "Readiness Audit",
-      price: "€249",
-      priceNote: "emailed in 24–48h",
-      body: "An automated, me-in-the-loop AI-native readiness audit — scored 0–100, with the exact setup to fix it. Delivered to your inbox.",
+      name: "Full audit",
+      price: FULL_AUDIT.price,
+      priceNote: `delivered in ${FULL_AUDIT.turnaround}`,
+      body: "The same scan, written up by AI and reviewed and rewritten by a person: what to fix, in what order, and why.",
       cta: { label: "Request the audit →", href: "/audit", event: "audit_requested" },
       highlight: false,
     },
     {
       key: "sprint",
-      name: "Wiring service",
+      name: "Fix sprint",
       price: "Custom",
-      priceNote: "2-week sprint",
-      body: "We wire your Learning Kit into your stack — a discovery + implementation sprint, with you.",
+      priceNote: "quoted per job",
+      body: "We make the fixes with you: tokens, guardrails, components, and the checks that keep them in place.",
       cta: { label: "Book a call →", href: CALL_MAILTO, event: "book_a_call" },
       highlight: false,
     },
-  ] satisfies PricingTier[],
+  ] satisfies PricingTier[] as PricingTier[],
 };
 
 // ── Per-persona value — what each role actually gets (expandable rows) ────────
@@ -288,11 +295,15 @@ export const faq = {
     },
     {
       q: "Is it really open source?",
-      a: "Yes — every skill is on GitHub, MIT. Start free; the €99 Learning Kit is the whole thing packaged to download and own.",
+      a: "Yes — every skill is on GitHub, MIT, and the Claude Code plugin is free. You pay only for the quick report, the human-reviewed audit or a design sprint.",
+    },
+    {
+      q: "What leaves my machine when I get a score?",
+      a: "Only the results file: numbers, counter definitions, file and folder paths, and short names such as token names. Never your source code. Add --redact-paths to hash the file names, or --dry-run to read the file before anything is sent.",
     },
     {
       q: "Which AI tools does it work with?",
-      a: "Claude Code, Cursor, Codex — a slash command, the CLI, or MCP.",
+      a: "Claude Code first: it installs as a plugin (/plugin install systemix@systemix). Cowork runs it too. The same scan runs from the CLI or MCP, so Cursor and Codex work as well.",
     },
   ] satisfies FaqItem[],
 };
@@ -311,7 +322,7 @@ export const brandClone = {
 
 export const bottomCta = {
   heading: "Stop the rot.",
-  body: "One command starts Systemix in ghost mode — free, in your repo, nothing touched without your sign-off.",
+  body: "Install the plugin in Claude Code and get your design system's AI-readiness score in a few minutes. Free, read-only, and your code never leaves your machine.",
   fineprint: "Open source · no lock-in · files in your own repo",
 };
 
@@ -320,7 +331,7 @@ export const bottomCta = {
 export const nav = {
   links: [
     { label: "How it works", href: "/#deep-dives" },
-    { label: "Learning Kit", href: "/kit" },
+    { label: "Free score", href: "/report" },
     { label: "Audit", href: "/audit" },
     { label: "Docs", href: "/docs" },
   ],
@@ -332,7 +343,7 @@ export const footer = {
   links: [
     { label: "GitHub", href: GITHUB_URL },
     { label: "Docs", href: "/docs" },
-    { label: "Learning Kit", href: "/kit" },
+    { label: "Free score", href: "/report" },
     { label: "Audit", href: "/audit" },
   ],
   badge: "Open source",
