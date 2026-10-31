@@ -6,7 +6,7 @@ tells you what to fix first.
 ## Install
 
 ```
-/plugin marketplace add boyantsonev/systemix
+/plugin marketplace add getsystemix/systemix
 /plugin install systemix@systemix
 ```
 

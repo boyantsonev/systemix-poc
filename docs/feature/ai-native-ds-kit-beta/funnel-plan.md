@@ -170,7 +170,7 @@ claude.com/docs/plugins, read 2026-10-29.
 
 - **Two places to list it.**
   - Our own marketplace in this repo, which works today:
-    `/plugin marketplace add boyantsonev/systemix-poc`, then `/plugin install systemix@systemix`.
+    `/plugin marketplace add getsystemix/systemix` (the public plugin repo, GitHub organization `getsystemix`, matching the domain and the npm scope), then `/plugin install systemix@systemix`.
   - Anthropic's public directory (claude.ai/directory/manage, which needs a paid plan). Getting
     in takes a review and a public repo, a README of at least 40 words, and a license. Install
     counts show on claude.com/marketplace. The built-in `claude-plugins-official` marketplace is

@@ -7,7 +7,7 @@
  *   node scripts/build-plugin.js [outDir]     write it (default: <repo>/plugin)
  *   node scripts/build-plugin.js --check      exit 1 if <repo>/plugin is not what a build would write
  *
- * The output is the root of the public plugin repo (boyantsonev/systemix):
+ * The output is the root of the public plugin repo (getsystemix/systemix):
  *   .claude-plugin/marketplace.json, README.md, LICENSE
  *   plugins/systemix/  plugin.json, .mcp.json, skills/ (from pipelines/design-system + plugin-src),
  *                      scan/ (the read-only subset of this CLI the skills run, copied as-is)
