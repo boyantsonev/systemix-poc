@@ -11,7 +11,8 @@ import {
   Section,
   SectionHeading,
 } from "@/components/landing/sections";
-import { InstallCommand, SectionTrack, TrackedLink } from "@/components/systemix/LandingEvents";
+import { InstallCommand, PluginInstall, SectionTrack, TrackedLink } from "@/components/systemix/LandingEvents";
+import { PLUGIN_INSTALL_COMMAND } from "@/lib/landing/content";
 import { Button } from "@/components/ui/button";
 import { FREE_SCORE_COMMAND, FULL_AUDIT, quickReportCheckoutUrl, quickReportPrice } from "@/lib/pricing";
 
@@ -20,7 +21,7 @@ import { FREE_SCORE_COMMAND, FULL_AUDIT, quickReportCheckoutUrl, quickReportPric
 export const metadata: Metadata = {
   title: "Free AI-readiness score for your design system | Systemix",
   description:
-    "Run one command in your repo and get your design system's AI-readiness score out of 100, free. Your code never leaves your machine. The full report with what to fix first is one small payment.",
+    "Install the Systemix plugin in Claude Code and get your design system's AI-readiness score out of 100, free. Your code never leaves your machine. The full report with what to fix first is one small payment.",
   alternates: { canonical: "/report" },
 };
 
@@ -28,9 +29,9 @@ const NOTIFY_MAILTO =
   "mailto:boyan.works@gmail.com?subject=Tell%20me%20when%20the%20Systemix%20quick%20report%20is%20live";
 
 const STEPS = [
-  { n: "1", t: "Run one command", b: "In your repo's root. The scan runs on your machine and takes a minute or two." },
-  { n: "2", t: "See your score", b: "Free: a score out of 100 and a score for each of six areas." },
-  { n: "3", t: "Unlock the report", b: "Buy a key, run the same command with it, and get what to fix first." },
+  { n: "1", t: "Install the plugin", b: "Two commands in Claude Code. No account, nothing to configure." },
+  { n: "2", t: "Run /systemix:score", b: "In your repo. The scan runs on your machine; you see what would be sent before anything leaves it. Free: a score out of 100 and per area." },
+  { n: "3", t: "Unlock the report", b: "Buy a key, add it to the plugin settings, run it again, and get what to fix first." },
 ];
 
 const FREE_ITEMS = ["overall score out of 100", "a score for each of six areas", "how many caveats were found"];
@@ -48,7 +49,7 @@ const FAQ = [
   },
   {
     q: "Can I see exactly what is sent?",
-    a: "Yes. Add --dry-run --payload-out results.json to write the file without sending it. Add --redact-paths to replace every file name with a hash; the score does not change.",
+    a: "Yes. /systemix:score shows what would be sent and asks before sending. Ask it to redact paths and every file name is replaced by a hash; the score does not change. From the CLI: --dry-run --payload-out results.json.",
   },
   {
     q: "Is an AI judging my code?",
@@ -56,7 +57,7 @@ const FAQ = [
   },
   {
     q: "What do I need?",
-    a: "Node.js 18 or newer, and a repo with a web UI. No account, no sign-up.",
+    a: `Claude Code with Node.js 18 or newer, and a repo with a web UI. No account, no sign-up. No Claude Code? Run ${FREE_SCORE_COMMAND} in your repo instead.`,
   },
 ];
 
@@ -118,13 +119,13 @@ export default async function QuickReportPage() {
                   Can your AI agents follow your design system?
                 </h1>
                 <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-muted-foreground">
-                  Run one command in your repo. Get a score out of 100 in a few minutes, free. Your code
-                  stays on your machine.
+                  Install the plugin in Claude Code. Get a score out of 100 in a few minutes, free. Your
+                  code stays on your machine.
                 </p>
                 <div className="mt-9 flex flex-col items-center gap-3">
-                  <InstallCommand cmd={FREE_SCORE_COMMAND} location="report-hero" />
+                  <PluginInstall location="report-hero" className="items-center" />
                   <p className="font-mono text-[11px] text-muted-foreground/70">
-                    Node 18+ · run it in your repo&apos;s root · no account
+                    no Claude Code? <span className="text-foreground/80">{FREE_SCORE_COMMAND}</span>
                   </p>
                 </div>
               </div>
@@ -135,7 +136,7 @@ export default async function QuickReportPage() {
             <Section>
               <div className="max-w-3xl">
                 <Eyebrow>How it works</Eyebrow>
-                <SectionHeading>Three steps, one command.</SectionHeading>
+                <SectionHeading>Three steps, two minutes.</SectionHeading>
               </div>
               <div className="mt-12 grid gap-4 sm:grid-cols-3 sm:gap-5">
                 {STEPS.map((s) => (
@@ -168,7 +169,7 @@ export default async function QuickReportPage() {
                     ))}
                   </ul>
                   <div className="mt-6">
-                    <InstallCommand cmd={FREE_SCORE_COMMAND} location="report-tier-free" />
+                    <InstallCommand cmd={PLUGIN_INSTALL_COMMAND} prompt=">" channel="plugin" step="install" location="report-tier-free" />
                   </div>
                 </div>
                 <div className="flex min-w-0 flex-col rounded-[var(--radius-screen)] border border-primary bg-card p-7 shadow-[var(--shadow-panel)]">

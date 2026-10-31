@@ -14,6 +14,14 @@ import { FULL_AUDIT, quickReportPrice } from "@/lib/pricing";
 
 export const GITHUB_URL = "https://github.com/boyantsonev/systemix-poc";
 export const AUDIT_COMMAND = "npx @getsystemix/cli audit";
+
+// The Claude Code plugin is the front door. PLUGIN_MARKETPLACE is the GitHub repo that holds
+// .claude-plugin/marketplace.json: this repo today (its root marketplace points at plugin/),
+// the public plugin repo once it is published. One line to switch.
+export const PLUGIN_MARKETPLACE = "boyantsonev/systemix-poc";
+export const PLUGIN_ADD_COMMAND = `/plugin marketplace add ${PLUGIN_MARKETPLACE}`;
+export const PLUGIN_INSTALL_COMMAND = "/plugin install systemix@systemix";
+export const PLUGIN_SCORE_COMMAND = "/systemix:score";
 export const INIT_COMMAND = "npx @getsystemix/cli init";
 export const BRAND_CLONE_MAILTO =
   "mailto:boyan.works@gmail.com?subject=Brand%20clone%20request";
@@ -32,7 +40,7 @@ export const POSITIONING = "Systemix keeps your design system from rotting.";
 // ── Announcement strip ────────────────────────────────────────────────────────
 
 export const announcement = {
-  text: "Open source · Runs on your AI coding tool · Free to start",
+  text: "Claude Code plugin · Open source · Free AI-readiness score",
   href: GITHUB_URL,
 };
 
@@ -72,7 +80,7 @@ export const heroFacts = {
     { label: "Monthly fee", value: "$0" },
     { label: "Runs on", value: "your AI coding tool" },
     { label: "Touches your code", value: "never uninvited" },
-    { label: "Ways in", value: "skills · CLI · MCP" },
+    { label: "Ways in", value: "Claude Code plugin · CLI · MCP" },
     // + a dynamic row derived at build time from experiments/ + LEARNINGS.md
   ] satisfies HeroFact[],
 };
@@ -117,8 +125,8 @@ export const deepDives: DeepDive[] = [
   },
   {
     key: "doors",
-    headline: "Three ways to run it.",
-    body: "A slash command in Claude Code, the terminal CLI, or your AI agent over MCP. Same files underneath — pick whichever way your team already works.",
+    headline: "Install it like any Claude Code plugin.",
+    body: "Two commands in Claude Code and /systemix:score tells you how well your agents can follow your design system. The same scan runs from the terminal CLI or over MCP, on the same files, for teams on Cursor or Codex.",
     mockup: "doors-code",
   },
   {
@@ -298,7 +306,7 @@ export const faq = {
     },
     {
       q: "Which AI tools does it work with?",
-      a: "Claude Code, Cursor, Codex — a slash command, the CLI, or MCP.",
+      a: "Claude Code first: it installs as a plugin (/plugin install systemix@systemix). Cowork runs it too. The same scan runs from the CLI or MCP, so Cursor and Codex work as well.",
     },
   ] satisfies FaqItem[],
 };
@@ -317,7 +325,7 @@ export const brandClone = {
 
 export const bottomCta = {
   heading: "Stop the rot.",
-  body: "One command starts Systemix in ghost mode — free, in your repo, nothing touched without your sign-off.",
+  body: "Install the plugin in Claude Code and get your design system's AI-readiness score in a few minutes. Free, read-only, and your code never leaves your machine.",
   fineprint: "Open source · no lock-in · files in your own repo",
 };
 

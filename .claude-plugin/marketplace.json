@@ -1,0 +1,24 @@
+{
+  "name": "systemix",
+  "owner": {
+    "name": "Systemix",
+    "url": "https://getsystemix.vercel.app"
+  },
+  "metadata": {
+    "description": "Systemix: the design-system agent for teams that ship UI with AI agents. (Development channel: this repo. The public plugin repo carries the same plugin.)"
+  },
+  "plugins": [
+    {
+      "name": "systemix",
+      "source": "./plugin/plugins/systemix",
+      "description": "Free AI-readiness score for your design system, the paid quick report, and read-only drift and duplicate audits. The scan runs locally.",
+      "category": "design",
+      "tags": [
+        "design-system",
+        "audit",
+        "drift",
+        "tokens"
+      ]
+    }
+  ]
+}

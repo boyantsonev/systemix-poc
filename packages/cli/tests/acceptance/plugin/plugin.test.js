@@ -47,6 +47,16 @@ describe("plugin build", () => {
     for (const rel of Object.keys(rendered).filter((r) => r.endsWith(".md"))) expect(text(rel)).not.toContain("user_config.license_key");
   });
 
+  test("this repo's own marketplace (the development channel) lists the same plugin from plugin/", () => {
+    const repoRoot = path.resolve(__dirname, "../../../../..");
+    const dev = JSON.parse(fs.readFileSync(path.join(repoRoot, ".claude-plugin/marketplace.json"), "utf8"));
+    const pub = JSON.parse(text(".claude-plugin/marketplace.json"));
+    expect(dev.name).toBe(pub.name);
+    expect(dev.plugins.map((p) => p.name)).toEqual(pub.plugins.map((p) => p.name));
+    expect(dev.plugins[0].source).toBe("./plugin/plugins/systemix");
+    expect(fs.existsSync(path.join(repoRoot, "plugin/plugins/systemix/.claude-plugin/plugin.json"))).toBe(true);
+  });
+
   test("has no top-level bin/ (claude.ai and org sync refuse plugins with one)", () => {
     expect(Object.keys(rendered).some((r) => r.startsWith(`${P}/bin/`))).toBe(false);
   });

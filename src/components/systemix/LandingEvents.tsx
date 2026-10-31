@@ -3,7 +3,12 @@
 import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
 import { useVariant } from "@/lib/useVariant";
-import { AUDIT_COMMAND } from "@/lib/landing/content";
+import {
+  AUDIT_COMMAND,
+  PLUGIN_ADD_COMMAND,
+  PLUGIN_INSTALL_COMMAND,
+  PLUGIN_SCORE_COMMAND,
+} from "@/lib/landing/content";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +17,11 @@ import { cn } from "@/lib/utils";
 export function InstallCommand({
   cmd = AUDIT_COMMAND,
   location = "hero",
-}: { cmd?: string; location?: string } = {}) {
+  prompt = "$",
+  channel = "cli",
+  step,
+  className,
+}: { cmd?: string; location?: string; prompt?: string; channel?: "cli" | "plugin"; step?: string; className?: string } = {}) {
   const ph = usePostHog();
   // A/B seam: create a `landing-hero` multivariate flag in PostHog to split this.
   const variant = useVariant("landing-hero");
@@ -21,7 +30,7 @@ export function InstallCommand({
   function copy() {
     navigator.clipboard.writeText(cmd).then(() => {
       setCopied(true);
-      ph.capture("install_command_copied", { location, variant });
+      ph.capture("install_command_copied", { location, variant, channel, ...(step ? { step } : {}) });
       // hero-cta-click-rate is experiment landing-ai-native-ds-2026-07's metric —
       // only fire it from the actual hero, or non-hero copies (kit, pricing,
       // bottom CTA) pollute a metric that's scoped to one section.
@@ -35,11 +44,14 @@ export function InstallCommand({
   return (
     <div
       onClick={copy}
-      className="inline-flex items-center gap-3 font-mono text-[13px] bg-muted/60 border border-border/60 rounded-lg py-2.5 pl-4 pr-1.5 cursor-pointer hover:bg-muted transition-colors select-none"
+      className={cn(
+        "inline-flex max-w-full items-center gap-3 font-mono text-[13px] bg-muted/60 border border-border/60 rounded-lg py-2.5 pl-4 pr-1.5 cursor-pointer hover:bg-muted transition-colors select-none",
+        className,
+      )}
       title="Click to copy"
     >
-      <span className="text-muted-foreground/40">$</span>
-      <span className="text-foreground/80">{cmd}</span>
+      <span className="text-muted-foreground/40">{prompt}</span>
+      <span className="min-w-0 flex-1 break-words text-left text-foreground/80">{cmd}</span>
       {/* The copy affordance itself is the filed-btn (default Button variant) —
           stopPropagation so clicking it doesn't also fire the parent div's copy. */}
       <button
@@ -52,6 +64,24 @@ export function InstallCommand({
       >
         {copied ? "COPIED ✓" : "COPY"}
       </button>
+    </div>
+  );
+}
+
+// ── Plugin install: the two Claude Code commands, then the score ─────────────
+// Each line copies on its own (pasting two slash commands at once runs only the
+// first). install_command_copied carries channel "plugin" and the step.
+
+export function PluginInstall({ location = "hero", className }: { location?: string; className?: string }) {
+  return (
+    <div className={cn("flex min-w-0 max-w-full flex-col items-start gap-2", className)}>
+      <div className="flex w-fit max-w-full flex-col gap-2">
+        <InstallCommand cmd={PLUGIN_ADD_COMMAND} prompt=">" channel="plugin" step="marketplace" location={location} className="w-full" />
+        <InstallCommand cmd={PLUGIN_INSTALL_COMMAND} prompt=">" channel="plugin" step="install" location={location} className="w-full" />
+      </div>
+      <p className="font-mono text-[11px] text-muted-foreground/70">
+        in Claude Code, then run <span className="text-foreground/80">{PLUGIN_SCORE_COMMAND}</span> in your repo
+      </p>
     </div>
   );
 }

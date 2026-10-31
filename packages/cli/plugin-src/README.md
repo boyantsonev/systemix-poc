@@ -31,13 +31,15 @@ The scan runs locally and is deterministic: the same code always gives the same 
 judgement in them. `/systemix:score` sends only the results file to the Systemix report service at
 `https://getsystemix.vercel.app/api/report`, and only after you say yes. The file holds numbers,
 counter definitions, file and folder paths, and short identifiers such as token names. It holds no
-source code. Ask for redacted paths and every file name is replaced by a hash. The service stores
-nothing. The other skills make no network calls.
+source code. Ask for redacted paths and every file name is replaced by a hash. The service keeps no
+copy of the file; it records one anonymous count per request (score band, size band, whether paths
+were redacted) for its own analytics, with no names, paths, keys or IP addresses. The other skills
+make no network calls.
 
 ## The full report
 
 The score is free. The full quick report is a one-off purchase at
-[getsystemix.vercel.app/report](https://getsystemix.vercel.app/report). Put the license key into the
+[getsystemix.vercel.app/report](https://getsystemix.vercel.app/report?utm_source=plugin&utm_medium=readme). Put the license key into the
 plugin settings (`/plugin configure systemix@systemix`), never into the chat. It is kept in your
 system's secure storage.
 

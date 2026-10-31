@@ -120,3 +120,38 @@ describe("POST /api/report", () => {
     });
   });
 });
+
+describe("POST /api/report analytics", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  const captured = (fetchMock: ReturnType<typeof vi.fn>) =>
+    fetchMock.mock.calls.filter((c) => String(c[0]).includes("posthog.com")).map((c) => JSON.parse(String((c[1] as RequestInit).body)));
+
+  it("sends one anonymous event with bands only, never a path, a name or the key", async () => {
+    vi.stubEnv("SYSTEMIX_REPORT_ACCESS", "lemonsqueezy");
+    vi.stubEnv("NEXT_PUBLIC_POSTHOG_KEY", "phc_test");
+    const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = await post({ counters: counters() });
+    expect(res.status).toBe(200);
+    await new Promise((r) => setTimeout(r, 0));
+    const events = captured(fetchMock);
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({ api_key: "phc_test", event: "score_served", distinct_id: "systemix-report-service" });
+    expect(events[0].properties).toMatchObject({ mode: "lemonsqueezy", full: false, score_band: "40-59", files_band: "50-199", redacted: false, $process_person_profile: false, $geoip_disable: true });
+    const sent = JSON.stringify(events[0]);
+    expect(sent).not.toMatch(/src\/|globals\.css|--[a-z]/);
+  });
+
+  it("sends nothing without a PostHog key", async () => {
+    vi.stubEnv("SYSTEMIX_REPORT_ACCESS", "open");
+    const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    expect((await post({ counters: counters() })).status).toBe(200);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(captured(fetchMock)).toHaveLength(0);
+  });
+});

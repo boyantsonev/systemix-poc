@@ -20,6 +20,8 @@ const { evaluate, rubricFromBlocks, DEFAULT_SKILLS_DIR } = require("./rubric-eva
 const RECOMMENDATIONS = require("./quick-report-recommendations.json");
 
 const MAX_CAVEATS = 10;
+// the referral link every report carries (utm tags: src/lib/analytics/funnel.ts in the app)
+const SHARE_URL = "https://getsystemix.vercel.app/report?utm_source=quick-report&utm_medium=report";
 
 let cachedRubric = null;
 function defaultRubric() {
@@ -138,6 +140,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, p
     lines.push("---");
     lines.push("");
     lines.push(`Scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. No source code was sent, only counts and file names.`);
+    lines.push(`Score another repo: ${SHARE_URL}`);
     return { scored: true, preview: true, overall, areas, caveats: [], caveatCount: caveats.length, markdown: lines.join("\n") + "\n" };
   }
 
@@ -166,6 +169,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, p
   lines.push("");
   lines.push(`How this was made: a deterministic scan of the code (no AI judgement in the numbers), scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. ${result.validity}`);
   lines.push("No source code was sent to produce this report, only counts and file names.");
+  lines.push(`Score another repo: ${SHARE_URL}`);
 
   return { scored: true, preview: false, overall, areas, caveats: shown, caveatCount: caveats.length, markdown: lines.join("\n") + "\n" };
 }

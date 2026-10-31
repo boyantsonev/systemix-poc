@@ -20,7 +20,8 @@
     "build:mcp": "npm run build -w packages/mcp-server",
     "smoke": "node scripts/smoke-test.js",
     "scrape-style": "tsx scripts/scrape-style.ts",
-    "design-md": "tsx scripts/generate-design-md.ts"
+    "design-md": "tsx scripts/generate-design-md.ts",
+    "posthog:funnel": "tsx scripts/posthog-funnel.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.199",

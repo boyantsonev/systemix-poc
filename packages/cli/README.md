@@ -99,7 +99,8 @@ report service, never your source code, and only when you pass `--yes`. `--redac
 file and folder name with a hash first (the score is the same). `--dry-run --payload-out file` writes
 the exact payload so you can read it. The report is deterministic: a score out of 100 from the same
 rubric the audit skills publish, a score per area, the caveats that cost the most points, and one
-recommendation for each. The service stores nothing.
+recommendation for each. The service keeps no copy of the file; it records one anonymous count per
+request (score band, size band) for its own analytics, with no names, paths or keys.
 
 ## How it runs
 
