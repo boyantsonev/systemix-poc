@@ -10,7 +10,7 @@ Hub and System are skipped: no UI frames and no design-system change.
 | 3 · the agent never rules | the read routes of the hosted control plane refused on production (E3) · 13 no self-approval tool · 14 no direct close · 15 `systemix experiment ack`, no click-approve · 16 role holders checked · 17 unshipped references fail the build · D4 Supabase out | E7, E8, E10 |
 
 ## Decisions for you
-- npm publish of 0.3.0 after PR 2 (yours).
+- npm publish of 0.3.0 after PR 2 (yours). Done 2026-10-31: 0.3.0 is `latest`, its 151 files match commit a6eb48e0 file for file; 0.2.0 is deprecated ("unsafe: can overwrite ~/.claude.json; upgrade to 0.3.0").
 
 ## Decisions made while building
 - PR 1: verified — the Vercel preview of 6b4f8290 built and deployed (status: success), so `next build` passes without /kit and /api/subscribe.

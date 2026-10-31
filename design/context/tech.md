@@ -19,7 +19,7 @@ reviewable PR, is covered by tests, stays deterministic and can be rolled back.
 - The report service is closed until `SYSTEMIX_REPORT_ACCESS` is set `src/lib/report-access.ts`
 ## Numbers
 - CLI tests: about 2,000 (Jest); app tests: 218 (Vitest), on branch claude/gifted-goodall-3iib00
-- npm `latest` for @getsystemix/cli: 0.2.0 (unsafe); 0.3.0 not published `wave-decisions.md DSC-7`
+- npm `latest` for @getsystemix/cli: 0.3.0 (published by the founder 2026-10-31; its 151 files match commit a6eb48e0); 0.2.0 deprecated as unsafe `npm view @getsystemix/cli`
 ## Open bets
 - Shipping the local hub inside the plugin needs its two dependencies installed from a lockfile at the plugin root (Claude Code installs them) `docs/feature/ai-native-ds-kit-beta/self-improving-agent.md`
 ## Sources
