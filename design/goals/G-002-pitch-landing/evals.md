@@ -2,8 +2,8 @@
 
 | id | must be true | checked by | bar | answered at | status |
 |---|---|---|---|---|---|
-| E1 | The hero says the pitch, with "design system" in the H1 | the rendered page source | the approved H1 and subline, word for word | product.score | open |
-| E2 | Every pillar claim is true today | each card checked against the plugin README and launch-review.md | 0 claims ahead of what ships | product.score | open |
+| E1 | The hero says the pitch, with "design system" in the H1 | the rendered page source | the approved H1 and subline, word for word | product.score | pass |
+| E2 | Every pillar claim is true today | each card checked against the plugin README and launch-review.md | 0 claims ahead of what ships | product.score | pass |
 | E3 | Everything is readable without JavaScript | a Playwright screenshot with JavaScript off | all text visible on every section | build.test | open |
 | E4 | Reduced motion turns every animation off | Playwright with reduced motion emulated | 0 running animations or transitions | build.test | open |
 | E5 | The first screen stays fast | Lighthouse mobile on the Vercel preview | LCP ≤ 2.5 s, CLS ≤ 0.1 | build.test | open |

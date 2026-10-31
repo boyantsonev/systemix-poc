@@ -34,7 +34,10 @@ export function quickReportCheckoutUrl(env: Env = publicEnv()): string | null {
   }
 }
 
-export const FULL_AUDIT = { price: "€499", turnaround: "24h" } as const;
+export const FULL_AUDIT = { price: "€499", turnaround: "24h", turnaroundLong: "24 hours" } as const;
+
+/** The design sprint: a fixed 3-day sprint (DSC-20). */
+export const SPRINT = { price: "€990", length: "3 days" } as const;
 
 /** The command that gets the free score: computed on the user's machine, nothing sent (DSC-22 D1). */
 export const FREE_SCORE_COMMAND = "npx @getsystemix/cli audit report --dirs src";

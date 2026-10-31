@@ -1,9 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Eyebrow,
-  FaqJsonLd,
   GridFrame,
   LandingFooter,
   LandingNav,
@@ -13,6 +11,7 @@ import {
 } from "@/components/landing/sections";
 import { InstallCommand, PluginInstall, SectionTrack, TrackedLink } from "@/components/systemix/LandingEvents";
 import { PLUGIN_INSTALL_COMMAND } from "@/lib/landing/content";
+import { loadOwnReport } from "@/lib/landing/own-score";
 import { Button } from "@/components/ui/button";
 import { FREE_SCORE_COMMAND, FULL_AUDIT, quickReportCheckoutUrl, quickReportPrice } from "@/lib/pricing";
 
@@ -20,8 +19,7 @@ import { FREE_SCORE_COMMAND, FULL_AUDIT, quickReportCheckoutUrl, quickReportPric
 // Price and checkout link come from src/lib/pricing.ts (settings, not code).
 export const metadata: Metadata = {
   title: "Free AI-readiness score for your design system | Systemix",
-  description:
-    "Install the Systemix plugin in Claude Code and get your design system's AI-readiness score out of 100, free. Your code never leaves your machine. The full report with what to fix first is one small payment.",
+  description: `Install the Systemix plugin in Claude Code and get your design system's AI-readiness score out of 100, free. Your code never leaves your machine. The quick report, with what to fix first, is ${quickReportPrice()}.`,
   alternates: { canonical: "/report" },
 };
 
@@ -31,7 +29,7 @@ const NOTIFY_MAILTO =
 const STEPS = [
   { n: "1", t: "Install the plugin", b: "Two commands in Claude Code. No account, nothing to configure." },
   { n: "2", t: "Run /systemix:score", b: "In your repo. The score is computed on your machine and nothing is sent. Free: a score out of 100 and per area." },
-  { n: "3", t: "Unlock the report", b: "Buy a key, add it to the plugin settings, run it again, and get what to fix first." },
+  { n: "3", t: "Unlock the quick report", b: "Buy a key, add it to the plugin settings, run it again, and get what to fix first." },
 ];
 
 const FREE_ITEMS = ["overall score out of 100", "a score for each of six areas", "how many caveats were found"];
@@ -42,79 +40,37 @@ const PAID_ITEMS = [
   "the same code always gives the same report",
 ];
 
-const FAQ = [
-  {
-    q: "What leaves my machine?",
-    a: "For the free score, nothing: it is computed on your machine. For the full report, only the results file: numbers, counter definitions, file and folder paths, and short names such as token names. Never your source code.",
-  },
-  {
-    q: "Can I see exactly what is sent?",
-    a: "Yes. For the full report, /systemix:score shows what would be sent and asks before sending. Ask it to redact paths and every file name is replaced by a hash; the score does not change. From the CLI: --dry-run --payload-out results.json.",
-  },
-  {
-    q: "Is an AI judging my code?",
-    a: "No. The numbers come from a deterministic scan and a published scoring rubric. Run it twice on the same commit and you get the same report.",
-  },
-  {
-    q: "What do I need?",
-    a: `Claude Code with Node.js 18 or newer, and a repo with a web UI. No account, no sign-up. No Claude Code? Run ${FREE_SCORE_COMMAND} in your repo instead.`,
-  },
-];
-
-type SampleReport = {
-  overall: number;
-  areas: { key: string; label: string; score: number }[];
-  caveats: { id: string; area: string; label: string; value: string; points: number; max: number; recommendation: string | null }[];
-  caveatCount: number;
-  commit: string;
-};
-
-/** The real report for this site's own repo (a committed results file), so the sample is never made up. */
-async function loadSample(): Promise<SampleReport | null> {
-  try {
-    const file = path.join(process.cwd(), "packages/cli/tests/acceptance/skills/fixtures/systemix-poc-986a92fca0cb.counters.json");
-    const counters = JSON.parse(fs.readFileSync(file, "utf8"));
-    const { build } = await import("../../../packages/cli/src/lib/quick-report.js");
-    const r = build(counters);
-    if (!r.scored || r.overall === null) return null;
-    return { overall: r.overall, areas: r.areas, caveats: r.caveats, caveatCount: r.caveatCount ?? r.caveats.length, commit: String(counters.repo?.commit ?? "").slice(0, 12) };
-  } catch {
-    return null;
-  }
-}
-
 function BuyButton({ location, className }: { location: string; className?: string }) {
   const url = quickReportCheckoutUrl();
   const price = quickReportPrice();
   return url ? (
     <Button variant="secondary" size="lg" className={className} asChild>
       <TrackedLink href={url} event="checkout_clicked" location={location}>
-        Buy the full report — {price}
+        Buy the quick report: {price}
       </TrackedLink>
     </Button>
   ) : (
     <Button variant="outline" size="lg" className={className} asChild>
       <TrackedLink href={NOTIFY_MAILTO} event="report_notify_requested" location={location}>
-        Full report coming soon — email me
+        Quick report coming soon: email me
       </TrackedLink>
     </Button>
   );
 }
 
 export default async function QuickReportPage() {
-  const sample = await loadSample();
+  const sample = await loadOwnReport();
   const price = quickReportPrice();
 
   return (
     <div className="min-h-screen text-foreground">
-      <FaqJsonLd items={FAQ} />
       <LandingNav />
       <GridFrame>
         <main>
           <SectionTrack name="report-hero">
             <section className="border-b border-border/60 py-24 sm:py-28">
               <div className="mx-auto max-w-5xl px-6 text-center">
-                <Eyebrow>Free score · full report {price}</Eyebrow>
+                <Eyebrow>Free score · quick report {price}</Eyebrow>
                 <h1 className="mx-auto max-w-3xl text-[2rem] font-bold leading-[1.12] sm:text-[3rem] sm:leading-[1.1] [text-shadow:var(--glow-head)]">
                   Can your AI agents follow your design system?
                 </h1>
@@ -173,7 +129,7 @@ export default async function QuickReportPage() {
                   </div>
                 </div>
                 <div className="flex min-w-0 flex-col rounded-[var(--radius-screen)] border border-primary bg-card p-7 shadow-[var(--shadow-panel)]">
-                  <p className="tva-label mb-3 text-[10px] text-muted-foreground">Full quick report</p>
+                  <p className="tva-label mb-3 text-[10px] text-muted-foreground">Quick report</p>
                   <p className="text-[2rem] font-bold leading-none">{price}</p>
                   <p className="mt-1 font-mono text-[11px] text-muted-foreground">per report · instant</p>
                   <ul className="mt-5 flex-1 space-y-2 text-[14px] text-muted-foreground">
@@ -198,8 +154,8 @@ export default async function QuickReportPage() {
                     score is not flattering.
                   </Lead>
                 </div>
-                <div className="mt-10 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-                  <div className="rounded-[var(--radius-screen)] border border-border bg-card p-7 shadow-[var(--shadow-panel)]">
+                <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+                  <div className="min-w-0 rounded-[var(--radius-screen)] border border-border bg-card p-7 shadow-[var(--shadow-panel)]">
                     <p className="tva-label text-[10px] text-muted-foreground">Free score</p>
                     <p className="mt-3 text-[3rem] font-bold leading-none">
                       {sample.overall}
@@ -219,11 +175,11 @@ export default async function QuickReportPage() {
                       ))}
                     </ul>
                     <p className="mt-6 text-[13px] text-muted-foreground">
-                      {sample.caveatCount} caveats found. The full report lists them.
+                      {sample.caveatCount} caveats found. The quick report lists them.
                     </p>
                   </div>
-                  <div className="rounded-[var(--radius-screen)] border border-primary bg-card p-7 shadow-[var(--shadow-panel)]">
-                    <p className="tva-label text-[10px] text-muted-foreground">Full report · first 3 of {sample.caveatCount}</p>
+                  <div className="min-w-0 break-words rounded-[var(--radius-screen)] border border-primary bg-card p-7 shadow-[var(--shadow-panel)]">
+                    <p className="tva-label text-[10px] text-muted-foreground">Quick report · first 3 of {sample.caveatCount}</p>
                     <ol className="mt-4 space-y-5">
                       {sample.caveats.slice(0, 3).map((c, i) => (
                         <li key={c.id} className="text-[14px]">
@@ -246,26 +202,15 @@ export default async function QuickReportPage() {
             </SectionTrack>
           )}
 
-          <SectionTrack name="report-faq">
+          <SectionTrack name="report-next">
             <Section>
-              <div className="max-w-3xl">
-                <Eyebrow>Your code stays yours</Eyebrow>
-                <SectionHeading>The honest answers.</SectionHeading>
-              </div>
-              <div className="mt-10 flex flex-col divide-y divide-border/60 border-y border-border/60">
-                {FAQ.map((f) => (
-                  <details key={f.q} className="group py-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-bold text-foreground [&::-webkit-details-marker]:hidden">
-                      {f.q}
-                      <span aria-hidden className="font-mono text-muted-foreground transition-transform group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">{f.a}</p>
-                  </details>
-                ))}
-              </div>
-              <p className="mt-8 text-[13px] text-muted-foreground">
+              <p className="text-[13px] text-muted-foreground">
+                What leaves your machine, and how to check it:{" "}
+                <Link href="/#faq" className="text-foreground underline underline-offset-4 hover:text-highlight">
+                  the FAQ →
+                </Link>
+              </p>
+              <p className="mt-3 text-[13px] text-muted-foreground">
                 Want a person to go through it with you?{" "}
                 <TrackedLink
                   href="/audit"

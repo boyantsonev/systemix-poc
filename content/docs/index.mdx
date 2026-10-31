@@ -2,45 +2,34 @@
 title: What is Systemix?
 ---
 
-Systemix runs little experiments on your website, writes down what it learned and why, and suggests the next one. **You approve every decision.**
+Systemix is the design system agent for AI-native products. It sets up your design system, keeps it from rotting, and runs your design sprints, inside Claude Code. **You approve every step.** Everything it knows lives as plain files in your repo.
 
-That's the whole product. It runs in Claude Code, and everything it knows lives as plain files in your repo — no platform, no dashboard you don't own.
+## Start in two minutes
 
-<LoopDiagram variant="operational" />
+1. **Install the plugin.** In Claude Code:
 
-## The four steps
+   ```
+   /plugin marketplace add boyantsonev/systemix-poc
+   /plugin install systemix@systemix
+   ```
 
-1. **Propose** — the daily runner suggests the next experiment as a card in `.systemix/queue.json`, built from what the loop has already learned. It never creates anything itself — you say yes or no.
-2. **Build** — the experiment becomes a file: `experiments/<id>.mdx`. The bet, who it's for, and the number that will prove it.
-3. **Measure** — the runner pulls real numbers (PostHog) into the file, every day, on its own.
-4. **Learn** — when the numbers are strong enough, you get a card recommending a decision. You close it; the lesson is written to `experiments/LEARNINGS.md` — the notebook the next proposal starts from.
+2. **Run `/systemix:score`** in your repo. It reads your code on your machine and prints a score out of 100, per area. Nothing is sent.
+3. **Fix what costs points.** Do it yourself, or buy the quick report, which lists each fix, biggest first.
 
-## What you approve
+No Claude Code? Run `npx @getsystemix/cli audit report --dirs src` in your repo.
 
-The system moves on its own, but three things always wait for your OK:
+## What it does
 
-- **Starting a new experiment** — the runner proposes; `/init-experiment` is how you accept.
-- **Closing an experiment** — the runner recommends promote / iterate / kill; you decide.
-- **Changing its own skills or rules** — always proposed, never self-applied.
+- **Deploy:** `/systemix:design-interview` drafts your design system with you; `/systemix:design-audit` proposes one from the code you have.
+- **Keep:** `/systemix:score`, `/systemix:drift-report` and `/systemix:readiness-audit` find raw colours, one-off sizes and duplicate components.
+- **Sprint (beta):** `/systemix:goal` turns one sentence into a goal, then pictures, a prototype and a release, with a gate at every step.
 
-## Three ways to drive it
+## Next
 
-- [Claude Code skills](/docs/slash-commands) — `/systemix-init`, `/measure`, `/close-experiment` and more
-- CLI — `systemix experiment new | list | close | learnings` and `systemix loop`
-- MCP — `experiment_new`, `experiment_list`, `experiment_learnings` for any agent that speaks MCP (a person closes and rules)
+→ [Getting started](/docs/getting-started): set up the CLI and the design-system files in a repo
 
-All three doors read and write the same files.
+→ [The loop](/docs/concepts/the-loop): the experiment loop, step by step
 
-**Optional adapters** — a design-system spine (`design/`, guardrails, tokens) and Figma sync ship in the box, but the loop doesn't need them. See [the design-system adapter](/docs/design-system).
+→ [Skills reference](/docs/slash-commands): every skill, generated from the source
 
-## Start here
-
-→ [Getting started](/docs/getting-started) — set up the loop in a new or existing repo
-
-→ [The loop](/docs/concepts/the-loop) — each step in detail, and what the daily runner does
-
-→ [The experiment](/docs/concepts/experiment) — the anatomy of one experiment file
-
-→ [Why files & loops](/docs/concepts/why-files) — why the memory lives on disk
-
-→ [Skills reference](/docs/slash-commands) — every skill, generated from the source
+→ [See it running on this repo](/docs/running-here): this site runs Systemix on itself

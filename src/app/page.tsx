@@ -1,30 +1,26 @@
 import type { Metadata } from "next";
 import { SectionTrack } from "@/components/systemix/LandingEvents";
 import {
-  Audiences,
   BottomCTA,
   FaqJsonLd,
   FaqSection,
-  FeatureDeepDives,
   GridFrame,
   HeroRow,
+  HowItWorks,
   LandingFooter,
   LandingNav,
-  Services,
-  StackStrip,
-  Statement,
-  TheLoop,
-  Trust,
+  Pillars,
+  Pricing,
+  Proof,
 } from "@/components/landing/sections";
-import { ScrollEffect } from "@/components/effects/ScrollEffect";
 import { faq } from "@/lib/landing/content";
 
-// Title + meta per the SEO brief (docs/feature/rebrand-hifi/seo-gtm-brief.md §3):
-// head term = design-system rot/drift, mechanisms below the fold.
+// Six sections (G-002, copy deck docs/feature/ai-native-ds-kit-beta/copy-deck.md):
+// hero · what it does · proof · how it works · pricing · FAQ, then the install again.
 export const metadata: Metadata = {
-  title: "Systemix — Stop your design system from rotting",
+  title: "Systemix: the design system agent for Claude Code",
   description:
-    "Systemix watches what you ship, catches design-system drift, and proposes AI fixes your team approves. Open source. Free to start.",
+    "Sets up your design system, keeps it from rotting and runs design sprints. Free AI-readiness score, computed on your machine.",
   alternates: { canonical: "/" },
 };
 
@@ -35,33 +31,20 @@ export default function LandingPage() {
       <LandingNav />
       <GridFrame>
         <main>
-          <SectionTrack name="hero" experimentId="landing-rebrand-hifi-2026-07">
+          <SectionTrack name="hero">
             <HeroRow />
           </SectionTrack>
-          <SectionTrack name="stack">
-            <StackStrip />
+          <SectionTrack name="what-it-does">
+            <Pillars />
           </SectionTrack>
-          <SectionTrack name="statement">
-            <Statement />
+          <SectionTrack name="proof">
+            <Proof />
           </SectionTrack>
-          <SectionTrack name="deep-dives">
-            <FeatureDeepDives />
-          </SectionTrack>
-          <SectionTrack name="audiences">
-            <Audiences />
-          </SectionTrack>
-          <ScrollEffect variant="dither-field" intensity="calm" tint="primary" height={140} />
-          {/* The live artifact as proof (not the lead) — the real running file,
-              honest by construction. It shows raw experiment state, so it sits
-              after the plain-language explainers, not before them. */}
-          <SectionTrack name="loop">
-            <TheLoop />
-          </SectionTrack>
-          <SectionTrack name="credibility">
-            <Trust />
+          <SectionTrack name="how-it-works">
+            <HowItWorks />
           </SectionTrack>
           <SectionTrack name="pricing">
-            <Services />
+            <Pricing />
           </SectionTrack>
           <SectionTrack name="faq">
             <FaqSection />
