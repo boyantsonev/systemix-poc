@@ -13,10 +13,10 @@ Hub and System are skipped: no UI frames and no design-system change.
 - npm publish of 0.3.0 after PR 2 (yours).
 
 ## Decisions made while building
+- PR 1: verified — the Vercel preview of 6b4f8290 built and deployed (status: success), so `next build` passes without /kit and /api/subscribe.
 - PR 1: the design collection's file list is a module constant, not an export: fumadocs-mdx refuses any export from source.config.ts that is not a collection (it broke the generator; caught by running it). CI now runs `npx fumadocs-mdx`.
 - PR 1: E3 stays open. Write routes refuse on production and /api/subscribe is gone, but the read routes that feed the hosted control plane (/api/queue, /api/hitl, /api/instance, /api/runs, /api/run/[id], /api/workflows) still answer there; they close with the control plane's removal (D2), pulled into PR 3.
 - PR 1: the plugin's version comes from packages/cli/package.json at build time; plugin-src/plugin.json carries none.
 
 ## Tested · not verified
-- PR 1: `next build` was not run here (Google Fonts are blocked in this sandbox); the Vercel preview of this push is the check.
 - PR 1: the new CI steps run for the first time on this branch's PR.
