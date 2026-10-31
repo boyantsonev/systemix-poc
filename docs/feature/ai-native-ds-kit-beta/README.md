@@ -15,6 +15,11 @@ owner: Boyan Tsonev
 > **One line (proposed, to freeze for 10 weeks):** *Systemix is the design system agent for
 > AI-native products. It sets up an open-source design system your agents build with, audits what
 > they ship, and improves it in loops that remember why.*
+>
+> **Founder's elevator pitch (2026-10-31, DSC-19), which replaces the line above:** *"Systemix is an
+> AI-native design system agent which deploys AI-native product design systems, keeps them from
+> rotting and orchestrates design sprints."* What each of the three pillars ships today:
+> `launch-review.md`.
 
 This plan comes from a parallel analysis of six inputs:
 - this repo's surfaces;
