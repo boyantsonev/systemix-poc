@@ -32,4 +32,4 @@ Reversible: yes, PR by PR.
 - *Does anything leave the machine?* Less than today: the free score stops sending (E9).
 
 ## Decision
-_(left for the person)_
+Approved by Boyan (reviewer), 2026-10-31: "start". Reading A; build-only.

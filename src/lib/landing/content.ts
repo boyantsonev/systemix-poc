@@ -25,13 +25,10 @@ export const PLUGIN_SCORE_COMMAND = "/systemix:score";
 export const INIT_COMMAND = "npx @getsystemix/cli init";
 export const BRAND_CLONE_MAILTO =
   "mailto:boyan.works@gmail.com?subject=Brand%20clone%20request";
-export const KIT_MAILTO = "mailto:boyan.works@gmail.com?subject=Systemix%20AI%20Kit";
 export const CALL_MAILTO = "mailto:boyan.works@gmail.com?subject=Systemix%20scoping%20call";
 
-// Checkout seam — flip these to the LemonSqueezy product URLs once the store is
-// live (e.g. "https://<store>.lemonsqueezy.com/buy/<id>"). Until then they fall
-// back to the existing mailto/form so nothing breaks. One-line change per tier.
-export const KIT_CHECKOUT_URL = KIT_MAILTO;
+// The audit request falls back to email until a checkout exists for it. The quick
+// report's checkout link and price live in src/lib/pricing.ts.
 export const AUDIT_CHECKOUT_URL = "mailto:boyan.works@gmail.com?subject=Systemix%20AI-Readiness%20Audit";
 
 /** The positioning line — say this before any jargon (SEO brief §1). */
@@ -298,7 +295,7 @@ export const faq = {
     },
     {
       q: "Is it really open source?",
-      a: "Yes — every skill is on GitHub, MIT. Start free; the €99 Learning Kit is the whole thing packaged to download and own.",
+      a: "Yes — every skill is on GitHub, MIT, and the Claude Code plugin is free. You pay only for the quick report, the human-reviewed audit or a design sprint.",
     },
     {
       q: "What leaves my machine when I get a score?",
@@ -336,7 +333,6 @@ export const nav = {
     { label: "How it works", href: "/#deep-dives" },
     { label: "Free score", href: "/report" },
     { label: "Audit", href: "/audit" },
-    { label: "Learning Kit", href: "/kit" },
     { label: "Docs", href: "/docs" },
   ],
   cta: { label: "Star on GitHub", href: GITHUB_URL },
@@ -349,7 +345,6 @@ export const footer = {
     { label: "Docs", href: "/docs" },
     { label: "Free score", href: "/report" },
     { label: "Audit", href: "/audit" },
-    { label: "Learning Kit", href: "/kit" },
   ],
   badge: "Open source",
 };

@@ -89,7 +89,8 @@ function render() {
   const put = (rel, content) => (out[rel.split(path.sep).join("/")] = content);
   const P = "plugins/systemix";
   const pkg = JSON.parse(fs.readFileSync(path.join(CLI, "package.json"), "utf8"));
-  const pluginJson = JSON.parse(fs.readFileSync(path.join(SRC, "plugin.json"), "utf8"));
+  // one version for the plugin and the scan it carries: the CLI's
+  const pluginJson = { ...JSON.parse(fs.readFileSync(path.join(SRC, "plugin.json"), "utf8")), version: pkg.version };
   const license = fs.readFileSync(path.join(REPO, "LICENSE"));
   const readme = fs.readFileSync(path.join(SRC, "README.md"), "utf8");
 

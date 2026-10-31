@@ -57,6 +57,16 @@ describe("local API routes", () => {
     },
   );
 
+  it.each(ROUTES)("%s %s refuses on a deployed site, even addressed to localhost", async (method, _path, load) => {
+    vi.stubEnv("VERCEL", "1");
+    try {
+      const res = await call(method, load, { "content-type": "application/json", origin: "http://localhost:3001" });
+      expect(res.status).toBe(403);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("wrote nothing into the workspace", () => {
     expect(fs.readdirSync(tmp)).toEqual([]);
   });

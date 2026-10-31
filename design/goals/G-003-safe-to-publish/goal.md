@@ -3,9 +3,9 @@ id: G-003
 slug: safe-to-publish
 title: Make Systemix safe to merge and publish — no private notes or retired offers on the site, no data loss or unasked writes in the CLI, and an agent that can never rule
 asked: "go with your recommendations" — accepting the proposed goal "Make Systemix safe to merge and publish" (repo-review.md § 3, phases 1–3)
-status: open
-step: product.evals
-waiting: reviewer
+status: building
+step: build.code
+waiting:
 lead: engineering-lead
 repos: [systemix-poc]
 opened: 2026-10-31

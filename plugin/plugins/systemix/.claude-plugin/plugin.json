@@ -1,7 +1,6 @@
 {
   "name": "systemix",
   "displayName": "Systemix",
-  "version": "0.2.0",
   "description": "The design system agent for Claude Code: deploys an AI-native design system, keeps it from rotting (a free deterministic AI-readiness score, drift and duplicate audits) and runs the product and build loops a design sprint needs, with a person ruling at every gate. The scan runs locally; your code never leaves your machine.",
   "author": {
     "name": "Systemix",
@@ -29,5 +28,6 @@
       "required": false,
       "sensitive": true
     }
-  }
+  },
+  "version": "0.3.0"
 }

@@ -1,11 +1,15 @@
 name: CI
 
-# Runs both test suites on every pull request: the CLI's Jest suite
-# (packages/cli) and the root Vitest suite (the app's route/contract tests plus
-# the MCP server's tests). The other workflows here are scheduled loop jobs.
+# Runs on every pull request and on main: the CLI's Jest suite (packages/cli), the
+# root Vitest suite (the app's route/contract tests plus the MCP server's tests), the
+# local hub's tests (packages/app), and two checks that keep generated and loop files
+# honest: the plugin in plugin/ is what a build writes, and the loops and goals in
+# design/ are well-formed. The other workflows here are scheduled loop jobs.
 
 on:
   pull_request:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -35,3 +39,15 @@ jobs:
 
       - name: App + MCP tests (Vitest)
         run: npm test
+
+      - name: Local hub tests (node --test)
+        run: npm --prefix packages/app test
+
+      - name: Plugin is up to date with its sources
+        run: node packages/cli/scripts/build-plugin.js --check
+
+      - name: Loops and goals are well-formed
+        run: node packages/cli/bin/cli.js loops check
+
+      - name: Docs sources compile (source.config.ts may only export collections)
+        run: npx fumadocs-mdx

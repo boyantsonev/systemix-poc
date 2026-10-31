@@ -22,6 +22,8 @@ export function rejectNonLocal(
   req: Request,
   { json = true }: { json?: boolean } = {},
 ): NextResponse | null {
+  // a deployed site is never local, whatever Host a request claims
+  if (process.env.VERCEL) return deny(403, "This route only answers on localhost.");
   const host = (req.headers.get("host") ?? new URL(req.url).host).toLowerCase();
   if (!LOOPBACK.has(hostname(host))) return deny(403, "This route only answers on localhost.");
 
