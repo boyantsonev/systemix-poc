@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { refuseOnDeploy } from '@/lib/local-request';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -9,6 +10,8 @@ const EVENTS_DIR = path.join(process.cwd(), '.systemix', 'events');
 const POLL_INTERVAL_MS = 1000;
 
 export async function GET(req: NextRequest) {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   const encoder = new TextEncoder();
   let lastSeen = new Date(req.nextUrl.searchParams.get('since') ?? 0).getTime();
 

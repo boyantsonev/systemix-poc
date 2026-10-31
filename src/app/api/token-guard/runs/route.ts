@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import fs from 'fs/promises'
 import path from 'path'
+import { refuseOnDeploy } from '@/lib/local-request';
 
 export interface RunLog {
   runId: string
@@ -14,6 +15,8 @@ export interface RunLog {
 // GET /api/token-guard/runs
 // Returns: { runs: RunLog[], stats: { totalRuns, totalTokens, avgCacheHitRatio } }
 export async function GET() {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   const runsDir = path.join(process.cwd(), '.systemix', 'runs')
 
   let runs: RunLog[] = []

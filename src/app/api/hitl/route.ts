@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { rejectNonLocal } from '@/lib/local-request';
+import { rejectNonLocal, refuseOnDeploy } from '@/lib/local-request';
 
 const QUEUE_PATH = path.join(process.cwd(), '.systemix', 'hitl-queue.json');
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   try {
     const status = req.nextUrl.searchParams.get('status');
     if (!fs.existsSync(QUEUE_PATH)) {

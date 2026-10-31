@@ -2,8 +2,8 @@
  * experiment.ts — the MCP door onto the loop (experiments/).
  *
  * Re-elevates the file-first loop as a tool surface so ANY agent / MCP client /
- * AI service can drive it: experiment_list / get / new / measure / close /
- * learnings. Operates on the SAME files as the CLI `experiment` subcommands and
+ * AI service can drive it: experiment_list / get / new / measure /
+ * learnings (no close: a person closes). Operates on the SAME files as the CLI `experiment` subcommands and
  * the .claude/skills (the "three doors"). v6: the loop is the core; this surface
  * is general (not design-bound) and reads/writes experiments/ + LEARNINGS.md +
  * .systemix/queue.json.
@@ -341,67 +341,9 @@ export async function experimentMeasureHandler(
   return ok(`${args.id}: posthog-event=${args.event}${args.metric ? ` metric=${args.metric}` : ""}`);
 }
 
-// --- experiment_close -------------------------------------------------------
-
-export const experimentCloseDefinition: ToolDefinition = {
-  name: "experiment_close",
-  description:
-    "Close an experiment: write status/result/decision/confidence/review-by into experiments/<id>.mdx, " +
-    "append the learning to experiments/LEARNINGS.md (## Memory, newest-first, cites the experiment), and " +
-    "push a decision card to .systemix/queue.json. The capture IS the loop.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      id: { type: "string", description: "The experiment id." },
-      result: { type: "string", description: "One-line result summary." },
-      decision: { type: "string", description: "promote | iterate | kill | no-action." },
-      confidence: { type: "number", description: "0.0–1.0." },
-      learning: { type: "string", description: "Optional short title for the learning entry (defaults to result)." },
-    },
-    required: ["id"],
-  },
-};
-
-export async function experimentCloseHandler(
-  args: { id: string; result?: string; decision?: string; confidence?: number; learning?: string },
-  projectRoot: string
-): Promise<ToolResult> {
-  const bad = invalidId(args.id);
-  if (bad) return bad;
-  const file = expPath(projectRoot, args.id);
-  if (!fs.existsSync(file)) return fail(`experiment not found: ${EXPERIMENTS_DIR}/${args.id}.mdx`);
-  const now = new Date();
-  const day = isoDay(now);
-  const reviewBy = isoDay(new Date(now.getTime() + REVIEW_DAYS * DAY_MS));
-
-  let raw = fs.readFileSync(file, "utf8");
-  raw = setFrontmatterField(raw, "status", "complete");
-  if (args.result != null) raw = setFrontmatterField(raw, "result", q(args.result));
-  if (args.decision != null) raw = setFrontmatterField(raw, "decision", args.decision);
-  if (args.confidence != null) raw = setFrontmatterField(raw, "confidence", String(args.confidence));
-  raw = setFrontmatterField(raw, "review-by", reviewBy);
-  fs.writeFileSync(file, raw, "utf8");
-
-  appendLearning(projectRoot, {
-    id: args.id,
-    title: args.learning || args.result || args.id,
-    decision: args.decision ?? null,
-    confidence: args.confidence ?? null,
-    // distinct learning title → the result becomes the evidence sentence (mirrors CLI + app)
-    summary: args.learning && args.result ? args.result : undefined,
-    day,
-    reviewBy,
-  });
-  pushQueueCard(projectRoot, {
-    id: args.id,
-    decision: args.decision ?? null,
-    confidence: args.confidence ?? null,
-    summary: args.result ?? null,
-    now,
-  });
-
-  return ok(`closed ${args.id}; learning → ${LEARNINGS_REL}; decision card → ${QUEUE_REL}`);
-}
+// --- experiment_close: removed ---------------------------------------------
+// Humans close experiments (CLAUDE.md: "it never closes; humans close"). A person
+// types `systemix experiment close <id> …`; the agent can only queue a close card.
 
 // --- experiment_learnings ---------------------------------------------------
 

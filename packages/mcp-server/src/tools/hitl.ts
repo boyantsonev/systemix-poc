@@ -1,5 +1,5 @@
 /**
- * hitl.ts — push_hitl_task / resolve_hitl_task / list_hitl_tasks
+ * hitl.ts — push_hitl_task / list_hitl_tasks (no resolve: a person types `systemix experiment ack`)
  *
  * Human-in-the-loop queue backed by .systemix/hitl-queue.json.
  * Skills push tasks when they need human approval before proceeding.
@@ -17,7 +17,6 @@ import type {
   HitlTask,
   HitlQueue,
 } from "../types.js";
-import { dualWriteHitlTask, dualResolveHitlTask } from "../supabase-client.js";
 
 const QUEUE_FILE = ".systemix/hitl-queue.json";
 const EVENTS_DIR = ".systemix/events";
@@ -128,17 +127,6 @@ export const pushHitlTaskHandler: ToolHandler<{
   queue.tasks.push(task);
   writeQueueAtomic(filePath, queue);
 
-  // Dual-write to Supabase (best-effort, fire-and-forget)
-  void dualWriteHitlTask({
-    id: task.id,
-    agent: task.agent,
-    type: task.type,
-    priority: task.priority,
-    title: task.title,
-    description: task.description,
-    payload: task.payload,
-    createdAt: task.createdAt,
-  });
 
   // Emit hitl_requested event
   emitEvent(path.join(projectRoot, EVENTS_DIR), {
@@ -161,113 +149,9 @@ export const pushHitlTaskHandler: ToolHandler<{
 };
 
 // ---------------------------------------------------------------------------
-// resolve_hitl_task
-// ---------------------------------------------------------------------------
-
-export const resolveHitlTaskDefinition: ToolDefinition = {
-  name: "resolve_hitl_task",
-  description:
-    "Resolve a human-in-the-loop task in .systemix/hitl-queue.json. " +
-    "Set action to 'approved', 'rejected', or 'skipped'. " +
-    "Skills should check the resolution before proceeding with a destructive operation.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      taskId: {
-        type: "string",
-        description: "Task ID returned by push_hitl_task.",
-      },
-      action: {
-        type: "string",
-        enum: ["approved", "rejected", "skipped"],
-        description: "Resolution action.",
-      },
-      note: {
-        type: "string",
-        description: "Optional note explaining the decision.",
-      },
-      resolvedBy: {
-        type: "string",
-        description: "Who resolved the task (e.g. 'human', 'dashboard', 'auto').",
-      },
-    },
-    required: ["taskId", "action"],
-  },
-};
-
-export const resolveHitlTaskHandler: ToolHandler<{
-  taskId: string;
-  action: "approved" | "rejected" | "skipped";
-  note?: string;
-  resolvedBy?: string;
-}> = async (args, projectRoot) => {
-  const filePath = path.join(projectRoot, QUEUE_FILE);
-  const queue = readQueue(filePath);
-
-  const taskIndex = queue.tasks.findIndex((t) => t.id === args.taskId);
-  if (taskIndex === -1) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: task ${args.taskId} not found in the HITL queue.`,
-        },
-      ],
-      isError: true,
-    };
-  }
-
-  const task = queue.tasks[taskIndex];
-
-  if (task.status !== "pending") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Task ${args.taskId} is already resolved (status: ${task.status}).`,
-        },
-      ],
-      isError: true,
-    };
-  }
-
-  const resolvedAt = new Date().toISOString();
-
-  const resolved: HitlTask = {
-    ...task,
-    status: args.action,
-    resolvedAt,
-    resolution: {
-      action: args.action,
-      note: args.note,
-      resolvedBy: args.resolvedBy,
-    },
-  };
-
-  queue.tasks[taskIndex] = resolved;
-  writeQueueAtomic(filePath, queue);
-
-  // Dual-write resolution to Supabase (best-effort, fire-and-forget)
-  void dualResolveHitlTask(task.id, args.action, resolved.resolution, resolvedAt);
-
-  // Emit hitl_resolved event
-  emitEvent(path.join(projectRoot, EVENTS_DIR), {
-    type: "hitl_resolved",
-    agent: task.agent,
-    data: { taskId: task.id, action: args.action },
-    timestamp: resolvedAt,
-  });
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({ taskId: resolved.id, action: args.action, task: resolved }, null, 2),
-      },
-    ],
-  };
-};
-
+// resolve_hitl_task: removed. The agent never rules on a card (G-003, decision
+// 2026-10-31): a person approves or declines with a typed command
+// (`systemix experiment ack <id>`, or `/systemix:gate` for a goal).
 // ---------------------------------------------------------------------------
 // list_hitl_tasks
 // ---------------------------------------------------------------------------

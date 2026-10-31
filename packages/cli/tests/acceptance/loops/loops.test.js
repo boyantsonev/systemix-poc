@@ -117,6 +117,34 @@ describe("goals check", () => {
     expect(out).toMatch(/decisions\.md:2: decision line does not parse/);
   });
 
+  test("a decision line is ruled by a holder of its role, or a holder of the deputy role, never the agent", () => {
+    const line = (who) => `# G-001 · decisions\n- **2026-10-31 · Evals approved.** E5 waived. (${who} · context product)\n`;
+    goal({ decisions: line("reviewer: Lin") });
+    expect(check()).toEqual([]);
+    goal({ decisions: line("reviewer: Mallory") });
+    expect(check().join("\n")).toMatch(/decisions\.md:2: Mallory does not hold reviewer \(holders: Ada, Lin\)/);
+    goal({ decisions: line("reviewer: Claude") });
+    expect(check().join("\n")).toMatch(/decisions\.md:2: decision line is ruled by the agent \(Claude\)/);
+    goal({ decisions: line("agent: Claude") });
+    expect(check().join("\n")).toMatch(/ruled by the agent/);
+  });
+
+  test("a deputy rules only while holding the role's deputy role", () => {
+    const line = (who) => `# G-001 · decisions\n- **2026-10-31 · Evals approved.** E5 waived. (${who} · context product)\n`;
+    const sys = kit.load(root);
+    const lead = sys.roster["design-lead"];
+    const deputyHolder = sys.roster[lead.deputy].holders[0];
+    const outsider = ["Ada", "Lin"].find((p) => !sys.roster[lead.deputy].holders.includes(p));
+    goal({ decisions: line(`design-lead: ${deputyHolder} as deputy`) });
+    expect(check()).toEqual([]);
+    if (outsider) {
+      goal({ decisions: line(`design-lead: ${outsider} as deputy`) });
+      expect(check().join("\n")).toMatch(new RegExp(`${outsider} rules as deputy for design-lead, but does not hold its deputy role`));
+    }
+    goal({ decisions: line("founder: Ada as deputy") });
+    expect(check().join("\n")).toMatch(/Ada rules as deputy, but founder names no deputy role/);
+  });
+
   test("an eval waived without a decision line, a vague check and too few evals are refused", () => {
     goal({ evals: EVALS.replace("| npm test |", "| looks good |").split("\n").slice(0, 5).join("\n") + "\n| E5 | x | loops check | exit 0 | build.test | waived |\n" });
     const out = check().join("\n");
@@ -160,11 +188,11 @@ describe("systemix loops", () => {
   });
 
   test("status and decisions read the goals; check exits 1 on errors", async () => {
-    goal({ decisions: "# G-001 · decisions\n- **2026-10-31 · Evals approved.** E5 waived. (reviewer: Ada as deputy · context product, design · brief B-001)\n" });
+    goal({ decisions: "# G-001 · decisions\n- **2026-10-31 · Evals approved.** E5 waived. (design-lead: Lin as deputy · context product, design · brief B-001)\n" });
     const rows = await quiet(() => loops(["status", "--json"], { projectRoot: root }));
     expect(rows).toEqual([{ id: "G-001", title: "A first goal", status: "open", step: "product.evals", waiting: "reviewer", holders: ["Ada", "Lin"], lastRuling: "2026-10-31 · Evals approved" }]);
     const all = await quiet(() => loops(["decisions", "--json"], { projectRoot: root }));
-    expect(all[0]).toMatchObject({ goal: "G-001", role: "reviewer", person: "Ada", deputy: true, context: ["product", "design"], brief: "B-001" });
+    expect(all[0]).toMatchObject({ goal: "G-001", role: "design-lead", person: "Lin", deputy: true, context: ["product", "design"], brief: "B-001" });
     expect(await quiet(() => loops(["check"], { projectRoot: root }))).toEqual([]);
     expect(process.exitCode).not.toBe(1);
     edit("goals/G-001-first-goal/goal.md", "status: open", "status: maybe");

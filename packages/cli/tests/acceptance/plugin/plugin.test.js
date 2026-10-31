@@ -10,7 +10,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
-const { render, write, diff, leftoverCalls, SKILL_NAMES, DEFAULT_OUT } = require("../../../scripts/build-plugin");
+const { render, write, diff, leftoverCalls, unshippedRefs, assertShipped, SKILL_NAMES, DEFAULT_OUT } = require("../../../scripts/build-plugin");
 const { makeRepo, removeRepo } = require("../counters/helpers");
 
 const P = "plugins/systemix";
@@ -35,6 +35,21 @@ describe("plugin build", () => {
     }
     expect(text(`${P}/skills/readiness-audit/SKILL.md`)).toContain('node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" audit counters');
     expect(text(`${P}/skills/drift-report/SKILL.md`)).toContain('node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" drift scan');
+  });
+
+  test("a skill that references an unshipped skill or command fails the build, naming it (G-003 E8)", () => {
+    const skill = `${P}/skills/score/SKILL.md`;
+    const bad = { ...rendered, [skill]: "Next: `/hermes`, then run `systemix design feed`; /systemix:gate is fine, /tmp/x.json is a path." };
+    expect(() => assertShipped(bad)).toThrow(/plugins\/systemix\/skills\/score\/SKILL\.md: \/hermes/);
+    expect(() => assertShipped(bad)).toThrow(/score\/SKILL\.md: systemix design feed/);
+    expect(unshippedRefs("/systemix:gate, /plugin update, `systemix loops check`, design/goals, /tmp/c.json")).toEqual([]);
+    expect(unshippedRefs("/systemix:nope and /init-experiment")).toEqual(["/systemix:nope", "/init-experiment"]);
+  });
+
+  test("the shipped skills reference only what the plugin ships", () => {
+    for (const rel of Object.keys(rendered).filter((r) => r.startsWith(`${P}/skills/`) && r.endsWith(".md"))) {
+      expect([rel, unshippedRefs(text(rel))]).toEqual([rel, []]);
+    }
   });
 
   test("the license key is a sensitive setting that only the MCP server receives", () => {

@@ -5,6 +5,7 @@
 import { NextRequest } from "next/server";
 import { existsSync, readFileSync, statSync, watchFile, unwatchFile } from "fs";
 import path from "path";
+import { refuseOnDeploy } from "@/lib/local-request";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,6 +24,8 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   const { id } = await params;
 
   // Sanitize ID to prevent path traversal

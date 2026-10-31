@@ -9,10 +9,10 @@
  *   context  — systemix_get_context, systemix_set_context, systemix_get_agent_state
  *   bridge   — get_token_bridge, diff_token_bridge, systemix_diff_tokens
  *   events   — emit_event, list_events
- *   hitl     — push_hitl_task, resolve_hitl_task, list_hitl_tasks
+ *   hitl     — push_hitl_task, list_hitl_tasks (a person rules with a typed command; no tool resolves a card)
  *   workflow — list_workflows, get_workflow
  *   contract — contract_get_token, contract_list_drifted, contract_get_component, contract_get_quality_score, contract_get_evidence, contract_write_evidence
- *   experiment — experiment_list, experiment_get, experiment_new, experiment_measure, experiment_close, experiment_learnings (the v6 loop over experiments/)
+ *   experiment — experiment_list, experiment_get, experiment_new, experiment_measure, experiment_learnings (the v6 loop over experiments/; humans close with the CLI)
  *
  * Usage:
  *   systemix-mcp --project-root /path/to/project
@@ -57,8 +57,6 @@ import {
 import {
   pushHitlTaskDefinition,
   pushHitlTaskHandler,
-  resolveHitlTaskDefinition,
-  resolveHitlTaskHandler,
   listHitlTasksDefinition,
   listHitlTasksHandler,
 } from "./tools/hitl.js";
@@ -94,8 +92,6 @@ import {
   experimentNewHandler,
   experimentMeasureDefinition,
   experimentMeasureHandler,
-  experimentCloseDefinition,
-  experimentCloseHandler,
   experimentLearningsDefinition,
   experimentLearningsHandler,
 } from "./tools/experiment.js";
@@ -139,7 +135,6 @@ const tools = [
   emitEventDefinition,
   listEventsDefinition,
   pushHitlTaskDefinition,
-  resolveHitlTaskDefinition,
   listHitlTasksDefinition,
   listWorkflowsDefinition,
   getWorkflowDefinition,
@@ -153,7 +148,6 @@ const tools = [
   experimentGetDefinition,
   experimentNewDefinition,
   experimentMeasureDefinition,
-  experimentCloseDefinition,
   experimentLearningsDefinition,
   designGetDefinition,
   designListProposalsDefinition,
@@ -170,7 +164,6 @@ const handlers = new Map<string, (args: Record<string, unknown>) => Promise<Tool
   [emitEventDefinition.name, (a) => emitEventHandler(a as Parameters<typeof emitEventHandler>[0], PROJECT_ROOT)],
   [listEventsDefinition.name, (a) => listEventsHandler(a as Parameters<typeof listEventsHandler>[0], PROJECT_ROOT)],
   [pushHitlTaskDefinition.name, (a) => pushHitlTaskHandler(a as Parameters<typeof pushHitlTaskHandler>[0], PROJECT_ROOT)],
-  [resolveHitlTaskDefinition.name, (a) => resolveHitlTaskHandler(a as Parameters<typeof resolveHitlTaskHandler>[0], PROJECT_ROOT)],
   [listHitlTasksDefinition.name, (a) => listHitlTasksHandler(a as Parameters<typeof listHitlTasksHandler>[0], PROJECT_ROOT)],
   [listWorkflowsDefinition.name, (a) => listWorkflowsHandler(a, PROJECT_ROOT)],
   [getWorkflowDefinition.name, (a) => getWorkflowHandler(a as Parameters<typeof getWorkflowHandler>[0], PROJECT_ROOT)],
@@ -184,7 +177,6 @@ const handlers = new Map<string, (args: Record<string, unknown>) => Promise<Tool
   [experimentGetDefinition.name, (a) => experimentGetHandler(a as Parameters<typeof experimentGetHandler>[0], PROJECT_ROOT)],
   [experimentNewDefinition.name, (a) => experimentNewHandler(a as Parameters<typeof experimentNewHandler>[0], PROJECT_ROOT)],
   [experimentMeasureDefinition.name, (a) => experimentMeasureHandler(a as Parameters<typeof experimentMeasureHandler>[0], PROJECT_ROOT)],
-  [experimentCloseDefinition.name, (a) => experimentCloseHandler(a as Parameters<typeof experimentCloseHandler>[0], PROJECT_ROOT)],
   [experimentLearningsDefinition.name, (a) => experimentLearningsHandler(a as Parameters<typeof experimentLearningsHandler>[0], PROJECT_ROOT)],
   [designGetDefinition.name, (_a) => designGetHandler({}, PROJECT_ROOT)],
   [designListProposalsDefinition.name, (a) => designListProposalsHandler(a as Parameters<typeof designListProposalsHandler>[0], PROJECT_ROOT)],

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadWorkflow, saveWorkflow, deleteWorkflow } from '@/lib/workflow/persistence';
-import { rejectNonLocal } from '@/lib/local-request';
+import { rejectNonLocal, refuseOnDeploy } from '@/lib/local-request';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   const { id } = await params;
   const workflow = loadWorkflow(id);
   if (!workflow) return NextResponse.json({ error: 'Not found' }, { status: 404 });

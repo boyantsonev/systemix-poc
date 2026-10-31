@@ -12,7 +12,7 @@ Verb = first word (approve | rework | drop; else ask and stop). Goal = a G-NNN i
 If `waiting` is empty, there is no gate: say which step it is at and stop.
 
 ## 2. Who is ruling
-`git config user.name`, matched to a holder in `design/loops/roster.md`. The gate's lead role must be held by that person, or they stand in as deputy (`away:`). No match → ask who is ruling and as which role. Never guess a person.
+`git config user.name`, matched to a holder in `design/loops/roster.md`. The gate's lead role must be held by that person, or they stand in as deputy: they hold the role that the lead role names as its `deputy:` (`loops check` refuses any other name, and refuses the agent). No match → ask who is ruling and as which role. Never guess a person.
 
 ## 3. What each verb does
 | verb | approve gate | decide gate |

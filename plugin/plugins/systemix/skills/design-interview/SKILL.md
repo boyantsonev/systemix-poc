@@ -58,8 +58,7 @@ even in autonomous mode. So:
 
 1. Present the three drafts and ask for approval (edits welcome — it's their system).
 2. Push a proposal card to the HITL feed (`.systemix/queue.json`) so the decision is
-   visible in the dashboard and readable by other agents (`systemix design feed` /
-   MCP `design_list_proposals`):
+   visible in the dashboard and readable by other agents (the Systemix CLI's design feed):
    ```json
    {
      "id": "design-proposal-<slug>-<timestamp>",

@@ -258,7 +258,7 @@ against a guardrails file that has rules"). Report every unruled family and prop
   in the report under "Proposed next step". The `id` and `requestedAt` come from the repo, not the clock, so two runs print the
   same ones; `proposed` and `context` hold counts and wording `[j]` (the numbers in `context` are tagged elsewhere in the
   report). Without git the id is `design-proposal-audit-nogit` and `requestedAt` is left out. The operator can paste it into the HITL feed
-  (`systemix design feed` / MCP `design_list_proposals` read it):
+  (the Systemix CLI's design feed reads it):
   ```json
   {
     "id": "design-proposal-audit-<commit, 12 chars>",
@@ -410,7 +410,7 @@ major at least, the same minor and patch when you can) and the same `--dirs`.
   `design/tokens.css` is a `guardrail` artifact — **always HITL**, even in autonomous mode (self-modification covenant).
   Never inline a token "just this once"; add it to `design/tokens.css` first.
 - **Code-first.** No Figma, no design tool. Pushing tokens *out* to a design tool is the optional Figma adapter
-  (`/sync-to-figma`), not this skill.
+  of the Systemix CLI, not this plugin.
 - After the operator has a design system, the two doors converge: greenfield builds from the interview, messy repos
   build from this audit — both land in `design/`.
 - **Recommend, don't just diagnose.** Stage 5 turns the findings into a concrete `systemix init` recommendation

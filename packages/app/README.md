@@ -11,11 +11,13 @@ infrastructure, for humans and agents:
 - **Skills & workflows** — what's installed in `.claude/skills/` +
   `.claude/workflows/` (`GET /api/skills`, viewer only)
 - **Experiments** + LEARNINGS (the instance memory)
-- **HITL queue** — approve/decline decision cards (reads both `.systemix/queue.json`
-  and `.systemix/hitl-queue.json`)
+- **HITL queue** — the decision cards (reads both `.systemix/queue.json`
+  and `.systemix/hitl-queue.json`), each with the command a person types to
+  rule on it: `npx @getsystemix/cli experiment ack <id> [--decline]`
 
-It is a *viewer + HITL actuator over the same files* the skills, CLI and MCP
-use — three-doors parity, no state of its own.
+It is a *viewer over the same files* the skills, CLI and MCP use — three-doors
+parity, no state of its own. It never rules: there is no approve button, so a
+click (by a person or an agent driving the browser) can never be the ruling.
 
 **The app wears the instance's skin**: `/api/home` resolves the semantic
 aliases (background/foreground/card/border/ring/…) from the instance's

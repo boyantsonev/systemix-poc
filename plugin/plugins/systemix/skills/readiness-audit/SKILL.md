@@ -391,7 +391,7 @@ runs agreed on every score).
 ## Delivery
 
 The report is markdown. Hand it over as is, or render it as a portable, self-contained artifact
-the same way `/workflow-artifact` does if that skill is installed (baked-in data, CSP-safe, no network) so it can be
+(baked-in data, CSP-safe, no network) so it can be
 shared without the repo. Do **not** attempt a live or localhost fetch from an artifact: the sandbox CSP
 blocks it. Keep the counters file next to the report; it is the proof a reviewer re-adds the
 numbers from. The tags are that audit trail: if they get in a reader's way, give them a second copy without the

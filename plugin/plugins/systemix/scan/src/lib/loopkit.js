@@ -370,8 +370,20 @@ function checkGoals(sys) {
         if (!l.startsWith("- ")) return;
         if (!DECISION_LINE.test(l)) err(decisionsFile, i + 1, "decision line does not parse: - **YYYY-MM-DD · Title.** body (role: person[ as deputy] · context a, b[ · brief B-NNN])");
         else {
-          const role = l.match(DECISION_LINE)[4];
-          if (!sys.roster[role]) err(decisionsFile, i + 1, `decision line names role "${role}", which is not in roster.md`);
+          const m = l.match(DECISION_LINE);
+          const role = m[4];
+          const person = m[5].trim();
+          const r = sys.roster[role];
+          if (!r) err(decisionsFile, i + 1, `decision line names role "${role}", which is not in roster.md`);
+          else if (role === "agent" || (sys.roster.agent && sys.roster.agent.holders.includes(person))) {
+            err(decisionsFile, i + 1, `decision line is ruled by the agent (${person}); a person rules every gate`);
+          } else if (m[6]) {
+            const dep = r.deputy && sys.roster[r.deputy];
+            if (!dep) err(decisionsFile, i + 1, `${person} rules as deputy, but ${role} names no deputy role`);
+            else if (!dep.holders.includes(person)) err(decisionsFile, i + 1, `${person} rules as deputy for ${role}, but does not hold its deputy role ${r.deputy}`);
+          } else if (!r.holders.includes(person)) {
+            err(decisionsFile, i + 1, `${person} does not hold ${role} (holders: ${r.holders.join(", ") || "none"})`);
+          }
         }
       });
     }

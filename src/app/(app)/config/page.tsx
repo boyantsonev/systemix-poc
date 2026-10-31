@@ -11,6 +11,23 @@ import { ConfigView } from "./ConfigView";
 export const dynamic = "force-dynamic";
 
 export default function ConfigPage() {
+  // the deployed site holds no instance state: Home is the local hub (G-003 E3, DSC-22 D2)
+  if (process.env.VERCEL) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="max-w-md text-center">
+          <p className="mb-2 text-sm font-medium text-foreground">Home runs on your machine</p>
+          <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+            The decision queue, runs and settings read your repo, so they are never served from this site.
+            Open them locally, in the repo that holds your design system:
+          </p>
+          <code className="inline-block rounded-lg border px-3 py-1.5 font-mono text-sm text-foreground">
+            npx @getsystemix/cli app
+          </code>
+        </div>
+      </div>
+    );
+  }
   const cfg = loadInstanceConfig();
   const runtime = loadRuntimeState();
   // The live instance loop as graph data (ADR-021) — slice 1 seeds source nodes.

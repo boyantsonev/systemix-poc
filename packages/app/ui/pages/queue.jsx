@@ -1,35 +1,12 @@
-// #/queue — the HITL stream: pending cards get Approve / Decline.
-import React, { useState } from 'react'
+// #/queue — the HITL stream. The hub reads; a person types the ruling
+// (`systemix experiment ack`), so a click can never be the agent's.
+import React from 'react'
 import { useApp } from '../app.jsx'
 import { asJson, useApi } from '../lib.js'
 
 export default function Queue() {
-  const { view, refresh } = useApp()
-  const [tick, setTick] = useState(0)
-  const { data, error, loading } = useApi('/api/queue', [tick])
-  const [note, setNote] = useState(null) // { kind: 'ok'|'err', text }
-  const [busyId, setBusyId] = useState(null)
-
-  const resolve = async (id, action) => {
-    setBusyId(id)
-    setNote(null)
-    try {
-      const r = await fetch(`/api/queue/${encodeURIComponent(id)}/resolve`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action }),
-      })
-      const body = await r.json().catch(() => null)
-      if (!r.ok) setNote({ kind: 'err', text: body?.error ?? `HTTP ${r.status}` })
-      else setNote({ kind: 'ok', text: body?.nextHint ?? `${action === 'approve' ? 'Approved' : 'Declined'}.` })
-    } catch (e) {
-      setNote({ kind: 'err', text: String(e) })
-    } finally {
-      setBusyId(null)
-      setTick((t) => t + 1) // refetch the queue
-      refresh() // refresh sidebar badges / home counts
-    }
-  }
+  const { view } = useApp()
+  const { data, error, loading } = useApi('/api/queue', [])
 
   if (loading && !data) return <div className="empty-note">Loading…</div>
   if (error) return <div className="empty-note">Failed to load queue: {error.error}</div>
@@ -38,7 +15,6 @@ export default function Queue() {
     return (
       <>
         <div className="eyebrow">GET /api/queue</div>
-        {note && <div className={note.kind === 'ok' ? 'toast toast-ok' : 'toast toast-err'}>{note.text}</div>}
         <pre className="machine-pre">{asJson(data)}</pre>
       </>
     )
@@ -52,18 +28,18 @@ export default function Queue() {
         {data.pendingCount > 0 && <span className="chip chip-amber">{data.pendingCount} pending</span>}
       </h1>
 
-      {note && <div className={note.kind === 'ok' ? 'toast toast-ok' : 'toast toast-err'}>{note.text}</div>}
+      <p className="muted">The hub never rules. To rule on a card, type the command under it in your terminal.</p>
 
       {data.items.length === 0 && <div className="empty-note">Queue is empty — nothing needs a human right now.</div>}
 
       {data.items.map((item) => (
-        <QueueCard key={`${item._source}:${item.id}`} item={item} busy={busyId === item.id} onResolve={resolve} />
+        <QueueCard key={`${item._source}:${item.id}`} item={item} />
       ))}
     </>
   )
 }
 
-function QueueCard({ item, busy, onResolve }) {
+function QueueCard({ item }) {
   const pending = item.status === 'pending'
   const subject = item.subject ?? item.experimentId ?? item.title ?? item.id
   const when = item.requestedAt ?? item.createdAt ?? null
@@ -81,12 +57,8 @@ function QueueCard({ item, busy, onResolve }) {
       )}
       {pending ? (
         <div className="queue-actions">
-          <button type="button" className="btn btn-approve" disabled={busy} onClick={() => onResolve(item.id, 'approve')}>
-            Approve
-          </button>
-          <button type="button" className="btn btn-decline" disabled={busy} onClick={() => onResolve(item.id, 'decline')}>
-            Decline
-          </button>
+          <code className="queue-command">npx @getsystemix/cli experiment ack {item.id}</code>
+          <code className="queue-command muted">npx @getsystemix/cli experiment ack {item.id} --decline</code>
         </div>
       ) : (
         <div className="queue-resolution muted">

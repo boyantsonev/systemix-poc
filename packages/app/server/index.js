@@ -18,9 +18,8 @@ import {
   loadQueue,
   loadSkills,
   loadTokens,
-  resolveQueueItem,
 } from './lib/instance.js'
-import { checkHost, checkMutation } from './lib/request-guard.js'
+import { checkHost } from './lib/request-guard.js'
 
 const args = process.argv.slice(2)
 const argOf = (name, fallback) => {
@@ -45,21 +44,6 @@ const json = (res, status, data) => {
   res.writeHead(status, { 'content-type': 'application/json' })
   res.end(JSON.stringify(data))
 }
-
-const readBody = (req) =>
-  new Promise((resolve, reject) => {
-    let body = ''
-    req.on('data', (c) => {
-      body += c
-    })
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(body || '{}'))
-      } catch {
-        reject(new Error('invalid JSON body'))
-      }
-    })
-  })
 
 async function handleApi(req, res, url) {
   const p = url.pathname
@@ -87,19 +71,14 @@ async function handleApi(req, res, url) {
   if (p === '/api/skills') return json(res, 200, loadSkills(ROOT))
   if (p === '/api/experiments') return json(res, 200, loadExperiments(ROOT))
   if (p === '/api/queue') return json(res, 200, loadQueue(ROOT))
-  const resolveMatch = p.match(/^\/api\/queue\/([\w.-]+)\/resolve$/)
-  if (resolveMatch && req.method === 'POST') {
-    const denied = checkMutation(req, PORT)
-    if (denied) return json(res, denied.status, { error: denied.error })
-    let body
-    try {
-      body = await readBody(req)
-    } catch (err) {
-      return json(res, 400, { error: err.message })
-    }
-    if (!body || typeof body !== 'object') return json(res, 400, { error: 'expected a JSON object' })
-    const result = resolveQueueItem(ROOT, resolveMatch[1], body)
-    return result.error ? json(res, result.status, { error: result.error }) : json(res, 200, result)
+  // the hub reads; it never rules. A person types the ruling (G-003 E7):
+  if (/^\/api\/queue\/[\w.-]+\/resolve$/.test(p)) {
+    const id = p.split('/')[3]
+    return json(res, 410, {
+      error: 'the hub does not resolve cards; a person types the ruling',
+      command: `npx @getsystemix/cli experiment ack ${id}`,
+      decline: `npx @getsystemix/cli experiment ack ${id} --decline`,
+    })
   }
   if (p === '/api/drift') return json(res, 200, loadDrift(ROOT))
   return json(res, 404, { error: 'unknown endpoint' })

@@ -61,6 +61,15 @@ const REWRITES = [
   [/CLI\s+release which lists `audit counters` in `npx @getsystemix\/cli --help` is required \(a Systemix checkout has it:\s+`node packages\/cli\/bin\/cli\.js`\)/g,
     "the plugin's scan must run (`" + SCAN_CMD + " --help` lists `audit counters`; if it does not, reinstall the plugin)"],
   [/\(`@getsystemix\/cli@<version>`\s+in place of `@getsystemix\/cli`\)/g, "(the same plugin version)"],
+  // skills and commands of the full CLI that the plugin does not ship (checked by unshippedRefs below)
+  [/\(`\/hermes` if it is installed, else the operator's own review\)/g, "(the operator's own review)"],
+  [/\(`\/hermes` if it is installed\)/g, "(the operator's review)"],
+  [/\[awaiting approval, \/hermes\]/g, "[awaiting approval]"],
+  [/\nthe same way `\/workflow-artifact` does if that skill is installed \(/g, "\n("],
+  [/ \(`\/sync-to-figma`\), not this skill/g, " of the Systemix CLI, not this plugin"],
+  [/`\/init-experiment` to validate the new direction/g, "`/systemix:goal` to validate the new direction"],
+  [/\(`systemix design feed` \/\s+MCP `design_list_proposals` read it\)/g, "(the Systemix CLI's design feed reads it)"],
+  [/\(`systemix design feed` \/\s+MCP `design_list_proposals`\)/g, "(the Systemix CLI's design feed)"],
   [/npx @getsystemix\/cli (--help|audit counters|drift scan)/g, `${SCAN_CMD} $1`],
   [new RegExp("(^|[\\s`(\"'])/(" + PIPELINE_SKILLS.join("|") + ")\\b", "gm"), "$1/systemix:$2"],
 ];
@@ -74,6 +83,35 @@ function rewriteSkill(text) {
 /** Every `npx @getsystemix/cli` call left in a generated skill must be one the operator runs by choice (init). */
 function leftoverCalls(text) {
   return [...text.matchAll(/npx @getsystemix\/cli(?! init)[^`\n]*/g)].map((m) => m[0]);
+}
+
+// what a generated skill may name: its own skills, Claude Code's /plugin, and the scan's commands
+const BUILTIN_COMMANDS = ["plugin"];
+const SCAN_COMMANDS = /^(audit (counters|report)|drift (scan|history)|loops (init|check|status|decisions)|init\b)/;
+
+/** Skill references and `systemix <command>`s in a generated skill that the plugin does not ship. */
+function unshippedRefs(text) {
+  const refs = [];
+  for (const m of text.matchAll(/(^|[\s`("'])\/([a-z][a-z0-9-]*(?::[a-z][a-z0-9-]*)?)(?![\w/.-])/gm)) {
+    const name = m[2];
+    const own = name.startsWith("systemix:") && SKILL_NAMES.includes(name.slice("systemix:".length));
+    if (!own && !BUILTIN_COMMANDS.includes(name)) refs.push(`/${name}`);
+  }
+  for (const m of text.matchAll(/(?:^|[\s`(])systemix ([a-z][a-z-]*(?: [a-z][a-z-]*)?)/gm)) {
+    if (!SCAN_COMMANDS.test(m[1])) refs.push(`systemix ${m[1]}`);
+  }
+  return refs;
+}
+
+/** Throw, naming each one, if a generated skill references something the plugin does not ship. */
+function assertShipped(rendered) {
+  const bad = [];
+  for (const [rel, content] of Object.entries(rendered)) {
+    if (!/^plugins\/systemix\/skills\/.+\.md$/.test(rel)) continue;
+    for (const ref of unshippedRefs(String(content))) bad.push(`${rel}: ${ref}`);
+  }
+  if (bad.length) throw new Error(`the plugin references what it does not ship:\n  ${bad.join("\n  ")}`);
+  return rendered;
 }
 
 function files(dir, base = dir) {
@@ -121,7 +159,7 @@ function render() {
   // the counters report the CLI version as toolVersion; no dependencies, so nothing is installed
   put(`${P}/scan/package.json`, JSON.stringify({ name: "systemix-plugin-scan", version: pkg.version, private: true, license: "MIT" }, null, 2) + "\n");
 
-  return Object.fromEntries(Object.entries(out).sort(([a], [b]) => (a < b ? -1 : 1)));
+  return assertShipped(Object.fromEntries(Object.entries(out).sort(([a], [b]) => (a < b ? -1 : 1))));
 }
 
 function write(outDir, rendered = render()) {
@@ -159,4 +197,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { render, write, diff, rewriteSkill, leftoverCalls, SCAN_FILES, SKILL_NAMES, DEFAULT_OUT };
+module.exports = { render, write, diff, rewriteSkill, leftoverCalls, unshippedRefs, assertShipped, SCAN_FILES, SKILL_NAMES, DEFAULT_OUT };

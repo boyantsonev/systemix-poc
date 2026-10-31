@@ -307,7 +307,7 @@ is the rubric (the block); the prose explains it, and if they ever disagree the 
   "needs review". Starred rules first.
 - **Propose, never write.** A class that is unruled drift gets a proposed guardrail line with its counts.
   A Warning you would keep gets a proposed token name `[j]`. Printed under "Proposed next step", marked
-  `[awaiting approval]`. This is the separate, always-HITL path (`/hermes` if it is installed, else the operator's own review), even in autonomous mode:
+  `[awaiting approval]`. This is the separate, always-HITL path (the operator's own review), even in autonomous mode:
   this skill writes no file and no `.systemix/queue.json` entry.
 
 ## Output format
@@ -357,8 +357,8 @@ Info is decided by the path: 30 hits in brand data, 14 in components/ui [r:sever
 - "Status is icon + text" (line 47) — manual — needs review.
 
 ## Proposed next step   (printed, nothing is written)
-→ guardrail for unruled drift [awaiting approval, /hermes]: "Type sizes come from the --font-size-* tokens; no text-[Npx]" — 247 class matches in 38 files [m:typography.arbitrary_size.matches!] [m:typography.arbitrary_size.files!]; 176 of the 265 arbitrary font-size class matches in all audited files equal a token [m:typography.arbitrary_size.equals_token] [m:typography.arbitrary_size.matches]
-→ tokens for the Warnings you keep, e.g. #241304 in system-graph.ts [j]   [awaiting approval, /hermes]
+→ guardrail for unruled drift [awaiting approval]: "Type sizes come from the --font-size-* tokens; no text-[Npx]" — 247 class matches in 38 files [m:typography.arbitrary_size.matches!] [m:typography.arbitrary_size.files!]; 176 of the 265 arbitrary font-size class matches in all audited files equal a token [m:typography.arbitrary_size.equals_token] [m:typography.arbitrary_size.matches]
+→ tokens for the Warnings you keep, e.g. #241304 in system-graph.ts [j]   [awaiting approval]
 
 ## Appendix — how these numbers were made
 | Score | Arithmetic | Result |
@@ -397,7 +397,7 @@ same `--dirs`.
   dot-folders are never walked, and `*.generated.*`, `*.gen.*`, `*.min.*` never audited (the header lists any
   skipped folder that holds source).
 - **Autonomy.** Recording drift status (this report) is a `record` artifact, auto at every tier. Proposing a NEW
-  token, a tighter guardrail or a rule for unruled drift is a separate, always-HITL path (`/hermes` if it is installed): writing
+  token, a tighter guardrail or a rule for unruled drift is a separate, always-HITL path (the operator's review): writing
   `design/tokens.css` or `design/guardrails.mdx` is a `guardrail` artifact, HITL even in autonomous mode.
 - **Cross-check (a Systemix checkout only).**
   `node packages/cli/tests/acceptance/skills/rubric-eval.js <counters> --skills packages/cli/pipelines/design-system/skills`

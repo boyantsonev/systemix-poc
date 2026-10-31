@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { NextRequest } from "next/server";
 
 // Every local route that writes the repo, resolves a decision or runs something
 // refuses cross-origin and text/plain requests before touching anything. Runs in
@@ -62,6 +63,46 @@ describe("local API routes", () => {
     try {
       const res = await call(method, load, { "content-type": "application/json", origin: "http://localhost:3001" });
       expect(res.status).toBe(403);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  // the read routes that serve repo state answer 404 on a deployed site (G-003 E3)
+  const READS: Array<[string, () => Promise<Record<string, unknown>>]> = [
+    ["/api/bundle", () => import("./bundle/route")],
+    ["/api/events/stream", () => import("./events/stream/route")],
+    ["/api/hitl", () => import("./hitl/route")],
+    ["/api/queue", () => import("./queue/route")],
+    ["/api/run/[id]", () => import("./run/[id]/route")],
+    ["/api/run/[id]/stream", () => import("./run/[id]/stream/route")],
+    ["/api/runs", () => import("./runs/route")],
+    ["/api/state/agents", () => import("./state/agents/route")],
+    ["/api/state/drift", () => import("./state/drift/route")],
+    ["/api/state/sync-log", () => import("./state/sync-log/route")],
+    ["/api/token-guard/runs", () => import("./token-guard/runs/route")],
+    ["/api/workflows", () => import("./workflows/route")],
+    ["/api/workflows/[id]", () => import("./workflows/[id]/route")],
+  ];
+
+  it.each(READS)("GET %s answers 404 on a deployed site", async (_path, load) => {
+    vi.stubEnv("VERCEL", "1");
+    try {
+      const handler = (await load()).GET as Handler;
+      const res = await handler(new NextRequest("http://localhost:3001/api/x"), { params: Promise.resolve({ id: "x" }) });
+      expect(res.status).toBe(404);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it("GET /api/instance (the showcase strip) serves counts, never a path", async () => {
+    vi.stubEnv("VERCEL", "1");
+    try {
+      const { GET } = await import("./instance/route");
+      const text = await (await GET()).text();
+      expect(text).not.toMatch(/\/(home|Users|tmp|var)\//);
+      expect(text).not.toMatch(/@[\w-]+\.[a-z]{2,}/);
     } finally {
       vi.unstubAllEnvs();
     }

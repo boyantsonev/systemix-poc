@@ -54,7 +54,7 @@ Present a table: `token · current · proposed · status`.
 
 ### Step 5 — Report
 - Tokens added / changed / unchanged; files touched (`design/tokens.css`, `design/DESIGN.md`, maybe `design/guardrails.mdx`).
-- Next: `/systemix:drift-report` to find code still using the old hardcoded values; `/init-experiment` to validate the new direction.
+- Next: `/systemix:drift-report` to find code still using the old hardcoded values; `/systemix:goal` to validate the new direction.
 
 ## Notes
 - Claude Design has no token-export API — this skill extracts from the share link or the exported

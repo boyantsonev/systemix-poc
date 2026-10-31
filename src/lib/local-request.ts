@@ -49,3 +49,11 @@ export function rejectNonLocal(
   }
   return null;
 }
+
+/**
+ * For the read routes that serve repo state (queue cards, runs, events, paths):
+ * on a deployed site they answer 404, as if they did not exist. null locally.
+ */
+export function refuseOnDeploy(): NextResponse | null {
+  return process.env.VERCEL ? deny(404, "This route only answers on localhost.") : null;
+}

@@ -4,7 +4,7 @@
 import { NextResponse } from "next/server";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import path from "path";
-import { rejectNonLocal } from "@/lib/local-request";
+import { rejectNonLocal, refuseOnDeploy } from "@/lib/local-request";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +13,8 @@ const SYSTEMIX_DIR = path.join(process.cwd(), ".systemix");
 const BUNDLE_FILE = path.join(SYSTEMIX_DIR, "bundle.json");
 
 export async function GET() {
+  const hidden = refuseOnDeploy();
+  if (hidden) return hidden;
   if (!existsSync(BUNDLE_FILE)) {
     return NextResponse.json(
       { error: "No bundle yet. Extract variables from the Figma plugin first." },
