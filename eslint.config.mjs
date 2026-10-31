@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // transitions.dev runtime, vendored unchanged (src/vendor/transitions/README.md)
+    "src/vendor/**",
   ]),
 ]);
 
