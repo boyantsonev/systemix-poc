@@ -116,7 +116,7 @@ describe("the bundled scan, copied out of this package", () => {
     expect(fs.existsSync(path.join(repo, ".claude"))).toBe(false);
   });
 
-  test("the MCP server lists quick_report and describes the payload without sending", () => {
+  test("the MCP server lists quick_report and gives the free score without sending anything", () => {
     const lines = [
       { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "1" } } },
       { jsonrpc: "2.0", method: "notifications/initialized" },
@@ -134,8 +134,25 @@ describe("the bundled scan, copied out of this package", () => {
     expect(out[0].result.serverInfo.name).toBe("systemix");
     expect(out[1].result.tools.map((t) => t.name)).toEqual(["quick_report"]);
     expect(out[2].result.isError).toBe(false);
-    expect(out[2].result.content[0].text).toMatch(/No source code[\s\S]*nothing was sent/);
+    // no key in the settings: the free score, computed here (DSC-22 D1)
+    expect(out[2].result.content[0].text).toMatch(/## Score: \d+ \/ 100[\s\S]*Computed on this machine; nothing was sent/);
     expect(out[3].error.code).toBe(-32601);
+  });
+
+  test("with a key and send=false, it only describes what would be sent", async () => {
+    const { quickReport } = require(path.join(dir, P, "scan/mcp.js"));
+    const saved = global.fetch;
+    global.fetch = async () => {
+      throw new Error("must not be called");
+    };
+    try {
+      const r = await quickReport({ dirs: ["src"] }, { SYSTEMIX_PROJECT_DIR: repo, SYSTEMIX_REPORT_SERVICE: "https://reports.example.test", SYSTEMIX_REPORT_KEY: "ABCD-1234-EFGH" });
+      expect(r.isError).toBe(false);
+      expect(r.text).toMatch(/No source code[\s\S]*nothing was sent[\s\S]*send=true/);
+    } finally {
+      global.fetch = saved;
+      process.exitCode = 0;
+    }
   });
 
   test("send=true posts the results file with the key from the settings, and never prints it", async () => {

@@ -113,9 +113,9 @@ describe("systemix audit report", () => {
 
   const env = { SYSTEMIX_REPORT_SERVICE: "https://reports.example.test" };
 
-  test("sends nothing without --yes", async () => {
+  test("with a key, sends nothing without --yes", async () => {
     const fetch = jest.fn();
-    const r = await quiet(() => audit(["report", "--dirs", "src"], { projectRoot: root, env, fetch }));
+    const r = await quiet(() => audit(["report", "--dirs", "src", "--key", "ABCD-1234"], { projectRoot: root, env, fetch }));
     expect(r).toBeNull();
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -159,11 +159,14 @@ describe("systemix audit report", () => {
     expect(errors.join("\n")).toContain("https://shop.example/buy/1");
   });
 
-  test("without a key prints the free score and says how to get the full report", async () => {
-    const fetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => ({ scored: true, preview: true, overall: 40, markdown: "# free\n", buyUrl: "https://shop.example/buy/1", price: "€9.99" }) }));
+  test("without a key, the free score is computed here and nothing is sent, even with --yes (G-003 E9)", async () => {
+    const fetch = jest.fn(async () => {
+      throw new Error("no network in this test");
+    });
     const errors = [];
+    const written = [];
     const spy = jest.spyOn(console, "error").mockImplementation((...a) => errors.push(a.join(" ")));
-    const out = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const out = jest.spyOn(process.stdout, "write").mockImplementation((c) => written.push(String(c)) && true);
     let r;
     try {
       r = await audit(["report", "--dirs", "src", "--yes"], { projectRoot: root, env, fetch });
@@ -171,9 +174,11 @@ describe("systemix audit report", () => {
       spy.mockRestore();
       out.mockRestore();
     }
-    expect(r.preview).toBe(true);
-    expect(JSON.parse(fetch.mock.calls[0][1].body).licenseKey).toBeNull();
-    expect(errors.join("\n")).toMatch(/free score.*€9\.99.*https:\/\/shop\.example\/buy\/1/s);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(r).toMatchObject({ scored: true, preview: true, local: true, caveats: [] });
+    expect(written.join("")).toMatch(/## Score: \d+ \/ 100[\s\S]*Computed on this machine; nothing was sent\./);
+    expect(written.join("")).not.toContain("only counts and file names");
+    expect(errors.join("\n")).toMatch(/nothing was sent[\s\S]*getsystemix\.vercel\.app\/report/);
   });
 
   test("refuses a non-https service", async () => {

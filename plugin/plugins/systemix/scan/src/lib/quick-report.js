@@ -84,11 +84,12 @@ function caveatsOf(result) {
 /**
  * Build the quick report (or, with `preview`, the free score) from a counters report.
  * @param {object} counters an `audit counters` report
- * @param {{rubric?: object, maxCaveats?: number, preview?: boolean, buyUrl?: string|null}} [options]
+ * @param {{rubric?: object, maxCaveats?: number, preview?: boolean, buyUrl?: string|null, local?: boolean}} [options]
+ *   local: built on the user's machine (the free score), so the footer says nothing was sent
  * @returns {{scored: boolean, preview?: boolean, overall: number|null, areas: Area[], caveats: Caveat[],
  *   caveatCount?: number, markdown: string}}
  */
-function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, preview = false, buyUrl = null } = {}) {
+function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, preview = false, buyUrl = null, local = false } = {}) {
   const result = evaluate(counters, rubric);
   const h = result.header || {};
   const lines = [];
@@ -102,7 +103,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, p
     lines.push("**No score.** The results file is incomplete, so a score would be misleading:");
     for (const r of reasons) lines.push(`- ${typeof r === "string" ? r : JSON.stringify(r)}`);
     lines.push("");
-    lines.push("Run `npx @getsystemix/cli audit counters` again without slicing options and send the full file.");
+    lines.push("Run the scan again on the folders that hold your UI (for example `--dirs src`), without slicing options.");
     return { scored: false, overall: null, areas: [], caveats: [], markdown: lines.join("\n") + "\n" };
   }
 
@@ -139,7 +140,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, p
     lines.push("");
     lines.push("---");
     lines.push("");
-    lines.push(`Scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. No source code was sent, only counts and file names.`);
+    lines.push(`Scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. ${local ? "Computed on this machine; nothing was sent." : "No source code was sent, only counts and file names."}`);
     lines.push(`Score another repo: ${SHARE_URL}`);
     return { scored: true, preview: true, overall, areas, caveats: [], caveatCount: caveats.length, markdown: lines.join("\n") + "\n" };
   }
@@ -168,7 +169,7 @@ function build(counters, { rubric = defaultRubric(), maxCaveats = MAX_CAVEATS, p
   lines.push("---");
   lines.push("");
   lines.push(`How this was made: a deterministic scan of the code (no AI judgement in the numbers), scored with rubric ${result.rubricVersion} and counters ${h.countersVersion}. ${result.validity}`);
-  lines.push("No source code was sent to produce this report, only counts and file names.");
+  lines.push(local ? "Computed on this machine; nothing was sent." : "No source code was sent to produce this report, only counts and file names.");
   lines.push(`Score another repo: ${SHARE_URL}`);
 
   return { scored: true, preview: false, overall, areas, caveats: shown, caveatCount: caveats.length, markdown: lines.join("\n") + "\n" };

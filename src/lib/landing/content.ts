@@ -200,7 +200,7 @@ export const pricing = {
       name: "Free score",
       price: "€0",
       priceNote: "runs on your machine",
-      body: "Your design system's AI-readiness score out of 100, per area. Only the results file is sent, never your code. Every skill stays free and MIT.",
+      body: "Your design system's AI-readiness score out of 100, per area, computed on your machine. Nothing is sent. Every skill stays free and MIT.",
       cta: { label: "Get your free score →", href: "/report", event: "free_score_clicked" },
       highlight: false,
     },

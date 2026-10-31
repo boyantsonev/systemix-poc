@@ -4,9 +4,10 @@
 /**
  * The Systemix plugin's scan: the subset of the `@getsystemix/cli` CLI the audit and loop skills
  * run, copied into the plugin so nothing is downloaded at run time. It never installs or
- * writes skills; the only command that writes is `loops init` (the loop templates, new
- * files only), which the loops skill runs after the person answered its setup questions.
- * Run it from the repo it reads:
+ * writes skills. Two commands write into the repo: `loops init` (the loop templates, new
+ * files only, after the person answered the loops skill's setup questions) and `drift scan`
+ * without --dry-run (a snapshot appended to .systemix/drift-history.json); the skills run
+ * `drift scan --dry-run`. Run it from the repo it reads:
  *
  *   node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" audit counters --dirs src --out /tmp/c.json
  */

@@ -25,7 +25,7 @@ export const FUNNEL_EVENTS: FunnelEvent[] = [
   { event: "section_viewed", stage: "acquisition", source: "web", meaning: "a section scrolled into view" },
   { event: "free_score_clicked", stage: "acquisition", source: "web", meaning: "pricing → free score page" },
   { event: "install_command_copied", stage: "activation", source: "web", meaning: "copied a plugin install command", where: { channel: "plugin" } },
-  { event: "score_served", stage: "activation", source: "server", meaning: "a free score was produced (the plugin or the CLI ran end to end)" },
+  { event: "score_served", stage: "activation", source: "server", meaning: "a free score was produced by the report service (older CLIs only: since DSC-22 the free score is computed on the user's machine and sends nothing)" },
   { event: "report_notify_requested", stage: "revenue", source: "web", meaning: "asked to be told when the full report is on sale (demand before launch)" },
   { event: "checkout_clicked", stage: "revenue", source: "web", meaning: "opened the Lemon Squeezy checkout" },
   { event: "report_delivered", stage: "revenue", source: "server", meaning: "a paid full report was produced (one license activation used)" },

@@ -47,6 +47,27 @@ function getInstalledSkills() {
     });
 }
 
+/**
+ * The bundled pipelines installed here. A skill shared by several pipelines (drift-report
+ * is in two) says nothing about which one was installed, so a pipeline counts when one of
+ * the skills only it ships is present.
+ */
+function installedPipelines(installedNames, pipelinesDir = PIPELINES_DIR) {
+  const have = new Set(installedNames);
+  const manifests = fs.readdirSync(pipelinesDir)
+    .filter((name) => fs.existsSync(path.join(pipelinesDir, name, 'manifest.json')))
+    .map((name) => ({ name, skills: JSON.parse(fs.readFileSync(path.join(pipelinesDir, name, 'manifest.json'), 'utf8')).skills || [] }));
+  const owners = new Map();
+  for (const m of manifests) for (const sk of m.skills) owners.set(sk, (owners.get(sk) || 0) + 1);
+  return manifests
+    .filter((m) => {
+      const own = m.skills.filter((sk) => owners.get(sk) === 1);
+      return (own.length ? own : m.skills).some((sk) => have.has(sk));
+    })
+    .map((m) => m.name)
+    .sort();
+}
+
 function fetchLatestVersion() {
   return new Promise((resolve, reject) => {
     // Scoped package names need the "/" encoded for the registry's URL path.
@@ -71,24 +92,27 @@ async function update(args) {
 systemix update — Check and apply SKILL.md updates
 
 Usage:
-  npx @getsystemix/cli update                    Check npm + skill-pack updates, apply
-  npx @getsystemix/cli update --check            Dry run — show what would change
-  npx @getsystemix/cli update --force            Re-install all skills regardless of version
-  npx @getsystemix/cli update --packs-only       Only refresh external skill packs
-  npx @getsystemix/cli update <pack-name>        Refresh a specific skill pack
+  npx @getsystemix/cli update                    Show what an update would change (writes nothing)
+  npx @getsystemix/cli update --yes              Apply it: re-install the installed pipelines' skills
+  npx @getsystemix/cli update --packs            Also show third-party skill-pack changes (pinned commits)
+  npx @getsystemix/cli update --packs-only       Only third-party skill packs
+  npx @getsystemix/cli update <pack-name>        One third-party skill pack
 
 Options:
-  --check        Report available updates without applying
-  --force        Force re-install all skills
-  --packs-only   Skip npm version check, only fetch skill packs
+  --yes          Apply the changes shown (without it, update only reports)
+  --check        Report only (the default; kept for scripts)
+  --force        Re-install even when the version is current
+  --packs        Include third-party skill packs (never fetched otherwise)
   --help         Show this help
 `);
     return;
   }
 
-  const checkOnly = args.includes('--check');
+  // nothing is written without --yes: a person sees the plan first
+  const checkOnly = args.includes('--check') || !args.includes('--yes');
   const force = args.includes('--force');
   const packsOnly = args.includes('--packs-only');
+  const withPacks = args.includes('--packs');
   // Positional pack name: first arg that isn't a flag
   const packFilter = args.find(a => !a.startsWith('--')) || null;
 
@@ -104,7 +128,7 @@ Options:
   // Check installed skills
   const installed = getInstalledSkills();
   if (installed.length === 0) {
-    console.log('No skills installed. Run: npx @getsystemix/cli add figma-to-code');
+    console.log('No skills installed. Run: npx @getsystemix/cli init');
     return;
   }
 
@@ -122,8 +146,8 @@ Options:
     console.log('  Skills are up to date based on local state.');
     // Loop skills reconcile from the local bundle — works offline.
     syncBundledLoopSkills(checkOnly);
-    // Still try skill packs (they use a separate GitHub fetch)
-    await updateSkillPacks({ checkOnly, force, packFilter: null, skillsDir: SKILLS_DIR });
+    if (withPacks) await updateSkillPacks({ checkOnly, force, packFilter: null, skillsDir: SKILLS_DIR });
+    if (checkOnly) console.log('\nNothing was written. Run with --yes to apply.');
     return;
   }
 
@@ -142,13 +166,15 @@ Options:
   } else if (checkOnly) {
     if (currentVersion !== latestVersion) {
       console.log(`Update available: ${currentVersion} -> ${latestVersion}`);
-      console.log('Run without --check to apply the update.');
+      console.log(`It would re-install: ${installedPipelines(installed.map((s) => s.name)).join(', ') || 'nothing (no bundled pipeline installed)'}`);
+      console.log('Run with --yes to apply it.');
     }
   } else {
-    // Re-install bundled pipeline skills
-    const pipelineNames = [...new Set(installed.map(() => 'figma-to-code'))];
+    // Re-install only the pipelines whose skills are installed here
+    const pipelineNames = installedPipelines(installed.map((s) => s.name));
     console.log(`Update available: ${currentVersion} -> ${latestVersion}`);
-    console.log('Re-installing skills...\n');
+    if (!pipelineNames.length) console.log('No bundled pipeline is installed here; nothing to re-install.');
+    console.log(`Re-installing: ${pipelineNames.join(', ')}\n`);
     try {
       const { add } = require('../add');
       for (const pipeline of pipelineNames) {
@@ -157,7 +183,7 @@ Options:
       console.log('\nSkills updated successfully');
     } catch (err) {
       console.error('\nUpdate failed:', err.message);
-      console.error('  Try: npx @getsystemix/cli add figma-to-code');
+      console.error('  Try: npx @getsystemix/cli update --yes --force');
       process.exit(1);
     }
   }
@@ -169,8 +195,10 @@ Options:
   // heals that drift too. Reuses `skills sync` against the dir update already resolved.
   syncBundledLoopSkills(checkOnly);
 
-  // ── Skill-packs fetch phase (always runs for full update) ──────────────────
-  await updateSkillPacks({ checkOnly, force, packFilter: null, skillsDir: SKILLS_DIR });
+  // ── Third-party skill packs: only when asked, pinned to a commit ───────────
+  if (withPacks) await updateSkillPacks({ checkOnly, force, packFilter: null, skillsDir: SKILLS_DIR });
+  else console.log('\nThird-party skill packs: not fetched (add --packs to review them).');
+  if (checkOnly) console.log('\nNothing was written. Run with --yes to apply.');
 
   console.log('\n  Run `npx @getsystemix/cli doctor` to verify your setup.');
 }
@@ -278,4 +306,4 @@ async function updateSkillPacks({ checkOnly, force, packFilter, skillsDir }) {
   }
 }
 
-module.exports = { update };
+module.exports = { update, installedPipelines };

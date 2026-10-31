@@ -36,5 +36,5 @@ export function quickReportCheckoutUrl(env: Env = publicEnv()): string | null {
 
 export const FULL_AUDIT = { price: "€499", turnaround: "24h" } as const;
 
-/** The command that gets the free score (the scan runs locally; only the results file is sent). */
-export const FREE_SCORE_COMMAND = "npx @getsystemix/cli audit report --yes";
+/** The command that gets the free score: computed on the user's machine, nothing sent (DSC-22 D1). */
+export const FREE_SCORE_COMMAND = "npx @getsystemix/cli audit report --dirs src";

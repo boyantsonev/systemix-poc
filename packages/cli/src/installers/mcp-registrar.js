@@ -70,30 +70,9 @@ function buildProxyEntry(projectRoot) {
   };
 }
 
-/**
- * Safely read and parse a JSON config file.
- * Returns {} when the file does not exist or cannot be parsed.
- * @param {string} configPath
- * @returns {object}
- */
-function readConfig(configPath) {
-  if (!fs.existsSync(configPath)) return {};
-  try {
-    return JSON.parse(fs.readFileSync(configPath, "utf8"));
-  } catch {
-    return {};
-  }
-}
-
-/**
- * Atomically write a JSON config file, creating parent directories as needed.
- * @param {string} configPath
- * @param {object} data
- */
-function writeConfig(configPath, data) {
-  fs.mkdirSync(path.dirname(configPath), { recursive: true });
-  fs.writeFileSync(configPath, JSON.stringify(data, null, 2) + "\n", "utf8");
-}
+// Same safe read and write as the server registrar: an unreadable config throws
+// instead of being replaced, and writes go through a temp file and a rename.
+const { readConfig, writeConfig } = require("./mcp-server-registrar");
 
 // ── Public API ────────────────────────────────────────────────────────────────
 

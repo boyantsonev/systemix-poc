@@ -43,7 +43,8 @@ Every audit is read-only. Anything the plugin would write into your design syste
 ## Your code stays on your machine
 
 The scan runs locally and is deterministic: the same code always gives the same numbers, with no AI
-judgement in them. `/systemix:score` sends only the results file to the Systemix report service at
+judgement in them. The free score is computed on your machine; nothing is sent. Only the full
+report needs the service: `/systemix:score` then sends the results file to
 `https://getsystemix.vercel.app/api/report`, and only after you say yes. The file holds numbers,
 counter definitions, file and folder paths, and short identifiers such as token names. It holds no
 source code. Ask for redacted paths and every file name is replaced by a hash. The service keeps no

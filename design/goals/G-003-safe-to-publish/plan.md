@@ -18,5 +18,13 @@ Hub and System are skipped: no UI frames and no design-system change.
 - PR 1: E3 stays open. Write routes refuse on production and /api/subscribe is gone, but the read routes that feed the hosted control plane (/api/queue, /api/hitl, /api/instance, /api/runs, /api/run/[id], /api/workflows) still answer there; they close with the control plane's removal (D2), pulled into PR 3.
 - PR 1: the plugin's version comes from packages/cli/package.json at build time; plugin-src/plugin.json carries none.
 
+- PR 2: the Claude Code registration stays where it was (~/.claude.json); it can no longer destroy the file. Moving it to the project's .mcp.json changes behaviour for existing users, so it goes to G-004.
+- PR 2: `init` sets up the product and build loops only when it scaffolds design/; with an existing or no design system it prints `loops init` instead of creating design/.
+- PR 2: `update` reports by default and applies only with `--yes`; third-party packs are fetched only with `--packs`, pinned to commit 807fcc1c.
+- PR 2: the skills keep their fixed /tmp report paths (the blind runs depend on them; the operator can name another path).
+- PR 2: the report service still answers a keyless request with the free score, for older CLIs; the plugin and this CLI no longer send one.
+- PR 2: init's prompt order changed (two Figma questions gone, one engine question at the end): 13 init tests updated to the new order; the three Figma-input tests replaced by one that asserts init asks no Figma question.
+
 ## Tested · not verified
+- PR 2: `/systemix:score` run by Claude itself in a logged-in Claude Code (this sandbox has no login); the tool and the scan were tested directly.
 - PR 1: the new CI steps run for the first time on this branch's PR.

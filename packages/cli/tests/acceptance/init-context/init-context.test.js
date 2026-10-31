@@ -63,8 +63,6 @@ describe("init context interview", () => {
     ws = makeWorkspace();
     const prompt = makePrompt([
       "1", // design: scaffold
-      "",  // figma url skip
-      "",  // figma token skip
       "",  // posthog skip
       "1", // autonomy ghost
       "2", // self-improvement audit
@@ -120,7 +118,7 @@ describe("init context interview", () => {
 
   test("a --reconfigure re-run updates config context: but never rewrites an existing DESIGN.md", async () => {
     ws = makeWorkspace();
-    const answers = (product, icp) => ["1", "", "", "", "1", "2", product, icp, "", "1"];
+    const answers = (product, icp) => ["1", "", "1", "2", product, icp, "", "1"];
     const run = (prompt, extra = {}) =>
       silence(() =>
         init({ projectRoot: ws.projectRoot, homeDir: ws.homeDir, prompt, detectClients: noClients, registerServer: noopRegister, ...extra })

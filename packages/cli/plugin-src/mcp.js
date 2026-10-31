@@ -23,16 +23,16 @@ const TOOLS = [
   {
     name: "quick_report",
     description:
-      "Score this repo's design system for AI readiness. The scan runs locally; with send=true ONLY the results file " +
-      "(counts, counter definitions, file and folder paths, short identifiers such as token names; never source code) " +
-      "is posted to the Systemix report service. With send=false (default) it only describes what would be sent. " +
-      "Without a license key in the plugin settings the answer is the free score (overall and per-area); with one, " +
-      "the full report (caveats and recommendations).",
+      "Score this repo's design system for AI readiness. Without a license key in the plugin settings: the free score " +
+      "(overall and per area), computed on this machine; nothing is sent and `send` is ignored. With a key: the full " +
+      "report (caveats and recommendations). Then send=false (default) only describes what would be sent, and send=true " +
+      "posts ONLY the results file (counts, counter definitions, file and folder paths, short identifiers such as token " +
+      "names; never source code) to the Systemix report service.",
     inputSchema: {
       type: "object",
       properties: {
         dirs: { type: "array", items: { type: "string" }, description: "Folders to scan, relative to the repo root (default: the usual source folders)" },
-        send: { type: "boolean", description: "true sends the results file; false (default) only shows what would be sent" },
+        send: { type: "boolean", description: "With a license key: true sends the results file; false (default) only shows what would be sent. Ignored without a key." },
         redact_paths: { type: "boolean", description: "Replace every file and folder name with a hash before sending (the score is unchanged)" },
       },
       additionalProperties: false,
@@ -71,7 +71,20 @@ async function quickReport(input, env = process.env) {
   const dirs = Array.isArray(input.dirs) ? input.dirs.filter((d) => typeof d === "string" && d.trim()) : [];
   const args = ["report", ...dirs.flatMap((d) => ["--dirs", d])];
   if (input.redact_paths) args.push("--redact-paths");
-  const cliEnv = { ...env, SYSTEMIX_REPORT_KEY: settingValue(env.SYSTEMIX_REPORT_KEY) || undefined };
+  const key = settingValue(env.SYSTEMIX_REPORT_KEY);
+  const cliEnv = { ...env, SYSTEMIX_REPORT_KEY: key || undefined };
+
+  // no key: the free score, computed here; nothing to send (DSC-22 D1)
+  if (!key) {
+    const { result, text } = await captured(() => audit(args, { projectRoot: root, env: cliEnv }));
+    process.exitCode = 0;
+    if (!result) return { text: text || "The scan gave no score.", isError: true };
+    const note = result.scored
+      ? `Free score, computed on this machine; nothing was sent. The full report adds the caveats and recommendations: ${result.buyUrl}. ` +
+        "The license key goes into the plugin settings: /plugin configure systemix@systemix."
+      : "Computed on this machine; nothing was sent. Name the folders that hold the UI in `dirs`.";
+    return { text: `${result.markdown.trim()}\n\n${note}`, isError: false };
+  }
 
   if (!input.send) {
     const { text } = await captured(() => audit([...args, "--dry-run"], { projectRoot: root, env: cliEnv }));

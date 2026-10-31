@@ -30,7 +30,7 @@ const NOTIFY_MAILTO =
 
 const STEPS = [
   { n: "1", t: "Install the plugin", b: "Two commands in Claude Code. No account, nothing to configure." },
-  { n: "2", t: "Run /systemix:score", b: "In your repo. The scan runs on your machine; you see what would be sent before anything leaves it. Free: a score out of 100 and per area." },
+  { n: "2", t: "Run /systemix:score", b: "In your repo. The score is computed on your machine and nothing is sent. Free: a score out of 100 and per area." },
   { n: "3", t: "Unlock the report", b: "Buy a key, add it to the plugin settings, run it again, and get what to fix first." },
 ];
 
@@ -45,11 +45,11 @@ const PAID_ITEMS = [
 const FAQ = [
   {
     q: "What leaves my machine?",
-    a: "Only the results file: numbers, counter definitions, file and folder paths, and short names such as token names. Never your source code.",
+    a: "For the free score, nothing: it is computed on your machine. For the full report, only the results file: numbers, counter definitions, file and folder paths, and short names such as token names. Never your source code.",
   },
   {
     q: "Can I see exactly what is sent?",
-    a: "Yes. /systemix:score shows what would be sent and asks before sending. Ask it to redact paths and every file name is replaced by a hash; the score does not change. From the CLI: --dry-run --payload-out results.json.",
+    a: "Yes. For the full report, /systemix:score shows what would be sent and asks before sending. Ask it to redact paths and every file name is replaced by a hash; the score does not change. From the CLI: --dry-run --payload-out results.json.",
   },
   {
     q: "Is an AI judging my code?",
