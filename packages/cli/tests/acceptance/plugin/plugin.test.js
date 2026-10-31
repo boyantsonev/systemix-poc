@@ -96,6 +96,20 @@ describe("the bundled scan, copied out of this package", () => {
     expect(h).toMatch(/drift <sub>.*--dry-run/);
   });
 
+  test("runs the loop kit: init writes the templates, check reads them", () => {
+    expect(scan("loops", "init").status).toBe(0);
+    expect(fs.existsSync(path.join(repo, "design/loops/product-loop.md"))).toBe(true);
+    const roster = path.join(repo, "design/loops/roster.md");
+    fs.writeFileSync(roster, fs.readFileSync(roster, "utf8").replace(/\{\{PERSON_[AB]\}\}/g, "Ada"));
+    const c = scan("loops", "check");
+    expect([c.status, c.stderr]).toEqual([0, ""]);
+    fs.rmSync(path.join(repo, "design/loops"), { recursive: true, force: true });
+  });
+
+  test("the gate skill can only be run by a person", () => {
+    expect(text(`${P}/skills/gate/SKILL.md`)).toMatch(/^disable-model-invocation: true$/m);
+  });
+
   test("refuses anything that would install or write skills", () => {
     const r = scan("audit");
     expect(r.status).toBe(1);

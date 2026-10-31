@@ -1,13 +1,26 @@
 {
   "name": "systemix",
   "displayName": "Systemix",
-  "version": "0.1.0",
-  "description": "Score how well AI agents can follow your design system: a free, deterministic AI-readiness score, the full quick report with a license key, and read-only audits for drift and duplicate components. The scan runs locally; your code never leaves your machine.",
-  "author": { "name": "Systemix", "url": "https://getsystemix.vercel.app" },
+  "version": "0.2.0",
+  "description": "The design system agent for Claude Code: deploys an AI-native design system, keeps it from rotting (a free deterministic AI-readiness score, drift and duplicate audits) and runs the product and build loops a design sprint needs, with a person ruling at every gate. The scan runs locally; your code never leaves your machine.",
+  "author": {
+    "name": "Systemix",
+    "url": "https://getsystemix.vercel.app"
+  },
   "homepage": "https://getsystemix.vercel.app",
   "repository": "https://github.com/getsystemix/systemix",
   "license": "MIT",
-  "keywords": ["design-system", "design-tokens", "audit", "drift", "ai-readiness", "tailwind", "frontend"],
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "audit",
+    "drift",
+    "ai-readiness",
+    "design-sprint",
+    "product-loop",
+    "tailwind",
+    "frontend"
+  ],
   "userConfig": {
     "license_key": {
       "type": "string",

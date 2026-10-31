@@ -41,6 +41,7 @@ const HELP = `
     npx @getsystemix/cli docs <sub>              Component docs contract: sync [--check] | new <Name> --group <g>
     npx @getsystemix/cli drift <sub>             Sacred timeline: scan [dir…] [--dry-run] [--json] | history [--last 10]
     npx @getsystemix/cli loop [<id>]             Ralph runner — advance running experiments to decision-ready (HITL close)
+    npx @getsystemix/cli loops <sub>             Product + build loops: init | check | status | decisions
     npx @getsystemix/cli propose <sub>           Engine generate stage: context|queue — propose the next bet (HITL approve)
     npx @getsystemix/cli skills sync [--global]  Refresh installed loop skills from the CLI's bundled source
 
@@ -201,6 +202,11 @@ async function main() {
     case "loop": {
       const { loop } = require("../src/commands/loop");
       await loop(args);
+      break;
+    }
+    case "loops": {
+      const { loops } = require("../src/commands/loops");
+      await loops(args);
       break;
     }
     case "propose": {

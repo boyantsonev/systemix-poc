@@ -22,8 +22,23 @@ Then, in your repo: `/systemix:score`.
 | `/systemix:drift-report` | Hard-coded colours, spacing and type that should use your tokens. |
 | `/systemix:design-interview` | Set up a design system from scratch through a short interview. |
 | `/systemix:claude-design-sync` | Bring a Claude Design output into your tokens, as a reviewable change. |
+| `/systemix:loops` | Where every goal is in the product and build loops, and who it waits on. Sets the loops up in a repo that has none. |
+| `/systemix:goal <one sentence>` | Open a goal: the agent writes the brief and the evals (what must be true for "done"), then stops for a person. |
+| `/systemix:next [G-NNN]` | The agent's steps, up to the next person: pictures, plan, prototype, system, code, tests, measurement. |
+| `/systemix:gate approve\|rework\|drop` | A person's ruling at a gate, written as a decision line. Only a person can run it. |
+| `/systemix:decide <loop.step>` | The brief before a gate, so a deputy decides from the same facts. |
 
-Every audit is read-only. Anything the plugin would write is proposed first and waits for your yes.
+## The loops
+
+A goal is one sentence a person types. The **product loop** turns it into a brief and
+evals, then pictures, scored and validated. The **build loop** turns a validated
+design into a plan, a prototype in real component code, design-system changes
+(the design sprint), the product on a branch, tests, a release and a measurement.
+Every gate waits for a person; the agent prepares, never rules. State lives in
+`design/loops/`, `design/goals/`, `design/context/` and `design/briefs/` as plain
+markdown, checked by `systemix loops check`.
+
+Every audit is read-only. Anything the plugin would write into your design system is proposed first and waits for your yes.
 
 ## Your code stays on your machine
 

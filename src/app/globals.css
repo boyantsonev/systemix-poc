@@ -10,6 +10,11 @@
 /* the CLI tests hold deliberately malformed class strings; never generate CSS from them */
 @source not "../../packages/cli/tests";
 @source not "../../plugin";
+/* the loop files (goals, briefs, context) are prose, not UI */
+@source not "../../design/loops";
+@source not "../../design/goals";
+@source not "../../design/briefs";
+@source not "../../design/context";
 
 @custom-variant dark (&:is(.dark *));
 

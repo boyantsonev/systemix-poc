@@ -2,9 +2,11 @@
 "use strict";
 
 /**
- * The Systemix plugin's scan: the subset of the `@getsystemix/cli` CLI the audit skills
- * run, copied into the plugin so nothing is downloaded at run time. Read-only commands
- * only; it never installs or writes skills. Run it from the repo being audited:
+ * The Systemix plugin's scan: the subset of the `@getsystemix/cli` CLI the audit and loop skills
+ * run, copied into the plugin so nothing is downloaded at run time. It never installs or
+ * writes skills; the only command that writes is `loops init` (the loop templates, new
+ * files only), which the loops skill runs after the person answered its setup questions.
+ * Run it from the repo it reads:
  *
  *   node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" audit counters --dirs src --out /tmp/c.json
  */
@@ -15,6 +17,7 @@ const HELP = `
     systemix audit counters [dir…]   Audit counters as JSON: [--groups g] [--ids i] [--brief] [--out file] [--pretty] [--summary] [--dirty]
     systemix audit report [dir…]     Free score, or the paid quick report with --key: sends only the counters JSON (never code) with --yes [--key k] [--redact-paths] [--dry-run]
     systemix drift <sub>             Sacred timeline: scan [dir…] [--dry-run] [--json] | history [--last 10]
+    systemix loops <sub>             Product + build loops: init | check | status | decisions [--json]
 `;
 
 async function main(argv) {
@@ -22,6 +25,10 @@ async function main(argv) {
   if (cmd === "audit" && (sub === "counters" || sub === "report")) {
     const { audit } = require("./src/commands/audit");
     return audit([sub, ...rest]);
+  }
+  if (cmd === "loops") {
+    const { loops } = require("./src/commands/loops");
+    return loops(argv.slice(1));
   }
   if (cmd === "drift" && sub) {
     const { drift } = require("./src/commands/drift");

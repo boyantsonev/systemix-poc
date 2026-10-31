@@ -26,7 +26,7 @@ const PIPELINE = path.join(CLI, "pipelines", "design-system", "skills");
 const DEFAULT_OUT = path.join(REPO, "plugin");
 
 const PIPELINE_SKILLS = ["readiness-audit", "design-audit", "drift-report", "design-interview", "claude-design-sync"];
-const OWN_SKILLS = ["score"];
+const OWN_SKILLS = ["score", "loops", "goal", "next", "gate", "decide"];
 const SKILL_NAMES = [...PIPELINE_SKILLS, ...OWN_SKILLS];
 
 // the module graph of `audit counters|report` and `drift scan|history` (checked by the tests: the copy must run alone)
@@ -40,6 +40,8 @@ const SCAN_FILES = [
   "src/lib/quick-report.js",
   "src/lib/quick-report-recommendations.json",
   "src/lib/rubric-eval.js",
+  "src/commands/loops.js",
+  "src/lib/loopkit.js",
   ...["index", "context", "counter", "summary", "census", "tokens", "css", "util", "colour", "typography", "exemptions",
     "scale", "primitives", "graph", "tags", "reachability", "guardrails", "markdown", "docs", "decisions", "habit",
     "legibility"].map((n) => `src/lib/counters/${n}.js`),
@@ -111,6 +113,8 @@ function render() {
   }
 
   for (const rel of SCAN_FILES) put(`${P}/scan/${rel}`, fs.readFileSync(path.join(CLI, rel)));
+  // the loop templates `loops init` copies
+  for (const rel of files(path.join(CLI, "templates", "loop"))) put(`${P}/scan/templates/loop/${rel}`, fs.readFileSync(path.join(CLI, "templates", "loop", rel)));
   put(`${P}/scan/systemix.js`, fs.readFileSync(path.join(SRC, "systemix.js")));
   put(`${P}/scan/mcp.js`, fs.readFileSync(path.join(SRC, "mcp.js")));
   // the counters report the CLI version as toolVersion; no dependencies, so nothing is installed
