@@ -42,4 +42,4 @@ working plugin.
 - *How do we roll it back?* Revert the PR, or uninstall the plugin; the loop files are plain markdown.
 
 ## Decision
-_(left for the person)_
+Approved as written by Boyan (reviewer), 2026-10-31: "go", then "yes". Reading A; the questions answered as the brief proposed.

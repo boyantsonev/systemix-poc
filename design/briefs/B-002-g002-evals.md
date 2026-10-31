@@ -34,4 +34,4 @@ each PR reverts on its own.
 - *Will motion hurt the first screen or search?* E3, E4 and E5.
 
 ## Decision
-_(left for the person)_
+Approved as written by Boyan (reviewer), 2026-10-31: "go", then "yes". Reading A; the questions answered as the brief proposed.

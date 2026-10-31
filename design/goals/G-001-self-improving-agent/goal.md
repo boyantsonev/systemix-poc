@@ -4,8 +4,8 @@ slug: self-improving-agent
 title: Systemix as a self-improving design system agent — one Claude Code plugin that runs the product and build loops, publishes its pictures, serves a local design hub and learns from what it measures
 asked: "lets analyse what we need to make systemix the self improving agent (deployable through claude code as plugin) having artifacts and localhost deployed design hub"
 status: open
-step: product.evals
-waiting: reviewer
+step: product.shape
+waiting:
 lead: design-lead
 repos: [systemix-poc]
 opened: 2026-10-31
