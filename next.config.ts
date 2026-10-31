@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // the Learning Kit is retired (G-002, 2026-10-31): send its visitors to the price ladder
-      { source: "/kit",                                destination: "/#services",                       permanent: true },
+      { source: "/kit",                                destination: "/#pricing",                        permanent: true },
       { source: "/instance",                           destination: "/config",                          permanent: false },
       { source: "/graph",                              destination: "/config",                          permanent: false },
       { source: "/system",                             destination: "/contract",                        permanent: false },

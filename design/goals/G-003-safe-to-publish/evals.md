@@ -11,5 +11,5 @@
 | E7 | The agent cannot rule | tests: no MCP tool resolves a card or closes an experiment; `systemix experiment ack` is the typed approval; a decision line whose person does not hold the role fails `loops check` | all pass | build.test | pass |
 | E8 | The plugin references only what it ships | the build check run on a skill with an unshipped reference | the build fails, naming the reference | build.test | pass |
 | E9 | The free score never leaves the machine | `audit report` without a key, with the network blocked | a score printed; 0 network calls | build.test | pass |
-| E10 | CI guards all of this | ci.yml on a PR and on main | plugin check, loops check, hub tests and both suites green | build.test | open |
+| E10 | CI guards all of this | ci.yml on a PR and on main | plugin check, loops check, hub tests and both suites green | build.test | pass |
 | E11 | A person gets a free score from the merged plugin with no network | the founder installs from main and runs /systemix:score offline, observed | a score in under 2 minutes; nothing sent | build.measure | open |

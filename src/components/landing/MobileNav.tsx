@@ -8,7 +8,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { SiGithub } from "@icons-pack/react-simple-icons";
 import {
   Sheet,
   SheetClose,
@@ -53,14 +52,8 @@ export function MobileNav({ className }: { className?: string }) {
         </nav>
         <div className="mt-auto border-t border-border/60 p-4">
           <SheetClose asChild>
-            <Button variant="outline" size="sm" asChild className="w-full">
-              <TrackedLink
-                href={nav.cta.href}
-                event="github_star_click"
-                location="nav-mobile"
-                className="flex items-center justify-center gap-1.5"
-              >
-                <SiGithub size={14} aria-hidden />
+            <Button variant="secondary" size="sm" asChild className="w-full">
+              <TrackedLink href={nav.cta.href} event="free_score_clicked" location="nav-mobile">
                 {nav.cta.label}
               </TrackedLink>
             </Button>

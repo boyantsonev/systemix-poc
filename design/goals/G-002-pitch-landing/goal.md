@@ -4,7 +4,7 @@ slug: pitch-landing
 title: The landing page rebuilt on the pitch — plugin-first hero, the three pillars, live proof, and transitions.dev reveal and loading motion
 asked: "plan updates on the landing page and also enhancing the LP experience with https://github.com/Jakubantalik/transitions.dev reveal/loading animations"
 status: open
-step: product.shape
+step: build.code
 waiting:
 lead: design-lead
 repos: [systemix-poc]

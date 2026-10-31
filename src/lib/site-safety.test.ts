@@ -15,7 +15,7 @@ describe("the public site", () => {
   });
 
   it("sells no retired offer: /kit redirects, and no page or doc carries an old price", () => {
-    expect(read("next.config.ts")).toMatch(/source: "\/kit",\s*destination: "\/#services",\s*permanent: true/);
+    expect(read("next.config.ts")).toMatch(/source: "\/kit",\s*destination: "\/#pricing",\s*permanent: true/);
     expect(fs.existsSync(path.join(root, "src/app/kit"))).toBe(false);
     expect(read("src/app/sitemap.ts")).not.toContain('"/kit"');
     const files = (dir: string): string[] =>
