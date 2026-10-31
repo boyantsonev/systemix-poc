@@ -112,17 +112,18 @@ svg text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
 
 <header class="intro">
   <h1>G-001 · pictures: the self-improving agent</h1>
-  <p>Seven frames for the Shape step. A1–A5 are the local design hub (<code>/systemix:hub</code>, the existing app on port 4400 with new views). A6–A7 are moments in Claude Code. The data is this repo's own: its two goals, its loops, its two measured scores. Answers evals E4, E5, E6 and E8 as far as a picture can.</p>
+  <p>Seven frames, shaped with the design lead on 2026-10-31. A1–A5 are the local design hub (<code>/systemix:hub</code>, the existing app on port 4400 with new views). A6–A7 are moments in Claude Code. The data is this repo's own: its two goals, its loops, its two measured scores. Answers evals E4, E5, E6 and E8 as far as a picture can.</p>
 </header>
 
 <!-- A1 -->
 <section class="frame" id="a1">
-  <div class="frame-label"><b>A1</b><span>Hub · Goals board</span><em>E4 · the first screen of /systemix:hub</em></div>
+  <div class="frame-label"><b>A1</b><span>Hub · Waiting on you (the first screen)</span><em>E4, E9 · shaped 2026-10-31: everything that needs a person, in one list</em></div>
   <div class="screen"><div class="app">
     <nav class="side" aria-label="Hub">
       <div class="brand">systemix <small>hub · localhost:4400</small></div>
+      <div class="nav on">Waiting on you <span class="n">3</span></div>
       <div class="nav-group">Loops</div>
-      <div class="nav on">Goals <span class="n">2</span></div>
+      <div class="nav">Goals <span class="n">2</span></div>
       <div class="nav">Loops <span class="n">2</span></div>
       <div class="nav">Briefs <span class="n">2</span></div>
       <div class="nav">Artifacts <span class="n">2</span></div>
@@ -133,28 +134,27 @@ svg text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
       <div class="nav">Docs</div>
       <div class="nav-group">Evidence</div>
       <div class="nav">Experiments</div>
-      <div class="nav">Queue <span class="n">1</span></div>
     </nav>
     <div class="main">
-      <div class="head"><div><h2>Goals</h2><div class="sub">Where every goal is, and whose gate it waits on. Read from <span class="mono">design/goals/</span>; nothing here changes a goal.</div></div><span class="pill ok">loops check ✓</span></div>
-      <div class="card callout">
-        <b>Nothing waits on you.</b>
-        <div class="sub">Both goals are with the agent at product.design. Next for the agent:</div>
-        <div class="cmd">/systemix:next G-001 <span class="copy">COPY</span></div>
-      </div>
+      <div class="head"><div><h2>Waiting on you</h2><div class="sub">Every goal gate and experiment card that needs a person. The hub shows the command to type; it never approves anything itself.</div></div><span class="pill ok">loops check ✓</span></div>
       <div class="card tw">
         <table>
-          <thead><tr><th>Goal</th><th>Title</th><th>Step</th><th>Waits on</th><th>Last ruling</th></tr></thead>
+          <thead><tr><th>What</th><th>Item</th><th>Since</th><th>Answer with</th></tr></thead>
           <tbody>
-            <tr><td class="mono">G-001</td><td>Systemix as a self-improving design system agent</td><td><span class="pill idle">product.design</span></td><td>agent</td><td class="muted">2026-10-31 · Evals approved</td></tr>
-            <tr><td class="mono">G-002</td><td>The landing page rebuilt on the pitch</td><td><span class="pill idle">product.design</span></td><td>agent</td><td class="muted">2026-10-31 · Evals approved</td></tr>
+            <tr><td><span class="pill wait">experiment</span></td><td>landing-rebrand-hifi-2026-07 closed: acknowledge the learning</td><td class="muted">31 Oct</td><td><span class="cmd">systemix experiment ack landing-rebrand-hifi-2026-07 <span class="copy">COPY</span></span></td></tr>
+            <tr><td><span class="pill wait">experiment</span></td><td>landing-ai-native-ds-2026-07: no evidence pulled before it was succeeded</td><td class="muted">10 Jul</td><td><span class="cmd">systemix experiment ack landing-ai-native-ds-2026-07 <span class="copy">COPY</span></span></td></tr>
+            <tr><td><span class="pill wait">experiment</span></td><td>landing-live-loop-2026-06: 6 visitors, not enough signal</td><td class="muted">10 Jul</td><td><span class="cmd">systemix experiment ack landing-live-loop-2026-06 <span class="copy">COPY</span></span></td></tr>
           </tbody>
         </table>
+        <span class="sub"><span class="mono">systemix experiment ack</span> is new in this goal: today these cards are approved with a click in the app, and the shaping decision moves them to a typed command.</span>
       </div>
       <div class="card">
-        <b>When a goal waits on a person</b>
-        <div class="sub">The board turns the row amber and shows the ruling to type. The hub never approves anything: a ruling is a command a person types in Claude Code.</div>
-        <div class="tw"><table><tbody><tr><td class="mono">G-003</td><td>example: a goal at the Evals gate</td><td><span class="pill wait">product.evals</span></td><td><b>reviewer</b> (Boyan)</td><td><span class="cmd">/systemix:gate approve G-003 <span class="copy">COPY</span></span></td></tr></tbody></table></div>
+        <b>Goals with the agent <span class="muted">· nothing to rule on</span></b>
+        <div class="sub">G-001 and G-002 are at product.shape, with you and the agent. <a href="#a2">Goals board →</a></div>
+      </div>
+      <div class="card">
+        <b>When a goal reaches a gate</b>
+        <div class="tw"><table><tbody><tr><td><span class="pill wait">goal gate</span></td><td class="mono">G-003</td><td>example: a goal at the Evals gate · brief B-003</td><td><span class="cmd">/systemix:gate approve G-003 <span class="copy">COPY</span></span></td></tr></tbody></table></div>
       </div>
     </div>
   </div></div>
@@ -162,7 +162,7 @@ svg text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
 
 <!-- A2 -->
 <section class="frame" id="a2">
-  <div class="frame-label"><b>A2</b><span>Hub · One goal</span><em>E4, E5 · brief, evals, decisions and pictures in one place</em></div>
+  <div class="frame-label"><b>A2</b><span>Hub · Goals board → one goal</span><em>E4, E5 · brief, evals, decisions and pictures in one place</em></div>
   <div class="screen"><div class="app">
     <nav class="side" aria-label="Hub">
       <div class="brand">systemix <small>hub</small></div>
@@ -290,27 +290,32 @@ svg text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
 
 <!-- A6 -->
 <section class="frame" id="a6">
-  <div class="frame-label"><b>A6</b><span>Claude Code · the drift guard</span><em>E6 · rot caught in the same turn the agent wrote it</em></div>
+  <div class="frame-label"><b>A6</b><span>Claude Code · the drift guard</span><em>E6 · shaped 2026-10-31: fixes what it just wrote, asks about what was already there</em></div>
   <div class="screen"><div class="term">
     <div><span class="you">›</span> make the pricing card's badge stand out</div>
     <div class="tool">● Edit  src/components/landing/sections.tsx</div>
     <div class="dim">  + &lt;span className="bg-[#ff5a1f] text-[11px] px-2"&gt;Popular&lt;/span&gt;</div>
     <div class="box">
-      <div class="warn">Systemix drift guard · 2 new raw values in the lines Claude just wrote</div>
+      <div class="warn">Systemix drift guard · 2 new raw values in what Claude just wrote</div>
       <div>sections.tsx:498  bg-[#ff5a1f]  → a colour token (guardrails: "no raw hex")</div>
       <div>sections.tsx:498  text-[11px]   → the type scale (guardrails: "no ad-hoc font sizes")</div>
-      <div class="dim">read-only scan of the changed file · nothing sent · /systemix:drift-report for the whole repo</div>
+      <div class="dim">read-only scan of the changed lines · nothing sent</div>
     </div>
-    <div class="tool">● Edit  src/components/landing/sections.tsx</div>
+    <div class="tool">● Edit  src/components/landing/sections.tsx   <span class="dim">(fixing its own values, same turn)</span></div>
     <div class="dim">  + &lt;span className="bg-highlight text-xs px-2"&gt;Popular&lt;/span&gt;</div>
-    <div class="okc">Systemix drift guard · clean</div>
-    <div>Done. The badge uses the highlight token and the xs type step, so it stays in the system.</div>
+    <div class="okc">Systemix drift guard · the new lines are clean</div>
+    <div class="box">
+      <div class="you">Already in this file before the change · not touched</div>
+      <div>sections.tsx:502  text-[13px] · sections.tsx:516  text-[11px]</div>
+      <div class="dim">suggested fix: text-sm and text-xs · say "fix the older ones" to apply, or leave them for /systemix:drift-report</div>
+    </div>
+    <div>Done. The badge uses the highlight token and the xs type step. I fixed the two values I had just written; two older ones in the same file are listed above and left as they were.</div>
   </div></div>
 </section>
 
 <!-- A7 -->
 <section class="frame" id="a7">
-  <div class="frame-label"><b>A7</b><span>Claude Code · learning and a proposed self-improvement</span><em>E8 · an example turn (illustrative numbers) · proposals only, gated by evals</em></div>
+  <div class="frame-label"><b>A7</b><span>Claude Code · learning and a proposed self-improvement</span><em>E8 · an example turn (illustrative numbers) · shaped 2026-10-31: a self-change is a goal, approved by typing</em></div>
   <div class="screen"><div class="term">
     <div><span class="you">›</span> /systemix:next G-001</div>
     <div class="dim">product.learn · reading design/evaluations.md and the turn's decisions</div>
@@ -319,24 +324,25 @@ svg text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
       <div>The drift guard caught 9 raw values across 4 turns; 7 were font sizes. The type scale is not mapped into the theme, so agents reach for text-[13px].</div>
     </div>
     <div class="box">
-      <div class="you">Proposed next goal (not opened)</div>
+      <div class="you">Proposed next goal for your product (not opened)</div>
       <div>"Map the type scale into the theme so agents stop writing arbitrary font sizes."</div>
-      <div class="dim">open it yourself: /systemix:goal &lt;that sentence&gt;</div>
+      <div class="dim">open it: /systemix:goal Map the type scale into the theme so agents stop writing arbitrary font sizes.</div>
     </div>
     <div class="box">
-      <div class="you">Proposed change to Systemix itself (approval card)</div>
-      <div>drift-report: name the nearest type step in each font-size finding.</div>
-      <div class="dim">plugin evals: 12 of 12 pass with the change · shows in the hub's Queue · ships only after a reviewer approves</div>
+      <div class="you">Proposed change to Systemix itself (not opened)</div>
+      <div>"drift-report names the nearest type step in each font-size finding."</div>
+      <div class="dim">a change to Systemix's own skills runs as a goal like any other: evals first (its plugin evals must pass), approved by typing /systemix:gate, never by a click</div>
+      <div class="dim">open it: /systemix:goal drift-report names the nearest type step in each font-size finding.</div>
     </div>
   </div></div>
 </section>
 
 <section class="notes">
-  <b>For the Shape step: what I'd like you to look at</b>
+  <b>Shaped on 2026-10-31 (decision lines in design/goals/G-001-self-improving-agent/decisions.md)</b>
   <ul>
-    <li>A1: should the board open on Goals, or on what waits on you across goals and the experiment queue?</li>
-    <li>A6: should the drift guard ask before fixing, or fix and say so (as drawn)? Ghost mode would mean "ask".</li>
-    <li>A7: skill changes approved in the hub's Queue with a click, or typed like a gate? Today the experiment queue is a click and gates are typed.</li>
+    <li>A1: the hub opens on everything waiting on you; the goals board is one click away.</li>
+    <li>A6: the drift guard fixes what the agent just wrote and says so; older drift waits for a yes.</li>
+    <li>A7: a change to Systemix itself is a goal, approved by typing; the hub never approves.</li>
   </ul>
 </section>
 
