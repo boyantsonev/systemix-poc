@@ -116,13 +116,41 @@ footer { color: var(--muted); font-size: 13px; }
 </header>
 
 <section class="panel" aria-label="The pitch against the product">
-  <div class="panel-head"><h2>The pitch against the product</h2><span class="pill warn">1 of 3 pillars complete</span></div>
+  <div class="panel-head"><h2>The pitch against the product</h2><span class="pill warn">1 complete · 2 in progress</span></div>
   <div class="pillars">
     <div class="rung"><span class="role">deploy</span><span class="pill warn">partial</span><p class="note">Interview, audit proposals and Claude Design sync ship. The one-step scaffold (<code>init</code>) is CLI-only, and npm still serves the unsafe 0.2.0.</p><p class="next">Next: <code>/systemix:init</code>, about 1 day</p></div>
     <div class="rung hi"><span class="role">keep from rotting</span><span class="pill ok">strong, on demand</span><p class="note">Score, readiness audit, design audit, drift report. Deterministic: 18 blind runs, same score. Nothing runs while the agent writes UI.</p><p class="next">Next: drift guard hook, about 1–2 days</p></div>
-    <div class="rung"><span class="role">orchestrate sprints</span><span class="pill todo">missing</span><p class="note">Not in Systemix. The method works in a private reference build: Frame → Build → Systematize, state per sprint, a checker.</p><p class="next">Next: <code>/systemix:sprint</code>, about 3–4 days</p></div>
+    <div class="rung"><span class="role">orchestrate sprints</span><span class="pill warn">loops shipped, beta</span><p class="note">The product and build loops now ship in the plugin: goal, evals, pictures, validate, then plan, hub, system (the sprint), code, test, ship, measure. A person rules at every gate.</p><p class="next">Next: the hub's loop views, G-001</p></div>
   </div>
-  <p class="note">Until the sprint skill ships, the site offers sprints as a service, not as a plugin feature. Sprint price is the weak rung: €4.5k for two weeks is far above the budgets seen ($100–$720). Hypothesis to test: a fixed 3-day sprint at €990–€1,490.</p>
+  <p class="note">Sprint price decided as the one to test: a fixed 3-day sprint at €990 (DSC-20).</p>
+</section>
+
+<section class="panel" aria-label="Goals waiting on you">
+  <div class="panel-head"><h2>Goals waiting on you</h2><span class="pill todo">2 at the Evals gate</span></div>
+  <p class="note">This repo now runs on its own product and build loops. Each goal stops for your ruling; type the ruling as a command. Briefs are in <code>design/briefs/</code>.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Goal</th><th>What it is</th><th>Step</th><th>Brief</th></tr></thead>
+    <tbody>
+      <tr><td><code>G-001</code></td><td>Systemix as a self-improving design system agent: one plugin with the loops, published pictures, a local design hub, a drift guard, measurement and gated self-improvement. 10 evals.</td><td>product.evals</td><td>B-001</td></tr>
+      <tr><td><code>G-002</code></td><td>The landing page rebuilt on the pitch: hero, three pillars, live proof, transitions.dev motion. 9 evals.</td><td>product.evals</td><td>B-002</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="cmds">
+    <div class="cmd">/systemix:gate approve G-001</div>
+    <div class="cmd">/systemix:gate approve G-002</div>
+    <div class="cmd">/systemix:gate rework G-001 &lt;what to change&gt;</div>
+  </div>
+  <h3>The self-improving agent, piece by piece</h3>
+  <ul class="list">
+    <li><span class="pill ok">done</span><p>Plugin runtime, the loops and gates (<code>/systemix:loops</code>, <code>goal</code>, <code>next</code>, <code>gate</code>, <code>decide</code>), checker with tests.</p></li>
+    <li><span class="pill warn">next</span><p>The local design hub inside the plugin, with goals, loops, briefs, artifacts and evaluations views; pictures published as artifacts.</p></li>
+    <li><span class="pill warn">next</span><p>A drift guard that checks the agent's own UI edits; <code>/systemix:init</code>; measurement through PostHog's own plugin.</p></li>
+    <li><span class="pill warn">next</span><p>Self-improvement: learnings propose the next goal; skill changes arrive as approval cards and ship only after their evals pass.</p></li>
+    <li><span class="pill todo">risk</span><p>The interviews are still 0 of 5. Run them alongside; the loops make "decision memory" demonstrable.</p></li>
+  </ul>
+  <p class="note">PostHog: integrate through its official Claude Code plugin and MCP (insights, surveys, signals); don't rebuild its Self-driving fixes.</p>
 </section>
 
 <section class="strip" aria-label="Status at a glance">
@@ -223,7 +251,7 @@ footer { color: var(--muted); font-size: 13px; }
       <div class="rung"><span class="role">magnet · free</span><span class="price">€0</span><h3>Plugin + score</h3><p class="note">Free and MIT. It runs on the client's own Claude, so a score costs us one short server call.</p></div>
       <div class="rung hi"><span class="role">first money · self-serve</span><span class="price">€9.99</span><h3>Quick report</h3><p class="note">Instant, no person. After VAT and Lemon Squeezy fees (about 5% + $0.50), roughly €7–9 per sale.</p></div>
       <div class="rung"><span class="role">main revenue · human-reviewed</span><span class="price">€499</span><h3>Full audit, 24h</h3><p class="note">AI drafts, a person rewrites the judged parts. Estimated 45–90 min each, so 3 a day per reviewer is plausible, not measured.</p></div>
-      <div class="rung"><span class="role">expansion · orchestrated</span><span class="price">€990+</span><h3>Design sprint</h3><p class="note">A fixed 3-day sprint run with <code>/systemix:sprint</code>: Frame, Build, Systematize. €990–€1,490 is a hypothesis; budgets seen so far are $100–$720.</p></div>
+      <div class="rung"><span class="role">expansion · orchestrated</span><span class="price">€990</span><h3>Design sprint</h3><p class="note">A fixed 3-day sprint run through the build loop: plan, hub, system. The price to test (DSC-20); budgets seen so far are $100–$720.</p></div>
     </div>
     <div class="table-wrap">
     <table>
@@ -241,11 +269,10 @@ footer { color: var(--muted); font-size: 13px; }
 </div>
 
 <section class="panel">
-  <div class="panel-head"><h2>Your to-do list, in order</h2><span class="pill todo">10 items</span></div>
+  <div class="panel-head"><h2>Your to-do list, in order</h2><span class="pill todo">9 items</span></div>
   <ol class="todo-list">
     <li>Tell me the exact repo name for <strong>systemix-agent</strong> (organization or repo?) and install the Claude GitHub App on it. I'll push the plugin and switch the install line.<span class="who">you → me</span></li>
-    <li>Approve the pitch-based hero, the pillar tags and the landing plan; pick the sprint price to test.<span class="who">you</span></li>
-    <li>Then I build the landing rework with the motion layer, followed by the drift guard hook, <code>/systemix:init</code> and <code>/systemix:sprint</code>.<span class="who">me</span></li>
+    <li>Rule on G-001 and G-002 at the Evals gate (above). Then I draw the pictures for each and stop for you again.<span class="who">you → me</span></li>
     <li>Vercel: set <code>SYSTEMIX_REPORT_ACCESS=lemonsqueezy</code>. This alone opens the free score.<span class="who">you</span></li>
     <li>Publish CLI 0.3.0 on npm and deprecate 0.2.0.<span class="who">you</span></li>
     <li>Lemon Squeezy: create the €9.99 product with single-use license keys, then add the store ID, product ID and checkout link to Vercel.<span class="who">you</span></li>
@@ -256,7 +283,7 @@ footer { color: var(--muted); font-size: 13px; }
   </ol>
 </section>
 
-<footer>Sources: the branch's code and tests (CLI 2,003 tests, app 218, all passing), <code>launch-review.md</code> and <code>funnel-plan.md</code> in <code>docs/feature/ai-native-ds-kit-beta/</code>, decisions DSC-16 and DSC-19, and the transitions.dev license. Lemon Squeezy fees are third-party estimates.</footer>
+<footer>Sources: the branch's code and tests (CLI 2,003 tests, app 218, all passing), <code>launch-review.md</code> and <code>funnel-plan.md</code> in <code>docs/feature/ai-native-ds-kit-beta/</code>, decisions DSC-16, DSC-19, DSC-20 and DSC-21, <code>self-improving-agent.md</code>, and the transitions.dev license. Lemon Squeezy fees are third-party estimates.</footer>
 
 </div>
 </body>
