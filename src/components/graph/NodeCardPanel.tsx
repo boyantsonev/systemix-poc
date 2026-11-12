@@ -134,7 +134,7 @@ function GenericBody({ node }: { node: TopoNode }) {
 }
 
 // Where "Set up this source →" points — the docs section on wiring a signal.
-const SETUP_HREF = "/docs/getting-started#connect-a-signal-optional-but-recommended";
+const SETUP_HREF = "/docs/labs/experiments#connect-posthog";
 const SETUP_LINK = { href: SETUP_HREF, label: "Set up this source →" };
 
 function SourceBody({ source }: { source: SourceCard }) {

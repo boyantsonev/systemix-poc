@@ -1,0 +1,34 @@
+---
+title: The design system files
+description: What lives in design/, which file is the source for what, and why it is code-first.
+---
+
+Systemix keeps your design system as plain files in your repo, in `design/`. People read them,
+agents read them, and they travel with the code, so the history of every decision is in git.
+
+| File | Holds | Source of truth for |
+|---|---|---|
+| `DESIGN.md` | The system in words: principles, patterns, voice, what each component is for | Intent |
+| `tokens.css` | Colours, type, spacing, radius, motion, as CSS custom properties | Values |
+| `guardrails.mdx` | The rules, explained, with the reasoning a person needs | Why |
+| `rules.md` | Every rule as one row an agent can check | What is checked |
+| `evals/rules/` | One sample of bad work per scripted rule, and one good file | That the check works |
+| `loops/`, `goals/`, `context/`, `briefs/` | The [product and build loops](/docs/concepts/loops), when you use them | How changes are made |
+
+## One source per kind of thing
+
+A rule lives once. `rules.md` holds the short, checkable form and names its source (a line in
+`guardrails.mdx`, `DESIGN.md` or a decision). When a row and its source disagree, the source is
+right and the row gets fixed. No skill, prompt or wiki keeps its own copy; mirrors point back.
+
+## Code-first
+
+Tokens are canonical in `tokens.css`. A raw hex value or pixel size in a component is drift, and
+`/systemix:check --drift` finds it. A design tool (Figma, Claude Design) can feed the system through
+setup, but the repo stays the source.
+
+## Nothing changes silently
+
+Setup proposes every file and writes on your yes. Later changes to the rules or the system, by a
+person or proposed by the agent, are changes to these files, made in a branch and reviewed like
+code. The agent never edits its own rules on its own.

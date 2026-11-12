@@ -1,0 +1,43 @@
+---
+title: /systemix:setup
+description: Build the design system and its rules, from your code, an interview, or Claude Design.
+---
+
+Builds the design system your agents will read, as files you own. **Nothing is written until you
+say yes**: setup shows each file, or its diff, first.
+
+```
+/systemix:setup [--from code|interview|claude-design <link>] [--loops]
+```
+
+## Where it starts from
+
+Setup picks the door from what is in your repo, and says which and why:
+
+| Your repo has | Door | What happens |
+|---|---|---|
+| UI code, no `design/` | **From the code** | It infers the tokens and patterns you already ship, finds drift and duplicate components, and proposes a `design/` starter from them |
+| No UI yet | **By interview** | A short conversation about your product, your people and the associations behind your palette, then drafts in your own voice |
+| A Claude Design link or export | **From Claude Design** | Its tokens and component styles into `design/` |
+| `design/` already | Straight to the rules | — |
+
+## The rules
+
+1. `systemix rules init` writes a starter [`design/rules.md`](/docs/concepts/rules): twelve
+   generic rules for tokens, components, accessibility and voice, and one sample of bad work per
+   scripted rule in `design/evals/rules/known-bad/`.
+2. Setup proposes your product's own rows from `DESIGN.md`, `guardrails.mdx`, your brand's voice
+   and any legal copy rules you give it, and removes starter rows that don't apply.
+3. For every new scripted rule it adds a sample of bad work, and runs `systemix rules lint` and
+   `systemix rules eval` until both pass. A rule whose sample is missed is not ready: the pattern
+   gets fixed, not the sample.
+
+## The loops (optional)
+
+With `--loops`, setup also sets up the [product and build loops](/docs/concepts/loops): it asks who
+holds each role, where prototypes live, how the project ships, and what the agent must never
+touch, then writes `design/loops/` and checks it.
+
+## Then
+
+`/systemix:check <a folder of UI>` shows where your code stands against the new rules.

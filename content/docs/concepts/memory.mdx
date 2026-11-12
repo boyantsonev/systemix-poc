@@ -1,0 +1,30 @@
+---
+title: Memory
+description: What the repo remembers — learnings, decisions, evals — and why it lives in files.
+---
+
+Systemix remembers in files, in your repo, so the next goal starts from what the last one proved
+and anyone, person or agent, can read why something is the way it is.
+
+| File | Remembers | Written by |
+|---|---|---|
+| `experiments/LEARNINGS.md` | What each goal or experiment learned, newest first, with its confidence and source | The loop's learn step |
+| `design/goals/*/decisions.md` | Every ruling, in the person's own words, with their role and the facts it was made from | `/systemix:loop gate` |
+| `design/goals/*/evals.md` | What "done" meant, and whether it was met | The loop |
+| `design/evaluations.md` | Each measurement, with the same definitions as last time | The measure step |
+| `design/rules.md` | The rules as they stand today, each with its source and date | You, through reviewed changes |
+
+## Recall before building
+
+`/systemix:brief` and `/systemix:loop open` read the latest learnings and the rulings that touch the
+work before they write anything. A new goal that contradicts a high-confidence learning has to say
+so. Cite the learnings a change builds on in its pull request.
+
+## Why files
+
+- **They travel with the code.** A branch carries its decisions; a revert takes them back too.
+- **Every tool can read them.** Claude Code, other agents, your editor, a reviewer on GitHub.
+- **Nobody keeps a copy.** A wiki or tracker can mirror them, but the repo is the source, so there
+  is one answer to "what did we decide".
+- **They are checked.** `systemix loops check` and `systemix rules lint` refuse malformed records
+  the way a test refuses broken code.

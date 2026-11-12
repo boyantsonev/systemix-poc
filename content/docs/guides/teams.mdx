@@ -1,0 +1,44 @@
+---
+title: For your team
+description: What design, engineering, content, product and AI agents each do with Systemix.
+---
+
+A design system has always connected these roles. With Systemix they read the same files, and
+every command reads the same rules, so a designer, an engineer and an agent briefed on Monday
+are briefed from one source.
+
+## Design
+
+- Run `/systemix:setup` once to turn what ships today into `design/`, then shape `DESIGN.md` and
+  `rules.md` so they say what you mean.
+- Hold the `design-lead` role in the loops: you shape the pictures and approve what goes into the
+  system.
+- When a check flags something you'd allow, change the rule, not the screen:
+  [fix the rule, not the instance](/docs/concepts/rules#fix-the-rule-not-the-instance).
+
+## Engineering
+
+- Run `/systemix:check` on your branch before review; `--drift` lists raw values that should be
+  tokens.
+- Put `systemix rules check` in CI so a block rule fails the build, the same way a test does.
+- Hold the `engineering-lead` role: you approve the plan, the pull request and the release.
+
+## Content and marketing
+
+- Voice, banned words and legal lines are rows in `rules.md` with `copy` tests, so a post, an
+  email or a landing section is checked the same way a screen is:
+  `/systemix:check --surface marketing <file>`.
+- Brief first: `/systemix:brief a launch email for …` gives the lines you may and may not use.
+
+## Product and business
+
+- A goal is one sentence: `/systemix:loop open <sentence>`. You approve its evals, decide "build it"
+  at validate and "ship it" at the end, each from a brief that names the facts.
+- The decision log in every goal folder answers "why is it like this" without a meeting.
+
+## AI agents
+
+- Agents read `design/` and `rules.md` directly; the plugin's commands are how Claude Code uses
+  them, and the files are plain enough for any other agent.
+- Agents may brief and check on their own. They never rule: every gate waits for a person, and
+  `systemix loops check` refuses a ruling made by an agent.

@@ -1,0 +1,56 @@
+---
+title: The product and build loops
+description: How a goal moves from a sentence to shipped and measured, where the gates are, and who rules them.
+---
+
+Every change worth recording runs as a goal through two loops, written as files in
+`design/loops/`. The **product loop** decides what to build; the **build loop** makes it, ships it
+and measures it. [`/systemix:loop`](/docs/commands/loop) drives both.
+
+## The product loop
+
+| Step | What happens | Gate |
+|---|---|---|
+| goal | One sentence becomes a goal: every reading of it, the one recommended, risks, questions | |
+| evals | Five to twelve checkable evals: what must be true, how it's checked, the bar | **approve** · reviewer |
+| design | Pictures for the evals that a picture can answer, from the design system | |
+| shape | The design lead's comments, redrawn; each rule they set written down | |
+| test | People try it; what they did is recorded | |
+| score | Every eval a picture can answer marked pass or fail | |
+| validate | Build it, reshape it, or drop it | **decide** · reviewer |
+| learn | The lessons into `experiments/LEARNINGS.md`, and the next goal proposed | |
+
+## The build loop
+
+| Step | What happens | Gate |
+|---|---|---|
+| plan | The plan, and any backend gap as its own brief | **approve** · reviewer |
+| hub | The pictures in your real components, on your prototype surface | |
+| system | What the frames needed twice goes into the design system | **approve** · reviewer |
+| code | A branch from the latest main, one concern per commit | |
+| test | The tests, and every eval answered at build time | |
+| review | The pull request and its review | **approve** · reviewer |
+| ship | Release notes and the evals scorecard | **decide** · reviewer |
+| measure | The evals again, with real use | |
+
+"Build it" at validate hands the goal to the build loop; measure hands the lessons back to learn.
+
+## Roles, not names
+
+The loops name roles: `design-lead`, `engineering-lead`, `founder`, `reviewer` and `agent`.
+`design/loops/roster.md` says who holds each this week, and each role's deputy. When the holder is
+away, the deputy rules, from a decision brief (`/systemix:loop decide`) that asks the questions the
+absent expert would have asked.
+
+## The agent never rules
+
+A gate is a person's ruling, typed with `/systemix:loop gate`. The agent prepares everything
+before a gate and stops there. `systemix loops check` refuses a decision line whose person doesn't
+hold the gate's role, a deputy who doesn't hold the deputy role, and any line ruled by the agent.
+
+```sh
+systemix loops init        # the loop templates (new files only)
+systemix loops check       # loops, goals and decision lines well-formed
+systemix loops status      # every goal, its step, whose gate it waits on
+systemix loops decisions   # every ruling, who made it, from which facts
+```
