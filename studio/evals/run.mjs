@@ -5,7 +5,7 @@
 //
 //   node evals/run.mjs --list
 //   node evals/run.mjs --triggers [--limit N]
-//   node evals/run.mjs --cases check,brief | --case <id> [--samples N]
+//   node evals/run.mjs --cases check,brief | --case <id>[,<id>…] [--samples N]
 //   options: --concurrency N (4) · --max-cost-usd X (25) · --out <file> · --keep · --no-judge
 //
 // Scoring is in evals/lib/score.cjs (unit-tested). Results go to evals/results/<date>.json,
@@ -244,7 +244,7 @@ async function main() {
     console.log(`  positives ${results.triggers.positives.ok}/${results.triggers.positives.total} · negatives ${results.triggers.negatives.ok}/${results.triggers.negatives.total}`);
   }
 
-  const wanted = opts.caseId ? cases.filter((c) => c.id === opts.caseId) : opts.cases ? cases.filter((c) => opts.cases.split(",").map((s) => s.trim().replace(/\.json$/, "")).includes(c.file.replace(/\.json$/, ""))) : [];
+  const wanted = opts.caseId ? cases.filter((c) => opts.caseId.split(",").includes(c.id)) : opts.cases ? cases.filter((c) => opts.cases.split(",").map((s) => s.trim().replace(/\.json$/, "")).includes(c.file.replace(/\.json$/, ""))) : [];
   if ((opts.caseId || opts.cases) && !wanted.length) throw new Error(`no case matched (${opts.caseId || opts.cases}); try --list`);
   const jobs = wanted.flatMap((c) => Array.from({ length: opts.samples }, (_, s) => ({ c, s })));
   const samples = await pool(jobs, (j) => runCase(j.c));
