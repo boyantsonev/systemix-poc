@@ -1,0 +1,32 @@
+.pricing-card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.pricing-card--featured {
+  border-color: var(--highlight-foreground);
+}
+
+.pricing-card__badge {
+  background: #fef3c7;
+  color: var(--highlight-foreground);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+}
+
+.pricing-card__plan {
+  font-size: var(--font-size-lg);
+}
+
+.pricing-card__price {
+  font-size: var(--font-size-2xl);
+}
+
+.pricing-card__period {
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+}

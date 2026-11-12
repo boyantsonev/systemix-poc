@@ -10,18 +10,21 @@ import {
   LandingFooter,
   LandingNav,
   Commands,
+  GoalLoop,
+  Improves,
+  Roles,
   Pricing,
-  Proof,
   Rules,
 } from "@/components/landing/sections";
 import { faq } from "@/lib/landing/content";
 
-// DSC-23 (G-005): hero · the four commands · rules as data · proof · how it works · pricing
-// (free plugin, sponsor, setup) · FAQ, then the install again.
+// The product studio (docs/feature/product-studio/copy-deck.md): hero · who uses it · the five
+// commands · how a goal ships · rules as data · it improves itself · how it works · pricing (free studio,
+// sponsor, setup by a designer) · FAQ, then the install again.
 export const metadata: Metadata = {
-  title: "Systemix: the design system agent for Claude Code",
+  title: "Systemix: a product studio built on your design system",
   description:
-    "A free Claude Code plugin: it sets up your design system and its rules, checks your agents' work against them, and runs design sprints. Nothing leaves your machine.",
+    "A free Claude Code plugin. A designer sets it up once; engineers, product and marketing ship through it. The agent reads your rules, code checks the work, and a person makes every call.",
   alternates: { canonical: "/" },
 };
 
@@ -35,14 +38,20 @@ export default function LandingPage() {
           <SectionTrack name="hero">
             <HeroRow />
           </SectionTrack>
+          <SectionTrack name="roles">
+            <Roles />
+          </SectionTrack>
           <SectionTrack name="commands">
             <Commands />
+          </SectionTrack>
+          <SectionTrack name="loop">
+            <GoalLoop />
           </SectionTrack>
           <SectionTrack name="rules">
             <Rules />
           </SectionTrack>
-          <SectionTrack name="proof">
-            <Proof />
+          <SectionTrack name="improves">
+            <Improves />
           </SectionTrack>
           <SectionTrack name="how-it-works">
             <HowItWorks />

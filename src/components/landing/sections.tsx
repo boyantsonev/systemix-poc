@@ -6,21 +6,22 @@ import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { PluginInstall, TrackedLink } from "@/components/systemix/LandingEvents";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { loadOwnReport } from "@/lib/landing/own-score";
 import { HeroGeneration } from "@/components/motion/HeroGeneration";
-import { ScoreDonut } from "@/components/motion/ScoreDonut";
+import { LoopDiagram } from "@/components/landing/LoopDiagram";
 import { FaqAccordion } from "@/components/motion/FaqAccordion";
 import {
   GITHUB_URL,
   bottomCta,
   faq,
   footer,
+  goalLoop,
   heroFacts,
   howItWorks,
+  improves,
+  roles,
   nav,
   commands,
   offer,
-  proof,
   rules,
 } from "@/lib/landing/content";
 
@@ -147,7 +148,34 @@ export function HeroRow() {
   );
 }
 
-// ── The four commands ────────────────────────────────────────────────────────────────────────────────────────────
+// ── Who uses it: one repo, one set of rules ─────────────────────────────────
+
+export function Roles() {
+  return (
+    <Section id="roles">
+      <div className="max-w-3xl">
+        <Eyebrow>{roles.label}</Eyebrow>
+        <SectionHeading>{roles.heading}</SectionHeading>
+        <Lead>{roles.body}</Lead>
+      </div>
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+        {roles.items.map((r, i) => (
+          <div
+            key={r.key}
+            data-reveal-card={i}
+            className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
+          >
+            <p className="text-[15px] font-bold text-foreground">{r.who}</p>
+            <p className="mt-3 flex-1 text-[14px] leading-relaxed text-muted-foreground">{r.does}</p>
+            <code className="mt-5 font-mono text-[12px] text-highlight">{r.types}</code>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+// ── The five commands: three anyone (or the agent) runs, two a person runs ───
 
 export function Commands() {
   return (
@@ -156,12 +184,15 @@ export function Commands() {
         <Eyebrow>{commands.label}</Eyebrow>
         <SectionHeading>{commands.heading}</SectionHeading>
       </div>
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+      <div className="mt-12 grid gap-4 sm:gap-5 lg:grid-cols-6">
         {commands.items.map((c, i) => (
           <div
             key={c.key}
             data-reveal-card={i}
-            className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
+            className={cn(
+              "flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]",
+              i < 3 ? "lg:col-span-2" : "lg:col-span-3",
+            )}
           >
             <p className="tva-label text-[10px] text-highlight">{c.pillar}</p>
             <code className="mt-3 font-mono text-[15px] font-semibold text-foreground">{c.command}</code>
@@ -170,6 +201,46 @@ export function Commands() {
           </div>
         ))}
       </div>
+    </Section>
+  );
+}
+
+// ── It improves itself: log → proposals → a person decides ───────────────────
+
+export function Improves() {
+  return (
+    <Section id="improves">
+      <div className="max-w-3xl">
+        <Eyebrow>{improves.label}</Eyebrow>
+        <SectionHeading>{improves.heading}</SectionHeading>
+      </div>
+      <LoopDiagram className="mt-12" steps={improves.steps} center={improves.center} centerNote={improves.centerNote} loopBack={improves.loopBack} personLabel={improves.personLabel} />
+      <p className="mt-8 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+        {improves.footnote}{" "}
+        <a
+          href={improves.link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-foreground underline underline-offset-4 hover:text-highlight"
+        >
+          {improves.link.label}
+        </a>
+      </p>
+    </Section>
+  );
+}
+
+// ── How a goal ships: the loop as a diagram ─────────────────────────────────
+
+export function GoalLoop() {
+  return (
+    <Section id="loop">
+      <div className="max-w-3xl">
+        <Eyebrow>{goalLoop.label}</Eyebrow>
+        <SectionHeading>{goalLoop.heading}</SectionHeading>
+        <Lead>{goalLoop.body}</Lead>
+      </div>
+      <LoopDiagram className="mt-12" steps={goalLoop.steps} center={goalLoop.center} centerNote={goalLoop.centerNote} loopBack={goalLoop.loopBack} personLabel={goalLoop.personLabel} />
     </Section>
   );
 }
@@ -225,52 +296,6 @@ export function Rules() {
             <p className="mt-1 opacity-60">{result.more}</p>
             <p className="mt-3 font-semibold">{result.verdict}</p>
           </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-// ── Proof: this repo's own score (a committed results file, never hand-written) ──
-
-export async function Proof() {
-  const report = await loadOwnReport();
-  if (!report) return null;
-  return (
-    <Section id="proof">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
-        <div>
-          <Eyebrow>{proof.label}</Eyebrow>
-          <SectionHeading>{proof.heading(report.overall)}</SectionHeading>
-          <Lead>{proof.body}</Lead>
-          <Link
-            href={proof.link.href}
-            className="mt-6 inline-block text-[13px] font-medium text-foreground underline underline-offset-4 hover:text-highlight"
-          >
-            {proof.link.label}
-          </Link>
-        </div>
-        <div
-          data-reveal-card="1"
-          className="grid items-center gap-6 rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)] sm:grid-cols-[auto_minmax(0,1fr)]"
-        >
-          <div className="justify-self-center">
-            <ScoreDonut score={report.overall} label="out of 100" />
-          </div>
-          <ul className="min-w-0 space-y-3">
-            {report.areas.map((a) => (
-              <li key={a.key}>
-                <div className="flex justify-between gap-3 text-[13px]">
-                  <span className="text-foreground">{a.label}</span>
-                  <span className="font-mono text-muted-foreground">{a.score} / 10</span>
-                </div>
-                <div className="mt-1 h-1.5 rounded-full bg-muted">
-                  <div className="h-1.5 rounded-full bg-primary" style={{ width: `${a.score * 10}%` }} />
-                </div>
-              </li>
-            ))}
-            <li className="pt-2 font-mono text-[11px] text-muted-foreground">commit {report.commit} · rubric v1</li>
-          </ul>
         </div>
       </div>
     </Section>

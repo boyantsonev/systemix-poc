@@ -1,0 +1,20 @@
+{
+  "count": 1,
+  "groups": [
+    "actions"
+  ],
+  "components": [
+    {
+      "name": "Button",
+      "slug": "button",
+      "group": "actions",
+      "status": "skeleton",
+      "source": "src/widgets/Button.tsx",
+      "reference": null,
+      "platforms": [
+        "web"
+      ],
+      "doc": "docs/components/button.md"
+    }
+  ]
+}

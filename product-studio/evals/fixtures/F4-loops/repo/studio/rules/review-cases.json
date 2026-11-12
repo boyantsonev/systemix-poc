@@ -1,0 +1,17 @@
+{
+  "C1": {
+    "bad": "<main><button class=\"btn-primary\">Save</button><button class=\"btn-primary\">Publish</button></main>",
+    "good": "<main><button class=\"btn-primary\">Publish</button><button class=\"btn-secondary\">Save draft</button></main>",
+    "expect": "bad: yes, two primary buttons on one view. good: no."
+  },
+  "C2": {
+    "bad": "<div class=\"rounded border px-4 py-2 cursor-pointer\" onclick=\"save()\">Save</div>",
+    "good": "<Button onClick={save}>Save</Button>",
+    "expect": "bad: yes, a button built by hand. good: no, it uses the system's Button."
+  },
+  "A2": {
+    "bad": "<input type=\"email\" placeholder=\"Email\">",
+    "good": "<label for=\"email\">Email</label><input id=\"email\" type=\"email\">",
+    "expect": "bad: no visible label, a placeholder is not a label. good: labelled."
+  }
+}

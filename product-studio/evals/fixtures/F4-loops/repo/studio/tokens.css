@@ -1,0 +1,98 @@
+/*
+ * Acme Notes design tokens. This file is canonical: code reads these custom properties and
+ * nothing else holds a colour.
+ *
+ * Two layers:
+ *   reference tokens  --ref-<hue>-<step>   raw values, never used by components directly
+ *   role tokens       --<role>             only var(--ref-…) or var(--<role>)
+ *
+ * REQUIRED ROLES: background foreground card card-foreground muted muted-foreground primary
+ * primary-foreground secondary secondary-foreground accent accent-foreground destructive
+ * destructive-foreground border input ring
+ *
+ * Light is :root, dark is .dark. Scale tokens (--font-size-*, --radius*, --space-*) hold raw values.
+ */
+
+:root {
+  /* reference: neutrals */
+  --ref-neutral-0: #ffffff;
+  --ref-neutral-50: #f8fafc;
+  --ref-neutral-100: #f1f5f9;
+  --ref-neutral-200: #e2e8f0;
+  --ref-neutral-300: #cbd5e1;
+  --ref-neutral-600: #475569;
+  --ref-neutral-700: #334155;
+  --ref-neutral-800: #1e293b;
+  --ref-neutral-900: #0f172a;
+  --ref-neutral-950: #020617;
+
+  /* reference: brand indigo */
+  --ref-indigo-100: #e0e7ff;
+  --ref-indigo-300: #a5b4fc;
+  --ref-indigo-600: #4f46e5;
+  --ref-indigo-900: #312e81;
+
+  /* reference: red */
+  --ref-red-400: #f87171;
+  --ref-red-600: #dc2626;
+
+  /* roles: light */
+  --background: var(--ref-neutral-0);
+  --foreground: var(--ref-neutral-900);
+  --card: var(--ref-neutral-0);
+  --card-foreground: var(--ref-neutral-900);
+  --muted: var(--ref-neutral-100);
+  --muted-foreground: var(--ref-neutral-600);
+  --primary: var(--ref-indigo-600);
+  --primary-foreground: var(--ref-neutral-0);
+  --secondary: var(--ref-neutral-100);
+  --secondary-foreground: var(--ref-neutral-900);
+  --accent: var(--ref-indigo-100);
+  --accent-foreground: var(--ref-indigo-900);
+  --destructive: var(--ref-red-600);
+  --destructive-foreground: var(--ref-neutral-0);
+  --border: var(--ref-neutral-200);
+  --input: var(--ref-neutral-300);
+  --ring: var(--primary);
+
+  /* scale: type */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  /* scale: radius */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+
+  /* scale: spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
+
+.dark {
+  --background: var(--ref-neutral-950);
+  --foreground: var(--ref-neutral-50);
+  --card: var(--ref-neutral-900);
+  --card-foreground: var(--ref-neutral-50);
+  --muted: var(--ref-neutral-800);
+  --muted-foreground: var(--ref-neutral-300);
+  --primary: var(--ref-indigo-300);
+  --primary-foreground: var(--ref-neutral-950);
+  --secondary: var(--ref-neutral-800);
+  --secondary-foreground: var(--ref-neutral-50);
+  --accent: var(--ref-indigo-900);
+  --accent-foreground: var(--ref-indigo-100);
+  --destructive: var(--ref-red-400);
+  --destructive-foreground: var(--ref-neutral-950);
+  --border: var(--ref-neutral-800);
+  --input: var(--ref-neutral-700);
+  --ring: var(--primary);
+}

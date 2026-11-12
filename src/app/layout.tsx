@@ -17,17 +17,19 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const SITE_TITLE = "Systemix: the design system agent for Claude Code";
+const SITE_TITLE = "Systemix: a product studio built on your design system";
 const SITE_DESCRIPTION =
-  "A free Claude Code plugin: it sets up your design system and its rules, checks your agents' work against them, and runs design sprints. Nothing leaves your machine.";
+  "A free Claude Code plugin. A designer sets it up once; engineers, product and marketing ship through it. The agent reads your rules, code checks the work, and a person makes every call.";
 
 // Runs before first paint. html.js: JavaScript is on. html.motion-ready: it is on and the reader
 // has not asked for reduced motion, so entrance states may start hidden (src/styles/motion.css).
-// html.motion-settled after --motion-settle shows everything, whatever happened to the scripts.
+// html.motion-settled after --motion-settle shows everything, but only when the page's scripts
+// never started (no html.motion-live, set by SectionTrack): otherwise a section scrolled to after
+// the first seconds would appear already finished instead of revealing.
 const MOTION_BOOT = `(function(){var d=document.documentElement;d.classList.add("js");
 if(!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("motion-ready");}
 addEventListener("DOMContentLoaded",function(){var t=parseFloat(getComputedStyle(d).getPropertyValue("--motion-settle"))||0;
-setTimeout(function(){d.classList.add("motion-settled")},t)});})();`;
+setTimeout(function(){if(!d.classList.contains("motion-live"))d.classList.add("motion-settled")},t)});})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://getsystemix.vercel.app"),

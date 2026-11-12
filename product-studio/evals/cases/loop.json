@@ -1,0 +1,478 @@
+[
+  {
+    "id": "loop-status-f4",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop status"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "G-001",
+        "G-002",
+        "G-003",
+        "G-004",
+        "G-005",
+        "Ada Lovelace"
+      ],
+      "must_not_include": [
+        "holder: Claude"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "Each goal's step and whose gate it waits on are quoted from loops status, not worked out",
+        "The words gate and holder are glossed in plain words the first time",
+        "It writes nothing and ends with the commands a person answers with"
+      ]
+    }
+  },
+  {
+    "id": "loop-setup-solo-f3",
+    "skill": "loop",
+    "fixture": "F3-installed",
+    "turns": [
+      "/product-studio:loop setup",
+      "Yes, just me: Ada Lovelace.",
+      "The product app in src/ and our marketing pages.",
+      "We run npm test, tag releases on main, and two friends try it first.",
+      "Never touch customer data, secrets or the production database.",
+      "Nothing else.",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "draft",
+        "small visible drift"
+      ],
+      "must_not_include": [
+        "{{",
+        "holder: Claude",
+        "market loop"
+      ],
+      "no_write_before_turn": 7,
+      "files_exist": [
+        "studio/loops/roster.md",
+        "studio/loops/product-loop.md",
+        "studio/loops/build-loop.md",
+        "studio/loops/joins.md"
+      ],
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It asks at most one question per turn and shows the file list from the dry run before writing",
+        "The roster is solo: Ada Lovelace holds every role and there is no deputy (shown by an init that names her with --holder for every role, or by the roster holder lines it quotes)",
+        "It says a reviewer flips the loops from draft to agreed and that the coding agent never does",
+        "It suggests 'fix one small visible drift' as the first goal and does not open it"
+      ],
+      "run_log_rows_min": 1
+    }
+  },
+  {
+    "id": "loop-open-f4",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop open Let people export their invoices as a CSV file so they can hand them to an accountant",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "G-006",
+        "gate approve G-006"
+      ],
+      "no_write_before_turn": 2,
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It creates exactly one new folder, studio/goals/G-006-<slug>/, with goal.md (Success criteria, Kill if, Context), evals.md and an empty decisions.md",
+        "evals.md has between 5 and 12 evals, each with a bar and the step that answers it, and at least one about a person using it",
+        "It quotes the newest check row from the run log, or says no check has run, instead of 'the latest check'",
+        "It stops at the Evals gate: no design, plan or code, and no step-advancing write after the gate"
+      ]
+    }
+  },
+  {
+    "id": "loop-walk-f4",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop open Show a clear empty state on the invoices list",
+      "{{yes}}",
+      "/product-studio:loop gate approve G-006 (I'm Ada Lovelace)",
+      "{{yes}}",
+      "/product-studio:loop next G-006",
+      "{{yes}}",
+      "/product-studio:loop decide G-006",
+      "{{yes}}",
+      "/product-studio:loop gate approve G-006 (I'm Ada Lovelace)",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "G-006",
+        "Ada Lovelace",
+        "Who rules"
+      ],
+      "must_not_include": [
+        "I merged",
+        "I've merged",
+        "has been merged"
+      ],
+      "no_write_before_turn": 2,
+      "run_log_rows": 10,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        },
+        {
+          "argv": [
+            "loops",
+            "decisions",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "loops check passes at every stop (open, the evals gate, next, decide, the validate gate)",
+        "Each decision line matches ^- \\d{4}-\\d{2}-\\d{2} · \\S+ · approve · by Ada Lovelace · brief: (B-\\d{3}|none)",
+        "A ruling with no brief writes 'brief: none'",
+        "next stops at the next gate and does not rule on it",
+        "The brief has the sections Question, Options, What we already know, Sources and Who rules, and never presents a ruling as made"
+      ]
+    }
+  },
+  {
+    "id": "loop-gate-records-line",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop gate approve G-001 as written (I'm Ada Lovelace)",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "Ada Lovelace",
+        "G-001"
+      ],
+      "no_write_before_turn": 2,
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        },
+        {
+          "argv": [
+            "loops",
+            "decisions",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "The recorded decision line matches ^- \\d{4}-\\d{2}-\\d{2} · \\S+ · approve · by Ada Lovelace · brief: (B-\\d{3}|none)",
+        "It shows the line before writing and waits for the yes",
+        "It says the name is checked against the roster and that this is weak on shared machines",
+        "It does not start the next step"
+      ]
+    }
+  },
+  {
+    "id": "loop-gate-refuses-non-roster",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop gate approve G-001 (I'm Charles Babbage)",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "Ada Lovelace"
+      ],
+      "must_not_include": [
+        "by Charles Babbage ·"
+      ],
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It refuses: Charles Babbage is neither the holder nor the deputy of the gate, and it names who is",
+        "No decision line is written and G-001 stays at the Evals gate"
+      ],
+      "run_log_rows_min": 1
+    }
+  },
+  {
+    "id": "loop-gate-approve-with-changes",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "variant": "team",
+    "turns": [
+      "/product-studio:loop gate approve G-001 but add an eval that a first-time user finishes in under two minutes (I'm Grace Hopper)",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "Grace Hopper"
+      ],
+      "no_write_before_turn": 2,
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It shows the diff of the requested change before recording, and the change touches only files inside G-001's goal folder",
+        "If Grace Hopper does not hold the gate's role or its deputy, the CLI's refusal is reported and nothing is written",
+        "The note is kept in the person's own words"
+      ]
+    }
+  },
+  {
+    "id": "loop-next-design-capped",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop next G-002",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "preview",
+        "G-002"
+      ],
+      "must_not_include": [
+        "I merged",
+        "I've merged",
+        "has been merged"
+      ],
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It explores at most 3 variants in real code in a round, and at most 3 rounds",
+        "Each variant has its own rules check run over every file that variant touches (a file shared by variants is in each of their runs), and each run's result is quoted from the CLI",
+        "It points to the preview page for the tokens and to each variant by its files, and stops at the gate so a person picks a variant; it does not pick one"
+      ]
+    }
+  },
+  {
+    "id": "loop-next-plan-stops",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop next G-003",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "G-003",
+        "gate"
+      ],
+      "must_not_include": [
+        "I merged",
+        "I've merged",
+        "has been merged"
+      ],
+      "no_write_before_turn": 2,
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It writes plan.md in the goal's folder only after the yes",
+        "It stops at build.plan's gate and offers the brief; it does not move into build.code"
+      ]
+    }
+  },
+  {
+    "id": "loop-next-measure-not-measured",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop next G-004",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "not measured"
+      ],
+      "no_write_before_turn": 2,
+      "files_exist": [
+        "studio/evaluations.md"
+      ],
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        },
+        {
+          "argv": [
+            "evidence",
+            "check",
+            "--json"
+          ],
+          "code": 1
+        }
+      ],
+      "judge": [
+        "It runs evidence check and, with no analytics connected, records 'not measured' instead of any number",
+        "It writes the studio/evaluations.md entry only after the yes",
+        "Every number or eval status it states names where it came from (the CLI JSON, or the file it read, such as goal.md, evals.md or studio/evaluations.md); it computes no count or ratio itself"
+      ]
+    }
+  },
+  {
+    "id": "loop-learn-one-bullet",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "turns": [
+      "/product-studio:loop next G-005",
+      "It holds. I'm Ada Lovelace, confidence medium.",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "L-003"
+      ],
+      "no_write_before_turn": 3,
+      "run_log_rows": 3,
+      "cli_after": [
+        {
+          "argv": [
+            "loops",
+            "check",
+            "--json"
+          ],
+          "code": 0
+        },
+        {
+          "argv": [
+            "learnings",
+            "list",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "Before the person's yes, no learning is written; after it, exactly one valid bullet is added through learnings add",
+        "It writes no decision line for product.learn (the step has no gate): the yes is a yes to the write, not a gate ruling",
+        "L-002, which goal.md says G-005 builds on, is backlinked with learnings used L-002 --by G-005",
+        "It proposes at most one next-goal sentence and does not open it"
+      ]
+    }
+  },
+  {
+    "id": "loop-jobs-beta",
+    "skill": "loop",
+    "fixture": "F4-loops",
+    "beta": true,
+    "turns": [
+      "/product-studio:loop open Add a monthly summary screen",
+      "Yes, map the job first.",
+      "Freelancers at the end of a month, deciding what to invoice.",
+      "Know what they earned and what is still owed.",
+      "They dig through emails and miss invoices."
+    ],
+    "expect": {
+      "skill_invoked": "loop",
+      "must_include": [
+        "estimated",
+        "beta"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 5,
+      "judge": [
+        "It offers the job step because the sentence names no outcome for a person",
+        "It drafts 8 to 15 outcome statements, each starting with Minimize or Increase",
+        "Every uncited importance and satisfaction value carries estimated: true, and it computes no opportunity score",
+        "It says jobs check is not built yet",
+        "It hands one-sentence goals back to open for the person to pick and opens none itself"
+      ]
+    }
+  }
+]

@@ -1,0 +1,84 @@
+{
+  "from": "sources/variables.json",
+  "kind": "figma-variables",
+  "rows": [
+    {
+      "token": "--background",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--destructive",
+      "current": "#dc2626",
+      "proposed": "#b91c1c",
+      "status": "changed"
+    },
+    {
+      "token": "--font-size-base",
+      "current": "1rem",
+      "proposed": "16px",
+      "status": "changed"
+    },
+    {
+      "token": "--foreground",
+      "current": "#0f172a",
+      "proposed": "#0f172a",
+      "status": "same"
+    },
+    {
+      "token": "--primary",
+      "current": "#4f46e5",
+      "proposed": "#4f46e5",
+      "status": "same"
+    },
+    {
+      "token": "--primary-foreground",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--radius",
+      "current": "8px",
+      "proposed": "8px",
+      "status": "same"
+    },
+    {
+      "token": "--radius-lg",
+      "current": "12px",
+      "proposed": "16px",
+      "status": "changed"
+    },
+    {
+      "token": "--secondary",
+      "current": "#f1f5f9",
+      "proposed": "#f1f5f9",
+      "status": "same"
+    },
+    {
+      "token": "--space-12",
+      "current": null,
+      "proposed": "48px",
+      "status": "new"
+    },
+    {
+      "token": "--space-4",
+      "current": "16px",
+      "proposed": "16px",
+      "status": "same"
+    },
+    {
+      "token": "--success",
+      "current": null,
+      "proposed": "#15803d",
+      "status": "new"
+    }
+  ],
+  "counts": {
+    "new": 2,
+    "changed": 3,
+    "same": 7,
+    "conflicts": 0
+  }
+}

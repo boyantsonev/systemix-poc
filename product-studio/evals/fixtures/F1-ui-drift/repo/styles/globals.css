@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: #1c1917;
+  background: #ffffff;
+  font-size: 16px;
+}
+
+#add {
+  margin-top: 8px;
+}
+
+.legal {
+  font-size: 11px;
+  color: #a8a29e;
+}
+
+.banner {
+  background: #6d28d9;
+  color: #fff;
+}

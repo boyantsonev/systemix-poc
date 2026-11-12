@@ -68,11 +68,76 @@ html.motion-ready [data-reveal-card] {
 html.motion-ready [data-reveal-card="1"] { --card: 1; }
 html.motion-ready [data-reveal-card="2"] { --card: 2; }
 html.motion-ready [data-reveal-card="3"] { --card: 3; }
+html.motion-ready [data-reveal-card="4"] { --card: 4; }
 html.motion-ready .is-shown [data-reveal-card],
 html.motion-settled [data-reveal-card] {
   opacity: 1;
   filter: blur(0);
 }
+
+/* ── Step diagrams (StepDiagram.tsx): the steps come in one by one ─────────────────────── */
+/* The same blurred rise as the cards, one --motion-stagger × 2 apart per step, so a ten-step
+   loop finishes in under a second. */
+html.motion-ready [data-reveal-step] {
+  opacity: 0;
+  transform: translateY(var(--motion-distance-micro));
+  filter: blur(var(--motion-blur-small));
+  transition:
+    opacity var(--motion-reveal) var(--motion-ease-smooth-out),
+    transform var(--motion-reveal) var(--motion-ease-smooth-out),
+    filter var(--motion-reveal) var(--motion-ease-smooth-out);
+  transition-delay: calc(var(--motion-stagger) * 2 * var(--step, 0));
+}
+html.motion-ready .is-shown [data-reveal-step],
+html.motion-settled [data-reveal-step] {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+/* ── Loop diagrams (LoopDiagram.tsx) ───────────────────────────────────────────────────── */
+/* The ring's colours come from the tokens; the step a person decides is filled with --highlight. */
+.loop-arc { fill: none; stroke: var(--border); stroke-width: 2; stroke-linecap: round; }
+.loop-arc-back { stroke: var(--highlight); stroke-dasharray: 0.02 0.03; }
+.loop-node { fill: var(--card); stroke: var(--muted-foreground); stroke-width: 1.5; }
+.loop-node-person { fill: var(--highlight); stroke: var(--highlight); }
+.loop-num { fill: var(--muted-foreground); font-family: var(--font-mono); font-size: 14px; }
+.loop-num-person { fill: var(--background); font-weight: 700; }
+.loop-label { fill: var(--foreground); font-size: 17px; font-weight: 700; }
+.loop-label-person { fill: var(--highlight); }
+.loop-center { fill: var(--foreground); font-size: 30px; font-weight: 700; }
+.loop-center-note { fill: var(--muted-foreground); font-family: var(--font-mono); font-size: 14px; }
+/* on a phone the ring is drawn at about half size: its words grow so they stay readable */
+@media (max-width: 640px) {
+  .loop-label { font-size: 25px; }
+  .loop-num { font-size: 18px; }
+  .loop-center { font-size: 40px; }
+  .loop-center-note { font-size: 20px; }
+}
+
+/* The arcs draw one after another round the ring, and each step comes in as its arc reaches
+   it. pathLength="1" on every arc, so a dash of 1 is the whole arc. The dashed return arc
+   keeps its dashes: it fades in instead of drawing. */
+html.motion-ready [data-loop-arc]:not(.loop-arc-back) {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0; /* the arrowhead (a marker) can't draw, so the arc fades in as it starts drawing */
+  transition:
+    stroke-dashoffset var(--motion-draw) var(--motion-ease-smooth-out),
+    opacity var(--motion-quick) var(--motion-ease-smooth-out);
+  transition-delay: calc(var(--motion-stagger) * 3 * var(--step, 0));
+}
+html.motion-ready [data-loop-arc].loop-arc-back,
+html.motion-ready [data-loop-step] {
+  opacity: 0;
+  transition: opacity var(--motion-reveal) var(--motion-ease-smooth-out);
+  transition-delay: calc(var(--motion-stagger) * 3 * var(--step, 0));
+}
+html.motion-ready .is-shown [data-loop-arc]:not(.loop-arc-back),
+html.motion-settled [data-loop-arc]:not(.loop-arc-back) { stroke-dashoffset: 0; opacity: 1; }
+html.motion-ready .is-shown [data-loop-arc].loop-arc-back,
+html.motion-ready .is-shown [data-loop-step],
+html.motion-settled [data-loop-arc].loop-arc-back,
+html.motion-settled [data-loop-step] { opacity: 1; }
 
 /* ── transitions.dev / UI generation: hold the card until the runtime takes it ── */
 /* HeroGeneration adds .is-generated in the same tick it calls generate(), so the
@@ -178,6 +243,9 @@ html.js .t-acc[data-open="true"] .t-acc-panel-inner { opacity: 1; filter: blur(0
 @media (prefers-reduced-motion: reduce) {
   [data-reveal-line],
   [data-reveal-card],
+  [data-reveal-step],
+  [data-loop-arc],
+  [data-loop-step],
   [data-generate],
   .t-digit,
   .t-morph-swap,

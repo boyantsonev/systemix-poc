@@ -1,0 +1,196 @@
+{
+  "version": 2,
+  "beta": true,
+  "score": 7,
+  "band": "starting",
+  "withheld": null,
+  "coverage": 1,
+  "dimensions": [
+    {
+      "id": "tokens",
+      "name": "Token source",
+      "weight": 0.2,
+      "score": 0,
+      "inputs": {
+        "source": {
+          "value": "none",
+          "score": 0
+        },
+        "share": {
+          "value": 0,
+          "score": 0
+        },
+        "roles": {
+          "value": "no studio/tokens.css",
+          "score": 0
+        }
+      },
+      "why": "a token source exists: none → 0; share of colour uses through tokens: 0 → 0; required roles defined as references in both themes: no studio/tokens.css → 0"
+    },
+    {
+      "id": "rules",
+      "name": "Codified rules",
+      "weight": 0.2,
+      "score": 0,
+      "inputs": {
+        "rows": {
+          "value": "no studio/rules.md",
+          "score": 0
+        },
+        "scripted": {
+          "value": "no studio/rules.md",
+          "score": 0
+        },
+        "eval": {
+          "value": "no studio/rules.md",
+          "score": 0
+        },
+        "reviewCases": {
+          "value": "no studio/rules.md",
+          "score": 0
+        }
+      },
+      "why": "rule rows in rules.md: no studio/rules.md → 0; share of rules a script checks: no studio/rules.md → 0; share of rule samples behaving in rules eval: no studio/rules.md → 0; share of review rules with a passing case: no studio/rules.md → 0"
+    },
+    {
+      "id": "drift",
+      "name": "Drift control",
+      "weight": 0.15,
+      "score": 0,
+      "inputs": {
+        "critical": {
+          "value": {
+            "count": 4,
+            "uiFiles": 5,
+            "per100": 80
+          },
+          "score": 0
+        },
+        "warning": {
+          "value": {
+            "count": 6,
+            "uiFiles": 5,
+            "per100": 120
+          },
+          "score": 0
+        }
+      },
+      "why": "critical drift per 100 UI files: count 4, uiFiles 5, per100 80 → 0; warning drift per 100 UI files: count 6, uiFiles 5, per100 120 → 0"
+    },
+    {
+      "id": "components",
+      "name": "Component reuse",
+      "weight": 0.15,
+      "score": 48,
+      "inputs": {
+        "duplicates": {
+          "value": 1,
+          "score": 75
+        },
+        "primitives": {
+          "value": 1,
+          "score": 20
+        }
+      },
+      "why": "components defined in two or more folders: 1 → 75; primitives in a primitives folder: 1 → 20"
+    },
+    {
+      "id": "rationale",
+      "name": "Captured rationale",
+      "weight": 0.15,
+      "score": 0,
+      "inputs": {
+        "decisions": {
+          "value": 0,
+          "score": 0
+        },
+        "goals": {
+          "value": "no studio/goals",
+          "score": 0
+        },
+        "learnings": {
+          "value": "no studio/LEARNINGS.md",
+          "score": 0
+        }
+      },
+      "why": "decision records: 0 → 0; goals: no studio/goals → 0; learnings with a source: no studio/LEARNINGS.md → 0"
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility",
+      "weight": 0.15,
+      "score": 0,
+      "inputs": {
+        "alt": {
+          "value": {
+            "total": 2,
+            "withoutAlt": 2
+          },
+          "score": 0
+        },
+        "contrast": {
+          "value": "no studio/tokens.css",
+          "score": 0
+        }
+      },
+      "why": "share of images with alt: total 2, withoutAlt 2 → 0; share of token pairs passing 4.5:1: no studio/tokens.css → 0"
+    }
+  ],
+  "opportunities": [
+    {
+      "dimension": "tokens",
+      "gap": 100,
+      "importance": 9,
+      "priority": 900,
+      "tie": [
+        "rules"
+      ]
+    },
+    {
+      "dimension": "rules",
+      "gap": 100,
+      "importance": 9,
+      "priority": 900,
+      "tie": [
+        "tokens"
+      ]
+    },
+    {
+      "dimension": "accessibility",
+      "gap": 100,
+      "importance": 8,
+      "priority": 800,
+      "tie": []
+    },
+    {
+      "dimension": "drift",
+      "gap": 100,
+      "importance": 7,
+      "priority": 700,
+      "tie": []
+    },
+    {
+      "dimension": "rationale",
+      "gap": 100,
+      "importance": 6,
+      "priority": 600,
+      "tie": []
+    },
+    {
+      "dimension": "components",
+      "gap": 52,
+      "importance": 6,
+      "priority": 312,
+      "tie": []
+    }
+  ],
+  "nearThreshold": [],
+  "validity": "This beta score is computed by code from the repo's own files with fixed, published weights: it is reproducible and says which conventions the repo already keeps, not how good its design is, and it is not a benchmark against other teams.",
+  "limits": [
+    "Weights, targets and band edges are published conventions, not fitted to any set of repos; they will change once goldens exist across more repos.",
+    "The score reads files and code patterns, not the product: a repo can keep every counted convention and still look inconsistent, and the reverse.",
+    "Drift is counted per 100 UI files, so adding UI files without styling lowers the drift penalty.",
+    "Rationale counts the decisions, goals and cited learnings that exist; it does not judge whether they are right.",
+    "When an input cannot be computed it is left out and the other weights of its dimension are rescaled; when coverage falls below 0.8 the score is withheld."
+  ]
+}

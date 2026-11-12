@@ -1,0 +1,14 @@
+{
+  "Color/background": "#ffffff",
+  "Color/foreground": "#0f172a",
+  "Color/primary": "#4f46e5",
+  "Color/primary-foreground": "#ffffff",
+  "Color/secondary": "#f1f5f9",
+  "Color/destructive": "#b91c1c",
+  "Color/success": "#15803d",
+  "Radius/radius": "8",
+  "Radius/radius-lg": "16",
+  "Spacing/space-4": "16",
+  "Spacing/space-12": "48",
+  "Type/font-size-base": "16"
+}

@@ -1,0 +1,20 @@
+.pricing-card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.pricing-card__plan {
+  font-size: var(--font-size-lg);
+}
+
+.pricing-card__price {
+  font-size: var(--font-size-2xl);
+}
+
+.pricing-card__period {
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+}

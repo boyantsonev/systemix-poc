@@ -1,0 +1,4 @@
+{
+  "id": "F8-legacy",
+  "purpose": "An older install, shaped like the live ones: design/guardrails.mdx with 10 bullet rules (patternable and judgement ones), experiments/LEARNINGS.md with 3 bullets in the older looser grammar (one without a confidence), experiments/goals/ with 2 goal files, .systemix/queue.json runtime state, design/evals/rules/known-bad/T1-raw-hex.css, a flat older design/tokens.css, and docs/components/{button,card}.md with docs/manifest.json. Exercises migrate."
+}

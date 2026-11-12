@@ -1,0 +1,119 @@
+{
+  "applied": false,
+  "moves": [
+    {
+      "from": ".systemix/",
+      "to": null,
+      "action": "drop"
+    },
+    {
+      "from": "design/DESIGN.md",
+      "to": "studio/DESIGN.md",
+      "action": "move"
+    },
+    {
+      "from": "design/evals/rules/known-bad/T1-raw-hex.css",
+      "to": "studio/rules/known-bad/T1-raw-hex.css",
+      "action": "move"
+    },
+    {
+      "from": "design/tokens.css",
+      "to": "studio/tokens.css",
+      "action": "move"
+    },
+    {
+      "from": "experiments/LEARNINGS.md",
+      "to": "studio/LEARNINGS.md",
+      "action": "rewrite"
+    },
+    {
+      "from": "experiments/goals/clear-renewals.mdx",
+      "to": "studio/goals/G-002-clear-renewals/decisions.md",
+      "action": "create"
+    },
+    {
+      "from": "experiments/goals/clear-renewals.mdx",
+      "to": "studio/goals/G-002-clear-renewals/evals.md",
+      "action": "create"
+    },
+    {
+      "from": "experiments/goals/clear-renewals.mdx",
+      "to": "studio/goals/G-002-clear-renewals/goal.md",
+      "action": "create"
+    },
+    {
+      "from": "experiments/goals/faster-first-note.mdx",
+      "to": "studio/goals/G-001-faster-first-note/decisions.md",
+      "action": "create"
+    },
+    {
+      "from": "experiments/goals/faster-first-note.mdx",
+      "to": "studio/goals/G-001-faster-first-note/evals.md",
+      "action": "create"
+    },
+    {
+      "from": "experiments/goals/faster-first-note.mdx",
+      "to": "studio/goals/G-001-faster-first-note/goal.md",
+      "action": "create"
+    }
+  ],
+  "guardrails": [
+    {
+      "line": 13,
+      "text": "All colours come from the custom properties in `design/tokens.css`: no raw hex (`#rrggbb`) in component styles."
+    },
+    {
+      "line": 14,
+      "text": "Font sizes come from the type scale tokens: no raw px font sizes."
+    },
+    {
+      "line": 15,
+      "text": "No arbitrary Tailwind values such as `bg-[#123456]` or `text-[13px]`."
+    },
+    {
+      "line": 19,
+      "text": "One primary action per screen; everything else is secondary."
+    },
+    {
+      "line": 20,
+      "text": "Reuse the components in `src/components/ui/`; never rebuild a button or a card inline."
+    },
+    {
+      "line": 21,
+      "text": "Empty states say what to do next, in one sentence, with one action."
+    },
+    {
+      "line": 25,
+      "text": "Every image has alt text; decorative images get an empty alt."
+    },
+    {
+      "line": 29,
+      "text": "No exclamation marks in product copy."
+    },
+    {
+      "line": 30,
+      "text": "No emoji anywhere in the interface."
+    },
+    {
+      "line": 31,
+      "text": "Never promise results: no \"guaranteed\", no \"best-in-class\"."
+    }
+  ],
+  "unmapped": [
+    {
+      "line": 11,
+      "text": "**2025-08-28 · Templates on the empty notebook did not help; people ignored them.** — from [notebook-templates-2025-08], decision: kill. Fewer than 1 in 10 new teams opened a template.",
+      "why": "missing a confidence, a review-by date"
+    }
+  ],
+  "conflicts": [],
+  "legacy": {
+    "guardrails": true,
+    "experiments": true,
+    "learnings": true,
+    "goals": true,
+    "state": true,
+    "evals": true,
+    "data": true
+  }
+}

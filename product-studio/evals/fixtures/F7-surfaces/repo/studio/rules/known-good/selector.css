@@ -1,0 +1,3 @@
+/* an id selector is not a colour, so T1 must not fire on the #add rule below */
+#add { color: var(--primary); }
+.title { font-size: var(--font-size-lg); }

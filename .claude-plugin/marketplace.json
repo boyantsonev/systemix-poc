@@ -19,6 +19,18 @@
         "drift",
         "tokens"
       ]
+    },
+    {
+      "name": "product-studio",
+      "source": "./product-studio/plugin",
+      "description": "An AI-native product studio: your design system, rules and loops as files, checked by code, ruled by people. Free; nothing leaves your machine.",
+      "category": "design",
+      "tags": [
+        "design-system",
+        "rules",
+        "product",
+        "loops"
+      ]
     }
   ]
 }

@@ -1,0 +1,52 @@
+{
+  "since": null,
+  "runs": 37,
+  "byCommand": {
+    "brief": {
+      "runs": 6,
+      "up": 0,
+      "down": 3,
+      "downShare": 0.5
+    },
+    "check": {
+      "runs": 21,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    },
+    "loop": {
+      "runs": 5,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    },
+    "setup": {
+      "runs": 5,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    }
+  },
+  "rulesCaught": {
+    "email": {
+      "blocks": 0,
+      "flags": 1
+    },
+    "marketing": {
+      "blocks": 0,
+      "flags": 1
+    },
+    "product": {
+      "blocks": 4,
+      "flags": 5
+    }
+  },
+  "blocksFixed": 2,
+  "falsePositives": {
+    "T1": 4
+  },
+  "errors": {
+    "rules eval failed: review-cases.json does not parse": 2
+  },
+  "proposalsCap": 3
+}

@@ -1,0 +1,21 @@
+{
+  "cards": [
+    {
+      "id": "decision-empty-notebook-2025-09-1758700000000",
+      "type": "decision",
+      "experimentId": "empty-notebook-2025-09",
+      "decision": "promote",
+      "confidence": 0.8,
+      "summary": "Median time to the first note fell from 4 min to 1 min 40 s across 5 observed sessions.",
+      "status": "approved",
+      "requestedAt": "2025-09-24T09:00:00.000Z"
+    },
+    {
+      "id": "guardrail-proposal-no-emoji-1759200000000",
+      "type": "guardrail-proposal",
+      "summary": "Tighten the emoji rule from product copy to the whole interface.",
+      "status": "pending",
+      "requestedAt": "2025-09-30T09:00:00.000Z"
+    }
+  ]
+}

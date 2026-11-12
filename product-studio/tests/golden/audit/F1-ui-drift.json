@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "root": "<root>",
+  "dirs": [
+    "src",
+    "components",
+    "styles"
+  ],
+  "files": {
+    "scanned": 6,
+    "ui": 5,
+    "styles": 1
+  },
+  "tokenSource": {
+    "file": null,
+    "kind": "none",
+    "count": 0
+  },
+  "palette": [
+    {
+      "value": "#ffffff",
+      "count": 3,
+      "files": [
+        "src/features/checkout/Button.tsx",
+        "styles/globals.css"
+      ]
+    },
+    {
+      "value": "#1c1917",
+      "count": 2,
+      "files": [
+        "styles/globals.css",
+        "tailwind.config.js"
+      ]
+    },
+    {
+      "value": "#6d28d9",
+      "count": 2,
+      "files": [
+        "styles/globals.css",
+        "tailwind.config.js"
+      ]
+    },
+    {
+      "value": "#a8a29e",
+      "count": 2,
+      "files": [
+        "src/features/checkout/CheckoutPage.tsx",
+        "styles/globals.css"
+      ]
+    },
+    {
+      "value": "#f5f5f4",
+      "count": 2,
+      "files": [
+        "src/features/pricing/PricingHero.tsx",
+        "tailwind.config.js"
+      ]
+    },
+    {
+      "value": "#5b21b6",
+      "count": 1,
+      "files": [
+        "tailwind.config.js"
+      ]
+    },
+    {
+      "value": "#7c3aed",
+      "count": 1,
+      "files": [
+        "src/features/checkout/Button.tsx"
+      ]
+    },
+    {
+      "value": "#c4c4c4",
+      "count": 1,
+      "files": [
+        "tailwind.config.js"
+      ]
+    }
+  ],
+  "typeScale": [
+    {
+      "value": "11px",
+      "count": 1
+    },
+    {
+      "value": "13px",
+      "count": 1
+    },
+    {
+      "value": "15px",
+      "count": 1
+    },
+    {
+      "value": "16px",
+      "count": 1
+    },
+    {
+      "value": "28px",
+      "count": 1
+    },
+    {
+      "value": "40px",
+      "count": 1
+    }
+  ],
+  "spacing": [
+    {
+      "value": "8px",
+      "count": 1
+    }
+  ],
+  "drift": {
+    "critical": [
+      {
+        "file": "src/features/checkout/Button.tsx",
+        "line": 6,
+        "match": "\"#ffffff\"",
+        "kind": "raw-colour"
+      },
+      {
+        "file": "src/features/checkout/Button.tsx",
+        "line": 6,
+        "match": "bg-[#7c3aed]",
+        "kind": "arbitrary-colour"
+      },
+      {
+        "file": "src/features/checkout/CheckoutPage.tsx",
+        "line": 15,
+        "match": "text-[#a8a29e]",
+        "kind": "arbitrary-colour"
+      },
+      {
+        "file": "src/features/pricing/PricingHero.tsx",
+        "line": 7,
+        "match": "bg-[#f5f5f4]",
+        "kind": "arbitrary-colour"
+      }
+    ],
+    "warning": [
+      {
+        "file": "src/features/checkout/Button.tsx",
+        "line": 6,
+        "match": "text-[13px]",
+        "kind": "arbitrary-value"
+      },
+      {
+        "file": "src/features/checkout/CheckoutPage.tsx",
+        "line": 9,
+        "match": "text-[28px]",
+        "kind": "arbitrary-value"
+      },
+      {
+        "file": "src/features/pricing/PricingHero.tsx",
+        "line": 9,
+        "match": "text-[40px]",
+        "kind": "arbitrary-value"
+      },
+      {
+        "file": "src/features/pricing/PricingHero.tsx",
+        "line": 10,
+        "match": "text-[15px]",
+        "kind": "arbitrary-value"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 8,
+        "match": "font-size: 16px",
+        "kind": "px-font-size"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 16,
+        "match": "font-size: 11px",
+        "kind": "px-font-size"
+      }
+    ],
+    "info": [
+      {
+        "file": "styles/globals.css",
+        "line": 6,
+        "match": "color: #1c1917",
+        "kind": "raw-colour"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 7,
+        "match": "background: #ffffff",
+        "kind": "raw-colour"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 12,
+        "match": "margin-top: 8px",
+        "kind": "raw-spacing"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 17,
+        "match": "color: #a8a29e",
+        "kind": "raw-colour"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 21,
+        "match": "background: #6d28d9",
+        "kind": "raw-colour"
+      },
+      {
+        "file": "styles/globals.css",
+        "line": 22,
+        "match": "color: #fff",
+        "kind": "raw-colour"
+      }
+    ]
+  },
+  "driftCounts": {
+    "critical": 4,
+    "warning": 6,
+    "info": 6
+  },
+  "duplicates": [
+    {
+      "name": "Button",
+      "files": [
+        "components/ui/Button.tsx",
+        "src/features/checkout/Button.tsx"
+      ]
+    }
+  ],
+  "primitives": [
+    {
+      "name": "Button",
+      "file": "components/ui/Button.tsx"
+    }
+  ],
+  "components": [
+    {
+      "name": "Button",
+      "file": "components/ui/Button.tsx"
+    },
+    {
+      "name": "Button",
+      "file": "src/features/checkout/Button.tsx"
+    },
+    {
+      "name": "CheckoutPage",
+      "file": "src/features/checkout/CheckoutPage.tsx"
+    },
+    {
+      "name": "Home",
+      "file": "src/app/page.tsx"
+    },
+    {
+      "name": "PricingHero",
+      "file": "src/features/pricing/PricingHero.tsx"
+    }
+  ],
+  "images": {
+    "total": 2,
+    "withoutAlt": 2
+  },
+  "setupClass": "fresh",
+  "tokenCoverage": {
+    "colourRefs": 0,
+    "literalColours": 9,
+    "share": 0
+  },
+  "openQuestions": [
+    "tailwind.config.js names 5 colours with raw values (brand, brand-dark, hint, ink, surface): are these the brand's colours, and which roles do they play?",
+    "Button is defined in 2 places (components/ui/Button.tsx, src/features/checkout/Button.tsx): which one is canonical?",
+    "There is no token source and 8 distinct colours are written raw: which of them are the brand's?"
+  ]
+}

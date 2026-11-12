@@ -1,0 +1,7 @@
+{
+  "id": "F4-loops",
+  "purpose": "F3's studio/ plus the loop kit: product and build loops, joins, a solo roster held by Ada Lovelace, context packs, two decisions, a LEARNINGS.md with two cited bullets, and five goals parked at product.evals (the Evals gate), product.design, build.plan, build.measure and product.learn. Variant team: a team roster with Ada Lovelace and Grace Hopper. Exercises every loop subcommand.",
+  "variants": {
+    "team": { "overlay": "team/" }
+  }
+}
