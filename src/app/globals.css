@@ -402,6 +402,29 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Motion tokens (G-002): the transitions.dev scale, prefixed so they never
+     collide with the animation tokens above. src/styles/motion.css and the
+     motion components read only these. ── */
+  --motion-stagger: 40ms;           /* per-line / per-card offset */
+  --motion-quick: 150ms;            /* text swap, copy label morph */
+  --motion-resize: 240ms;           /* width of a morphing label, accordion */
+  --motion-reveal: 400ms;           /* card reveal, donut morph */
+  --motion-emphasis: 500ms;         /* text reveal, number pop-in */
+  --motion-hold: 2000ms;            /* how long a thinking state holds */
+  --motion-gap: 50ms;               /* pause between two thinking states */
+  --motion-shimmer: 2000ms;         /* one shimmer sweep */
+  --motion-settle: 4000ms;          /* failsafe: everything visible by then */
+  --motion-ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-in-out: ease-in-out;
+  --motion-ease-pop: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --motion-ease-linear: linear;
+  --motion-distance-micro: 8px;     /* digit and state rise */
+  --motion-distance-text: 12px;     /* text reveal rise */
+  --motion-blur-small: 2px;
+  --motion-blur-medium: 3px;
+  --motion-chart-gap: 3px;          /* gap between donut segments */
+  --motion-chart-corner: 2px;       /* donut segment corner radius */
 }
 
 /* ── RADIUS DIAL ── */

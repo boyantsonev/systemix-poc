@@ -1,0 +1,245 @@
+/*
+ * motion.css: the site's motion layer (G-002 PR 2, plan: docs/feature/ai-native-ds-kit-beta/launch-review.md § 4).
+ *
+ * The snippets below are adapted from transitions.dev (https://transitions.dev) and used under
+ * the Transitions.dev License (src/vendor/transitions/LICENSE.txt), not this repo's MIT license:
+ * free on this website, not to be redistributed. Never copy them into plugin/ or
+ * packages/cli/templates/. Each keeps its transitions.dev comment; their literal values are
+ * mapped to the --motion-* tokens in src/app/globals.css (no raw durations or easings here).
+ *
+ * Rules (G-002 evals E3, E4):
+ *   - Visible without JavaScript: hidden states apply only under html.motion-ready, which an
+ *     inline script in the layout adds when JavaScript runs and the reader has not asked for
+ *     reduced motion (html.js marks JavaScript alone: the FAQ's closed state). html.motion-settled
+ *     (added after --motion-settle) shows everything, whatever happened to the scripts.
+ *   - prefers-reduced-motion: reduce turns every transition and animation off.
+ */
+
+/* ── transitions.dev / Texts reveal (18): staggered blurred rise ─────────────── */
+/* Lines are marked data-reveal-line="N"; the section around them gets .is-shown
+   from SectionTrack's observer (the same one that sends section_viewed). */
+html.motion-ready [data-reveal-line] {
+  opacity: 0;
+  transform: translateY(var(--motion-distance-text));
+  filter: blur(var(--motion-blur-medium));
+  transition:
+    opacity var(--motion-emphasis) var(--motion-ease-smooth-out),
+    transform var(--motion-emphasis) var(--motion-ease-smooth-out),
+    filter var(--motion-emphasis) var(--motion-ease-smooth-out);
+  transition-delay: calc(var(--motion-stagger) * var(--line, 0));
+  will-change: transform, opacity, filter;
+}
+html.motion-ready [data-reveal-line="1"] { --line: 1; }
+html.motion-ready [data-reveal-line="2"] { --line: 2; }
+html.motion-ready [data-reveal-line="3"] { --line: 3; }
+html.motion-ready .is-shown [data-reveal-line],
+html.motion-settled [data-reveal-line] {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* The hero plays the same rise at first paint, with no script in the way, so the largest
+   paint (the H1) never waits for hydration (E5). It starts just above opacity 0: the browser
+   does not count a fully transparent element as painted, which would delay the LCP. */
+@keyframes t-text-rise {
+  from {
+    opacity: 0.01;
+    transform: translateY(var(--motion-distance-text));
+    filter: blur(var(--motion-blur-medium));
+  }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+html.motion-ready [data-reveal-onload] [data-reveal-line] {
+  animation: t-text-rise var(--motion-emphasis) var(--motion-ease-smooth-out) both;
+  animation-delay: calc(var(--motion-stagger) * var(--line, 0));
+}
+
+/* ── transitions.dev / Skeleton loader and reveal (14), the content side ─────── */
+/* Cards cross-blur in when their section is shown, one --motion-stagger apart. */
+html.motion-ready [data-reveal-card] {
+  opacity: 0;
+  filter: blur(var(--motion-blur-small));
+  transition:
+    opacity var(--motion-reveal) var(--motion-ease-in-out),
+    filter var(--motion-reveal) var(--motion-ease-in-out);
+  transition-delay: calc(var(--motion-stagger) * 2 * var(--card, 0));
+}
+html.motion-ready [data-reveal-card="1"] { --card: 1; }
+html.motion-ready [data-reveal-card="2"] { --card: 2; }
+html.motion-ready [data-reveal-card="3"] { --card: 3; }
+html.motion-ready .is-shown [data-reveal-card],
+html.motion-settled [data-reveal-card] {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ── transitions.dev / UI generation: hold the card until the runtime takes it ── */
+/* HeroGeneration adds .is-generated in the same tick it calls generate(), so the
+   card never flashes; the runtime then owns its opacity until the reveal. */
+html.motion-ready [data-generate]:not(.is-generated) { opacity: 0; }
+html.motion-settled [data-generate] { opacity: 1; }
+
+/* The runtime's colours, mapped to our tokens (keep the drawing monochrome). */
+:root:root:root {
+  --gen-line: color-mix(in oklab, var(--muted-foreground) 70%, transparent);
+  --gen-strong: var(--muted-foreground);
+  --gen-ink: color-mix(in oklab, var(--foreground) 28%, transparent);
+  --gen-surface: var(--background);
+  --gen-text: var(--foreground);
+  --gen-muted: var(--muted-foreground);
+  --gen-font: var(--font-mono);
+}
+
+/* ── transitions.dev / Number pop-in (02) ────────────────────────────────────── */
+@keyframes t-digit-pop-in {
+  0% {
+    transform: translateY(var(--motion-distance-micro));
+    opacity: 0;
+    filter: blur(var(--motion-blur-small));
+  }
+  100% { transform: translate(0, 0); opacity: 1; filter: blur(0); }
+}
+.t-digit-group { display: inline-flex; align-items: baseline; }
+.t-digit { display: inline-block; }
+html.motion-ready .t-digit-group:not(.is-animating) .t-digit { opacity: 0; }
+html.motion-settled .t-digit-group .t-digit { opacity: 1; }
+.t-digit-group.is-animating .t-digit {
+  animation: t-digit-pop-in var(--motion-emphasis) var(--motion-ease-pop) both;
+  will-change: transform, opacity, filter;
+}
+.t-digit-group.is-animating .t-digit[data-stagger="1"] { animation-delay: calc(var(--motion-stagger) * 2); }
+.t-digit-group.is-animating .t-digit[data-stagger="2"] { animation-delay: calc(var(--motion-stagger) * 4); }
+
+/* ── transitions.dev / Donut chart (35) ──────────────────────────────────────── */
+.t-donut { position: relative; }
+.t-donut svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.t-donut-seg { stroke-linejoin: round; }
+/* ScoreDonut draws the ring from 0 when it scrolls in; hold the server's final ring till then. */
+html.motion-ready .t-donut:not(.is-drawn) .t-donut-seg { opacity: 0; }
+html.motion-settled .t-donut .t-donut-seg { opacity: 1; }
+.t-donut-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+/* ── transitions.dev / Text morph (33): the copy button's label ──────────────── */
+.t-morph { white-space: nowrap; }
+.t-morph-swap {
+  display: inline-grid;
+  vertical-align: bottom;
+  justify-items: start;
+  transition: width var(--motion-resize) var(--motion-ease-smooth-out);
+}
+.t-morph-swap > span {
+  grid-area: 1 / 1;
+  white-space: pre;
+  transition:
+    opacity var(--motion-quick) var(--motion-ease-smooth-out),
+    filter var(--motion-quick) var(--motion-ease-smooth-out);
+}
+.t-morph-new { opacity: 0; filter: blur(var(--motion-blur-small)); }
+.t-morph-swap.is-morphing .t-morph-old { opacity: 0; filter: blur(var(--motion-blur-small)); }
+.t-morph-swap.is-morphing .t-morph-new { opacity: 1; filter: blur(0); }
+
+/* ── transitions.dev / Accordion expand (21): the FAQ ────────────────────────── */
+/* Without JavaScript every answer is open; the closed state exists only under
+   html.js (JavaScript ran), where FaqAccordion toggles data-open. */
+.t-acc-panel { display: grid; grid-template-rows: 1fr; }
+html.js .t-acc-panel {
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--motion-resize) var(--motion-ease-smooth-out);
+}
+html.js .t-acc[data-open="true"] .t-acc-panel { grid-template-rows: 1fr; }
+.t-acc-panel-inner { overflow: hidden; }
+html.js .t-acc-panel-inner {
+  opacity: 0;
+  filter: blur(var(--motion-blur-small));
+  transition:
+    opacity var(--motion-resize) var(--motion-ease-smooth-out),
+    filter var(--motion-resize) var(--motion-ease-smooth-out);
+}
+html.js .t-acc[data-open="true"] .t-acc-panel-inner { opacity: 1; filter: blur(0); }
+.t-acc-chevron {
+  display: inline-flex;
+  transform: scaleY(1);
+  transform-origin: center;
+  transition: transform var(--motion-resize) var(--motion-ease-smooth-out);
+}
+.t-acc-chevron path { vector-effect: non-scaling-stroke; }
+.t-acc[data-open="true"] .t-acc-chevron { transform: scaleY(-1); }
+
+/* ── transitions.dev / Thinking states (28): what /systemix:score does ───────── */
+.t-think { position: relative; display: inline-block; text-align: left; }
+.t-think-sizer { display: block; visibility: hidden; white-space: nowrap; }
+.t-think-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  transform: translateY(0);
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    transform var(--motion-quick) var(--motion-ease-in-out),
+    filter var(--motion-quick) var(--motion-ease-in-out),
+    opacity var(--motion-quick) var(--motion-ease-in-out);
+}
+.t-think-text::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(90deg,
+    transparent 0%, transparent 40%,
+    var(--foreground) 50%,
+    transparent 60%, transparent 100%);
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: t-think-shimmer var(--motion-shimmer) var(--motion-ease-linear) infinite;
+}
+@keyframes t-think-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0% 0; }
+}
+.t-think-text.is-exit {
+  transform: translateY(calc(var(--motion-distance-micro) * -1));
+  filter: blur(var(--motion-blur-small));
+  opacity: 0;
+}
+.t-think-text.is-enter-start {
+  transition: none;
+  transform: translateY(var(--motion-distance-micro));
+  filter: blur(var(--motion-blur-small));
+  opacity: 0;
+}
+
+/* ── Reduced motion: every transition and animation above is off (E4) ────────── */
+/* motion-ready is never set for these readers, so nothing starts hidden; this also
+   stops the transitions that run without it (accordion, copy morph, thinking states). */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal-line],
+  [data-reveal-card],
+  [data-generate],
+  .t-digit,
+  .t-morph-swap,
+  .t-morph-swap > span,
+  .t-acc-panel,
+  .t-acc-panel-inner,
+  .t-acc-chevron,
+  .t-think-text {
+    transition: none !important;
+    animation: none !important;
+  }
+  .t-think-text::before { display: none !important; }
+}

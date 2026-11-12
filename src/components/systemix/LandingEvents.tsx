@@ -2,6 +2,8 @@
 
 import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
+import { morphText } from "@/lib/motion/morph";
+import { motionAllowed } from "@/lib/motion/tokens";
 import { useVariant } from "@/lib/useVariant";
 import {
   AUDIT_COMMAND,
@@ -26,6 +28,19 @@ export function InstallCommand({
   // A/B seam: create a `landing-hero` multivariate flag in PostHog to split this.
   const variant = useVariant("landing-hero");
   const [copied, setCopied] = useState(false);
+  const label = useRef<HTMLSpanElement>(null);
+
+  // transitions.dev / Text morph (33): COPY → COPIED ✓ and back, only the changing letters blur
+  useEffect(() => {
+    const el = label.current;
+    if (!el) return;
+    const next = copied ? "COPIED ✓" : "COPY";
+    if (motionAllowed()) morphText(el, next);
+    else {
+      el.dataset.text = next;
+      el.textContent = next;
+    }
+  }, [copied]);
 
   function copy() {
     navigator.clipboard.writeText(cmd).then(() => {
@@ -62,7 +77,9 @@ export function InstallCommand({
         }}
         className={cn(buttonVariants({ size: "xs" }), "ml-1")}
       >
-        {copied ? "COPIED ✓" : "COPY"}
+        <span ref={label} className="t-morph">
+          COPY
+        </span>
       </button>
     </div>
   );
@@ -161,7 +178,22 @@ export function SectionTrack({ name, experimentId, persona, children, className 
       { threshold: 0.3 },
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    // The motion layer's reveals (src/styles/motion.css) play when the section enters the view.
+    // A separate observer: threshold 0, since a tall section may never be 30% in view on a phone.
+    const reveal = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("is-shown");
+          reveal.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px" },
+    );
+    reveal.observe(el);
+    return () => {
+      obs.disconnect();
+      reveal.disconnect();
+    };
   }, [name, experimentId, persona, ph]);
 
   return <div ref={ref} className={className}>{children}</div>;

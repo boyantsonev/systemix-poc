@@ -7,6 +7,9 @@ import { PluginInstall, TrackedLink } from "@/components/systemix/LandingEvents"
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { loadOwnReport } from "@/lib/landing/own-score";
+import { HeroGeneration } from "@/components/motion/HeroGeneration";
+import { ScoreDonut } from "@/components/motion/ScoreDonut";
+import { FaqAccordion } from "@/components/motion/FaqAccordion";
 import {
   GITHUB_URL,
   bottomCta,
@@ -52,18 +55,24 @@ export function Section({
 }
 
 export function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="tva-label mb-4 text-[11px] text-muted-foreground">{children}</p>;
+  return (
+    <p data-reveal-line="0" className="tva-label mb-4 text-[11px] text-muted-foreground">
+      {children}
+    </p>
+  );
 }
 
 export function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[1.9rem] font-bold leading-[1.12] sm:text-[2.25rem]">{children}</h2>
+    <h2 data-reveal-line="1" className="text-[1.9rem] font-bold leading-[1.12] sm:text-[2.25rem]">
+      {children}
+    </h2>
   );
 }
 
 export function Lead({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn("mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground", className)}>
+    <p data-reveal-line="2" className={cn("mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground", className)}>
       {children}
     </p>
   );
@@ -111,7 +120,7 @@ export function LandingNav() {
 
 function HeroFacts() {
   return (
-    <div className="flex flex-col p-6 sm:p-8">
+    <HeroGeneration className="flex flex-col p-6 sm:p-8">
       <p className="tva-label mb-4 text-[10px] text-muted-foreground">· {heroFacts.label}</p>
       <dl className="flex flex-1 flex-col justify-center">
         {heroFacts.items.map((f) => (
@@ -124,7 +133,7 @@ function HeroFacts() {
           </div>
         ))}
       </dl>
-    </div>
+    </HeroGeneration>
   );
 }
 
@@ -147,9 +156,10 @@ export function Pillars() {
         <SectionHeading>{pillars.heading}</SectionHeading>
       </div>
       <div className="mt-12 grid gap-4 sm:gap-5 lg:grid-cols-3">
-        {pillars.items.map((p) => (
+        {pillars.items.map((p, i) => (
           <div
             key={p.key}
+            data-reveal-card={i}
             className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
           >
             <p className="tva-label text-[10px] text-highlight">{p.tag}</p>
@@ -182,20 +192,28 @@ export async function Proof() {
             {proof.link.label}
           </Link>
         </div>
-        <ul className="space-y-3 rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]">
-          {report.areas.map((a) => (
-            <li key={a.key}>
-              <div className="flex justify-between text-[13px]">
-                <span className="text-foreground">{a.label}</span>
-                <span className="font-mono text-muted-foreground">{a.score} / 10</span>
-              </div>
-              <div className="mt-1 h-1.5 rounded-full bg-muted">
-                <div className="h-1.5 rounded-full bg-primary" style={{ width: `${a.score * 10}%` }} />
-              </div>
-            </li>
-          ))}
-          <li className="pt-2 font-mono text-[11px] text-muted-foreground">commit {report.commit} · rubric v1</li>
-        </ul>
+        <div
+          data-reveal-card="1"
+          className="grid items-center gap-6 rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)] sm:grid-cols-[auto_minmax(0,1fr)]"
+        >
+          <div className="justify-self-center">
+            <ScoreDonut score={report.overall} label="out of 100" />
+          </div>
+          <ul className="min-w-0 space-y-3">
+            {report.areas.map((a) => (
+              <li key={a.key}>
+                <div className="flex justify-between gap-3 text-[13px]">
+                  <span className="text-foreground">{a.label}</span>
+                  <span className="font-mono text-muted-foreground">{a.score} / 10</span>
+                </div>
+                <div className="mt-1 h-1.5 rounded-full bg-muted">
+                  <div className="h-1.5 rounded-full bg-primary" style={{ width: `${a.score * 10}%` }} />
+                </div>
+              </li>
+            ))}
+            <li className="pt-2 font-mono text-[11px] text-muted-foreground">commit {report.commit} · rubric v1</li>
+          </ul>
+        </div>
       </div>
     </Section>
   );
@@ -211,9 +229,10 @@ export function HowItWorks() {
         <SectionHeading>{howItWorks.heading}</SectionHeading>
       </div>
       <div className="mt-12 grid gap-4 sm:grid-cols-3 sm:gap-5">
-        {howItWorks.steps.map((s) => (
+        {howItWorks.steps.map((s, i) => (
           <div
             key={s.n}
+            data-reveal-card={i}
             className="rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
           >
             <p className="font-mono text-[12px] text-highlight">{s.n}</p>
@@ -237,9 +256,10 @@ export function Pricing() {
       </div>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-5">
-        {pricing.tiers.map((t) => (
+        {pricing.tiers.map((t, i) => (
           <div
             key={t.key}
+            data-reveal-card={i}
             className={cn(
               "flex flex-col rounded-[var(--radius-screen)] border bg-card p-6 shadow-[var(--shadow-panel)]",
               t.highlight ? "border-primary" : "border-border",
@@ -270,22 +290,7 @@ export function FaqSection() {
         <Eyebrow>{faq.label}</Eyebrow>
         <SectionHeading>{faq.heading}</SectionHeading>
       </div>
-      <div className="mt-10 flex flex-col divide-y divide-border/60 border-y border-border/60">
-        {faq.items.map((f) => (
-          <details key={f.q} className="group py-4">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-bold text-foreground [&::-webkit-details-marker]:hidden">
-              {f.q}
-              <span
-                aria-hidden
-                className="font-mono text-muted-foreground transition-transform group-open:rotate-45"
-              >
-                +
-              </span>
-            </summary>
-            <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">{f.a}</p>
-          </details>
-        ))}
-      </div>
+      <FaqAccordion items={faq.items} />
     </Section>
   );
 }

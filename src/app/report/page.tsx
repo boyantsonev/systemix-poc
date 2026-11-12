@@ -12,6 +12,7 @@ import {
 import { InstallCommand, PluginInstall, SectionTrack, TrackedLink } from "@/components/systemix/LandingEvents";
 import { PLUGIN_INSTALL_COMMAND } from "@/lib/landing/content";
 import { loadOwnReport } from "@/lib/landing/own-score";
+import { ThinkingStates } from "@/components/motion/ThinkingStates";
 import { Button } from "@/components/ui/button";
 import { FREE_SCORE_COMMAND, FULL_AUDIT, quickReportCheckoutUrl, quickReportPrice } from "@/lib/pricing";
 
@@ -30,6 +31,15 @@ const STEPS = [
   { n: "1", t: "Install the plugin", b: "Two commands in Claude Code. No account, nothing to configure." },
   { n: "2", t: "Run /systemix:score", b: "In your repo. The score is computed on your machine and nothing is sent. Free: a score out of 100 and per area." },
   { n: "3", t: "Unlock the quick report", b: "Buy a key, add it to the plugin settings, run it again, and get what to fix first." },
+];
+
+// What /systemix:score does, step by step (the first line is the summary, shown without motion).
+const SCORE_STEPS = [
+  "/systemix:score reads your repo and sends nothing",
+  "Reading your repo",
+  "Counting colours, sizes and components",
+  "Scoring six areas",
+  "Score ready, on your machine",
 ];
 
 const FREE_ITEMS = ["overall score out of 100", "a score for each of six areas", "how many caveats were found"];
@@ -82,6 +92,9 @@ export default async function QuickReportPage() {
                   <PluginInstall location="report-hero" className="items-center" />
                   <p className="font-mono text-[11px] text-muted-foreground/70">
                     no Claude Code? <span className="text-foreground/80">{FREE_SCORE_COMMAND}</span>
+                  </p>
+                  <p className="mt-4 font-mono text-[12px]">
+                    <ThinkingStates states={SCORE_STEPS} />
                   </p>
                 </div>
               </div>
