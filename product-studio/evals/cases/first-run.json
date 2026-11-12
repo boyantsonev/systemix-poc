@@ -1,0 +1,47 @@
+[
+  {
+    "id": "first-run-check-then-setup",
+    "skill": "setup",
+    "fixture": "F1-ui-drift",
+    "turns": [
+      "check my design",
+      "ok, set it up"
+    ],
+    "expect": {
+      "skill_invoked": [
+        "check",
+        "setup"
+      ],
+      "must_include": [
+        "T1",
+        "A1",
+        "preview.html",
+        "Open questions for a person"
+      ],
+      "must_not_include": [
+        "guardrails.mdx",
+        "ghost",
+        "autonomy",
+        "queue card",
+        "dashboard",
+        "HEAD~1"
+      ],
+      "no_repo_writes": true,
+      "files_absent": [
+        "studio/DESIGN.md",
+        "studio/tokens.css",
+        "studio/rules.md",
+        ".github/workflows/design-rules.yml"
+      ],
+      "run_log_rows": 2,
+      "judge": [
+        "The first reply lists findings with rule IDs and file and line in that same turn, before asking anything",
+        "The first reply writes nothing and offers setup",
+        "The second reply is a setup proposal: the door (from the code), the files it would write, the check results quoted from the CLI, and the preview page's path exactly as the `file` field of the `preview --json` output it ran",
+        "The second reply's last section is headed exactly 'Open questions for a person' (only the ask for a yes and the run-log and rating lines follow it), and it includes the audit's open questions, such as which Button stays",
+        "The second reply asks for a yes and writes nothing to the repo before it",
+        "Counts, scores, totals, ratios and contrast values in the replies are quoted from the CLI output it ran (rules check, audit, tokens lint, preview), never computed by the agent: counting items or summing counts into a total is a violation. Restating a standard (WCAG's 4.5:1), a file:line, or a value the agent itself proposes (a token value, a 4px spacing step) is not"
+      ]
+    }
+  }
+]

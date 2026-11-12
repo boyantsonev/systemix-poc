@@ -1,0 +1,19 @@
+  migrate (dry run: nothing written)
+
+  Would move 11:
+    drop     .systemix/
+    move     design/DESIGN.md → studio/DESIGN.md
+    move     design/evals/rules/known-bad/T1-raw-hex.css → studio/rules/known-bad/T1-raw-hex.css
+    move     design/tokens.css → studio/tokens.css
+    rewrite  experiments/LEARNINGS.md → studio/LEARNINGS.md
+    create   experiments/goals/clear-renewals.mdx → studio/goals/G-002-clear-renewals/decisions.md
+    create   experiments/goals/clear-renewals.mdx → studio/goals/G-002-clear-renewals/evals.md
+    create   experiments/goals/clear-renewals.mdx → studio/goals/G-002-clear-renewals/goal.md
+    create   experiments/goals/faster-first-note.mdx → studio/goals/G-001-faster-first-note/decisions.md
+    create   experiments/goals/faster-first-note.mdx → studio/goals/G-001-faster-first-note/evals.md
+    create   experiments/goals/faster-first-note.mdx → studio/goals/G-001-faster-first-note/goal.md
+
+  10 bullets in design/guardrails.mdx to map to rule rows (the file stays).
+
+  1 learnings could not be rewritten:
+    line 11: missing a confidence, a review-by date

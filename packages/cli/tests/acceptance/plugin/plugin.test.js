@@ -71,12 +71,14 @@ describe("plugin build", () => {
     expect(net).toEqual([]);
   });
 
-  test("this repo's own marketplace (the development channel) lists the same plugin from plugin/", () => {
+  test("this repo's own marketplace (the development channel) lists the same plugin from plugin/, plus the product studio", () => {
     const repoRoot = path.resolve(__dirname, "../../../../..");
     const dev = JSON.parse(fs.readFileSync(path.join(repoRoot, ".claude-plugin/marketplace.json"), "utf8"));
     const pub = JSON.parse(text(".claude-plugin/marketplace.json"));
     expect(dev.name).toBe(pub.name);
-    expect(dev.plugins.map((p) => p.name)).toEqual(pub.plugins.map((p) => p.name));
+    // the development channel also carries the product studio (product-studio/plugin), built separately
+    expect(dev.plugins.map((p) => p.name)).toEqual([...pub.plugins.map((p) => p.name), "product-studio"]);
+    expect(dev.plugins[1].source).toBe("./product-studio/plugin");
     expect(dev.plugins[0].source).toBe("./plugin/plugins/systemix");
     expect(fs.existsSync(path.join(repoRoot, "plugin/plugins/systemix/.claude-plugin/plugin.json"))).toBe(true);
   });

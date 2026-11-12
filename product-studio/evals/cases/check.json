@@ -1,0 +1,250 @@
+[
+  {
+    "id": "check-first-run-no-design",
+    "skill": "check",
+    "fixture": "F1-ui-drift",
+    "turns": [
+      "check my design"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "fail",
+        "T1",
+        "T3",
+        "A1",
+        "setup"
+      ],
+      "must_not_include": [
+        "HEAD~1"
+      ],
+      "no_repo_writes": true,
+      "files_absent": [
+        "studio/rules.md",
+        "studio/tokens.css",
+        "studio/DESIGN.md"
+      ],
+      "run_log_rows": 1,
+      "judge": [
+        "The first reply already lists findings with rule IDs; it does not ask a question before showing them",
+        "It says the repo has no rules yet and that the starter rules were used",
+        "It offers setup and says nothing is written until the person says yes"
+      ]
+    }
+  },
+  {
+    "id": "check-one-report-per-finding",
+    "skill": "check",
+    "fixture": "F1-ui-drift",
+    "turns": [
+      "check my design for drift and broken rules"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "T1",
+        "T4",
+        "A1"
+      ],
+      "must_not_include": [
+        "drift score"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "judge": [
+        "Each scripted finding (rule ID plus file and line) appears once; no finding is reported both as drift and as a rule break",
+        "Every count, total, share or ratio it prints is quoted from the rules check or audit JSON (a field such as blocks, flags, driftCounts or tokenCoverage.share, or the text of an openQuestions entry); it never derives one by counting a list or adding numbers. Values quoted from a rule or from the code (a 12px minimum, a hex) are not counts"
+      ]
+    }
+  },
+  {
+    "id": "check-branch-states-base",
+    "skill": "check",
+    "fixture": "F3-installed",
+    "turns": [
+      "check my branch before review"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "fail",
+        "T1",
+        "V1",
+        "main"
+      ],
+      "must_not_include": [
+        "HEAD~1"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "cli_after": [
+        {
+          "argv": [
+            "rules",
+            "check",
+            "--changed",
+            "--json"
+          ],
+          "code": 1
+        }
+      ],
+      "judge": [
+        "It states the base it compared with (main)",
+        "It reports one block (T1) and one flag (V1) with file and line, each with a 'use instead' fix",
+        "It raises no finding on studio/tokens.css"
+      ]
+    }
+  },
+  {
+    "id": "check-no-origin-asks-for-base",
+    "skill": "check",
+    "fixture": "F3-installed",
+    "variant": "no-origin",
+    "turns": [
+      "check my branch before review",
+      "compare it with trunk"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "--base",
+        "trunk",
+        "T1"
+      ],
+      "must_not_include": [
+        "HEAD~1"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "judge": [
+        "On the first turn it asks which branch to compare with instead of choosing a base itself",
+        "After the second turn it states that the check compared with trunk"
+      ]
+    }
+  },
+  {
+    "id": "check-token-file-never-checked",
+    "skill": "check",
+    "fixture": "F3-installed",
+    "turns": [
+      "check studio/tokens.css against the rules"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "pass"
+      ],
+      "must_not_include": [
+        "HEAD~1"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "cli_after": [
+        {
+          "argv": [
+            "rules",
+            "check",
+            "studio/tokens.css",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It explains that the token file holds raw values on purpose and is never checked; it raises no T1 on it"
+      ]
+    }
+  },
+  {
+    "id": "check-review-block-asks-person",
+    "skill": "check",
+    "fixture": "F3-installed",
+    "turns": [
+      "review my branch, including the questions a script can't answer"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "agent reading",
+        "A2"
+      ],
+      "must_not_include": [
+        "HEAD~1"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "judge": [
+        "Every answer to a review question is labelled agent reading",
+        "If it reads a block review row as broken, it asks the person to confirm instead of failing the work on its own",
+        "It never presents its own reading as a person's ruling"
+      ]
+    }
+  },
+  {
+    "id": "check-score-beta",
+    "skill": "check",
+    "fixture": "F3-installed",
+    "beta": true,
+    "turns": [
+      "score our design system's readiness"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "beta",
+        "Open questions for a person"
+      ],
+      "must_not_include": [
+        "paid",
+        "tier",
+        "share link"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "judge": [
+        "Every score, weight, coverage, gap, priority and distance it prints is quoted from the score JSON (including the why strings, nearThreshold and limits); it computes none itself, such as a sum, an average or a distance to a band edge that nearThreshold does not print. Restating a published standard such as 4.5:1 is not a computed number",
+        "It words exactly three top opportunities in the order of the JSON opportunities array (for this fixture: rationale, then components, then rules)",
+        "If the score is withheld it says withheld with the reason and gives no estimate"
+      ]
+    }
+  },
+  {
+    "id": "check-fix-after-yes",
+    "skill": "check",
+    "fixture": "F3-installed",
+    "turns": [
+      "check my branch and fix the block",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "check",
+      "must_include": [
+        "T1",
+        "pass with fixes"
+      ],
+      "must_not_include": [
+        "HEAD~1"
+      ],
+      "no_write_before_turn": 2,
+      "files_absent": [
+        "studio/evaluations.md"
+      ],
+      "run_log_rows": 1,
+      "cli_after": [
+        {
+          "argv": [
+            "rules",
+            "check",
+            "--changed",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It shows the fix as a diff and waits for the yes before editing",
+        "After the edit it reruns the same check and states the verdict as pass with fixes, listing the flag that remains"
+      ]
+    }
+  }
+]

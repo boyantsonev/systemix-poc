@@ -2,7 +2,7 @@ name: CI
 
 # Runs on every pull request and on main: the CLI's Jest suite (packages/cli), the
 # root Vitest suite (the app's route/contract tests plus the MCP server's tests), the
-# local hub's tests (packages/app), the product studio's suite (studio/), and two checks that keep generated and loop files
+# local hub's tests (packages/app), the product studio's suite (product-studio/), and two checks that keep generated and loop files
 # honest: the plugin in plugin/ is what a build writes, and the loops and goals in
 # design/ are well-formed. The other workflows here are scheduled loop jobs.
 
@@ -47,10 +47,10 @@ jobs:
         run: node packages/cli/scripts/build-plugin.js --check
 
       - name: Product studio tests (Jest; includes its plugin build, path and leak checks)
-        run: npm --prefix studio test
+        run: npm --prefix product-studio test
 
       - name: Product studio plugin is up to date with its sources
-        run: node studio/scripts/build-plugin.js --check
+        run: node product-studio/scripts/build-plugin.js --check
 
       - name: Loops and goals are well-formed
         run: node packages/cli/bin/cli.js loops check

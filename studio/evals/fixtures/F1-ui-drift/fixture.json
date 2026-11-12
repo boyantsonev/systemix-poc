@@ -1,4 +1,0 @@
-{
-  "id": "F1-ui-drift",
-  "purpose": "React and Tailwind with no design/: raw hex and px, bg-[#…] and text-[13px], <img> and <Image> without alt, a Button in components/ui/ and again in src/features/checkout/, two primary buttons on the checkout screen, a low-contrast hint-on-surface pair in tailwind.config.js, a CSS #add id selector, an exclamation-heavy CTA and the claim \"Guaranteed results\". Exercises first-run check, from-code and score."
-}

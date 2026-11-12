@@ -3,7 +3,7 @@
 // brand for the studio until it moves to its own name. The studio is free; a designer setting it
 // up for a product is what we sell, priced per product.
 // Vocabulary (one term per thing, every page): the studio · the five commands by name · rules
-// (design/rules.md) · "a person makes every call" · setup (the paid service, done by a designer).
+// (studio/rules.md) · "a person makes every call" · setup (the paid service, done by a designer).
 // Not in marketing copy: "agent" as the product's name, the loop as a noun on its own, ghost mode,
 // autonomy, "the rot".
 
@@ -132,10 +132,10 @@ export const commands = {
 export const rules = {
   label: "Your rules, as data",
   heading: "Every rule is a row a check can run.",
-  body: "Setup writes design/rules.md: one row per design, brand, voice or legal rule, each with its source and a test. Change a rule there and every command reads the new one.",
-  // real starter rows and a real check result (studio/templates/design/rules)
+  body: "Setup writes studio/rules.md: one row per design, brand, voice or legal rule, each with its source and a test. Change a rule there and every command reads the new one.",
+  // real starter rows and a real check result (product-studio/templates/studio/rules)
   sample: {
-    file: "design/rules.md",
+    file: "studio/rules.md",
     header: ["ID", "Rule", "Severity", "Test"],
     rows: [
       ["T1", "Colours come from tokens", "block", "script: css /(?<=:[^;{}]*)#[0-9a-fA-F]{3,8}\\b/"],
@@ -145,7 +145,7 @@ export const rules = {
   },
   // the starter's own run on its known-bad samples
   result: {
-    command: "product-studio rules check design/rules/known-bad",
+    command: "product-studio rules check studio/rules/known-bad",
     lines: [
       { mark: "✗", id: "T1", where: "T1-raw-hex.css:2", what: "#ff3366", severity: "block" },
       { mark: "!", id: "L1", where: "L1-unqualified-claim.txt:1", what: "best-in-class", severity: "flag" },

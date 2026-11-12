@@ -1,8 +1,0 @@
-{
-  "id": "F6-runlog",
-  "purpose": "F3 plus the loop kit (solo roster, Ada Lovelace) and design/.studio/runs.jsonl with 40 rows: T1 dropped as a false positive 4 times, brief rated down on 3 of its 6 runs, the same setup error twice, the rest normal; and evals/results/2026-01-14.json with one trigger miss. Variant clean: 12 normal rows and no results file. Variant vendored: the plugin vendored under .claude/plugins/product-studio/. Exercises admin.",
-  "variants": {
-    "clean": { "overlay": "clean/", "remove": ["evals"] },
-    "vendored": { "overlay": "vendored/" }
-  }
-}
