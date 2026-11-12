@@ -1,0 +1,13 @@
+:root {
+  --color-background: #ffffff;
+  --color-foreground: #111827;
+  --color-muted: #f3f4f6;
+  --color-muted-foreground: #4b5563;
+  --color-primary: #0f766e;
+  --color-primary-foreground: #ffffff;
+  --color-danger: #b91c1c;
+  --color-border: #e5e7eb;
+  --radius-md: 6px;
+  --space-2: 8px;
+  --space-4: 16px;
+}

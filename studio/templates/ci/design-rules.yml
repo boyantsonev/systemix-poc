@@ -1,0 +1,26 @@
+# The design rules check, on every pull request. Needs no key and sends nothing anywhere.
+# It runs the scripted rows of design/rules.md over the files this pull request changes and fails
+# the job on a block; a flag is reported but does not fail. `rules eval` proves every rule still
+# catches its known-bad sample. Change a rule in design/rules.md, never here.
+name: design rules
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the check compares this branch with its base
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Every rule catches its known-bad sample
+        run: npx --yes @contextcraft/product-studio rules eval
+      - name: The changed files follow the rules
+        run: npx --yes @contextcraft/product-studio rules check --changed --base "origin/${{ github.base_ref }}"

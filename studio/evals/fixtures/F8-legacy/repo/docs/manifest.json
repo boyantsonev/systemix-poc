@@ -1,0 +1,33 @@
+{
+  "count": 2,
+  "groups": [
+    "actions",
+    "layout"
+  ],
+  "components": [
+    {
+      "name": "Button",
+      "slug": "button",
+      "group": "actions",
+      "status": "ported",
+      "source": "src/components/ui/Button.tsx",
+      "reference": null,
+      "platforms": [
+        "web"
+      ],
+      "doc": "docs/components/button.md"
+    },
+    {
+      "name": "Card",
+      "slug": "card",
+      "group": "layout",
+      "status": "skeleton",
+      "source": "src/components/ui/Card.tsx",
+      "reference": null,
+      "platforms": [
+        "web"
+      ],
+      "doc": "docs/components/card.md"
+    }
+  ]
+}

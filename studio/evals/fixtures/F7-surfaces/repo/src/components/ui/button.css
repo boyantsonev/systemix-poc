@@ -1,0 +1,23 @@
+.button {
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.button--primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.button--destructive {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--ring);
+}

@@ -1,0 +1,10 @@
+  tokens diff: sources/tokens.json (dtcg) against design/tokens.css
+  TOKEN                 CURRENT  PROPOSED  STATUS
+  --background          #ffffff  #ffffff   same
+  --foreground          #0f172a  #0f172a   same
+  --primary             #4f46e5  #4f46e5   same
+  --primary-foreground  #ffffff  #ffffff   same
+  --radius              8px      8px       same
+  --ring                #4f46e5  #6366f1   changed
+  --success             -        #15803d   new
+  7 tokens: 1 new, 1 changed, 5 same, 0 conflicts-rule

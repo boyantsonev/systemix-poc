@@ -102,3 +102,13 @@ describe("rules", () => {
     expect(r.stderr).toMatch(/rules init/);
   });
 });
+
+describe("copy in components", () => {
+  test("text nodes are copy even when the component body has no nested braces; code between > and < is not", async () => {
+    const root = tmpRepo({
+      "src/Cta.tsx": 'export function Cta() {\n  return <button className="btn">Start now!</button>;\n}\nexport const X = ({ a }: { a: number }) => a > 1 && <p>Guaranteed results</p>;\n',
+    });
+    const r = await cli(["rules", "check", "src", "--starter", "--json"], { root });
+    expect(r.json.findings.map((f) => `${f.id}:${f.line}`).sort()).toEqual(["L1:4", "V1:2"]);
+  });
+});

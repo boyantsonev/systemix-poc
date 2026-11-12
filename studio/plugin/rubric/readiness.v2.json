@@ -1,0 +1,88 @@
+{
+  "id": "readiness",
+  "version": 2,
+  "beta": true,
+  "coverageFloor": 0.8,
+  "requiredRoles": 17,
+  "bands": [
+    { "id": "starting", "min": 0 },
+    { "id": "forming", "min": 40 },
+    { "id": "working", "min": 65 },
+    { "id": "strong", "min": 85 }
+  ],
+  "nearThreshold": 5,
+  "validity": "This beta score is computed by code from the repo's own files with fixed, published weights: it is reproducible and says which conventions the repo already keeps, not how good its design is, and it is not a benchmark against other teams.",
+  "limits": [
+    "Weights, targets and band edges are published conventions, not fitted to any set of repos; they will change once goldens exist across more repos.",
+    "The score reads files and code patterns, not the product: a repo can keep every counted convention and still look inconsistent, and the reverse.",
+    "Drift is counted per 100 UI files, so adding UI files without styling lowers the drift penalty.",
+    "Rationale counts the decisions, goals and cited learnings that exist; it does not judge whether they are right.",
+    "When an input cannot be computed it is left out and the other weights of its dimension are rescaled; when coverage falls below 0.8 the score is withheld."
+  ],
+  "dimensions": [
+    {
+      "id": "tokens",
+      "name": "Token source",
+      "weight": 0.2,
+      "importance": 9,
+      "inputs": [
+        { "id": "source", "name": "a token source exists", "weight": 0.3, "reads": { "command": ["audit"], "field": "tokenSource.kind" }, "scale": "present" },
+        { "id": "share", "name": "share of colour uses through tokens", "weight": 0.4, "reads": { "command": ["audit"], "field": "tokenCoverage.share" }, "scale": "share" },
+        { "id": "roles", "name": "required roles defined as references in both themes", "weight": 0.3, "reads": { "command": ["tokens", "lint"], "layout": "tokens", "field": "missing, raw" }, "scale": "roles" }
+      ]
+    },
+    {
+      "id": "rules",
+      "name": "Codified rules",
+      "weight": 0.2,
+      "importance": 9,
+      "inputs": [
+        { "id": "rows", "name": "rule rows in rules.md", "weight": 0.25, "reads": { "command": ["rules", "lint"], "layout": "rules", "field": "rules" }, "scale": "target", "target": 12 },
+        { "id": "scripted", "name": "share of rules a script checks", "weight": 0.25, "reads": { "command": ["rules", "lint"], "layout": "rules", "field": "scripted / rules" }, "scale": "share" },
+        { "id": "eval", "name": "share of rule samples behaving in rules eval", "weight": 0.3, "reads": { "command": ["rules", "eval"], "layout": "rulesDir", "field": "rows[].ok" }, "scale": "share" },
+        { "id": "reviewCases", "name": "share of review rules with a passing case", "weight": 0.2, "reads": { "command": ["rules", "eval"], "layout": "reviewCases", "field": "reviewCases[].ok" }, "scale": "share" }
+      ]
+    },
+    {
+      "id": "drift",
+      "name": "Drift control",
+      "weight": 0.15,
+      "importance": 7,
+      "inputs": [
+        { "id": "critical", "name": "critical drift per 100 UI files", "weight": 0.6, "reads": { "command": ["audit"], "field": "drift.critical, files.ui" }, "scale": "penalty", "perUnit": 5 },
+        { "id": "warning", "name": "warning drift per 100 UI files", "weight": 0.4, "reads": { "command": ["audit"], "field": "drift.warning, files.ui" }, "scale": "penalty", "perUnit": 2 }
+      ]
+    },
+    {
+      "id": "components",
+      "name": "Component reuse",
+      "weight": 0.15,
+      "importance": 6,
+      "inputs": [
+        { "id": "duplicates", "name": "components defined in two or more folders", "weight": 0.5, "reads": { "command": ["audit"], "field": "duplicates" }, "scale": "penalty", "perUnit": 25 },
+        { "id": "primitives", "name": "primitives in a primitives folder", "weight": 0.5, "reads": { "command": ["audit"], "field": "primitives" }, "scale": "target", "target": 5 }
+      ]
+    },
+    {
+      "id": "rationale",
+      "name": "Captured rationale",
+      "weight": 0.15,
+      "importance": 6,
+      "inputs": [
+        { "id": "decisions", "name": "decision records", "weight": 0.35, "reads": { "layout": "decisions", "field": "D-*.md" }, "scale": "target", "target": 5 },
+        { "id": "goals", "name": "goals", "weight": 0.3, "reads": { "command": ["loops", "status"], "layout": "goals", "field": "goals" }, "scale": "target", "target": 3 },
+        { "id": "learnings", "name": "learnings with a source", "weight": 0.35, "reads": { "command": ["learnings", "list"], "layout": "learnings", "field": "learnings[].source" }, "scale": "target", "target": 5 }
+      ]
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility",
+      "weight": 0.15,
+      "importance": 8,
+      "inputs": [
+        { "id": "alt", "name": "share of images with alt", "weight": 0.5, "reads": { "command": ["audit"], "field": "images" }, "scale": "share" },
+        { "id": "contrast", "name": "share of token pairs passing 4.5:1", "weight": 0.5, "reads": { "command": ["tokens", "lint"], "layout": "tokens", "field": "pairs[].ok" }, "scale": "share" }
+      ]
+    }
+  ]
+}

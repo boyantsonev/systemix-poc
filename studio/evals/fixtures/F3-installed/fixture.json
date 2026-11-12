@@ -1,0 +1,8 @@
+{
+  "id": "F3-installed",
+  "purpose": "The studio already set up: a layered light and dark tokens.css that passes AA, DESIGN.md, rules.md (the starter plus product V/L rows and a brand-colour row) with its known-bad samples and review cases. The branch feature/pricing-card adds a highlight role to design/tokens.css and changes two components: a raw hex in pricing-card.css (one T1 block) and an exclamation in the checkout copy (one V1 flag). Exercises check, brief, preview and the triggers.",
+  "branch": { "name": "feature/pricing-card", "overlay": "branch/" },
+  "variants": {
+    "no-origin": { "initialBranch": "trunk" }
+  }
+}

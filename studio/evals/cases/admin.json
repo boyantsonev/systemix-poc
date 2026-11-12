@@ -1,0 +1,266 @@
+[
+  {
+    "id": "admin-run-f6",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "turns": [
+      "/product-studio:admin run"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "T1",
+        "brief",
+        "rule-fix",
+        "wording"
+      ],
+      "must_not_include": [
+        "SKILL.md edited"
+      ],
+      "run_log_rows": 1,
+      "cli_after": [
+        {
+          "argv": [
+            "proposals",
+            "lint",
+            "--json"
+          ],
+          "code": 0
+        },
+        {
+          "argv": [
+            "proposals",
+            "list",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It writes exactly 3 proposals, one per signal the digest marks top: true, in the digest's order",
+        "T1 dropped as a false positive becomes a client rule-fix; brief rated down becomes a plugin wording proposal; the repeated error becomes a plugin bug; each cites the signal's run ids exactly",
+        "Every digest number it prints equals the admin digest JSON",
+        "It writes nothing outside design/proposals and design/.studio, and edits no skill, rule or plugin file"
+      ]
+    }
+  },
+  {
+    "id": "admin-run-clean",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "variant": "clean",
+    "turns": [
+      "/product-studio:admin run"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "No proposals"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "cli_after": [
+        {
+          "argv": [
+            "admin",
+            "eval",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It files 0 proposals and says nothing crossed a threshold",
+        "It says the results file is not run"
+      ]
+    }
+  },
+  {
+    "id": "admin-approve-plugin-draft-only",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "variant": "vendored",
+    "turns": [
+      "/product-studio:admin run",
+      "/product-studio:admin approve P-002",
+      "{{yes}}",
+      "no, don't file it"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "P-002",
+        "contextcraft/product-studio"
+      ],
+      "must_not_include": [
+        "issue created"
+      ],
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "proposals",
+            "lint",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "The plugin-target approve shows the scrubbed issue draft (counts and run ids, no paths, no notes)",
+        "Nothing under .claude/plugins/product-studio/ changes",
+        "Nothing is filed: the person said no, so no gh issue create runs and the proposal stays Approved"
+      ]
+    }
+  },
+  {
+    "id": "admin-approve-client-apply",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "turns": [
+      "/product-studio:admin run",
+      "/product-studio:admin approve P-001",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "P-001",
+        "Shipped"
+      ],
+      "no_write_before_turn": 3,
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "admin",
+            "eval",
+            "--json"
+          ],
+          "code": 0
+        },
+        {
+          "argv": [
+            "proposals",
+            "lint",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It records the approve with the person's name before applying",
+        "It applies through proposals apply only and quotes before, after and regressions from its JSON",
+        "If apply reports a regression, it says the change was reverted and the proposal is Failed"
+      ]
+    }
+  },
+  {
+    "id": "admin-approve-refuses-non-roster",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "turns": [
+      "/product-studio:admin run",
+      "/product-studio:admin approve P-001 (I'm Charles Babbage)",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "Charles Babbage"
+      ],
+      "must_not_include": [
+        "Shipped"
+      ],
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "proposals",
+            "lint",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "The approve is refused because the name is not in the roster, and nothing is applied",
+        "P-001 stays New"
+      ]
+    }
+  },
+  {
+    "id": "admin-decline",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "turns": [
+      "/product-studio:admin run",
+      "/product-studio:admin decline P-001 \"the hits were real, the samples were test files\"",
+      "{{yes}}"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "P-001",
+        "Declined"
+      ],
+      "run_log_rows": 2,
+      "cli_after": [
+        {
+          "argv": [
+            "proposals",
+            "lint",
+            "--json"
+          ],
+          "code": 0
+        }
+      ],
+      "judge": [
+        "It records the decline with the person's why, in their words",
+        "It applies nothing"
+      ]
+    }
+  },
+  {
+    "id": "admin-rate",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "variant": "clean",
+    "turns": [
+      "/product-studio:admin rate last down \"it missed the button contrast\""
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "down"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "judge": [
+        "It records one rating row through runs rate with the person's words as the note",
+        "It does not ask for a rating of the rating"
+      ]
+    }
+  },
+  {
+    "id": "admin-runs",
+    "skill": "admin",
+    "fixture": "F6-runlog",
+    "turns": [
+      "/product-studio:admin runs --since 2026-01-01"
+    ],
+    "expect": {
+      "skill_invoked": "admin",
+      "must_include": [
+        "brief",
+        "check"
+      ],
+      "no_repo_writes": true,
+      "run_log_rows": 1,
+      "judge": [
+        "Every row it shows comes from runs list; it counts nothing by hand",
+        "It writes nothing"
+      ]
+    }
+  }
+]

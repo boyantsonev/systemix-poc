@@ -1,0 +1,9 @@
+{
+  "name": "@contextcraft/product-studio",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "bin": {
+    "product-studio": "./bin/product-studio.js"
+  }
+}

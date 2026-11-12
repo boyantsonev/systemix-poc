@@ -1,0 +1,44 @@
+{
+  "since": null,
+  "runs": 12,
+  "byCommand": {
+    "brief": {
+      "runs": 3,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    },
+    "check": {
+      "runs": 7,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    },
+    "loop": {
+      "runs": 1,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    },
+    "setup": {
+      "runs": 1,
+      "up": 0,
+      "down": 0,
+      "downShare": 0
+    }
+  },
+  "rulesCaught": {
+    "email": {
+      "blocks": 0,
+      "flags": 0
+    },
+    "product": {
+      "blocks": 0,
+      "flags": 1
+    }
+  },
+  "blocksFixed": 0,
+  "falsePositives": {},
+  "errors": {},
+  "proposalsCap": 3
+}

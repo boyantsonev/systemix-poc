@@ -81,7 +81,9 @@ function build(outDir) {
   for (const entry of CLI_COPY) {
     const src = path.join(STUDIO, entry);
     if (!fs.existsSync(src)) continue;
-    if (fs.statSync(src).isDirectory()) for (const f of walk(src)) put(`${entry}/${f}`, fs.readFileSync(path.join(src, f)));
+    // templates are what a repo receives: their {{PLUGIN}}-style names are filled like the skills'
+    // (a template's own {{TODAY}}-style fields stay for the command that copies it)
+    if (fs.statSync(src).isDirectory()) for (const f of walk(src)) put(`${entry}/${f}`, entry === "templates" && /\.(md|ya?ml)$/.test(f) ? fill(fs.readFileSync(path.join(src, f), "utf8")) : fs.readFileSync(path.join(src, f)));
     else put(entry, fs.readFileSync(src));
   }
   put("package.json", JSON.stringify({ name: pkg.name, version: pkg.version, private: true, license: pkg.license, bin: pkg.bin }, null, 2) + "\n");

@@ -473,3 +473,44 @@ and, when there is a branch, checks out `branch.name` and commits the overlay.
     - `judge[]` (criteria for the judge, free text only).
 - The harness (`evals/run.mjs`) copies a fixture, runs `claude -p --plugin-dir <built plugin>`, scores
   and writes `evals/results/<date>.json`. It is built after the skills.
+
+## Settled during the build (2026-11-12)
+
+The agents reported these ambiguities in the contract. The lead settled each one as follows; the
+code and the guides follow them.
+
+- **Loop steps.** The product loop is goal → evals (approve gate) → design → validate (decide gate)
+  → learn. The build loop is plan (approve gate) → code → test → ship (decide gate) → measure.
+  `loops goal new` parks a goal at the first gated step (product.evals). A person's step (one
+  with a holder but no named gate) is closed with `loops gate <G> approve --note "it holds"`.
+  The coding agent's own steps are moved by the guide editing `step:` after a yes, and
+  `loops check` refuses a goal that went past a gate with no approve line.
+- **Roster.** `- deputy:` names a role (its holders stand in) or a person. `proposals decide`
+  reads the roster through `loopkit.parseRoster`, the same reading a gate uses.
+- **Run log.**
+  - A rating is its own `kind:"rating"` row with `ref`; run rows carry `rating:"none"`.
+  - `runs rate <id|last> skip` records that the person was asked and passed.
+  - Brief and score runs log `result:"pass"` (or `error`).
+  - The run-log field list is SPEC's; `claude_code_version` lives in the eval results file, not
+    the row.
+- **admin digest.**
+  - `rulesCaught` is `{surface: {blocks, flags}}`, because a row carries no rule ids beyond
+    false positives.
+  - An error's message is the row's `note`.
+  - The thresholds are SPEC's fixed numbers.
+  - Writing the proposal files is the admin guide's job, so there is no `admin run` CLI command.
+- **audit.** It adds `driftCounts {critical, warning, info}` so guides quote numbers instead of
+  counting. A Tailwind config counts as a token source only when it reads tokens. It takes a
+  `--primitives <path>` flag (repeatable) in place of a config file.
+- **tokens.** Figma variable names keep their last path segment (`Color/primary` → `--primary`).
+  `tokens diff` compares against the light theme. A source with no tokens returns no rows, and
+  the import guide reads that as "send me the export". Field names: `missing[]` and pair `fg/bg`
+  use bare role names; `raw[].token` and diff `rows[].token` keep the `--`.
+- **Placeholders.** `{{REPO}}` and `{{MARKETPLACE}}` exist alongside PLUGIN, CLI and ROOT. The
+  build fills them in skills and in templates (`.md`, `.yml`); a template's own `{{TODAY}}`
+  stays for the command that copies it.
+- **Copy extraction.** In markup and components, copy is the text nodes between a tag's `>` and
+  the next `<`, with `{expressions}` blanked. Code that happens to sit between a `>` and a `<`
+  (`=>`, `&&`, `return`, braces) is not copy.
+- **Not built yet.** `jobs check` (loop/jobs is beta and runs by hand), a brief-id command, and
+  a command that moves an agent-only step.

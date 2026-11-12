@@ -1,0 +1,4 @@
+{
+  "id": "F2-css-vars",
+  "purpose": "No Tailwind: a DTCG tokens.json plus plain CSS custom properties in styles/theme.css, components outside components/ui (src/widgets/), and one skeleton doc docs/components/button.md with docs/manifest.json. Exercises generality and component-docs."
+}

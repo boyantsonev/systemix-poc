@@ -1,0 +1,109 @@
+{
+  "from": "sources/export.html",
+  "kind": "html",
+  "rows": [
+    {
+      "token": "--accent",
+      "current": "#e0e7ff",
+      "proposed": "#e0e7ff",
+      "status": "same"
+    },
+    {
+      "token": "--accent-foreground",
+      "current": "#312e81",
+      "proposed": "#312e81",
+      "status": "same"
+    },
+    {
+      "token": "--background",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--border",
+      "current": "#e2e8f0",
+      "proposed": "#e2e8f0",
+      "status": "same"
+    },
+    {
+      "token": "--card",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--card-foreground",
+      "current": "#0f172a",
+      "proposed": "#0f172a",
+      "status": "same"
+    },
+    {
+      "token": "--font-size-base",
+      "current": "1rem",
+      "proposed": "1rem",
+      "status": "same"
+    },
+    {
+      "token": "--foreground",
+      "current": "#0f172a",
+      "proposed": "#0f172a",
+      "status": "same"
+    },
+    {
+      "token": "--highlight",
+      "current": null,
+      "proposed": "#fef3c7",
+      "status": "new"
+    },
+    {
+      "token": "--highlight-foreground",
+      "current": null,
+      "proposed": "#78350f",
+      "status": "new"
+    },
+    {
+      "token": "--ink",
+      "current": null,
+      "proposed": "#000000",
+      "status": "conflicts-rule",
+      "rule": "B1"
+    },
+    {
+      "token": "--muted",
+      "current": "#f1f5f9",
+      "proposed": "#f1f5f9",
+      "status": "same"
+    },
+    {
+      "token": "--muted-foreground",
+      "current": "#475569",
+      "proposed": "#475569",
+      "status": "same"
+    },
+    {
+      "token": "--primary",
+      "current": "#4f46e5",
+      "proposed": "#4338ca",
+      "status": "changed"
+    },
+    {
+      "token": "--primary-foreground",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--radius",
+      "current": "8px",
+      "proposed": "10px",
+      "status": "changed"
+    }
+  ],
+  "counts": {
+    "new": 2,
+    "changed": 2,
+    "same": 11,
+    "conflicts": 1
+  }
+}

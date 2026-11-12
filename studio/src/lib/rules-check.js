@@ -104,10 +104,21 @@ function partsOf(file) {
   const css = raw.replace(/<style[^>]*>([\s\S]*?)<\/style>|style="([^"]*)"|[^]/gi, (m, block, attr) =>
     block !== undefined ? blank(m.slice(0, m.indexOf(block))) + block + blank(m.slice(m.indexOf(block) + block.length)) : attr !== undefined ? " ".repeat(7) + attr + " " : m === "\n" ? "\n" : " ",
   );
-  const copy = raw
-    .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, blank)
-    .replace(/<!--[\s\S]*?-->|\{\/\*[\s\S]*?\*\/\}/g, blank)
-    .replace(/<[^>]*>|\{[^{}]*\}/g, blank);
+  // copy = the text nodes only: what sits between a tag's > and the next <, with {expressions}
+  // blanked. Everything else is blanked, so a component body never hides or fakes its copy.
+  const stripped = raw.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, blank).replace(/<!--[\s\S]*?-->|\{\/\*[\s\S]*?\*\/\}/g, blank);
+  const chars = blank(raw).split("");
+  for (const m of stripped.matchAll(/>([^<>]+)</g)) {
+    let text = m[1];
+    for (let prev = null; prev !== text; ) {
+      prev = text;
+      text = text.replace(/\{[^{}]*\}/g, blank);
+    }
+    if (/=>|&&|\|\||\breturn\b|[{}]/.test(text)) continue; // code between a > and a <, not a text node
+    const start = m.index + 1;
+    for (let k = 0; k < text.length; k++) chars[start + k] = text[k];
+  }
+  const copy = chars.join("");
   const isMarkup = [".html", ".htm", ".vue", ".svelte"].includes(ext);
   return { raw, copy: isMarkup || [".jsx", ".tsx"].includes(ext) ? copy : "", css, html: isMarkup || [".jsx", ".tsx"].includes(ext) ? raw : "", code: raw };
 }

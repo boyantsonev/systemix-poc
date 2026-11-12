@@ -5,7 +5,7 @@
   "description": "An AI-native product studio for coding agents: your design system, rules and loops as files, checked by code, ruled by people.",
   "license": "MIT",
   "bin": { "product-studio": "./bin/product-studio.js" },
-  "files": ["bin", "src", "templates", "namespace.json"],
+  "files": ["bin", "src", "rubric", "templates", "namespace.json"],
   "engines": { "node": ">=18" },
   "scripts": {
     "test": "jest",

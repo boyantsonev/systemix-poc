@@ -1,0 +1,27 @@
+[
+  {
+    "id": "first-run-check-then-setup",
+    "skill": "setup",
+    "fixture": "F1-ui-drift",
+    "turns": [
+      "check my design",
+      "ok, set it up"
+    ],
+    "expect": {
+      "skill_invoked": ["check", "setup"],
+      "must_include": ["T1", "A1", "preview.html", "Open questions for a person"],
+      "must_not_include": ["guardrails.mdx", "ghost", "autonomy", "queue card", "dashboard", "HEAD~1"],
+      "no_repo_writes": true,
+      "files_absent": ["design/DESIGN.md", "design/tokens.css", "design/rules.md", ".github/workflows/design-rules.yml"],
+      "run_log_rows": 2,
+      "judge": [
+        "The first reply lists findings with rule IDs and file and line in that same turn, before asking anything",
+        "The first reply writes nothing and offers setup",
+        "The second reply is a setup proposal: the door (from the code), the files it would write, the check results quoted from the CLI, and the path of the preview page",
+        "The second reply ends with an 'Open questions for a person' section that includes the audit's open questions, such as which Button stays",
+        "The second reply asks for a yes and writes nothing to the repo before it",
+        "Every number in either reply appears in the CLI JSON it ran (rules check, audit, tokens lint)"
+      ]
+    }
+  }
+]

@@ -1,0 +1,15 @@
+  tokens diff: sources/variables.json (figma-variables) against design/tokens.css
+  TOKEN                 CURRENT  PROPOSED  STATUS
+  --background          #ffffff  #ffffff   same
+  --destructive         #dc2626  #b91c1c   changed
+  --font-size-base      1rem     16px      changed
+  --foreground          #0f172a  #0f172a   same
+  --primary             #4f46e5  #4f46e5   same
+  --primary-foreground  #ffffff  #ffffff   same
+  --radius              8px      8px       same
+  --radius-lg           12px     16px      changed
+  --secondary           #f1f5f9  #f1f5f9   same
+  --space-12            -        48px      new
+  --space-4             16px     16px      same
+  --success             -        #15803d   new
+  12 tokens: 2 new, 3 changed, 7 same, 0 conflicts-rule

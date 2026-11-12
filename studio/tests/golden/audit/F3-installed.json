@@ -1,0 +1,243 @@
+{
+  "version": 1,
+  "root": "<root>",
+  "dirs": [
+    "src"
+  ],
+  "files": {
+    "scanned": 11,
+    "ui": 7,
+    "styles": 4
+  },
+  "tokenSource": {
+    "file": "design/tokens.css",
+    "kind": "css-vars",
+    "count": 52
+  },
+  "palette": [
+    {
+      "value": "#fef3c7",
+      "count": 2,
+      "files": [
+        "design/tokens.css",
+        "src/features/pricing/pricing-card.css"
+      ]
+    },
+    {
+      "value": "#020617",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#0f172a",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#1e293b",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#312e81",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#334155",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#475569",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#4f46e5",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#78350f",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#a5b4fc",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#cbd5e1",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#dc2626",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#e0e7ff",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#e2e8f0",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#f1f5f9",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#f87171",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#f8fafc",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    },
+    {
+      "value": "#ffffff",
+      "count": 1,
+      "files": [
+        "design/tokens.css"
+      ]
+    }
+  ],
+  "typeScale": [
+    {
+      "value": "0.75rem",
+      "count": 1
+    },
+    {
+      "value": "0.875rem",
+      "count": 1
+    },
+    {
+      "value": "1rem",
+      "count": 1
+    },
+    {
+      "value": "1.125rem",
+      "count": 1
+    },
+    {
+      "value": "1.5rem",
+      "count": 1
+    },
+    {
+      "value": "2rem",
+      "count": 1
+    }
+  ],
+  "spacing": [
+    {
+      "value": "4px",
+      "count": 1
+    },
+    {
+      "value": "8px",
+      "count": 1
+    },
+    {
+      "value": "12px",
+      "count": 1
+    },
+    {
+      "value": "16px",
+      "count": 1
+    },
+    {
+      "value": "24px",
+      "count": 1
+    },
+    {
+      "value": "32px",
+      "count": 1
+    }
+  ],
+  "drift": {
+    "critical": [],
+    "warning": [],
+    "info": [
+      {
+        "file": "src/features/pricing/pricing-card.css",
+        "line": 14,
+        "match": "background: #fef3c7",
+        "kind": "raw-colour"
+      }
+    ]
+  },
+  "driftCounts": {
+    "critical": 0,
+    "warning": 0,
+    "info": 1
+  },
+  "duplicates": [],
+  "primitives": [
+    {
+      "name": "Button",
+      "file": "src/components/ui/Button.tsx"
+    },
+    {
+      "name": "Card",
+      "file": "src/components/ui/Card.tsx"
+    },
+    {
+      "name": "TextField",
+      "file": "src/components/ui/TextField.tsx"
+    }
+  ],
+  "images": {
+    "total": 0,
+    "withoutAlt": 0
+  },
+  "setupClass": "mature",
+  "tokenCoverage": {
+    "colourRefs": 20,
+    "literalColours": 1,
+    "share": 0.95
+  },
+  "openQuestions": [
+    "#fef3c7 is written raw once (src/features/pricing/pricing-card.css) but is already the token --ref-amber-100 in design/tokens.css: should those uses read the token?"
+  ]
+}

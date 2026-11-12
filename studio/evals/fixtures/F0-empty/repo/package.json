@@ -1,0 +1,9 @@
+{
+  "name": "ledgerly",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A budgeting app for freelancers with irregular income.",
+  "scripts": {
+    "test": "echo \"no tests yet\""
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "from": "sources/tokens.json",
+  "kind": "dtcg",
+  "rows": [
+    {
+      "token": "--background",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--foreground",
+      "current": "#0f172a",
+      "proposed": "#0f172a",
+      "status": "same"
+    },
+    {
+      "token": "--primary",
+      "current": "#4f46e5",
+      "proposed": "#4f46e5",
+      "status": "same"
+    },
+    {
+      "token": "--primary-foreground",
+      "current": "#ffffff",
+      "proposed": "#ffffff",
+      "status": "same"
+    },
+    {
+      "token": "--radius",
+      "current": "8px",
+      "proposed": "8px",
+      "status": "same"
+    },
+    {
+      "token": "--ring",
+      "current": "#4f46e5",
+      "proposed": "#6366f1",
+      "status": "changed"
+    },
+    {
+      "token": "--success",
+      "current": null,
+      "proposed": "#15803d",
+      "status": "new"
+    }
+  ],
+  "counts": {
+    "new": 1,
+    "changed": 1,
+    "same": 5,
+    "conflicts": 0
+  }
+}

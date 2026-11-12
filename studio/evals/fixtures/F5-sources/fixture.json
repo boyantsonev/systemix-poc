@@ -1,0 +1,4 @@
+{
+  "id": "F5-sources",
+  "purpose": "F3's design/ (tokens.css, DESIGN.md, rules.md) plus design sources to import: sources/export.html (a Claude Design export with <style>:root{…}</style>, including a changed primary, a new highlight pair and a pure-black ink that conflicts with rule B1), sources/variables.json (the Figma get_variable_defs shape), sources/tokens.json (DTCG) and sources/login.html (an unfetchable-link stub: a sign-in page with no tokens). Exercises import."
+}

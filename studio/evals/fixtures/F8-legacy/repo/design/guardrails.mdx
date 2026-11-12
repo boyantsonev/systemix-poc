@@ -1,0 +1,31 @@
+---
+type: guardrails
+updated: 2025-09-30
+---
+
+# Design guardrails · Acme Notes
+
+The rules the drift check enforces. Keep them specific and checkable. Changes to this file are
+always proposed to a person first.
+
+## Tokens
+
+- All colours come from the custom properties in `design/tokens.css`: no raw hex (`#rrggbb`) in component styles.
+- Font sizes come from the type scale tokens: no raw px font sizes.
+- No arbitrary Tailwind values such as `bg-[#123456]` or `text-[13px]`.
+
+## Components
+
+- One primary action per screen; everything else is secondary.
+- Reuse the components in `src/components/ui/`; never rebuild a button or a card inline.
+- Empty states say what to do next, in one sentence, with one action.
+
+## Accessibility
+
+- Every image has alt text; decorative images get an empty alt.
+
+## Voice
+
+- No exclamation marks in product copy.
+- No emoji anywhere in the interface.
+- Never promise results: no "guaranteed", no "best-in-class".

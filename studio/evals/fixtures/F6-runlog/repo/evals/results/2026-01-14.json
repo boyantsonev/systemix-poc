@@ -1,0 +1,145 @@
+{
+  "date": "2026-01-14",
+  "cli_version": "0.1.0",
+  "claude_code_version": "2.1.0",
+  "triggers": {
+    "total": 30,
+    "positives": {
+      "ok": 17,
+      "total": 18
+    },
+    "negatives": {
+      "ok": 12,
+      "total": 12
+    },
+    "misses": [
+      {
+        "ask": "Is this on-brand?",
+        "expected": "check",
+        "got": null
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "brief-email-surface",
+      "ok": true
+    },
+    {
+      "id": "brief-goal-context",
+      "ok": true
+    },
+    {
+      "id": "brief-marketing-claims",
+      "ok": true
+    },
+    {
+      "id": "brief-marketing-not-email",
+      "ok": true
+    },
+    {
+      "id": "brief-product-card",
+      "ok": true
+    },
+    {
+      "id": "brief-unreadable-source",
+      "ok": true
+    },
+    {
+      "id": "check-branch-states-base",
+      "ok": true
+    },
+    {
+      "id": "check-first-run-no-design",
+      "ok": true
+    },
+    {
+      "id": "check-fix-after-yes",
+      "ok": true
+    },
+    {
+      "id": "check-no-origin-asks-for-base",
+      "ok": true
+    },
+    {
+      "id": "check-one-report-per-finding",
+      "ok": true
+    },
+    {
+      "id": "check-review-block-asks-person",
+      "ok": true
+    },
+    {
+      "id": "check-score-beta",
+      "ok": true
+    },
+    {
+      "id": "check-token-file-never-checked",
+      "ok": true
+    },
+    {
+      "id": "first-run-check-then-setup",
+      "ok": true
+    },
+    {
+      "id": "setup-f0-interview",
+      "ok": true
+    },
+    {
+      "id": "setup-f1-from-code",
+      "ok": true
+    },
+    {
+      "id": "setup-f1-interview-redirects",
+      "ok": true
+    },
+    {
+      "id": "setup-f1-proposal-only",
+      "ok": true
+    },
+    {
+      "id": "setup-f2-docs",
+      "ok": true
+    },
+    {
+      "id": "setup-f2-from-code-css-vars",
+      "ok": true
+    },
+    {
+      "id": "setup-f3-agents-block-idempotent",
+      "ok": true
+    },
+    {
+      "id": "setup-f3-already-set-up",
+      "ok": true
+    },
+    {
+      "id": "setup-f3-ci",
+      "ok": true
+    },
+    {
+      "id": "setup-f5-figma-not-connected",
+      "ok": true
+    },
+    {
+      "id": "setup-f5-figma-variables-file",
+      "ok": true
+    },
+    {
+      "id": "setup-f5-import-export",
+      "ok": true
+    },
+    {
+      "id": "setup-f5-unfetchable-link",
+      "ok": true
+    },
+    {
+      "id": "setup-f8-dry-run-only",
+      "ok": true
+    },
+    {
+      "id": "setup-f8-migrate",
+      "ok": true
+    }
+  ]
+}

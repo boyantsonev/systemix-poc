@@ -1,0 +1,16 @@
+{
+  "name": "product-studio",
+  "version": "0.1.0",
+  "description": "An AI-native product studio for coding agents: your design system, rules and loops as files, checked by code, ruled by people.",
+  "author": {
+    "name": "contextcraft"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/contextcraft/product-studio",
+  "keywords": [
+    "design-system",
+    "rules",
+    "product",
+    "claude-code"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "root": "<root>",
+  "dirs": [
+    "src",
+    "styles"
+  ],
+  "files": {
+    "scanned": 5,
+    "ui": 3,
+    "styles": 2
+  },
+  "tokenSource": {
+    "file": "tokens.json",
+    "kind": "tokens-json",
+    "count": 11
+  },
+  "palette": [
+    {
+      "value": "#ffffff",
+      "count": 4,
+      "files": [
+        "styles/theme.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#b91c1c",
+      "count": 3,
+      "files": [
+        "styles/theme.css",
+        "styles/widgets.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#0f766e",
+      "count": 2,
+      "files": [
+        "styles/theme.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#111827",
+      "count": 2,
+      "files": [
+        "styles/theme.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#4b5563",
+      "count": 2,
+      "files": [
+        "styles/theme.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#e5e7eb",
+      "count": 2,
+      "files": [
+        "styles/theme.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#f3f4f6",
+      "count": 2,
+      "files": [
+        "styles/theme.css",
+        "tokens.json"
+      ]
+    },
+    {
+      "value": "#1f2937",
+      "count": 1,
+      "files": [
+        "styles/widgets.css"
+      ]
+    }
+  ],
+  "typeScale": [
+    {
+      "value": "13px",
+      "count": 1
+    },
+    {
+      "value": "20px",
+      "count": 1
+    }
+  ],
+  "spacing": [
+    {
+      "value": "8px",
+      "count": 2
+    },
+    {
+      "value": "16px",
+      "count": 2
+    }
+  ],
+  "drift": {
+    "critical": [],
+    "warning": [
+      {
+        "file": "styles/widgets.css",
+        "line": 15,
+        "match": "font-size: 20px",
+        "kind": "px-font-size"
+      },
+      {
+        "file": "styles/widgets.css",
+        "line": 24,
+        "match": "font-size: 13px",
+        "kind": "px-font-size"
+      }
+    ],
+    "info": [
+      {
+        "file": "styles/widgets.css",
+        "line": 16,
+        "match": "color: #1f2937",
+        "kind": "raw-colour"
+      },
+      {
+        "file": "styles/widgets.css",
+        "line": 20,
+        "match": "color: #b91c1c",
+        "kind": "raw-colour"
+      }
+    ]
+  },
+  "driftCounts": {
+    "critical": 0,
+    "warning": 2,
+    "info": 2
+  },
+  "duplicates": [],
+  "primitives": [],
+  "images": {
+    "total": 0,
+    "withoutAlt": 0
+  },
+  "setupClass": "mature",
+  "tokenCoverage": {
+    "colourRefs": 6,
+    "literalColours": 2,
+    "share": 0.75
+  },
+  "openQuestions": [
+    "There are 2 token sources (tokens.json, tokens-json; styles/theme.css, css-vars): which one is canonical?",
+    "#b91c1c is written raw once (styles/widgets.css) but is already the token color.danger in tokens.json: should those uses read the token?"
+  ]
+}
