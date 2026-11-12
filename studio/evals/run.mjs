@@ -119,7 +119,15 @@ function snapshot(root) {
 
 const runLogRows = (root) => {
   const f = path.join(root, "design", ".studio", "runs.jsonl");
-  return fs.existsSync(f) ? fs.readFileSync(f, "utf8").split("\n").filter((l) => l.trim()).length : 0;
+  // run and admin rows only: a rating (or a skipped rating) is a second row about the same run
+  if (!fs.existsSync(f)) return 0;
+  return fs.readFileSync(f, "utf8").split("\n").filter((l) => {
+    try {
+      return JSON.parse(l).kind !== "rating";
+    } catch {
+      return false;
+    }
+  }).length;
 };
 
 function cliCode(root, a) {
