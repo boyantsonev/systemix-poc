@@ -26,6 +26,18 @@ describe("the public site", () => {
     expect(hits).toEqual([]);
   });
 
+  it("sells nothing DSC-23 withdrew: no report, audit or fixed sprint price, no report pages or service (G-005 E6)", () => {
+    const files = (dir: string): string[] =>
+      fs.readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory() ? files(path.join(dir, e.name)) : /\.(tsx?|mdx?)$/.test(e.name) && !/\.test\./.test(e.name) ? [path.join(dir, e.name)] : [],
+      );
+    const hits = [...files("src"), ...files("content")].filter((f) => /€\s?(9\.99|499|990)\b|\bquick report\b|\[full audit\]/i.test(read(f).replace(/\/\/.*$/gm, "")));
+    expect(hits).toEqual([]);
+    for (const gone of ["src/app/report", "src/app/audit", "src/app/api/report"]) expect(fs.existsSync(path.join(root, gone))).toBe(false);
+    expect(read("next.config.ts")).toMatch(/source: "\/report",\s*destination: "\/#install",\s*permanent: true/);
+    expect(read("next.config.ts")).toMatch(/source: "\/audit",\s*destination: "\/#pricing",\s*permanent: true/);
+  });
+
   it("has no endpoint that logs visitors' emails", () => {
     expect(fs.existsSync(path.join(root, "src/app/api/subscribe"))).toBe(false);
   });

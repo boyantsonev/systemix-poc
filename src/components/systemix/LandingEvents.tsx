@@ -9,7 +9,7 @@ import {
   AUDIT_COMMAND,
   PLUGIN_ADD_COMMAND,
   PLUGIN_INSTALL_COMMAND,
-  PLUGIN_SCORE_COMMAND,
+  PLUGIN_FIRST_COMMAND,
 } from "@/lib/landing/content";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -97,7 +97,7 @@ export function PluginInstall({ location = "hero", className }: { location?: str
         <InstallCommand cmd={PLUGIN_INSTALL_COMMAND} prompt=">" channel="plugin" step="install" location={location} className="w-full" />
       </div>
       <p className="font-mono text-[11px] text-muted-foreground/70">
-        in Claude Code, then run <span className="text-foreground/80">{PLUGIN_SCORE_COMMAND}</span> in your repo
+        in Claude Code, then run <span className="text-foreground/80">{PLUGIN_FIRST_COMMAND}</span> in your repo
       </p>
     </div>
   );
@@ -105,7 +105,7 @@ export function PluginInstall({ location = "hero", className }: { location?: str
 
 // ── Tracked conversion link ───────────────────────────────────────────────────
 // A plain anchor that fires a PostHog event on click. Used for the book-a-call /
-// sprint CTAs so the `book_a_call` metric the landing experiment measures is real.
+// sponsor and setup CTAs, so the revenue steps in src/lib/analytics/funnel.ts are real.
 
 export function TrackedLink({
   href,

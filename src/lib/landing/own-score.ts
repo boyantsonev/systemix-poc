@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 // This repo's own report, built from a committed results file, so the score the site shows
-// is never made up. Used by the landing's proof section and by /report.
+// is never made up. Used by the landing's proof section.
 
 export type OwnReport = {
   overall: number;

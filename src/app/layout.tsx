@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 const SITE_TITLE = "Systemix: the design system agent for Claude Code";
 const SITE_DESCRIPTION =
-  "Sets up your design system, keeps it from rotting and runs design sprints. Free AI-readiness score, computed on your machine.";
+  "A free Claude Code plugin: it sets up your design system and its rules, checks your agents' work against them, and runs design sprints. Nothing leaves your machine.";
 
 // Runs before first paint. html.js: JavaScript is on. html.motion-ready: it is on and the reader
 // has not asked for reduced motion, so entrance states may start hidden (src/styles/motion.css).

@@ -53,7 +53,7 @@ export function MobileNav({ className }: { className?: string }) {
         <div className="mt-auto border-t border-border/60 p-4">
           <SheetClose asChild>
             <Button variant="secondary" size="sm" asChild className="w-full">
-              <TrackedLink href={nav.cta.href} event="free_score_clicked" location="nav-mobile">
+              <TrackedLink href={nav.cta.href} event="install_cta_clicked" location="nav-mobile">
                 {nav.cta.label}
               </TrackedLink>
             </Button>
