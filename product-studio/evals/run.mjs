@@ -7,6 +7,7 @@
 //   node evals/run.mjs --triggers [--limit N]
 //   node evals/run.mjs --cases check,brief | --case <id>[,<id>…] [--samples N]
 //   options: --concurrency N (4) · --max-cost-usd X (25) · --out <file> · --keep · --no-judge
+//            --model sonnet|opus (sonnet) · --with-installed (also load this machine's other plugins)
 //
 // Scoring is in evals/lib/score.cjs (unit-tested). Results go to evals/results/<date>.json,
 // the file `admin eval` reads.
@@ -55,6 +56,10 @@ const opts = {
   keep: flag("--keep"),
   judge: !flag("--no-judge"),
   maxTurns: Number(val("--max-turns", 40)),
+  // Sonnet by default (about a quarter of Opus's price); --model opus for a final check
+  model: val("--model", "sonnet"),
+  // only the studio is loaded; --with-installed keeps this machine's other plugins (for collisions)
+  withInstalled: flag("--with-installed"),
 };
 
 const loadCases = () =>
@@ -68,6 +73,8 @@ let skipped = 0;
 
 function claude(prompt, { cwd, resume = null, plugin = true, tools = TOOLS, allowed = ALLOWED, maxTurns = opts.maxTurns }) {
   const args = ["-p", prompt, "--output-format", "stream-json", "--verbose", "--max-turns", String(maxTurns), "--strict-mcp-config", "--permission-mode", "acceptEdits", "--add-dir", os.tmpdir()];
+  args.push("--model", opts.model);
+  if (!opts.withInstalled) args.push("--setting-sources", "project");
   if (plugin) args.push("--plugin-dir", PLUGIN);
   args.push("--tools", tools.length ? tools.join(",") : "");
   if (allowed.length) args.push("--allowedTools", ...allowed);

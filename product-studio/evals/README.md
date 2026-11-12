@@ -16,6 +16,8 @@ node evals/run.mjs --triggers [--limit N]                   # which skill each a
 node evals/run.mjs --cases check,brief [--samples 3]        # cases by file; a majority passes
 node evals/run.mjs --case <id> --keep                       # one case, keep its temp repo
   --concurrency N (4)   --max-cost-usd X (25)   --no-judge   --out <file>
+  --model sonnet|opus   (sonnet; run opus once before a release)
+  --with-installed      (also load this machine's other plugins; use it for --triggers collisions)
 ```
 
 Results are written to `results/<date>.json`, the file `admin eval` reads. The release bar:
