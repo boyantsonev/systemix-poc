@@ -66,6 +66,11 @@ node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops gate G-NNN approve --b
 
 Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json`. It must print `ok: true`.
 
+**Connectors**, per `${CLAUDE_PLUGIN_ROOT}/skills/shared/connectors.md`: when the goal has `issue:` and the
+tracker is ready, comment from `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" connectors comment G-NNN --json`, and close the issue when
+it prints `close: true` (a ship or a drop). When the goal now waits at a gate and a channel is
+ready, send `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" connectors notice gate G-NNN --json`. Not connected: one line, and carry on.
+
 ## 6 · Reply
 
 One line with the `line` the CLI printed, then the new `step` and what comes `next`:

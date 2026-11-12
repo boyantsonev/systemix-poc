@@ -53,7 +53,7 @@ const LEAKS = [
   ["experiments/", /(^|\/)(migrate\.(js|md)|layout\.js)$/],
   ["guardrails.mdx", /(^|\/)(migrate\.(js|md)|layout\.js|setup\/SKILL\.md)$/],
   ["localhost:", null],
-  ["posthog", /(^|\/)(analytics\.md|evidence\.js|context-pack\.md)$/],
+  ["posthog", /(^|\/)(analytics\.md|evidence\.js|context-pack\.md|connectors\.(md|js))$/],
   ["app.notion.com", null],
   ["claude.ai/artifact", null],
 ];

@@ -44,9 +44,10 @@ record the depth you used in the run row.
    marketing): facts with their sources. Then the code for this surface: the components it will
    use (`docs/manifest.json` if present, otherwise a search of the component folders) and what
    is already built.
-7. **Connectors** (full, optional). Only those connected in this session: an issue tracker, a
-   docs workspace, an analytics tool, a support inbox, a design tool. Each is optional. One that
-   isn't connected is listed under **Couldn't read** as "not connected", never guessed.
+7. **Connectors** (full, optional; `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" connectors check --json` names this repo's).
+   Only those connected in this session: an issue tracker, a docs workspace, an analytics tool, a
+   support inbox, a design tool. Each is optional. One that isn't connected is listed under
+   **Couldn't read** as "not connected", never guessed.
 
 ## Privacy
 

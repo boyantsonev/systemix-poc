@@ -1,7 +1,7 @@
 ---
 name: setup
 description: Set up your design system as files the coding agent follows (studio/DESIGN.md, layered light and dark tokens.css, and rules.md with tested rows) from the UI you already ship, from a short interview when there is no UI yet, from a design source (a Claude Design export, Figma variables, tokens.json or a CSS file), or from an older install. Proposes every file and writes only after a yes. Use when someone says "set up a design system", "turn our UI into a system", "our colours are all over the place", "make our tokens from the code", "import our tokens from Figma", "start a design system from scratch", "add the design rules check to CI" or "document our components". Not for reviewing work against the rules (use check), not for what applies before you build (use brief), not for critique of a mockup (a design-critique skill), not for writing copy (a ux-copy skill), and not for designing a logo.
-argument-hint: "[--from code|interview|import <file-or-link>|migrate] [--ci] [--agents] [--docs] [--loops]"
+argument-hint: "[--from code|interview|import <file-or-link>|migrate] [--ci] [--agents] [--docs] [--loops] [--connectors]"
 ---
 
 # /{{PLUGIN}}:setup
@@ -127,8 +127,8 @@ If there is nothing to ask, say "None." Never drop this section.
 - `--docs`: fill component docs from source, per `{{ROOT}}/skills/setup/references/component-docs.md`.
 - `--loops`: set up the product and build loops, per `{{ROOT}}/skills/loop/references/status-and-setup.md`.
   The roster names each role's holder (who rules) and an optional deputy; a gate is a person's.
-
-Connecting an analytics source is optional: `{{ROOT}}/skills/setup/references/analytics.md`.
+- `--connectors`: interview for the optional issues, pages, notices and analytics
+  (`{{ROOT}}/skills/setup/references/analytics.md`), per `{{ROOT}}/skills/shared/connectors.md`.
 
 ## Reply
 

@@ -82,6 +82,11 @@ questions for the gate, and the person's choices:
     /product-studio:loop gate drop G-NNN <why>
     /product-studio:loop decide G-NNN                    a brief first, for a deputy
 
+**The issue.** If `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" connectors check --json` shows `tracker` ready, offer the goal's issue
+from `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" connectors issue G-NNN --json`, and with `slack` ready the gate notice from
+`node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" connectors notice gate G-NNN --json`, per `${CLAUDE_PLUGIN_ROOT}/skills/shared/connectors.md`. Not
+connected: one line ("GitHub issues not connected"), and carry on.
+
 **Hard stop.** No design, plan or code in the same turn. No commit, push or pull request unless
 asked.
 

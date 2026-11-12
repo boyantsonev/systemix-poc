@@ -29,7 +29,9 @@ const rel = {
   proposals: `${D}/proposals`,
   evaluations: `${D}/evaluations.md`,
   learnings: `${D}/LEARNINGS.md`,
+  connectors: `${D}/connectors.json`, // optional, committed, no secrets: tracker, docs pages, notices, analytics
   state: S,
+  analyticsLegacy: `${S}/analytics.json`, // read by `evidence` only when connectors.json has no analytics key
   runs: `${S}/runs.jsonl`,
   preview: `${S}/preview.html`,
   componentDocs: "docs/components",

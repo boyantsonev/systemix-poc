@@ -79,7 +79,8 @@ that message in full, never "the files above".
 ## Privacy
 
 - `note` holds only what the person said about this run, in their words. Never a summary of the
-  conversation, never repo text, never anything from their private sources.
+  conversation, never repo text, never anything from their private sources. The one addition: a
+  run that posted a page records `page: <link>` there, per `{{ROOT}}/skills/shared/connectors.md`.
 - No customer names, emails, account details, secrets, tokens, URLs with a query string or home
   paths in any field. The CLI's privacy lint rejects these and names the field; fix that field.
 - `sources` names a source, never quotes it. A private source is written as `private source`.

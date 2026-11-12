@@ -129,7 +129,7 @@ function parseJudge(text) {
 module.exports = { skillsInvoked, changed, scoreCase, judgeOk, majority, triggerGot, triggerSummary, parseJudge, isAutomatic };
 
 /** The studio CLI's commands and outputs in a turn, each trimmed, for the judge. */
-function cliOutputs(events, bin, max = 4000) {
+function cliOutputs(events, bin, max = 30000) {
   const calls = new Map();
   const out = [];
   for (const e of events) {

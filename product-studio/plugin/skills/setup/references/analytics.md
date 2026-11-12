@@ -42,14 +42,16 @@ A note per framework, for the capture key only (the read key never goes in the b
 
 ## 3. Propose the config
 
-The config is `studio/.state/analytics.json`, with names only:
+The config is the `"analytics"` key of `studio/connectors.json` (committed; the other connectors
+are in `${CLAUDE_PLUGIN_ROOT}/skills/shared/connectors.md`), with names only:
 
 ```json
-{ "source": "posthog", "hostEnv": "POSTHOG_HOST", "keyEnv": "POSTHOG_API_KEY", "projectEnv": "POSTHOG_PROJECT_ID" }
+{ "analytics": { "source": "posthog", "hostEnv": "POSTHOG_HOST", "keyEnv": "POSTHOG_API_KEY", "projectEnv": "POSTHOG_PROJECT_ID" } }
 ```
 
-Show it and write it only after a yes. If the team commits `studio/.state/`, this file is safe
-to commit: it holds no values.
+Show the change to the file (a new file in full, or a diff that adds the key) and write it only
+after a yes. It holds no values. An older install's `studio/.state/analytics.json` is still read
+when `studio/connectors.json` has no `"analytics"` key; propose moving it, never delete it silently.
 
 ## 4. Verify
 

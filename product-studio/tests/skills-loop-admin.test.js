@@ -148,6 +148,8 @@ describe("loop and admin guides", () => {
     expect(text).toContain("{{ROOT}}/skills/loop/references/jobs.md");
     expect(text).toMatch(/No subagents/);
     expect(text.indexOf("Write G-<next>")).toBeLessThan(text.indexOf("{{CLI}} loops goal new"));
+    expect(text).toContain("{{CLI}} connectors issue G-NNN --json");
+    expect(text).toContain("{{ROOT}}/skills/shared/connectors.md");
   });
 
   test("gate: the CLI writes the line, refuses a non-holder, brief none, goal-folder-only changes", () => {
@@ -158,6 +160,9 @@ describe("loop and admin guides", () => {
     expect(text).toContain("--brief none");
     expect(text).toMatch(/weak on a\s+shared machine/);
     expect(text).toMatch(/only files inside the goal's own folder/);
+    expect(text).toContain("{{CLI}} connectors comment G-NNN --json");
+    expect(text).toContain("{{CLI}} connectors notice gate G-NNN --json");
+    expect(text).toContain("{{ROOT}}/skills/shared/connectors.md");
   });
 
   test("next: the playbook rows as the catalog sets them", () => {
@@ -172,6 +177,7 @@ describe("loop and admin guides", () => {
     expect(text).toMatch(/not measured/);
     expect(text).toContain("studio/evaluations.md");
     expect(text).toContain("{{CLI}} evidence check --json");
+    expect(text).toContain("{{CLI}} connectors page measurement G-NNN --json");
     expect(text).toContain("{{CLI}} learnings add --text");
     expect(text).toContain("{{CLI}} learnings used L-NNN --by G-NNN --json");
     expect(text).toMatch(/never open it/);
@@ -211,6 +217,8 @@ describe("loop and admin guides", () => {
       "{{CLI}} proposals lint --json",
       '{{CLI}} proposals decide P-NNN approve --by "<name>" --json',
       "{{CLI}} proposals apply P-NNN --json",
+      "{{CLI}} connectors page digest --json",
+      "{{CLI}} connectors notice digest --json",
       '{{CLI}} proposals decide P-NNN decline --by "<name>" --why "<why>" --json',
     ]) expect(text).toContain(c);
     expect(text).toContain("gh issue create --repo {{REPO}}");

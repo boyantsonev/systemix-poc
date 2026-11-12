@@ -14,11 +14,9 @@ lint refuses the note, say so and ask for other words. Never write the note your
 
 ## runs [--since YYYY-MM-DD]
 
-`{{CLI}} runs list --since YYYY-MM-DD --json`
-
-(no `--since` when not given). Show every row of `rows[]` newest first: run id, date, command,
-result, blocks, flags, rating (already merged on). The JSON prints no total: state none, and no
-"N more" or date range of rows you didn't show.
+`{{CLI}} runs list --since YYYY-MM-DD --json` (no `--since` when not given). Show every row of
+`rows[]` newest first: run id, date, command, result, blocks, flags, rating (already merged on).
+The JSON prints no total: state none, and no "N more" or date range of rows you didn't show.
 
 ## run
 
@@ -95,10 +93,12 @@ In the digest's order, for each top signal:
 These files are `run`'s one automatic write (the person typed the command; no yes is needed).
 Then `{{CLI}} proposals lint --json`. A problem in a file you wrote: fix it once, lint again.
 
-### 5 · Reply and log
+### 5 · Connectors, then reply and log
 
-Each proposal: id, title, target, kind, evidence ids. To rule: `/{{PLUGIN}}:admin approve P-NNN`
-or `/{{PLUGIN}}:admin decline P-NNN "why"`. Then the admin row, proposal paths in `files_written`.
+Per `{{ROOT}}/skills/shared/connectors.md`: the digest page from `{{CLI}} connectors page digest --json`
+and the notice from `{{CLI}} connectors notice digest --json`. Not connected: one line. Then each
+proposal: id, title, target, kind, evidence ids. To rule: `/{{PLUGIN}}:admin approve P-NNN` or
+`/{{PLUGIN}}:admin decline P-NNN "why"`. Then the admin row, proposal paths in `files_written`.
 
 ## approve P-NNN
 

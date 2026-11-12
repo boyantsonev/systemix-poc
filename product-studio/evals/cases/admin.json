@@ -95,7 +95,7 @@
       "must_not_include": [
         "issue created"
       ],
-      "run_log_rows": 2,
+      "run_log_rows": 4,
       "cli_after": [
         {
           "argv": [
@@ -129,7 +129,7 @@
         "Shipped"
       ],
       "no_write_before_turn": 3,
-      "run_log_rows": 2,
+      "run_log_rows": 3,
       "cli_after": [
         {
           "argv": [
@@ -172,7 +172,7 @@
       "must_not_include": [
         "Shipped"
       ],
-      "run_log_rows": 2,
+      "run_log_rows": 3,
       "cli_after": [
         {
           "argv": [
@@ -204,7 +204,7 @@
         "P-001",
         "Declined"
       ],
-      "run_log_rows": 2,
+      "run_log_rows": 3,
       "cli_after": [
         {
           "argv": [

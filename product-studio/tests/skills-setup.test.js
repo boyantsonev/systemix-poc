@@ -20,8 +20,9 @@ const OWN = [
   "setup/references/migrate.md",
   "setup/references/analytics.md",
   "shared/preview.md",
+  "shared/connectors.md",
 ];
-const BUDGET = { "setup/references/from-code.md": 120 };
+const BUDGET = { "setup/references/from-code.md": 120, "shared/connectors.md": 120 };
 const DEFAULT_BUDGET = 150;
 const CASE_FILES = ["setup.json", "first-run.json"];
 const FIXTURE_IDS = ["F0-empty", "F1-ui-drift", "F2-css-vars", "F3-installed", "F4-loops", "F5-sources", "F6-runlog", "F7-surfaces", "F8-legacy"];
@@ -79,13 +80,13 @@ const BANNED = [
   ["--bill-", null],
   [/\bvero\b/, null],
   [/\bvito\b/, null],
-  ["notion", null],
+  ["notion", /^shared\/connectors\.md$/],
   ["contract/", null],
   ["localhost:", null],
   ["claude.ai/artifact", null],
   ["experiments/", /^setup\/references\/migrate\.md$/],
   ["guardrails.mdx", /^setup\/(SKILL|references\/migrate)\.md$/],
-  ["posthog", /^setup\/references\/analytics\.md$/],
+  ["posthog", /^(setup\/references\/analytics|shared\/connectors)\.md$/],
   ["ghost", null],
   ["autonomy", null],
   ["queue card", null],
@@ -175,6 +176,8 @@ describe("setup guides", () => {
     }
     expect(t).toContain("{{ROOT}}/skills/loop/references/status-and-setup.md");
     expect(t).toContain("{{ROOT}}/skills/shared/preview.md");
+    expect(t).toContain("--connectors");
+    expect(t).toContain("{{ROOT}}/skills/shared/connectors.md");
     const last = t.slice(t.lastIndexOf("\n## "));
     expect(last).toMatch(/run log/i);
     expect(last).toContain("{{ROOT}}/skills/shared/run-log.md");
@@ -212,6 +215,26 @@ describe("setup guides", () => {
     expect(text("setup/references/import.md")).toContain("send me the export");
     expect(text("setup/references/interview.md")).toMatch(/At most 8 questions/);
     expect(text("setup/references/interview.md")).toMatch(/One question per turn/);
+  });
+});
+
+describe("the connectors guide", () => {
+  test("names the config, the rule, each connector's CLI text and tool, and the setup interview", () => {
+    const t = text("shared/connectors.md");
+    expect(t).toContain("studio/connectors.json");
+    expect(t).toContain("{{CLI}} connectors check --json");
+    for (const c of ["issue G-NNN", "comment G-NNN", "page measurement G-NNN", "page digest", "notice gate G-NNN", "notice digest"]) expect(t).toContain(`{{CLI}} connectors ${c} --json`);
+    expect(t).toContain("{{CLI}} evidence check --json");
+    expect(t).toMatch(/not connected/);
+    expect(t).toMatch(/"post": "ask"/);
+    expect(t).toMatch(/"post": "auto"/);
+    expect(t).toContain("gh issue create --repo <repo> --label <label> --title");
+    expect(t).toContain("--body-file <tmp>");
+    expect(t).toContain("gh issue comment");
+    expect(t).toContain("gh issue close");
+    expect(t).toContain("issue: <n>");
+    expect(t).toMatch(/notion-create-pages/);
+    expect(t).toMatch(/One question per turn/);
   });
 });
 

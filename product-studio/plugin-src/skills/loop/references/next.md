@@ -81,6 +81,9 @@ Run `{{CLI}} loops check --json` before every stop. It must print `ok: true`.
    then write. Not connected: this dated "not measured" entry is the **recommended** write, even
    when an older entry says the same; the goal stays at build.measure (moving on unmeasured is the
    person's call, a separate yes). Quote bars and kill-if lines with their file (`goal.md`).
+4. Connectors, per `{{ROOT}}/skills/shared/connectors.md`: the analytics tools in step 2 when the
+   session has them, and after the write the measurement page from
+   `{{CLI}} connectors page measurement G-NNN --json`. Not connected: one line, and carry on.
 
 **product.learn.** One learning. The step has no gate and no person's role, so no decision line
 is written: the person's yes is a yes to a write, not a gate ruling.

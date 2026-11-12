@@ -17,6 +17,7 @@ const COMMANDS = {
   docs: "sync | check: component docs in docs/components and docs/manifest.json",
   migrate: "--dry-run | --apply: move an older install into this layout",
   evidence: "check: whether an analytics source is connected (optional)",
+  connectors: "check | issue | comment | page | notice: optional outward connectors, as text a person approves",
 };
 
 const load = (name) => require(`./${name}`);

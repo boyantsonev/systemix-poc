@@ -115,7 +115,7 @@
         "HEAD~1"
       ],
       "no_repo_writes": true,
-      "run_log_rows": 1,
+      "run_log_rows": 2,
       "judge": [
         "On the first turn it asks which branch to compare with instead of choosing a base itself",
         "After the second turn it states that the check compared with trunk"
@@ -229,7 +229,7 @@
       "files_absent": [
         "studio/evaluations.md"
       ],
-      "run_log_rows": 1,
+      "run_log_rows": 2,
       "cli_after": [
         {
           "argv": [

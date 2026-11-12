@@ -82,6 +82,11 @@ questions for the gate, and the person's choices:
     /{{PLUGIN}}:loop gate drop G-NNN <why>
     /{{PLUGIN}}:loop decide G-NNN                    a brief first, for a deputy
 
+**The issue.** If `{{CLI}} connectors check --json` shows `tracker` ready, offer the goal's issue
+from `{{CLI}} connectors issue G-NNN --json`, and with `slack` ready the gate notice from
+`{{CLI}} connectors notice gate G-NNN --json`, per `{{ROOT}}/skills/shared/connectors.md`. Not
+connected: one line ("GitHub issues not connected"), and carry on.
+
 **Hard stop.** No design, plan or code in the same turn. No commit, push or pull request unless
 asked.
 

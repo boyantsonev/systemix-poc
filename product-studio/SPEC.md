@@ -18,7 +18,8 @@ package `@contextcraft/product-studio`, the client data folder `studio/` and the
 
 Never write a brand, client or product name: no systemix, getsystemix, hermes, hellobill, vero, vito,
 contract/, .systemix (except in migrate), experiments/ (except in migrate), guardrails.mdx (except in
-migrate), localhost:, posthog (except in the analytics reference and `evidence`), notion, or artifact
+migrate), localhost:, posthog (except in the analytics reference, `evidence`, `connectors` and
+`shared/connectors.md`), notion (except in `shared/connectors.md` and `connectors`), or artifact
 URLs. A leak-grep enforces this.
 
 ## The client repo layout (`src/lib/layout.js` is the code form)
@@ -38,8 +39,10 @@ studio/briefs/              B-NNN-<slug>.md decision briefs
 studio/proposals/           P-NNN-<slug>.md improvement proposals (admin)
 studio/evaluations.md       what build.measure measured
 studio/LEARNINGS.md         the learnings ledger (cited bullets)
+studio/connectors.json      optional outward connectors (committed, no secrets; see § connectors)
 studio/.state/runs.jsonl   the run log (gitignored by default)
 studio/.state/preview.html the token preview (generated)
+studio/.state/analytics.json  older analytics config, read only when connectors.json has no "analytics"
 docs/components/<slug>.md + docs/manifest.json   component docs (optional)
 .github/workflows/design-rules.yml               optional CI (no key)
 ```
@@ -351,10 +354,60 @@ This is a port of `../packages/cli/src/commands/docs.js` without gray-matter and
 
 ### evidence `src/commands/evidence.js`
 
-`evidence check [--json]` → `{connected, source, problems[]}`. It reads `studio/.state/analytics.json`
-(`{source:"posthog"|"other", hostEnv, keyEnv, projectEnv}`, the names of env vars, never values) and
-checks that those env vars are set. It makes no network call. It exits 1 with a clear message when
-something is missing.
+`evidence check [--json]` → `{connected, source, config, problems[]}`. It reads the `"analytics"` key
+of `studio/connectors.json` (`{source:"posthog"|"other", hostEnv, keyEnv, projectEnv}`, the names of
+env vars, never values) and checks that those env vars are set. When `studio/connectors.json` has no
+`"analytics"` key it falls back to the older `studio/.state/analytics.json` (same shape), so an
+install that connected analytics before connectors existed keeps working; `config` names the file
+read. It makes no network call. It exits 1 with a clear message when something is missing.
+
+### connectors `src/commands/connectors.js`
+
+Connectors are optional, and everything else runs without them. This command never posts, calls
+the network or reads a secret. It checks the config and prints the exact text a guide shows a
+person before anything leaves the repo. The guide is `plugin-src/skills/shared/connectors.md`.
+
+`studio/connectors.json` is committed and holds no secrets. Every key is optional:
+
+```
+{ "tracker":   { "kind": "github", "repo": "owner/name", "label": "studio", "post": "ask"|"auto" },
+  "notion":    { "digests": "<parent page id or url>", "measurements": "<parent page id or url>", "post": "ask"|"auto" },
+  "slack":     { "channel": "#name", "post": "ask"|"auto" },
+  "analytics": { "source": "posthog"|"other", "hostEnv", "keyEnv", "projectEnv" } }
+```
+
+`post` defaults to `ask`: every outward post waits for a person's yes to the exact text. `auto` is a
+standing yes that a person wrote into a committed file; setup writes it only after that yes. The
+label defaults to `studio`. Unknown fields are problems, because secrets never go in this file.
+
+- `connectors check [--json]` → `{file, exists, ok, problems[], connectors:{tracker|notion|slack|analytics:
+  {configured, ready, post, problems[]}}}`. It makes no network call.
+  - A missing file means every connector is `configured: false`.
+  - A shape problem makes that connector `ready: false`. Analytics is ready when its env vars are set
+    (`evidence`'s own check, reused); its `post` is null.
+  - Exit 0, or 1 when the file is malformed: not JSON, not an object, an unknown connector, or a
+    section that is not an object.
+- `connectors issue <G-NNN> [--json]` → `{id, title, body, labels[], repo, issue}`.
+  - The title is `G-NNN · <title>`.
+  - The body is built from goal.md, evals.md and decisions.md: the sentence, the step and status, a
+    `Goal folder:` line with the folder path, Success criteria, Kill if, the evals table verbatim, the
+    decision lines, and a closing `Opened by product-studio` line.
+  - `issue` is goal.md's frontmatter `issue:` (a number), or null. `loops check` allows that field.
+- `connectors comment <G-NNN> [--json]` → `{id, line, body, close, reason, repo, issue}`. The body is
+  the goal's latest decision line, written for a person. `close` is true when the goal is now `shipped`
+  (`reason: "completed"`) or `dropped` (`reason: "not planned"`). Exit 1 `{error:"no-decision"}`
+  when the goal has no decision line.
+- `connectors page digest [--since YYYY-MM-DD] [--json]` → `{title, markdown, since}`. It is built from
+  `admin digest` (through `src/lib/invoke.js`) and `proposals list`. Every number is the digest's own.
+- `connectors page measurement <G-NNN> [--json]` → `{id, title, markdown, rows}`. It holds the goal's
+  rows of `studio/evaluations.md`, with each eval's "must be true" text and the goal's Kill if lines.
+  Exit 1 `{error:"no-measurements"}` when there is no row.
+- `connectors notice gate <G-NNN> [--json]` → `{id, text, waitsOn}`: one paragraph naming the gate and
+  its holder and deputy from `loops status`, and the commands to rule. Exit 1 `{error:"not-at-gate"}`
+  when the goal waits on nobody.
+- `connectors notice digest [--since YYYY-MM-DD] [--json]` → `{text, since}`: one paragraph from
+  `admin digest` and the proposals that wait for a ruling.
+- An unknown goal is exit 1 `{error:"no-such-goal"}`. Output is deterministic.
 
 ## Templates (`templates/`)
 
@@ -512,6 +565,13 @@ code and the guides follow them.
 - **Copy extraction.** In markup and components, copy is the text nodes between a tag's `>` and
   the next `<`, with `{expressions}` blanked. Code that happens to sit between a `>` and a `<`
   (`=>`, `&&`, `return`, braces) is not copy.
+- **Connectors (2026-11-12).** Tasks are tracked as GitHub issues, never Linear. A docs workspace
+  holds a page per admin digest and per measurement, a chat channel gets notices, and PostHog is the
+  analytics source. Each one is optional. Its config is `studio/connectors.json`, whose `"analytics"`
+  key replaces `studio/.state/analytics.json`; `evidence` still reads that older file as a fallback.
+  Posting is the guide's job, through `gh` or the session's MCP tools. The CLI only prints the text.
+  The issue number lands in goal.md frontmatter `issue:`, shown as a diff. A posted page's link goes
+  in the evaluations entry, or in the admin row's `note`.
 - **Not built yet.** `jobs check` (loop/jobs is beta and runs by hand), a brief-id command, and
   a command that moves an agent-only step.
 - **Folders (2026-11-12).** A client repo keeps the studio in `studio/` and its local state in
@@ -520,3 +580,6 @@ code and the guides follow them.
   `migrate` moves the system files to `studio/` and leaves `design/guardrails.mdx` as a pointer.
   In this repo the studio's source lives in `product-studio/`, because `studio/` is this repo's
   own install of it.
+- **Run-log rows per conversation.** Each turn that ends a run appends one `run` row: a turn
+  that stops at a proposal logs `proposed`, and the yes turn that writes logs `written`. A case
+  with N turns expects N new rows; ratings and skips are separate `rating` rows and never count.
