@@ -140,7 +140,7 @@ async function run(argv, ctx) {
 
   if (sub === "init") {
     const r = init(root, { dryRun: parsed.bools.has("--dry-run"), today: ctx.today() });
-    if (json) ctx.json(r);
+    if (json) ctx.json({ ...r, writtenCount: r.written.length, keptCount: r.kept.length });
     else {
       ctx.out(`  ${parsed.bools.has("--dry-run") ? "Would write" : "Wrote"} ${r.written.length} files${r.kept.length ? `, kept ${r.kept.length} that already exist` : ""}.`);
       r.written.forEach((f) => ctx.out(`    + ${f}`));

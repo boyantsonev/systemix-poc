@@ -17,7 +17,7 @@ Four promises hold on every door:
   written without asking. You never commit, push, stash or switch branch: the person does.
 - **Code does the arithmetic.** Every count, share, total, setup class and contrast ratio you
   print is a field of a `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js"` command's output, quoted as printed. No field, no number:
-  never count rows, tokens, colours or samples, and never add counts into a total. Values you
+  never count rows, tokens, colours, samples or files (quote `writtenCount`, `scripted`, `review`), and never add counts into a total. Values you
   propose (a token, a spacing step) and standards (AA's 4.5:1) are not counts.
 - **A yes approves your recommendation.** When you offer choices and ask for a yes, mark exactly
   one "(recommended)". A plain yes means that one: act on it.

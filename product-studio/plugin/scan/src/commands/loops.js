@@ -250,7 +250,7 @@ async function run(argv, ctx) {
     const r = init(ctx, root, parsed);
     if (r.usage) return ctx.usage(r.usage, USAGE);
     if (r.error) return refuse({ error: r.error, roles: r.roles, message: `no holder for ${r.roles.join(", ")}: git config user.name is empty; pass --holder role=name` });
-    if (json) ctx.json({ ...r.result, preset: r.preset, holders: r.holders });
+    if (json) ctx.json({ ...r.result, writtenCount: r.result.written.length, keptCount: r.result.kept.length, preset: r.preset, holders: r.holders });
     else {
       ctx.out(`  ${r.dryRun ? "Would write" : "Wrote"} ${r.result.written.length} files (${r.preset} roster)${r.result.kept.length ? `, kept ${r.result.kept.length} that already exist` : ""}.`);
       r.result.written.forEach((f) => ctx.out(`    + ${f}`));
