@@ -7,10 +7,18 @@
 const AUTOMATIC = [/^design\/\.studio\//, /^design\/proposals\/P-\d{3}/];
 const isAutomatic = (rel) => AUTOMATIC.some((r) => r.test(rel));
 
-/** The skill names a transcript invoked, in order, without the plugin prefix: ["check", "setup"]. */
+/** The skill names a transcript invoked, in order, without the plugin prefix: ["check", "setup"].
+ *  A turn typed as `/<plugin>:<skill> …` invokes that skill directly (no Skill tool call), so the
+ *  prompts are read too: pass them as { type: "prompt", text } events in turn order. */
 function skillsInvoked(events, plugin) {
   const out = [];
+  const slash = new RegExp(`^\\s*/${plugin.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}:([a-z][a-z-]*)\\b`);
   for (const e of events) {
+    if (e.type === "prompt") {
+      const m = slash.exec(e.text || "");
+      if (m) out.push(m[1]);
+      continue;
+    }
     if (e.type !== "assistant" || !e.message || !Array.isArray(e.message.content)) continue;
     for (const c of e.message.content) {
       if (c.type === "tool_use" && c.name === "Skill" && c.input && typeof c.input.skill === "string") {
@@ -38,7 +46,7 @@ function scoreCase(expect, run) {
   const add = (name, ok, detail) => checks.push({ name, ok: !!ok, detail });
   const allText = run.turns.map((t) => t.text || "").join("\n\n");
   const lower = allText.toLowerCase();
-  const events = run.turns.flatMap((t) => t.events || []);
+  const events = run.turns.flatMap((t) => [{ type: "prompt", text: t.prompt || "" }, ...(t.events || [])]);
 
   if (expect.skill_invoked !== undefined) {
     const want = Array.isArray(expect.skill_invoked) ? expect.skill_invoked : [expect.skill_invoked];
@@ -62,9 +70,15 @@ function scoreCase(expect, run) {
     add("no_write_before_turn", c.length === 0, c.length ? `wrote before turn ${expect.no_write_before_turn}: ${c.join(", ")}` : null);
   }
   const final = snaps[snaps.length - 1];
-  for (const f of expect.files_exist || []) add(`files_exist ${f}`, Object.prototype.hasOwnProperty.call(final, f), null);
-  for (const f of expect.files_absent || []) add(`files_absent ${f}`, !Object.prototype.hasOwnProperty.call(final, f), null);
-  if (expect.run_log_rows !== undefined) add("run_log_rows", run.runLogRows === expect.run_log_rows, `want ${expect.run_log_rows}, got ${run.runLogRows}`);
+  // a path names a file, or a folder when any file sits under it
+  const present = (f) => Object.prototype.hasOwnProperty.call(final, f) || Object.keys(final).some((k) => k.startsWith(f.replace(/\/?$/, "/")));
+  for (const f of expect.files_exist || []) add(`files_exist ${f}`, present(f), null);
+  for (const f of expect.files_absent || []) add(`files_absent ${f}`, !present(f), null);
+  if (expect.run_log_rows !== undefined) {
+    // rows this run added: a fixture may ship a run log already
+    const added = run.runLogRows - (run.runLogRowsBefore || 0);
+    add("run_log_rows", added === expect.run_log_rows, `want ${expect.run_log_rows} new, got ${added}`);
+  }
   for (const [i, c] of (expect.cli_after || []).entries()) {
     const got = (run.cliAfter || [])[i];
     add(`cli_after ${c.argv.join(" ")}`, got && got.code === c.code, got ? `exit ${got.code}${got.code === c.code ? "" : `, want ${c.code}`}` : "not run");
@@ -113,3 +127,21 @@ function parseJudge(text) {
 }
 
 module.exports = { skillsInvoked, changed, scoreCase, judgeOk, majority, triggerGot, triggerSummary, parseJudge, isAutomatic };
+
+/** The studio CLI's commands and outputs in a turn, each trimmed, for the judge. */
+function cliOutputs(events, bin, max = 4000) {
+  const calls = new Map();
+  const out = [];
+  for (const e of events) {
+    const content = (e.message && Array.isArray(e.message.content) && e.message.content) || [];
+    for (const c of content) {
+      if (e.type === "assistant" && c.type === "tool_use" && c.name === "Bash" && c.input && String(c.input.command || "").includes(`${bin}.js`)) calls.set(c.id, c.input.command);
+      if (e.type === "user" && c.type === "tool_result" && calls.has(c.tool_use_id)) {
+        const body = Array.isArray(c.content) ? c.content.map((x) => x.text || "").join("") : String(c.content || "");
+        out.push(`$ ${calls.get(c.tool_use_id).slice(0, 300)}\n${body.slice(0, max)}`);
+      }
+    }
+  }
+  return out;
+}
+module.exports.cliOutputs = cliOutputs;

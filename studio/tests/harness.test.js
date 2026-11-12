@@ -72,3 +72,25 @@ describe("eval scoring", () => {
     expect(sum).toEqual({ total: 4, positives: { ok: 1, total: 2 }, negatives: { ok: 1, total: 2 }, misses: [{ ask: "b", expected: "setup", got: "check" }, { ask: "d", expected: null, got: "brief" }] });
   });
 });
+
+describe("eval scoring, round two", () => {
+  test("a slash-command turn counts as invoking that skill", () => {
+    const run = { turns: [{ prompt: "/product-studio:loop status", text: "", events: [], snapshotAfter: {} }], snapshotBefore: {}, plugin: "product-studio" };
+    expect(s.scoreCase({ skill_invoked: "loop" }, run).ok).toBe(true);
+    expect(s.skillsInvoked([{ type: "prompt", text: "/product-studio:admin run" }], "product-studio")).toEqual(["admin"]);
+    expect(s.skillsInvoked([{ type: "prompt", text: "please /product-studio:admin run" }], "product-studio")).toEqual([]);
+  });
+
+  test("run_log_rows counts the rows this run added; files_exist accepts a folder", () => {
+    const run = { turns: [{ text: "", events: [], snapshotAfter: { "design/rules/known-bad/T1-a.css": "x" } }], snapshotBefore: {}, runLogRows: 41, runLogRowsBefore: 40, plugin: "p" };
+    expect(s.scoreCase({ run_log_rows: 1, files_exist: ["design/rules/known-bad"], files_absent: ["design/rules/known-good"] }, run).ok).toBe(true);
+  });
+
+  test("cliOutputs pairs each studio CLI call with its result", () => {
+    const events = [
+      { type: "assistant", message: { content: [{ type: "tool_use", id: "t1", name: "Bash", input: { command: 'node "/p/scan/product-studio.js" rules check . --json' } }, { type: "tool_use", id: "t2", name: "Bash", input: { command: "ls" } }] } },
+      { type: "user", message: { content: [{ type: "tool_result", tool_use_id: "t1", content: '{"blocks":2}' }, { type: "tool_result", tool_use_id: "t2", content: "a" }] } },
+    ];
+    expect(s.cliOutputs(events, "product-studio")).toEqual(['$ node "/p/scan/product-studio.js" rules check . --json\n{"blocks":2}']);
+  });
+});

@@ -140,10 +140,12 @@ async function judge(c, turns) {
       return "";
     }
   })();
-  const transcript = turns.map((t, i) => `### Turn ${i + 1}: the person wrote\n${t.prompt}\n\n### The assistant replied\n${t.text}`).join("\n\n");
+  const transcript = turns.map((t, i) => `### Turn ${i + 1}: the person wrote\n${t.prompt}\n\n### The studio's CLI output in this turn\n${score.cliOutputs(t.events, ns.bin).join("\n\n") || "(none)"}\n\n### The assistant replied\n${t.text}`).join("\n\n");
   const prompt = `You are grading one transcript of a coding assistant against fixed criteria. You see only the criteria, what the test repo is, and the transcript. Judge strictly: a criterion passes only if the transcript clearly meets it. Quote the passage that decides each one.
 
 Test repo: ${purpose}
+
+The product may make three automatic writes without asking: appending to design/.studio/runs.jsonl (the run log), writing design/.studio/preview.html, and writing proposal files under design/proposals/ during an admin run. These never count as "writing to the repo". A number counts as quoted from the CLI when it appears in the CLI output shown for that turn.
 
 Criteria:
 ${c.expect.judge.map((j, i) => `${i + 1}. ${j}`).join("\n")}
@@ -162,6 +164,7 @@ Reply with JSON only: {"criteria":[{"criterion":"<text>","pass":true|false,"quot
 async function runCase(c) {
   const root = materialize(c.fixture, { variant: c.variant || null });
   const before = snapshot(root);
+  const logBefore = runLogRows(root);
   const turns = [];
   let session = null;
   for (const t of c.turns) {
@@ -171,7 +174,7 @@ async function runCase(c) {
     turns.push({ prompt, text: r.text, events: r.events, snapshotAfter: snapshot(root), cost: r.cost, code: r.code, stderr: r.stderr });
     if (r.code !== 0 && !r.text) break;
   }
-  const run = { turns, snapshotBefore: before, runLogRows: runLogRows(root), cliAfter: (c.expect.cli_after || []).map((x) => ({ argv: x.argv, code: cliCode(root, x.argv) })), plugin: ns.plugin };
+  const run = { turns, snapshotBefore: before, runLogRows: runLogRows(root), runLogRowsBefore: logBefore, cliAfter: (c.expect.cli_after || []).map((x) => ({ argv: x.argv, code: cliCode(root, x.argv) })), plugin: ns.plugin };
   const det = score.scoreCase(c.expect, run);
   let verdict = null;
   if (opts.judge && c.expect.judge && c.expect.judge.length) verdict = await judge(c, turns);
@@ -181,7 +184,7 @@ async function runCase(c) {
     ok,
     checks: det.checks,
     judge: verdict,
-    skills: score.skillsInvoked(turns.flatMap((t) => t.events), ns.plugin),
+    skills: score.skillsInvoked(turns.flatMap((t) => [{ type: "prompt", text: t.prompt }, ...t.events]), ns.plugin),
     cost: turns.reduce((s, t) => s + t.cost, 0),
     final: turns.map((t) => t.text.slice(0, 1500)),
     ...(opts.keep ? { root } : {}),
