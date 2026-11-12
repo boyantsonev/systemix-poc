@@ -1,0 +1,10 @@
+{
+  "org": "contextcraft",
+  "repo": "contextcraft/product-studio",
+  "plugin": "product-studio",
+  "marketplace": "contextcraft",
+  "package": "@contextcraft/product-studio",
+  "bin": "product-studio",
+  "dataDir": "design",
+  "stateDir": "design/.studio"
+}

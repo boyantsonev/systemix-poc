@@ -1,0 +1,21 @@
+{
+  "name": "@contextcraft/product-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An AI-native product studio for coding agents: your design system, rules and loops as files, checked by code, ruled by people.",
+  "license": "MIT",
+  "bin": { "product-studio": "./bin/product-studio.js" },
+  "files": ["bin", "src", "templates", "namespace.json"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "jest",
+    "build:plugin": "node scripts/build-plugin.js",
+    "check:plugin": "node scripts/build-plugin.js --check"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/tests"],
+    "testTimeout": 30000
+  },
+  "devDependencies": { "jest": "^29.7.0" }
+}
