@@ -414,6 +414,7 @@
   --motion-hold: 2000ms;            /* how long a thinking state holds */
   --motion-gap: 50ms;               /* pause between two thinking states */
   --motion-shimmer: 2000ms;         /* one shimmer sweep */
+  --motion-draw: 700ms;             /* one arc of a loop diagram drawing */
   --motion-settle: 4000ms;          /* failsafe: everything visible by then */
   --motion-ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
   --motion-ease-in-out: ease-in-out;

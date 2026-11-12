@@ -136,6 +136,8 @@ export const goalLoop = {
   heading: "One sentence in, a measured release out.",
   body: "/product-studio:loop walks a goal through the product and build loops. The agent does the work between the marked steps. At each marked step it stops, and a person decides.",
   personLabel: "you decide",
+  center: "a goal",
+  centerNote: "filled: a person decides",
   steps: [
     { label: "Goal", note: "One sentence, opened by a person" },
     { label: "Evals", note: "5–12 checks that say what done means", person: true },
@@ -186,6 +188,8 @@ export const improves = {
   label: "It improves itself",
   heading: "It learns from every run. You approve every change.",
   personLabel: "you decide",
+  center: "the studio",
+  centerNote: "filled: a person decides",
   steps: [
     { label: "Every run", note: "One line in a log on your machine" },
     { label: "Your rating", note: "A thumbs up or down, now and then" },

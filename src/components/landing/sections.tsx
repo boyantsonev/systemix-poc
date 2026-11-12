@@ -7,7 +7,7 @@ import { PluginInstall, TrackedLink } from "@/components/systemix/LandingEvents"
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { HeroGeneration } from "@/components/motion/HeroGeneration";
-import { StepDiagram } from "@/components/landing/StepDiagram";
+import { LoopDiagram } from "@/components/landing/LoopDiagram";
 import { FaqAccordion } from "@/components/motion/FaqAccordion";
 import {
   GITHUB_URL,
@@ -214,7 +214,7 @@ export function Improves() {
         <Eyebrow>{improves.label}</Eyebrow>
         <SectionHeading>{improves.heading}</SectionHeading>
       </div>
-      <StepDiagram className="mt-12" columns={6} steps={improves.steps} loopBack={improves.loopBack} personLabel={improves.personLabel} />
+      <LoopDiagram className="mt-12" steps={improves.steps} center={improves.center} centerNote={improves.centerNote} loopBack={improves.loopBack} personLabel={improves.personLabel} />
       <p className="mt-8 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
         {improves.footnote}{" "}
         <a
@@ -240,7 +240,7 @@ export function GoalLoop() {
         <SectionHeading>{goalLoop.heading}</SectionHeading>
         <Lead>{goalLoop.body}</Lead>
       </div>
-      <StepDiagram className="mt-12" steps={goalLoop.steps} loopBack={goalLoop.loopBack} personLabel={goalLoop.personLabel} />
+      <LoopDiagram className="mt-12" steps={goalLoop.steps} center={goalLoop.center} centerNote={goalLoop.centerNote} loopBack={goalLoop.loopBack} personLabel={goalLoop.personLabel} />
     </Section>
   );
 }
