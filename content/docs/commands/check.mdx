@@ -1,0 +1,44 @@
+---
+title: /systemix:check
+description: Check work against your rules before review; with the readiness score, drift and the deep audit.
+---
+
+A referee with one rulebook for every team. It designs nothing: it reads `design/rules.md` and
+says, rule by rule, what passes, what needs a person's eye and what must be fixed, with where and
+how. Everything runs on your machine; nothing is sent.
+
+```
+/systemix:check [files or folders] [--surface product|marketing|email] [--drift] [--deep] [--score]
+```
+
+With no files named, it checks the files changed on your branch.
+
+## What it does
+
+1. **Reads `design/rules.md`, fresh.** No copy of a rule lives in the command.
+2. **Runs every `script:` rule** with `systemix rules check`: each rule carries its own pattern.
+3. **Answers every `review:` rule** by looking at the work: hierarchy, tone, clarity.
+4. **Scores the goal's evals**, when the work belongs to a goal.
+
+## The result
+
+| Result | Means |
+|---|---|
+| **fail** | A `block` rule broke. Fix it before review or publishing |
+| **pass with flags** | Only `flag` rules broke. Fix them, or say why each is fine |
+| **pass** | Ready for review |
+
+Each finding reads `ID · file:line · what · fix`, blocks first, and the reply ends with the one
+thing to fix first.
+
+**If a rule looks wrong, don't work round it.** Change it in `design/rules.md` with a sample of bad
+work, prove it with `systemix rules eval`, and every command picks it up on its next run.
+[Fix the rule, not the instance →](/docs/concepts/rules#fix-the-rule-not-the-instance)
+
+## Options
+
+- `--score`: your AI-readiness score out of 100 and per area, every caveat that costs points and
+  one recommendation for each. Deterministic: the same code always gives the same numbers.
+- `--drift`: raw colours, sizes and spacing in your code that should reference `design/tokens.css`,
+  by severity.
+- `--deep`: the long, scored readiness audit, with its published rubric.

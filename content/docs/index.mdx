@@ -1,35 +1,37 @@
 ---
 title: What is Systemix?
+description: The design system agent for AI-native products, as a free Claude Code plugin.
 ---
 
-Systemix is the design system agent for AI-native products. It sets up your design system, keeps it from rotting, and runs your design sprints, inside Claude Code. **You approve every step.** Everything it knows lives as plain files in your repo.
+Systemix is the design system agent for AI-native products. It sets up your design system as
+files in your repo, gives your agents its rules before they build, checks their work against
+those rules, and runs every change from a goal to a shipped, measured result. **You approve every
+step that matters.**
 
-## Start in two minutes
+It is a free, open-source (MIT) Claude Code plugin with four commands. Everything runs on your
+machine; nothing is sent anywhere.
 
-1. **Install the plugin.** In Claude Code:
+## The four commands
 
-   ```
-   /plugin marketplace add boyantsonev/systemix-poc
-   /plugin install systemix@systemix
-   ```
+| Command | When | What you get |
+|---|---|---|
+| [`/systemix:setup`](/docs/commands/setup) | Once, to start | `design/`: your design system and `rules.md`, from your code, an interview, or Claude Design |
+| [`/systemix:brief`](/docs/commands/brief) | Before you build | The rules that apply, what to start from, what was already decided |
+| [`/systemix:check`](/docs/commands/check) | Before review | Pass, pass with flags or fail, rule by rule, with the fix; `--score` for the readiness score |
+| [`/systemix:loop`](/docs/commands/loop) | To run a goal | A goal to shipped and measured, stopping at every gate for you |
 
-2. **Run `/systemix:setup`** in your repo. It proposes your design system and its rules (`design/rules.md`) from your code; you approve each file. Nothing is sent.
-3. **Run `/systemix:check`** on a folder of UI. It lists what breaks a rule, biggest first, with the fix for each.
+## Why it works
 
-No Claude Code? Run `npx @getsystemix/cli audit report --dirs src` in your repo.
+Design rules end up in five places at once: a brand wiki, a design file, a `DESIGN.md`, the
+token file, and the prompts inside every AI tool. They drift, and an agent briefed from the wrong
+copy ships the old look. Systemix keeps **one master that a machine can read**:
+[`design/rules.md`](/docs/concepts/rules), where every rule is a row with a test. Every command
+reads it fresh, and drift is found and fixed in small, checked loops.
 
-## What it does
+## Start
 
-- **Deploy:** `/systemix:setup` builds your design system and its rules (`design/rules.md`) from the code you have, from a short interview, or from a Claude Design output.
-- **Keep:** `/systemix:brief` gives the rules before you build; `/systemix:check` checks the work against them, with `--score`, `--drift` and `--deep` for the score, the drift from your tokens and the long audit.
-- **Sprint (beta):** `/systemix:loop open` turns one sentence into a goal, then pictures, a prototype and a release, with a gate at every step.
+→ [Getting started](/docs/getting-started): install, set up, run your first check
 
-## Next
-
-→ [Getting started](/docs/getting-started): set up the CLI and the design-system files in a repo
-
-→ [The loop](/docs/concepts/the-loop): the experiment loop, step by step
-
-→ [Skills reference](/docs/slash-commands): every skill, generated from the source
+→ [The design system files](/docs/concepts/design-system): what lives in `design/`
 
 → [See it running on this repo](/docs/running-here): this site runs Systemix on itself

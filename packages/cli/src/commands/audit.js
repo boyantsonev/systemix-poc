@@ -277,7 +277,7 @@ async function audit(args = [], opts = {}) {
   console.log("  Next: open Claude Code in this repo and run\n");
   console.log("    /design-audit            audit the whole repo");
   console.log("    /design-audit src/       scope to a directory\n");
-  console.log("  Docs: https://getsystemix.vercel.app/docs/audit\n");
+  console.log("  Docs: https://getsystemix.vercel.app/docs/commands/setup\n");
 }
 
 module.exports = { audit };

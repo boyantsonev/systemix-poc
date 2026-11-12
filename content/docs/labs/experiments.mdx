@@ -1,0 +1,53 @@
+---
+title: The experiment loop
+description: Optional and CLI-only — measuring bets with PostHog and writing what they taught you.
+---
+
+Before the plugin, Systemix was built around experiments: a bet on a change, measured with
+PostHog, closed with a written decision. That loop still works from the CLI, and its notebook,
+`experiments/LEARNINGS.md`, is the same memory the [product loop](/docs/concepts/loops) writes to.
+It is optional: nothing in the four commands needs it.
+
+## An experiment is a file
+
+`experiments/<id>.mdx`: the bet in one sentence, who it's for, the change that ships, and the one
+number that will prove it.
+
+```sh
+npx @getsystemix/cli experiment new <id>        # write the file
+npx @getsystemix/cli experiment measure <id>    # pull the numbers into it
+npx @getsystemix/cli experiment list
+npx @getsystemix/cli experiment learnings --recent 5
+```
+
+## The daily runner
+
+`systemix loop` (on a cron, or by hand) pulls fresh numbers into every running experiment and
+stops each on an explicit state:
+
+| State | Means |
+|---|---|
+| `decision-ready` | A close proposal is queued; you close it, never the runner |
+| `blocked:not-measured` | The experiment names no event yet |
+| `blocked:not-wired` | No PostHog credentials |
+| `waiting:insufficient-evidence` | The signal is still too weak; it tries again tomorrow |
+
+`systemix propose` can draft the next bet from the learnings. It only proposes.
+
+## Closing
+
+A person closes an experiment and rules on its card, typed, never clicked and never by an agent:
+
+```sh
+npx @getsystemix/cli experiment close <id> --result "…" --decision promote|iterate|kill|no-action
+npx @getsystemix/cli experiment ack <card-id> [--decline]
+```
+
+Closing appends one line to `experiments/LEARNINGS.md`, which the next goal or brief reads first.
+
+## Connect PostHog
+
+Experiments author and close without a signal; measuring needs PostHog. Set your project's
+capture key (`NEXT_PUBLIC_POSTHOG_KEY`) and a reverse proxy (`/ingest`) so ad blockers don't drop
+events, then run `npx @getsystemix/cli evidence check`. The PostHog Claude Code plugin gives the
+loops' measure step the same data.

@@ -29,7 +29,18 @@ const nextConfig: NextConfig = {
       { source: "/design-system/tokens/:slug",         destination: "/contract/tokens/:slug",           permanent: false },
       { source: "/design-system/components/:slug",     destination: "/contract/components/:slug",       permanent: false },
       { source: "/design-system/hypotheses/:slug",     destination: "/experiments/:slug",               permanent: false },
-      { source: "/docs/concepts/memory-layer",         destination: "/docs/concepts/evidence-layer",    permanent: true  },
+      // docs v2 (2026-11-12): the four commands replaced the experiment-loop docs
+      { source: "/docs/concepts/memory-layer",         destination: "/docs/concepts/memory",            permanent: true  },
+      { source: "/docs/concepts/evidence-layer",       destination: "/docs/concepts/memory",            permanent: true  },
+      { source: "/docs/concepts/why-files",            destination: "/docs/concepts/memory",            permanent: true  },
+      { source: "/docs/concepts/the-meta-loop",        destination: "/docs/concepts/loops",             permanent: true  },
+      { source: "/docs/concepts/the-loop",             destination: "/docs/labs/experiments",           permanent: true  },
+      { source: "/docs/concepts/experiment",           destination: "/docs/labs/experiments",           permanent: true  },
+      { source: "/docs/the-contract",                  destination: "/docs/concepts/design-system",     permanent: true  },
+      { source: "/docs/design-system",                 destination: "/docs/concepts/design-system",     permanent: true  },
+      { source: "/docs/audit",                         destination: "/docs/commands/setup",             permanent: true  },
+      { source: "/docs/slash-commands",                destination: "/docs/getting-started",            permanent: true  },
+      { source: "/docs/guides/:role(business|engineers|designers|marketers|agents)", destination: "/docs/guides/teams", permanent: true },
     ];
   },
   // PostHog ingestion is reverse-proxied through our own origin (/ingest) so that

@@ -1,0 +1,57 @@
+---
+title: The CLI
+description: The commands behind the plugin, for CI and for use without Claude Code.
+---
+
+The plugin bundles the scan behind its commands, so in Claude Code you never need the CLI. Use it
+in CI, in scripts, or without Claude Code:
+
+```sh
+npx @getsystemix/cli <command>
+```
+
+## Rules
+
+| Command | What it does |
+|---|---|
+| `rules init [--dir design] [--dry-run]` | The starter `rules.md` and its samples of bad work. New files only |
+| `rules lint [--rules design/rules.md]` | Every row well-formed, every pattern compiles. Exit 1 on a problem |
+| `rules check <files or folders…> [--surface s] [--json]` | Pass, pass with flags, or fail (exit 1). Lists the review questions |
+| `rules eval [--evals design/evals/rules]` | Every bad sample trips its rule, the good files trip nothing. Exit 1 otherwise |
+
+[How rules work →](/docs/concepts/rules)
+
+## Score and drift
+
+| Command | What it does |
+|---|---|
+| `audit report [--dirs src] [--out file]` | The readiness report: the score out of 100 and per area, every caveat, one recommendation each. Computed here; nothing is sent |
+| `audit counters [--dirs src] [--out file]` | The raw counters the score is built from, as JSON |
+| `drift scan [dirs…] [--dry-run] [--json]` | Raw values that should be tokens, by severity. Without `--dry-run` it appends a snapshot to the drift history |
+| `drift history [--last 10]` | The drift score over time |
+
+## Loops
+
+| Command | What it does |
+|---|---|
+| `loops init` | The loop templates in `design/` (new files only) |
+| `loops check` | Loops, goals and decision lines well-formed; refuses a ruling by anyone who doesn't hold the role, or by the agent |
+| `loops status [--json]` | Every goal, its step, and whose gate it waits on |
+| `loops decisions [--json]` | Every ruling, who made it, from which facts |
+
+[How the loops work →](/docs/concepts/loops)
+
+## In CI
+
+```yaml
+- run: npx @getsystemix/cli@0.4.0 rules check src --surface product
+- run: npx @getsystemix/cli@0.4.0 rules eval
+```
+
+Pin the version, so the check only changes when you change it.
+
+## Everything else
+
+`systemix --help` lists every command. Those not on this page belong to the
+[experiment loop](/docs/labs/experiments) or to older pipelines (Figma sync, token profiling) that
+the plugin doesn't use.

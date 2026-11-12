@@ -1,0 +1,48 @@
+---
+title: /systemix:loop
+description: Run a goal from one sentence to shipped and measured, with a person at every gate.
+---
+
+Takes a goal from one sentence to shipped and measured, through the
+[product and build loops](/docs/concepts/loops), stopping at every gate for a person.
+**Only you run this command**: a gate is a ruling, and the agent never rules.
+
+```
+/systemix:loop [status]
+/systemix:loop open <one sentence>
+/systemix:loop next [G-NNN]
+/systemix:loop gate approve|rework|drop [G-NNN] [note]
+/systemix:loop decide <loop.step>
+```
+
+| Subcommand | What it does |
+|---|---|
+| `status` (or nothing) | Where every goal is and whose gate it waits on. Sets the loops up in a repo that has none |
+| `open <sentence>` | Opens a goal: the reading of your sentence, its evals, an empty decision log. Stops at the Evals gate |
+| `next [G-NNN]` | Runs the agent's steps until the next person or gate, then stops and says who must look |
+| `gate approve\|rework\|drop` | Records your ruling, word for word, and moves the goal on |
+| `decide <loop.step>` | The decision brief before a gate, so whoever holds the role, or their deputy, decides from the same facts. Never decides |
+
+## A goal is a folder
+
+`/systemix:loop open` writes `design/goals/G-NNN-<slug>/`:
+
+| File | Holds |
+|---|---|
+| `goal.md` | The sentence as typed, how the agent reads it, for whom, risks, the questions for the gate. Frontmatter holds the state: `step` and `waiting` |
+| `evals.md` | Five to twelve evals: what must be true, how it is checked, the bar, when it is answered |
+| `decisions.md` | One line per ruling, in the person's own words, with their role |
+| `artifacts.md` | The pictures, from the design step on |
+| `plan.md` | The build plan and what was decided while building |
+
+`systemix loops check` refuses anything malformed, a ruling by someone who doesn't hold the
+gate's role, and any ruling made by the agent.
+
+## How a turn goes
+
+1. You type `/systemix:loop open <sentence>`. The agent writes the goal and its evals, and stops.
+2. You rule: `/systemix:loop gate approve G-007`, or `approve` with changes in the note, or `rework`
+   or `drop`.
+3. `/systemix:loop next G-007` runs the agent's steps (pictures, the check until it passes, the plan,
+   the prototype, the code) and stops at the next gate.
+4. Repeat until the release is measured and the lessons are written to `experiments/LEARNINGS.md`.

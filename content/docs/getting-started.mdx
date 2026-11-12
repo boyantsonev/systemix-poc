@@ -1,70 +1,82 @@
 ---
 title: Getting started
+description: Install the plugin, set up your design system, and run your first check.
 ---
 
-## Install
+You need Claude Code and a repo with a web UI (or none yet: setup can start from an interview).
 
-```sh
-npm install -g @getsystemix/cli
-# or
-npx @getsystemix/cli@latest init
-```
+## 1. Install the plugin
 
-## Run the init wizard
-
-```sh
-/systemix-init
-```
-
-The wizard walks you through:
-
-1. **Instance brief** — your product, your ICP, what you're trying to learn
-2. **Design setup** — scaffold a `design/` folder, point at an existing one, or skip
-3. **Signal setup** — wire PostHog (recommended) or skip for now
-4. **First experiment** — ICP · JTBD · hypothesis · the AI workflow that tests it · the metric you'll measure
-
-## What you have after init
+In Claude Code, one line at a time:
 
 ```
-experiments/
-  <id>.mdx          ← your first experiment (an _example.mdx if you skipped authoring)
-  LEARNINGS.md      ← the notebook of what closed experiments taught you (starts blank)
-  goals/            ← the outcomes the experiments aim at
+/plugin marketplace add boyantsonev/systemix-poc
+/plugin install systemix@systemix
+```
+
+No account, no key, nothing to configure.
+
+## 2. Set up your design system
+
+```
+/systemix:setup
+```
+
+Setup looks at your repo and picks where to start: from the code you already ship, from a short
+interview when there is no UI yet, or from a Claude Design output. It proposes four files in
+`design/`, and writes each only after you say yes:
+
+```
 design/
-  DESIGN.md         ← the design substrate (optional; scaffold, point, or skip)
-  guardrails.mdx    ← the rules drift checks enforce
-  tokens.css        ← code-first tokens
-.claude/skills/     ← the loop skills, installed project-scoped
-CLAUDE.md           ← the per-instance loop orchestrator
-systemix.config.yaml
+  DESIGN.md        the design system in words: principles, patterns, voice
+  tokens.css       the tokens, canonical in code
+  guardrails.mdx   the rules, explained
+  rules.md         every rule as a row an agent can check
+  evals/rules/     one sample of bad work per scripted rule
 ```
 
-Init also registers the `systemix-mcp` server (repo `.claude.json`, plus
-Claude Desktop if present) and updates `.gitignore`. Commit `experiments/`,
-`design/`, `.claude/skills/`, `CLAUDE.md`, and `systemix.config.yaml` so the
-instance is reproducible.
+Then make the rules yours: replace the starter rows with your brand's voice, legal lines and
+patterns. Setup runs `systemix rules eval` until every sample of bad work is caught.
+[How rules work →](/docs/concepts/rules)
 
-## Next: run the loop
-
-Once an experiment is authored, [the loop](/docs/concepts/the-loop) carries it from bet to written decision:
+## 3. Check something
 
 ```
-/write-variants → /measure → /close-experiment
+/systemix:check src/components
 ```
 
-## What happens daily
+You get **fail**, **pass with flags** or **pass**, and every problem with its rule ID, where it is
+and the fix. Add `--score` for your AI-readiness score out of 100.
 
-Put `systemix loop` on a cron (or run it by hand) and each day it:
+## 4. Build the next thing with a brief
 
-1. pulls fresh numbers into every running experiment,
-2. queues a **close-proposal card** when the evidence is strong enough (you decide),
-3. and when the loop is idle — or a new learning just landed — queues an
-   **experiment-proposal card** suggesting the next bet, drafted from `LEARNINGS.md`.
+Before the next screen or component:
 
-It never creates or closes anything itself. Accept a proposal with `/init-experiment`; close with `/close-experiment`.
+```
+/systemix:brief a settings page for notifications
+```
 
-## Connect a signal (optional but recommended)
+One screen: the rules that apply, the components and tokens to start from, and what was already
+decided. Build, then run `/systemix:check` before review.
 
-Without PostHog wired, `/measure` will log a warning and skip the evidence fetch — experiments still author and close, just without live data.
+## 5. Run a goal as a loop (when you're ready)
 
-To wire PostHog, run `/connect-signal` after init. It guides you through the capture key, the reverse-proxy `/ingest` config (for ad-blocker bypass), and the `NEXT_PUBLIC_POSTHOG_KEY` env var.
+```
+/systemix:loop open make sign-up take under two minutes
+```
+
+The goal gets evals, then pictures, a prototype, code and a release, with a gate at each step
+that only you rule on. Start small: a visible drift fix exercises every part, end to end.
+[How the loops work →](/docs/concepts/loops)
+
+## Without Claude Code
+
+The scan behind the commands is also a CLI:
+
+```sh
+npx @getsystemix/cli rules init           # the starter rules.md
+npx @getsystemix/cli rules check src      # pass, flags or fail
+npx @getsystemix/cli audit report --dirs src   # the readiness score and report
+```
+
+[The CLI reference →](/docs/reference/cli)

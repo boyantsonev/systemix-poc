@@ -1,0 +1,69 @@
+---
+title: Rules as data
+description: The rules.md format, scripted and review tests, the known-bad evals, and fixing the rule instead of the instance.
+---
+
+`design/rules.md` holds every design, brand, voice and legal-copy rule as one table row. The
+check reads it fresh every time, so changing a rule means editing one row.
+
+```markdown
+| ID | Rule | Surface | Severity | Source | Test |
+|---|---|---|---|---|---|
+| T1 | Colours come from tokens: no raw hex values in components | product, marketing | block | design/guardrails.mdx | script: css /#[0-9a-fA-F]{3,8}\b/ |
+| C1 | One primary action per view | product | flag | design/guardrails.mdx | review: Is there more than one primary button on this view? |
+```
+
+## The columns
+
+| Column | Values |
+|---|---|
+| **ID** | An area letter and a number (`T1`, `V3`). IDs never change or get reused; a retired rule keeps its row |
+| **Rule** | The rule in a few words |
+| **Surface** | `product`, `marketing`, `email`, `docs` or `all`, comma-separated |
+| **Severity** | `block`: fix before review or publishing · `flag`: fix, or say why it's fine · `retired`: kept for history, never checked |
+| **Source** | Where the rule is decided, with the date |
+| **Test** | `script: <where> /pattern/flags`, which the check runs, or `review: <question>`, which a person or the agent answers by looking |
+
+A `script:` test names where to look:
+
+| Where | Means |
+|---|---|
+| `copy` | The visible text: markup and code stripped away |
+| `css` | Stylesheets, `<style>` blocks and `style=""` attributes |
+| `html` | The raw markup |
+| `code` | The raw file, for class names such as `text-[13px]` |
+| `any` | All of the above |
+
+Write `\|` for a `|` inside a pattern. Raw values belong in `tokens.css` only, so don't run the
+check on the tokens file itself.
+
+## Every scripted rule has a sample of bad work
+
+`design/evals/rules/known-bad/` holds one file per scripted rule, named `<ID>-<what>.<ext>`, that
+breaks that rule. `known-good/` holds work that follows every rule.
+
+```sh
+systemix rules eval
+```
+
+passes only when every bad sample trips its own rule and the good files trip nothing. A check
+that misses a known-bad sample is not ready for anyone to rely on. The starter's nine scripted
+rules catch nine of nine.
+
+## Fix the rule, not the instance
+
+When a finding looks wrong, nobody works round it:
+
+1. Propose the change to the row: a tighter pattern, a different surface, a lower severity.
+2. Add or change its sample of bad work.
+3. Run `systemix rules eval` until it passes.
+4. A person approves the change, and the one row changes for every command on its next run.
+
+## The commands
+
+```sh
+systemix rules init [--dir design]          # the starter rules.md and its samples (new files only)
+systemix rules lint                          # every row well-formed, every pattern compiles
+systemix rules check <files…> [--surface s]  # pass, pass with flags, or fail (exit 1)
+systemix rules eval                          # every bad sample caught, the good ones clean
+```
