@@ -53,7 +53,7 @@
       "run_log_rows": 1,
       "judge": [
         "Each scripted finding (rule ID plus file and line) appears once; no finding is reported both as drift and as a rule break",
-        "Every count, total, share or ratio it prints is quoted from the rules check or audit JSON (a field such as blocks, flags, driftCounts or tokenCoverage.share, or the text of an openQuestions entry); it never derives one by counting a list or adding numbers. Values quoted from a rule or from the code (a 12px minimum, a hex) are not counts Describing what it saw while reviewing (two buttons that both look primary, three violets that are close) is a reading, not a computed count; a count printed by any CLI JSON it ran (rules lint's rules, scripted and review included) is quoted, not computed."
+        "Every count, total, share or ratio it prints is quoted from the rules check or audit JSON (a field such as blocks, flags, driftCounts or tokenCoverage.share, or the text of an openQuestions entry); it never derives one by counting a list or adding numbers. Values quoted from a rule or from the code (a 12px minimum, a hex) are not counts Describing what it saw while reviewing (two buttons that both look primary, three violets that are close) is a reading, not a computed count; a count printed by any CLI JSON it ran (rules lint's rules, scripted and review included) is quoted, not computed. Counting items it lists right there in the same reply (five file:line locations, then 'five colours') is fine; a count of things it does not show, or a sum, difference or total of CLI numbers, is not."
       ]
     }
   },
@@ -202,7 +202,7 @@
       "no_repo_writes": true,
       "run_log_rows": 1,
       "judge": [
-        "Every score, weight, coverage, gap, priority and distance it prints is quoted from the score JSON (including the why strings, nearThreshold and limits); it computes none itself, such as a sum, an average or a distance to a band edge that nearThreshold does not print. Restating a published standard such as 4.5:1 is not a computed number Describing what it saw while reviewing (two buttons that both look primary, three violets that are close) is a reading, not a computed count; a count printed by any CLI JSON it ran (rules lint's rules, scripted and review included) is quoted, not computed.",
+        "Every score, weight, coverage, gap, priority and distance it prints is quoted from the score JSON (including the why strings, nearThreshold and limits); it computes none itself, such as a sum, an average or a distance to a band edge that nearThreshold does not print. Restating a published standard such as 4.5:1 is not a computed number Describing what it saw while reviewing (two buttons that both look primary, three violets that are close) is a reading, not a computed count; a count printed by any CLI JSON it ran (rules lint's rules, scripted and review included) is quoted, not computed. Counting items it lists right there in the same reply (five file:line locations, then 'five colours') is fine; a count of things it does not show, or a sum, difference or total of CLI numbers, is not.",
         "It words exactly three top opportunities in the order of the JSON opportunities array (for this fixture: rationale, then components, then rules)",
         "If the score is withheld it says withheld with the reason and gives no estimate"
       ]
