@@ -227,7 +227,7 @@ describe("check and brief evals", () => {
         expect({ id: c.id, key: k, ok }).toEqual({ id: c.id, key: k, ok: true });
       }
       expect(c.expect.skill_invoked).toBe(skill);
-      expect(c.expect.run_log_rows).toBe(1);
+      expect(c.expect.run_log_rows).toBe(c.turns.length); // one row per turn that ends a run (SPEC)
     }
   });
 

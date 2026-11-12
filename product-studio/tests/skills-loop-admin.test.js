@@ -295,7 +295,7 @@ describe("loop and admin evals", () => {
     const walk = cases.find((c) => c.id === "loop-walk-f4");
     const verbs = walk.turns.filter((t) => t.startsWith("/product-studio:loop")).map((t) => t.split(" ")[1]);
     expect(verbs).toEqual(["open", "gate", "next", "gate", "decide"]);
-    expect(walk.expect.run_log_rows).toBe(5);
+    expect(walk.expect.run_log_rows).toBe(walk.turns.length); // one row per turn that ends a run (SPEC)
     expect(cases.some((c) => c.id === "loop-gate-refuses-non-roster")).toBe(true);
     expect(cases.some((c) => (c.expect.judge || []).some((j) => /at most 3 variants/.test(j)))).toBe(true);
     expect(cases.some((c) => c.expect.must_include && c.expect.must_include.includes("not measured"))).toBe(true);
