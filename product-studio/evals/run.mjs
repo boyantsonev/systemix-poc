@@ -183,6 +183,12 @@ async function runCase(c) {
     if (r.code !== 0 && !r.text) break;
   }
   const run = { turns, snapshotBefore: before, runLogRows: runLogRows(root), runLogRowsBefore: logBefore, cliAfter: (c.expect.cli_after || []).map((x) => ({ argv: x.argv, code: cliCode(root, x.argv) })), plugin: ns.plugin };
+  // a usage limit ends the nested session mid-case: report it as not run, never as a failure
+  const limited = turns.some((t) => /hit your .{0,20}limit|usage limit reached|rate limit/i.test(t.text || ""));
+  if (limited) {
+    if (!opts.keep) fs.rmSync(root, { recursive: true, force: true });
+    return { ok: false, limited: true, checks: [], judge: null, skills: [], cost: turns.reduce((s, t) => s + t.cost, 0), final: turns.map((t) => (t.text || "").slice(0, 300)) };
+  }
   const det = score.scoreCase(c.expect, run);
   let verdict = null;
   if (opts.judge && c.expect.judge && c.expect.judge.length) verdict = await judge(c, turns);
@@ -258,12 +264,17 @@ async function main() {
   const samples = await pool(jobs, (j) => runCase(j.c));
   for (const c of wanted) {
     const mine = jobs.map((j, i) => (j.c === c ? samples[i] : undefined)).filter((x) => x !== undefined);
-    const ran = mine.filter(Boolean);
-    results.cases.push({ id: c.id, skill: c.skill, fixture: c.fixture, beta: !!c.beta, ok: ran.length > 0 && score.majority(ran.map((r) => r.ok)), samples: ran });
+    const ran = mine.filter((x) => x && !x.limited);
+    const limitedRuns = mine.filter((x) => x && x.limited).length;
+    results.cases.push({ id: c.id, skill: c.skill, fixture: c.fixture, beta: !!c.beta, ok: ran.length > 0 && score.majority(ran.map((r) => r.ok)), notRun: ran.length === 0 && limitedRuns > 0 ? "usage limit" : undefined, samples: ran });
   }
   if (wanted.length) {
     console.log("\nCases");
     for (const c of results.cases) {
+      if (c.notRun) {
+        console.log(`  ⚠ ${c.id}  not run: the nested session hit a ${c.notRun}; run it again later`);
+        continue;
+      }
       console.log(`  ${c.ok ? "✓" : "✗"} ${c.id}${c.beta ? " (beta)" : ""}  ${c.samples.filter((s) => s.ok).length}/${c.samples.length}`);
       for (const s of c.samples) {
         for (const k of s.checks.filter((x) => !x.ok)) console.log(`      ✗ ${k.name}${k.detail ? `: ${k.detail}` : ""}`);
