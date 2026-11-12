@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // transitions.dev runtime, vendored unchanged (src/vendor/transitions/README.md)
     "src/vendor/**",
+    // the product studio: a CommonJS CLI with its own Jest suite (studio/package.json)
+    "studio/**",
   ]),
 ]);
 
