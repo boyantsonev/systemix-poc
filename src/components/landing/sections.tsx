@@ -17,6 +17,8 @@ import {
   footer,
   heroFacts,
   howItWorks,
+  improves,
+  roles,
   nav,
   commands,
   offer,
@@ -147,7 +149,34 @@ export function HeroRow() {
   );
 }
 
-// ── The four commands ────────────────────────────────────────────────────────────────────────────────────────────
+// ── Who uses it: one repo, one set of rules ─────────────────────────────────
+
+export function Roles() {
+  return (
+    <Section id="roles">
+      <div className="max-w-3xl">
+        <Eyebrow>{roles.label}</Eyebrow>
+        <SectionHeading>{roles.heading}</SectionHeading>
+        <Lead>{roles.body}</Lead>
+      </div>
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+        {roles.items.map((r, i) => (
+          <div
+            key={r.key}
+            data-reveal-card={i}
+            className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
+          >
+            <p className="text-[15px] font-bold text-foreground">{r.who}</p>
+            <p className="mt-3 flex-1 text-[14px] leading-relaxed text-muted-foreground">{r.does}</p>
+            <code className="mt-5 font-mono text-[12px] text-highlight">{r.types}</code>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+// ── The five commands: three anyone (or the agent) runs, two a person runs ───
 
 export function Commands() {
   return (
@@ -156,12 +185,15 @@ export function Commands() {
         <Eyebrow>{commands.label}</Eyebrow>
         <SectionHeading>{commands.heading}</SectionHeading>
       </div>
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+      <div className="mt-12 grid gap-4 sm:gap-5 lg:grid-cols-6">
         {commands.items.map((c, i) => (
           <div
             key={c.key}
-            data-reveal-card={i}
-            className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
+            data-reveal-card={Math.min(i, 3)}
+            className={cn(
+              "flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]",
+              i < 3 ? "lg:col-span-2" : "lg:col-span-3",
+            )}
           >
             <p className="tva-label text-[10px] text-highlight">{c.pillar}</p>
             <code className="mt-3 font-mono text-[15px] font-semibold text-foreground">{c.command}</code>
@@ -170,6 +202,42 @@ export function Commands() {
           </div>
         ))}
       </div>
+    </Section>
+  );
+}
+
+// ── It improves itself: log → proposals → a person decides ───────────────────
+
+export function Improves() {
+  return (
+    <Section id="improves">
+      <div className="max-w-3xl">
+        <Eyebrow>{improves.label}</Eyebrow>
+        <SectionHeading>{improves.heading}</SectionHeading>
+      </div>
+      <ol className="mt-12 grid gap-4 sm:grid-cols-3 sm:gap-5">
+        {improves.steps.map((s, i) => (
+          <li
+            key={s.n}
+            data-reveal-card={i}
+            className="rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
+          >
+            <p className="font-mono text-[12px] text-highlight">{s.n}</p>
+            <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{s.body}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-8 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+        {improves.footnote}{" "}
+        <a
+          href={improves.link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-foreground underline underline-offset-4 hover:text-highlight"
+        >
+          {improves.link.label}
+        </a>
+      </p>
     </Section>
   );
 }
