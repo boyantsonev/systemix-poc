@@ -6,15 +6,15 @@ import { ThemeToggle } from "@/components/systemix/ThemeToggle";
 import { PluginInstall, TrackedLink } from "@/components/systemix/LandingEvents";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { loadOwnReport } from "@/lib/landing/own-score";
 import { HeroGeneration } from "@/components/motion/HeroGeneration";
-import { ScoreDonut } from "@/components/motion/ScoreDonut";
+import { StepDiagram } from "@/components/landing/StepDiagram";
 import { FaqAccordion } from "@/components/motion/FaqAccordion";
 import {
   GITHUB_URL,
   bottomCta,
   faq,
   footer,
+  goalLoop,
   heroFacts,
   howItWorks,
   improves,
@@ -22,7 +22,6 @@ import {
   nav,
   commands,
   offer,
-  proof,
   rules,
 } from "@/lib/landing/content";
 
@@ -189,7 +188,7 @@ export function Commands() {
         {commands.items.map((c, i) => (
           <div
             key={c.key}
-            data-reveal-card={Math.min(i, 3)}
+            data-reveal-card={i}
             className={cn(
               "flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]",
               i < 3 ? "lg:col-span-2" : "lg:col-span-3",
@@ -215,18 +214,7 @@ export function Improves() {
         <Eyebrow>{improves.label}</Eyebrow>
         <SectionHeading>{improves.heading}</SectionHeading>
       </div>
-      <ol className="mt-12 grid gap-4 sm:grid-cols-3 sm:gap-5">
-        {improves.steps.map((s, i) => (
-          <li
-            key={s.n}
-            data-reveal-card={i}
-            className="rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
-          >
-            <p className="font-mono text-[12px] text-highlight">{s.n}</p>
-            <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{s.body}</p>
-          </li>
-        ))}
-      </ol>
+      <StepDiagram className="mt-12" columns={6} steps={improves.steps} loopBack={improves.loopBack} personLabel={improves.personLabel} />
       <p className="mt-8 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
         {improves.footnote}{" "}
         <a
@@ -238,6 +226,21 @@ export function Improves() {
           {improves.link.label}
         </a>
       </p>
+    </Section>
+  );
+}
+
+// ── How a goal ships: the loop as a diagram ─────────────────────────────────
+
+export function GoalLoop() {
+  return (
+    <Section id="loop">
+      <div className="max-w-3xl">
+        <Eyebrow>{goalLoop.label}</Eyebrow>
+        <SectionHeading>{goalLoop.heading}</SectionHeading>
+        <Lead>{goalLoop.body}</Lead>
+      </div>
+      <StepDiagram className="mt-12" steps={goalLoop.steps} loopBack={goalLoop.loopBack} personLabel={goalLoop.personLabel} />
     </Section>
   );
 }
@@ -293,52 +296,6 @@ export function Rules() {
             <p className="mt-1 opacity-60">{result.more}</p>
             <p className="mt-3 font-semibold">{result.verdict}</p>
           </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-// ── Proof: this repo's own score (a committed results file, never hand-written) ──
-
-export async function Proof() {
-  const report = await loadOwnReport();
-  if (!report) return null;
-  return (
-    <Section id="proof">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
-        <div>
-          <Eyebrow>{proof.label}</Eyebrow>
-          <SectionHeading>{proof.heading(report.overall)}</SectionHeading>
-          <Lead>{proof.body}</Lead>
-          <Link
-            href={proof.link.href}
-            className="mt-6 inline-block text-[13px] font-medium text-foreground underline underline-offset-4 hover:text-highlight"
-          >
-            {proof.link.label}
-          </Link>
-        </div>
-        <div
-          data-reveal-card="1"
-          className="grid items-center gap-6 rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)] sm:grid-cols-[auto_minmax(0,1fr)]"
-        >
-          <div className="justify-self-center">
-            <ScoreDonut score={report.overall} label="out of 100" />
-          </div>
-          <ul className="min-w-0 space-y-3">
-            {report.areas.map((a) => (
-              <li key={a.key}>
-                <div className="flex justify-between gap-3 text-[13px]">
-                  <span className="text-foreground">{a.label}</span>
-                  <span className="font-mono text-muted-foreground">{a.score} / 10</span>
-                </div>
-                <div className="mt-1 h-1.5 rounded-full bg-muted">
-                  <div className="h-1.5 rounded-full bg-primary" style={{ width: `${a.score * 10}%` }} />
-                </div>
-              </li>
-            ))}
-            <li className="pt-2 font-mono text-[11px] text-muted-foreground">commit {report.commit} · rubric v1</li>
-          </ul>
         </div>
       </div>
     </Section>

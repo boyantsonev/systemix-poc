@@ -10,6 +10,8 @@
 import { SETUP_MAILTO, SPONSOR_URL, setupPrice } from "@/lib/pricing";
 
 export const GITHUB_URL = "https://github.com/boyantsonev/systemix-poc";
+// the studio's own guide, until it has a docs site (the /docs pages describe the older plugin)
+export const STUDIO_DOCS_URL = `${GITHUB_URL}/blob/main/product-studio/plugin/README.md`;
 export const LINKEDIN_URL = "https://www.linkedin.com/in/boyantsonev/";
 export const AUDIT_COMMAND = "npx @getsystemix/cli audit";
 
@@ -127,6 +129,28 @@ export const commands = {
   ] satisfies Command[],
 };
 
+// ── How a goal ships: the loop, with the steps a person decides ─────────────
+
+export const goalLoop = {
+  label: "How a goal ships",
+  heading: "One sentence in, a measured release out.",
+  body: "/product-studio:loop walks a goal through the product and build loops. The agent does the work between the marked steps. At each marked step it stops, and a person decides.",
+  personLabel: "you decide",
+  steps: [
+    { label: "Goal", note: "One sentence, opened by a person" },
+    { label: "Evals", note: "5–12 checks that say what done means", person: true },
+    { label: "Design", note: "2–3 variants in real code, each checked" },
+    { label: "Validate", note: "Pick the variant that ships", person: true },
+    { label: "Plan", note: "Small steps, each one reviewable", person: true },
+    { label: "Build", note: "Against your rules, on a draft branch" },
+    { label: "Test", note: "The check and the evals" },
+    { label: "Ship", note: "Release it, or send it back", person: true },
+    { label: "Measure", note: "From your analytics, or “not measured”" },
+    { label: "Learn", note: "One learning, written after your yes" },
+  ],
+  loopBack: "What it learned is read before the next goal starts.",
+};
+
 // ── Rules as data: what makes the check trustworthy ──────────────────────────
 
 export const rules = {
@@ -161,22 +185,18 @@ export const rules = {
 export const improves = {
   label: "It improves itself",
   heading: "It learns from every run. You approve every change.",
+  personLabel: "you decide",
   steps: [
-    { n: "Logs", body: "Every command adds one line to a log on your machine. Now and then it asks for a thumbs up or down." },
-    { n: "Proposes", body: "The admin command turns the log into at most three proposals: a rule that misfires, a check that missed, a step that confused." },
-    { n: "Asks", body: "A person approves or declines each one. The checks run before and after, and a change that makes anything worse is undone." },
+    { label: "Every run", note: "One line in a log on your machine" },
+    { label: "Your rating", note: "A thumbs up or down, now and then" },
+    { label: "Admin", note: "What it did, and where it misfired" },
+    { label: "Proposals", note: "At most three, each with its evidence" },
+    { label: "Approve", note: "Or decline, with a reason", person: true },
+    { label: "Re-check", note: "Checks before and after; worse is undone" },
   ],
+  loopBack: "Nothing about the studio changes without a person's yes.",
   footnote: "This site runs on the studio. Its goals and proposals are public GitHub issues.",
   link: { label: "Follow this site's loop →", href: `${GITHUB_URL}/issues?q=label%3Astudio` },
-};
-
-// ── Proof: this repo's own score ──────────────────────────────────────────────
-
-export const proof = {
-  label: "Proof",
-  heading: (score: number) => `Our own repo scores ${score} out of 100.`,
-  body: "We run Systemix on this site. The score isn't flattering, and that's the point: it names what to fix first.",
-  link: { label: "How the score works →", href: "/docs" },
 };
 
 // ── How it works ──────────────────────────────────────────────────────────────
@@ -258,9 +278,9 @@ export const nav = {
   links: [
     { label: "Who uses it", href: "/#roles" },
     { label: "Commands", href: "/#commands" },
-    { label: "How it works", href: "/#how-it-works" },
+    { label: "How a goal ships", href: "/#loop" },
     { label: "Pricing", href: "/#pricing" },
-    { label: "Docs", href: "/docs" },
+    { label: "Docs", href: STUDIO_DOCS_URL },
   ],
   cta: { label: "Install the plugin", href: "/#install" },
 };
@@ -271,7 +291,7 @@ export const footer = {
     { label: "GitHub", href: GITHUB_URL },
     { label: "Sponsor", href: SPONSOR_URL },
     { label: "LinkedIn", href: LINKEDIN_URL },
-    { label: "Docs", href: "/docs" },
+    { label: "Docs", href: STUDIO_DOCS_URL },
   ],
   badge: "Open source",
 };

@@ -161,6 +161,15 @@ export function SectionTrack({ name, experimentId, persona, children, className 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // the scripts run, so the reveals are live: the layout's failsafe must not settle them. If it
+    // already fired (a slow start), this section keeps what the reader can see or has passed, and
+    // the failsafe is lifted on the next frame so the sections below still reveal on scroll.
+    const root = document.documentElement;
+    root.classList.add("motion-live");
+    if (root.classList.contains("motion-settled")) {
+      if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add("is-shown");
+      requestAnimationFrame(() => root.classList.remove("motion-settled"));
+    }
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !fired.current) {

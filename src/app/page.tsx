@@ -10,16 +10,16 @@ import {
   LandingFooter,
   LandingNav,
   Commands,
+  GoalLoop,
   Improves,
   Roles,
   Pricing,
-  Proof,
   Rules,
 } from "@/components/landing/sections";
 import { faq } from "@/lib/landing/content";
 
 // The product studio (docs/feature/product-studio/copy-deck.md): hero · who uses it · the five
-// commands · rules as data · it improves itself · proof · how it works · pricing (free studio,
+// commands · how a goal ships · rules as data · it improves itself · how it works · pricing (free studio,
 // sponsor, setup by a designer) · FAQ, then the install again.
 export const metadata: Metadata = {
   title: "Systemix: a product studio built on your design system",
@@ -44,14 +44,14 @@ export default function LandingPage() {
           <SectionTrack name="commands">
             <Commands />
           </SectionTrack>
+          <SectionTrack name="loop">
+            <GoalLoop />
+          </SectionTrack>
           <SectionTrack name="rules">
             <Rules />
           </SectionTrack>
           <SectionTrack name="improves">
             <Improves />
-          </SectionTrack>
-          <SectionTrack name="proof">
-            <Proof />
           </SectionTrack>
           <SectionTrack name="how-it-works">
             <HowItWorks />

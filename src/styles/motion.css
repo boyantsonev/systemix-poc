@@ -68,12 +68,32 @@ html.motion-ready [data-reveal-card] {
 html.motion-ready [data-reveal-card="1"] { --card: 1; }
 html.motion-ready [data-reveal-card="2"] { --card: 2; }
 html.motion-ready [data-reveal-card="3"] { --card: 3; }
+html.motion-ready [data-reveal-card="4"] { --card: 4; }
 html.motion-ready .is-shown [data-reveal-card],
 html.motion-settled [data-reveal-card] {
   opacity: 1;
   filter: blur(0);
 }
 
+/* ── Step diagrams (StepDiagram.tsx): the steps come in one by one ─────────────────────── */
+/* The same blurred rise as the cards, one --motion-stagger × 2 apart per step, so a ten-step
+   loop finishes in under a second. */
+html.motion-ready [data-reveal-step] {
+  opacity: 0;
+  transform: translateY(var(--motion-distance-micro));
+  filter: blur(var(--motion-blur-small));
+  transition:
+    opacity var(--motion-reveal) var(--motion-ease-smooth-out),
+    transform var(--motion-reveal) var(--motion-ease-smooth-out),
+    filter var(--motion-reveal) var(--motion-ease-smooth-out);
+  transition-delay: calc(var(--motion-stagger) * 2 * var(--step, 0));
+}
+html.motion-ready .is-shown [data-reveal-step],
+html.motion-settled [data-reveal-step] {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
 /* ── transitions.dev / UI generation: hold the card until the runtime takes it ── */
 /* HeroGeneration adds .is-generated in the same tick it calls generate(), so the
    card never flashes; the runtime then owns its opacity until the reveal. */
@@ -178,6 +198,7 @@ html.js .t-acc[data-open="true"] .t-acc-panel-inner { opacity: 1; filter: blur(0
 @media (prefers-reduced-motion: reduce) {
   [data-reveal-line],
   [data-reveal-card],
+  [data-reveal-step],
   [data-generate],
   .t-digit,
   .t-morph-swap,

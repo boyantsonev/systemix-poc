@@ -7,8 +7,9 @@ free; a designer setting it up for a product is what we sell.
 
 ## Order
 
-Hero · who uses it · five commands · rules as data · it improves itself · proof · how it works ·
-pricing · FAQ · install again.
+Hero · who uses it · five commands · how a goal ships (diagram) · rules as data · it improves itself
+(diagram) · how it works · pricing · FAQ · install again. The old proof section (the earlier scan's
+score) is gone until the studio's own score runs on this repo; "Docs" points at the studio's guide.
 
 ## Choices
 
@@ -36,5 +37,4 @@ pricing · FAQ · install again.
 - The root marketplace lists the `product-studio` plugin (the install line depends on it).
 - The `studio` label and the first public goal issues exist, so the "Follow this site's loop" link
   shows something.
-- The proof section still shows the old rubric's score. Move it to `product-studio score` (beta)
-  once the studio is installed on this repo.
+- Bring back a proof section from `product-studio score` (beta) once the studio runs on this repo.
