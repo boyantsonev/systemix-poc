@@ -6,7 +6,7 @@ title: Product loop — goal · evals · design · validate
 status: draft
 awaiting: [reviewer]
 lead: design-lead
-clock: a goal — one sentence typed as /systemix:goal; the turn ends when a reviewer says build it, reshape it or drop it
+clock: a goal — one sentence typed as /systemix:loop open; the turn ends when a reviewer says build it, reshape it or drop it
 updated: {{TODAY}}
 ---
 
@@ -98,8 +98,8 @@ and the evals still open.
 - runs: agent
 - gate: decide · reviewer · with design-lead, engineering-lead · context product, design, tech
 - writes: design/goals
-- note: The agent prepares the brief (/systemix:decide); a person rules with
-  /systemix:gate. "Build it" hands the goal, its evals and the validated
+- note: The agent prepares the brief (/systemix:loop decide); a person rules with
+  /systemix:loop gate. "Build it" hands the goal, its evals and the validated
   pictures to the build loop's Plan.
 
 ### Learn

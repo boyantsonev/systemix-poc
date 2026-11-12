@@ -78,60 +78,31 @@ function fail(message) {
 
 const REPORT_USAGE = [
   "",
-  "  Usage: npx @getsystemix/cli audit report [dir…] [--dirs a,b] [--key <license key> --yes]",
-  "                                           [--out report.md] [--redact-paths] [--dry-run] [--payload-out file]",
+  "  Usage: npx @getsystemix/cli audit report [dir…] [--dirs a,b] [--out report.md] [--root dir]",
   "",
-  "    Without a key: the free score (overall and per area), computed on this machine. Nothing is sent.",
-  "    With a key: the full quick report (caveats and recommendations). The counters run here and ONLY the",
-  "    results file (counts, counter definitions, file and folder paths, short identifiers such as token",
-  "    names; never source code) goes to the Systemix report service, and only with --yes.",
+  "    The AI-readiness report, computed on this machine and sent nowhere (DSC-23): the score out of 100",
+  "    and per area, every caveat that costs points, biggest first, and one recommendation for each.",
   "",
-  "    --key            the license key from your purchase (or set SYSTEMIX_REPORT_KEY)",
-  "    --yes            send the results file (needed for the full report)",
-  "    --redact-paths   replace every file and folder name with a hash before sending; the score is the same",
-  "    --dry-run        build and describe the payload, never send it (--payload-out writes it to a file)",
-  "    --out            write the score or report there (default: print it)",
+  "    --out            write the report there (default: print it)",
   "    --root           the project to audit (default: the current folder)",
-  "    The service is https://getsystemix.vercel.app unless SYSTEMIX_REPORT_SERVICE says otherwise.",
   "",
 ].join("\n");
 
-const BUY_URL = "https://getsystemix.vercel.app/report?utm_source=cli&utm_medium=free-score";
-
-const DEFAULT_SERVICE = "https://getsystemix.vercel.app";
-
-/** The service URL, refusing anything but https (http only for localhost, for development). */
-function serviceUrl(raw) {
-  let u;
-  try {
-    u = new URL(raw);
-  } catch {
-    return null;
-  }
-  const local = u.hostname === "localhost" || u.hostname === "127.0.0.1";
-  if (u.protocol !== "https:" && !(u.protocol === "http:" && local)) return null;
-  return new URL("/api/report", u).toString();
-}
-
 /**
- * `systemix audit report` — the paid quick report. The scan runs here; only the counters
- * JSON leaves the machine, and only with --yes.
- * @returns {Promise<object|null>} the service's answer, or null when nothing was sent
+ * `systemix audit report` — the readiness report. The counters and the scoring both run here;
+ * nothing leaves the machine.
+ * @returns {object|null} the report, or null when nothing ran
  */
-async function reportCommand(args, opts = {}) {
+function reportCommand(args, opts = {}) {
   const { parseFlags, splitList } = require("./drift");
-  const parsed = parseFlags(args, {
-    valueFlags: ["--dirs", "--root", "--key", "--out", "--payload-out"],
-    boolFlags: ["--yes", "--dry-run", "--redact-paths"],
-  });
+  const parsed = parseFlags(args, { valueFlags: ["--dirs", "--root", "--out"], boolFlags: [] });
   if (parsed.help) {
     console.log(REPORT_USAGE);
     return null;
   }
   const { runCounters } = require("../lib/counters");
-  const { redactPaths, payloadSummary } = require("../lib/quick-report");
+  const { build } = require("../lib/quick-report");
   const { safeJoin } = require("../lib/design-source");
-  const env = opts.env ?? process.env;
   const last = (key) => (parsed.values[key] ?? []).slice(-1)[0];
   const problems = [...parsed.errors, ...parsed.unknown.map((f) => `unknown flag ${f}`)];
 
@@ -143,8 +114,6 @@ async function reportCommand(args, opts = {}) {
   }
   const dirs = [...new Set([...splitList(parsed.values["--dirs"] ?? []), ...splitList(parsed.positional)])];
   for (const d of dirs) if (!safeJoin(root, d)) problems.push(`folder ${d} is outside the project root`);
-  const endpoint = serviceUrl(env.SYSTEMIX_REPORT_SERVICE || DEFAULT_SERVICE);
-  if (!endpoint) problems.push("SYSTEMIX_REPORT_SERVICE must be an https URL (http only for localhost)");
   if (problems.length) {
     for (const p of problems) fail(p);
     console.error("     (see: audit report --help)\n");
@@ -158,93 +127,22 @@ async function reportCommand(args, opts = {}) {
     fail(e.message);
     return null;
   }
-  const key = last("--key") ?? env.SYSTEMIX_REPORT_KEY;
-  const out = last("--out");
-
-  // the free score is computed here: no key, nothing to send (DSC-22 D1)
-  if (!key && !parsed.bools.has("--dry-run") && !last("--payload-out")) {
-    const { build } = require("../lib/quick-report");
-    let free;
-    try {
-      free = build(report, { preview: true, buyUrl: BUY_URL, local: true });
-    } catch (e) {
-      fail(`the results could not be scored (${e.message})`);
-      return null;
-    }
-    if (out) {
-      fs.writeFileSync(path.resolve(out), free.markdown);
-      console.error(`  ✓  free score written to ${out} (score ${free.overall ?? "none"})`);
-    } else {
-      process.stdout.write(free.markdown);
-    }
-    if (free.scored) {
-      console.error("  Computed on this machine; nothing was sent. For the caveats and recommendations, buy the full report");
-      console.error(`  at ${BUY_URL} and run again with --key <license key> --yes.\n`);
-    } else {
-      console.error("  Computed on this machine; nothing was sent. Name the folders that hold your UI with --dirs (e.g. --dirs src).\n");
-    }
-    return { ...free, local: true, buyUrl: BUY_URL };
-  }
-
-  const payload = parsed.bools.has("--redact-paths") ? redactPaths(report) : report;
-  const s = payloadSummary(payload);
-  console.error(`\n  The results file: ${s.counters} counters, ${Math.round(s.bytes / 1024)} KB, ${s.redacted ? "file names hashed" : `${s.paths} file and folder paths`}. No source code.`);
-  console.error(`  Folders scanned: ${(report.scope.dirs || []).join(", ") || "(default list)"}`);
-
-  const payloadOut = last("--payload-out");
-  if (payloadOut) {
-    fs.writeFileSync(path.resolve(payloadOut), JSON.stringify(payload, null, 2) + "\n");
-    console.error(`  Wrote the exact payload to ${payloadOut}`);
-  }
-  if (parsed.bools.has("--dry-run")) {
-    console.error("  Dry run: nothing was sent.\n");
-    return null;
-  }
-  if (!parsed.bools.has("--yes")) {
-    console.error(`  Nothing was sent. Re-run with --yes to send it to ${new URL(endpoint).host}.\n`);
-    return null;
-  }
-  const doFetch = opts.fetch ?? globalThis.fetch;
-  let res;
+  let result;
   try {
-    res = await doFetch(endpoint, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ counters: payload, licenseKey: key ?? null }),
-    });
+    result = build(report, { local: true });
   } catch (e) {
-    fail(`could not reach the report service (${e && e.message ? e.message : "network error"})`);
+    fail(`the results could not be scored (${e.message})`);
     return null;
   }
-  let body = null;
-  try {
-    body = await res.json();
-  } catch {
-    /* not JSON */
-  }
-  if (!res.ok) {
-    const why = body && body.error ? body.error : `HTTP ${res.status}`;
-    if (res.status === 402 || res.status === 403) fail(`the license key was not accepted: ${why}`);
-    else if (res.status === 503) fail(`the report service is not open yet: ${why}`);
-    else fail(`the report service refused the results file: ${why}`);
-    if ((res.status === 402 || res.status === 403) && body && body.buyUrl) console.error(`     Buy a quick report: ${body.buyUrl}`);
-    console.error();
-    return null;
-  }
-  const what = body.preview ? "free score" : "quick report";
+  const out = last("--out");
   if (out) {
-    fs.writeFileSync(path.resolve(out), body.markdown);
-    console.error(`  ✓  ${what} written to ${out} (score ${body.overall ?? "none"})`);
+    fs.writeFileSync(path.resolve(out), result.markdown);
+    console.error(`  ✓  report written to ${out} (score ${result.overall ?? "none"})`);
   } else {
-    process.stdout.write(body.markdown);
+    process.stdout.write(result.markdown);
   }
-  if (body.preview) {
-    console.error(body.buyUrl
-      ? `  This is the free score. For the caveats and recommendations, buy the full report${body.price ? ` (${body.price})` : ""} at ${body.buyUrl}\n  and run the same command with --key <license key>.`
-      : "  This is the free score. The full report is not on sale yet.");
-  }
-  if (out || body.preview) console.error();
-  return body;
+  if (!result.scored) console.error("  Name the folders that hold your UI with --dirs (e.g. --dirs src).\n");
+  return { ...result, local: true };
 }
 
 /**

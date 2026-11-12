@@ -172,7 +172,7 @@ html.js .t-acc[data-open="true"] .t-acc-panel-inner { opacity: 1; filter: blur(0
 .t-acc-chevron path { vector-effect: non-scaling-stroke; }
 .t-acc[data-open="true"] .t-acc-chevron { transform: scaleY(-1); }
 
-/* ── transitions.dev / Thinking states (28): what /systemix:score does ───────── */
+/* ── transitions.dev / Thinking states (28): what /systemix:check --score does ───────── */
 .t-think { position: relative; display: inline-block; text-align: left; }
 .t-think-sizer { display: block; visibility: hidden; white-space: nowrap; }
 .t-think-text {

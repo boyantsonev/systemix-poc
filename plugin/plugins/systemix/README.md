@@ -1,63 +1,46 @@
 # Systemix plugin for Claude Code
 
-Can your AI agents follow your design system? This plugin scores it, free, in a few minutes, and
-tells you what to fix first.
+The design system agent for Claude Code. It sets up your design system as files your agents read,
+gives them the rules before they build, checks their work against those rules, and runs a goal
+from one sentence to shipped with a person at every gate. Free and open source (MIT).
 
 ## Install
 
 ```
-/plugin marketplace add getsystemix/systemix
+/plugin marketplace add boyantsonev/systemix-poc
 /plugin install systemix@systemix
 ```
 
-Then, in your repo: `/systemix:score`.
+Then, in your repo: `/systemix:setup`.
 
-## What you get
+## Four commands
 
-| Command | What it does |
-|---|---|
-| `/systemix:score` | Your AI-readiness score out of 100 and per area (free). With a license key: every caveat that costs points, biggest first, with one recommendation each. |
-| `/systemix:readiness-audit` | The long-form readiness audit, scored from the same published rubric. |
-| `/systemix:design-audit` | Zero-setup audit: de-facto tokens, drift, duplicate components, a proposed `design/` starter. |
-| `/systemix:drift-report` | Hard-coded colours, spacing and type that should use your tokens. |
-| `/systemix:design-interview` | Set up a design system from scratch through a short interview. |
-| `/systemix:claude-design-sync` | Bring a Claude Design output into your tokens, as a reviewable change. |
-| `/systemix:loops` | Where every goal is in the product and build loops, and who it waits on. Sets the loops up in a repo that has none. |
-| `/systemix:goal <one sentence>` | Open a goal: the agent writes the brief and the evals (what must be true for "done"), then stops for a person. |
-| `/systemix:next [G-NNN]` | The agent's steps, up to the next person: pictures, plan, prototype, system, code, tests, measurement. |
-| `/systemix:gate approve\|rework\|drop` | A person's ruling at a gate, written as a decision line. Only a person can run it. |
-| `/systemix:decide <loop.step>` | The brief before a gate, so a deputy decides from the same facts. |
+| Command | When | What you get |
+|---|---|---|
+| `/systemix:setup` | Once, to start | `design/DESIGN.md`, `tokens.css`, `guardrails.mdx` and `rules.md` (every rule as a row an agent can check), built from the code you ship, from a short interview, or from a Claude Design output. Every file is proposed and written only after your yes. |
+| `/systemix:brief` | Before you build | One screen: the rules that apply, the tokens and components to start from, what was already decided, and what the work will be checked against. |
+| `/systemix:check` | Before review | Pass, pass with flags or fail, with each problem's rule ID, where it is and the fix. `--score` gives your AI-readiness score out of 100, `--drift` what has drifted from your tokens, `--deep` the long readiness audit. |
+| `/systemix:loop` | To run a goal | Goal and evals → pictures → prototype → design-system changes → code → tests → release → measurement, stopping at every gate for a person. Only you run it: a gate is your ruling. |
 
-## The loops
+## Rules as data
 
-A goal is one sentence a person types. The **product loop** turns it into a brief and
-evals, then pictures, scored and validated. The **build loop** turns a validated
-design into a plan, a prototype in real component code, design-system changes
-(the design sprint), the product on a branch, tests, a release and a measurement.
-Every gate waits for a person; the agent prepares, never rules. State lives in
-`design/loops/`, `design/goals/`, `design/context/` and `design/briefs/` as plain
-markdown, checked by `systemix loops check`.
+`design/rules.md` holds every design, brand, voice and legal-copy rule as one table row: an ID,
+the surfaces it covers, `block` or `flag`, where it was decided, and a test. A test is either
+`script: <copy|css|html|code|any> /pattern/`, which the check runs, or `review: <question>`, which
+a person or the agent answers by looking. Change a rule there and every command reads the new one;
+no skill keeps its own copy. Each scripted rule has a known-bad sample in
+`design/evals/rules/known-bad/`, and `systemix rules eval` proves the check catches every one.
 
-Every audit is read-only. Anything the plugin would write into your design system is proposed first and waits for your yes.
+## Nothing leaves your machine
 
-## Your code stays on your machine
+Everything runs locally: the scan is bundled with the plugin, nothing is downloaded at run time,
+and nothing is sent anywhere. The score is deterministic: the same code always gives the same
+numbers, with no AI judgement in them.
 
-The scan runs locally and is deterministic: the same code always gives the same numbers, with no AI
-judgement in them. The free score is computed on your machine; nothing is sent. Only the full
-report needs the service: `/systemix:score` then sends the results file to
-`https://getsystemix.vercel.app/api/report`, and only after you say yes. The file holds numbers,
-counter definitions, file and folder paths, and short identifiers such as token names. It holds no
-source code. Ask for redacted paths and every file name is replaced by a hash. The service keeps no
-copy of the file; it records one anonymous count per request (score band, size band, whether paths
-were redacted) for its own analytics, with no names, paths, keys or IP addresses. The other skills
-make no network calls.
+## Support it
 
-## The full report
-
-The score is free. The full quick report is a one-off purchase at
-[getsystemix.vercel.app/report](https://getsystemix.vercel.app/report?utm_source=plugin&utm_medium=readme). Put the license key into the
-plugin settings (`/plugin configure systemix@systemix`), never into the chat. It is kept in your
-system's secure storage.
+The plugin is free. If it helps, you can [sponsor the work](https://github.com/sponsors/boyantsonev).
+Want it set up for your product, rules and all? [Get in touch](https://getsystemix.vercel.app/#setup).
 
 ## License
 

@@ -45,6 +45,7 @@ Added 2026-10-11 (second DISCOVER pass: Phase 1–4 documents drafted; still des
 | DSC-20: Design sprint = fixed 3 days at €990; the hero experiment closed | LOW | G-002 |
 | DSC-21: The Loop Kit is the orchestration engine; PostHog integrated, not duplicated | MEDIUM | Built; G-001 |
 | DSC-22: Free score local; no hosted control plane; objectives vs goals; no Supabase; Figma behind labs | MEDIUM | G-003, G-004 |
+| DSC-23: Free plugin (four commands), sponsor link, paid setup priced per client from a starting price; quick report, audit and the 3-day sprint withdrawn | LOW | G-005 |
 
 Gates: **G1 OPEN · G2 not passed (blocked) · G3 not started · G4 not started.** No peer review requested.
 
@@ -61,6 +62,7 @@ Full recommendation: `diverge/recommendation.md` · options: `diverge/options-ra
 | DIV-5: ICP | AI-native product teams of 2–20 on Next/shadcn with Claude Code/Cursor, monetized via subscription + usage | LOW-MEDIUM | Hypothesis; G1 decides |
 | DIV-6: Ladder | Free kit · free scorecard · Report €490 · Sprint from €4.5k / 2 wk · pack bundled · loop later | LOW-MEDIUM | Launch hypotheses; one file, one ADR |
 | DIV-6a: Ladder superseded | DIV-6 is replaced by DSC-16, DSC-20 and DSC-22: free plugin and score · €9.99 quick report · €499 audit · €990 3-day sprint | — | 2026-10-31 |
+| DIV-6b: Ladder superseded again | DIV-6a is replaced by DSC-23: the free plugin, a sponsor link, and setup for a client's product from a starting price | — | 2026-11-12 |
 
 ## DISCUSS: not started (after G1)
 

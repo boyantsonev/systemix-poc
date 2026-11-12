@@ -9,7 +9,7 @@
  *
  * The output is the root of the public plugin repo (getsystemix/systemix):
  *   .claude-plugin/marketplace.json, README.md, LICENSE
- *   plugins/systemix/  plugin.json, .mcp.json, skills/ (from pipelines/design-system + plugin-src),
+ *   plugins/systemix/  plugin.json, skills/ (the four commands from plugin-src, the pipeline guides as references),
  *                      scan/ (the read-only subset of this CLI the skills run, copied as-is)
  *
  * Skills are copied from the pipeline with their `npx @getsystemix/cli` calls pointed at the bundled
@@ -25,9 +25,15 @@ const SRC = path.join(CLI, "plugin-src");
 const PIPELINE = path.join(CLI, "pipelines", "design-system", "skills");
 const DEFAULT_OUT = path.join(REPO, "plugin");
 
-const PIPELINE_SKILLS = ["readiness-audit", "design-audit", "drift-report", "design-interview", "claude-design-sync"];
-const OWN_SKILLS = ["score", "loops", "goal", "next", "gate", "decide"];
-const SKILL_NAMES = [...PIPELINE_SKILLS, ...OWN_SKILLS];
+// The plugin is four commands (DSC-23, G-005). The long pipeline skills ship as reference guides
+// inside the command that uses them (skills/<command>/references/<guide>/guide.md), not as skills.
+const OWN_SKILLS = ["setup", "brief", "check", "loop"];
+const GUIDES = {
+  setup: ["design-audit", "design-interview", "claude-design-sync"],
+  check: ["drift-report", "readiness-audit"],
+};
+const PIPELINE_SKILLS = Object.values(GUIDES).flat();
+const SKILL_NAMES = OWN_SKILLS;
 
 // the module graph of `audit counters|report` and `drift scan|history` (checked by the tests: the copy must run alone)
 const SCAN_FILES = [
@@ -42,6 +48,8 @@ const SCAN_FILES = [
   "src/lib/rubric-eval.js",
   "src/commands/loops.js",
   "src/lib/loopkit.js",
+  "src/commands/rules.js",
+  "src/lib/rules-check.js",
   ...["index", "context", "counter", "summary", "census", "tokens", "css", "util", "colour", "typography", "exemptions",
     "scale", "primitives", "graph", "tags", "reachability", "guardrails", "markdown", "docs", "decisions", "habit",
     "legibility"].map((n) => `src/lib/counters/${n}.js`),
@@ -67,11 +75,12 @@ const REWRITES = [
   [/\[awaiting approval, \/hermes\]/g, "[awaiting approval]"],
   [/\nthe same way `\/workflow-artifact` does if that skill is installed \(/g, "\n("],
   [/ \(`\/sync-to-figma`\), not this skill/g, " of the Systemix CLI, not this plugin"],
-  [/`\/init-experiment` to validate the new direction/g, "`/systemix:goal` to validate the new direction"],
+  [/`\/init-experiment` to validate the new direction/g, "`/systemix:loop open` to validate the new direction"],
   [/\(`systemix design feed` \/\s+MCP `design_list_proposals` read it\)/g, "(the Systemix CLI's design feed reads it)"],
   [/\(`systemix design feed` \/\s+MCP `design_list_proposals`\)/g, "(the Systemix CLI's design feed)"],
   [/npx @getsystemix\/cli (--help|audit counters|drift scan)/g, `${SCAN_CMD} $1`],
-  [new RegExp("(^|[\\s`(\"'])/(" + PIPELINE_SKILLS.join("|") + ")\\b", "gm"), "$1/systemix:$2"],
+  // a guide naming another guide: drop the slash, the name is the guide's (see each command's SKILL.md)
+  [new RegExp("(^|[\\s`(\"'])/(" + PIPELINE_SKILLS.join("|") + ")\\b", "gm"), "$1$2"],
 ];
 
 function rewriteSkill(text) {
@@ -87,7 +96,7 @@ function leftoverCalls(text) {
 
 // what a generated skill may name: its own skills, Claude Code's /plugin, and the scan's commands
 const BUILTIN_COMMANDS = ["plugin"];
-const SCAN_COMMANDS = /^(audit (counters|report)|drift (scan|history)|loops (init|check|status|decisions)|init\b)/;
+const SCAN_COMMANDS = /^(audit (counters|report)|drift (scan|history)|loops (init|check|status|decisions)|rules (init|lint|check|eval)|init\b)/;
 
 /** Skill references and `systemix <command>`s in a generated skill that the plugin does not ship. */
 function unshippedRefs(text) {
@@ -136,15 +145,19 @@ function render() {
   put("README.md", readme);
   put("LICENSE", license);
   put(`${P}/.claude-plugin/plugin.json`, JSON.stringify(pluginJson, null, 2) + "\n");
-  put(`${P}/.mcp.json`, fs.readFileSync(path.join(SRC, "mcp.json"), "utf8"));
   put(`${P}/.claude-plugin/icon.png`, fs.readFileSync(path.join(SRC, "icon.png")));
   put(`${P}/README.md`, readme);
   put(`${P}/LICENSE`, license);
 
-  for (const skill of PIPELINE_SKILLS) {
-    for (const rel of files(path.join(PIPELINE, skill))) {
-      const abs = path.join(PIPELINE, skill, rel);
-      put(`${P}/skills/${skill}/${rel}`, rel.endsWith(".md") ? rewriteSkill(fs.readFileSync(abs, "utf8")) : fs.readFileSync(abs));
+  for (const [command, guides] of Object.entries(GUIDES)) {
+    for (const guide of guides) {
+      for (const rel of files(path.join(PIPELINE, guide))) {
+        const abs = path.join(PIPELINE, guide, rel);
+        // SKILL.md becomes guide.md without its frontmatter: a guide, never a skill of its own
+        const name = rel === "SKILL.md" ? "guide.md" : rel;
+        const body = rel.endsWith(".md") ? rewriteSkill(fs.readFileSync(abs, "utf8")) : fs.readFileSync(abs);
+        put(`${P}/skills/${command}/references/${guide}/${name}`, rel === "SKILL.md" ? String(body).replace(/^---\n[\s\S]*?\n---\n+/, "") : body);
+      }
     }
   }
   for (const skill of OWN_SKILLS) {
@@ -152,10 +165,11 @@ function render() {
   }
 
   for (const rel of SCAN_FILES) put(`${P}/scan/${rel}`, fs.readFileSync(path.join(CLI, rel)));
+  // the starter rules.md and its known-bad evals, which `rules init` copies
+  for (const rel of files(path.join(CLI, "templates", "rules"))) put(`${P}/scan/templates/rules/${rel}`, fs.readFileSync(path.join(CLI, "templates", "rules", rel)));
   // the loop templates `loops init` copies
   for (const rel of files(path.join(CLI, "templates", "loop"))) put(`${P}/scan/templates/loop/${rel}`, fs.readFileSync(path.join(CLI, "templates", "loop", rel)));
   put(`${P}/scan/systemix.js`, fs.readFileSync(path.join(SRC, "systemix.js")));
-  put(`${P}/scan/mcp.js`, fs.readFileSync(path.join(SRC, "mcp.js")));
   // the counters report the CLI version as toolVersion; no dependencies, so nothing is installed
   put(`${P}/scan/package.json`, JSON.stringify({ name: "systemix-plugin-scan", version: pkg.version, private: true, license: "MIT" }, null, 2) + "\n");
 

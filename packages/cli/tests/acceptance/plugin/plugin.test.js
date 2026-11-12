@@ -2,8 +2,9 @@
 
 /**
  * The Claude Code plugin (scripts/build-plugin.js → <repo>/plugin): the committed output is what
- * a build writes, the skills call the bundled scan, the scan runs on its own outside this
- * package, and the MCP server answers over stdio with the key taken from the plugin settings.
+ * a build writes, it is four commands (G-005 E1), it sends nothing anywhere (E2), the loop is a
+ * person's command (E4), every reference is shipped (E5), and the bundled scan runs on its own
+ * outside this package, the rules check included (E3).
  */
 
 const fs = require("fs");
@@ -22,6 +23,12 @@ describe("plugin build", () => {
     expect(diff(DEFAULT_OUT, rendered)).toEqual([]);
   });
 
+  test("ships exactly four commands: setup, brief, check, loop (G-005 E1)", () => {
+    const skills = new Set(Object.keys(rendered).filter((r) => /^plugins\/systemix\/skills\/[^/]+\/SKILL\.md$/.test(r)).map((r) => r.split("/")[3]));
+    expect([...skills].sort()).toEqual(["brief", "check", "loop", "setup"]);
+    expect(Object.keys(rendered).filter((r) => r.startsWith(`${P}/skills/`) && r.endsWith("/SKILL.md") && r.split("/").length > 5)).toEqual([]);
+  });
+
   test("ships every skill, each named after its folder", () => {
     for (const name of SKILL_NAMES) {
       const body = text(`${P}/skills/${name}/SKILL.md`);
@@ -33,17 +40,18 @@ describe("plugin build", () => {
     for (const rel of Object.keys(rendered).filter((r) => r.startsWith(`${P}/skills/`) && r.endsWith(".md"))) {
       expect([rel, leftoverCalls(text(rel))]).toEqual([rel, []]);
     }
-    expect(text(`${P}/skills/readiness-audit/SKILL.md`)).toContain('node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" audit counters');
-    expect(text(`${P}/skills/drift-report/SKILL.md`)).toContain('node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" drift scan');
+    expect(text(`${P}/skills/check/references/readiness-audit/guide.md`)).toContain('node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" audit counters');
+    expect(text(`${P}/skills/check/references/drift-report/guide.md`)).toContain('node "${CLAUDE_PLUGIN_ROOT}/scan/systemix.js" drift scan');
+    expect(text(`${P}/skills/check/references/readiness-audit/guide.md`)).not.toMatch(/^---\nname:/);
   });
 
   test("a skill that references an unshipped skill or command fails the build, naming it (G-003 E8)", () => {
-    const skill = `${P}/skills/score/SKILL.md`;
-    const bad = { ...rendered, [skill]: "Next: `/hermes`, then run `systemix design feed`; /systemix:gate is fine, /tmp/x.json is a path." };
-    expect(() => assertShipped(bad)).toThrow(/plugins\/systemix\/skills\/score\/SKILL\.md: \/hermes/);
-    expect(() => assertShipped(bad)).toThrow(/score\/SKILL\.md: systemix design feed/);
-    expect(unshippedRefs("/systemix:gate, /plugin update, `systemix loops check`, design/goals, /tmp/c.json")).toEqual([]);
-    expect(unshippedRefs("/systemix:nope and /init-experiment")).toEqual(["/systemix:nope", "/init-experiment"]);
+    const skill = `${P}/skills/check/SKILL.md`;
+    const bad = { ...rendered, [skill]: "Next: `/hermes`, then run `systemix design feed`; /systemix:loop is fine, /tmp/x.json is a path." };
+    expect(() => assertShipped(bad)).toThrow(/plugins\/systemix\/skills\/check\/SKILL\.md: \/hermes/);
+    expect(() => assertShipped(bad)).toThrow(/check\/SKILL\.md: systemix design feed/);
+    expect(unshippedRefs("/systemix:loop, /plugin update, `systemix loops check`, `systemix rules eval`, design/goals, /tmp/c.json")).toEqual([]);
+    expect(unshippedRefs("/systemix:gate, /systemix:score and /init-experiment")).toEqual(["/systemix:gate", "/systemix:score", "/init-experiment"]);
   });
 
   test("the shipped skills reference only what the plugin ships", () => {
@@ -52,14 +60,15 @@ describe("plugin build", () => {
     }
   });
 
-  test("the license key is a sensitive setting that only the MCP server receives", () => {
+  test("sends nothing anywhere: no MCP server, no settings, no network call (G-005 E2)", () => {
     const manifest = JSON.parse(text(`${P}/.claude-plugin/plugin.json`));
     expect(manifest.name).toBe("systemix");
-    expect(manifest.userConfig.license_key).toMatchObject({ type: "string", sensitive: true, required: false });
-    const mcp = JSON.parse(text(`${P}/.mcp.json`)).mcpServers.systemix;
-    expect(mcp.args).toEqual(["${CLAUDE_PLUGIN_ROOT}/scan/mcp.js"]);
-    expect(mcp.env.SYSTEMIX_REPORT_KEY).toBe("${user_config.license_key}");
-    for (const rel of Object.keys(rendered).filter((r) => r.endsWith(".md"))) expect(text(rel)).not.toContain("user_config.license_key");
+    expect(manifest.userConfig).toBeUndefined();
+    expect(manifest.mcpServers).toBeUndefined();
+    expect(Object.keys(rendered).filter((r) => /\.mcp\.json$|scan\/mcp\.js$/.test(r))).toEqual([]);
+    const code = Object.keys(rendered).filter((r) => r.endsWith(".js"));
+    const net = code.filter((r) => /\bfetch\s*\(|require\(["'](node:)?https?["']\)|XMLHttpRequest|\.request\(/.test(text(r)));
+    expect(net).toEqual([]);
   });
 
   test("this repo's own marketplace (the development channel) lists the same plugin from plugin/", () => {
@@ -121,75 +130,33 @@ describe("the bundled scan, copied out of this package", () => {
     fs.rmSync(path.join(repo, "design/loops"), { recursive: true, force: true });
   });
 
-  test("the gate skill can only be run by a person", () => {
-    expect(text(`${P}/skills/gate/SKILL.md`)).toMatch(/^disable-model-invocation: true$/m);
+  test("the loop is a person's command: a gate is a ruling (G-005 E4)", () => {
+    expect(text(`${P}/skills/loop/SKILL.md`)).toMatch(/^disable-model-invocation: true$/m);
+    for (const s of ["setup", "brief", "check"]) expect(text(`${P}/skills/${s}/SKILL.md`)).not.toMatch(/disable-model-invocation/);
+  });
+
+  test("runs the rules: init writes the starter, eval catches every known-bad sample, check finds the hex (G-005 E3)", () => {
+    expect(scan("rules", "init").status).toBe(0);
+    const e = scan("rules", "eval");
+    expect([e.status, e.stdout]).toEqual([0, expect.stringContaining("every sample behaves")]);
+    const c = scan("rules", "check", "src", "--json");
+    expect(c.status).toBe(1);
+    const r = JSON.parse(c.stdout);
+    expect(r.result).toBe("fail");
+    expect(r.findings.map((f) => f.id)).toEqual(expect.arrayContaining(["T3", "T4"]));
+    fs.rmSync(path.join(repo, "design"), { recursive: true, force: true });
+  });
+
+  test("the report is computed here and nothing is sent", () => {
+    const r = scan("audit", "report", "--dirs", "src");
+    expect(r.status).toBe(0);
+    expect(r.stdout).toMatch(/## Score: \d+ \/ 100[\s\S]*Computed on this machine; nothing was sent/);
+    expect(scan("audit", "report", "--dirs", "src", "--key", "X").status).toBe(1);
   });
 
   test("refuses anything that would install or write skills", () => {
     const r = scan("audit");
     expect(r.status).toBe(1);
     expect(fs.existsSync(path.join(repo, ".claude"))).toBe(false);
-  });
-
-  test("the MCP server lists quick_report and gives the free score without sending anything", () => {
-    const lines = [
-      { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "1" } } },
-      { jsonrpc: "2.0", method: "notifications/initialized" },
-      { jsonrpc: "2.0", id: 2, method: "tools/list" },
-      { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "quick_report", arguments: { dirs: ["src"] } } },
-      { jsonrpc: "2.0", id: 4, method: "nope" },
-    ].map((l) => JSON.stringify(l)).join("\n") + "\n";
-    const r = spawnSync(process.execPath, [path.join(dir, P, "scan/mcp.js")], {
-      input: lines,
-      encoding: "utf8",
-      env: { ...process.env, SYSTEMIX_PROJECT_DIR: repo, SYSTEMIX_REPORT_SERVICE: "https://reports.example.test", SYSTEMIX_REPORT_KEY: "${user_config.license_key}" },
-    });
-    const out = r.stdout.trim().split("\n").map((l) => JSON.parse(l));
-    expect(out.map((m) => m.id)).toEqual([1, 2, 3, 4]);
-    expect(out[0].result.serverInfo.name).toBe("systemix");
-    expect(out[1].result.tools.map((t) => t.name)).toEqual(["quick_report"]);
-    expect(out[2].result.isError).toBe(false);
-    // no key in the settings: the free score, computed here (DSC-22 D1)
-    expect(out[2].result.content[0].text).toMatch(/## Score: \d+ \/ 100[\s\S]*Computed on this machine; nothing was sent/);
-    expect(out[3].error.code).toBe(-32601);
-  });
-
-  test("with a key and send=false, it only describes what would be sent", async () => {
-    const { quickReport } = require(path.join(dir, P, "scan/mcp.js"));
-    const saved = global.fetch;
-    global.fetch = async () => {
-      throw new Error("must not be called");
-    };
-    try {
-      const r = await quickReport({ dirs: ["src"] }, { SYSTEMIX_PROJECT_DIR: repo, SYSTEMIX_REPORT_SERVICE: "https://reports.example.test", SYSTEMIX_REPORT_KEY: "ABCD-1234-EFGH" });
-      expect(r.isError).toBe(false);
-      expect(r.text).toMatch(/No source code[\s\S]*nothing was sent[\s\S]*send=true/);
-    } finally {
-      global.fetch = saved;
-      process.exitCode = 0;
-    }
-  });
-
-  test("send=true posts the results file with the key from the settings, and never prints it", async () => {
-    const { quickReport } = require(path.join(dir, P, "scan/mcp.js"));
-    const calls = [];
-    const saved = global.fetch;
-    global.fetch = async (url, init) => {
-      calls.push({ url, body: JSON.parse(init.body) });
-      return { ok: true, status: 200, json: async () => ({ scored: true, preview: false, overall: 40, markdown: "# Quick design-system report\n" }) };
-    };
-    try {
-      const r = await quickReport({ dirs: ["src"], send: true, redact_paths: true }, { SYSTEMIX_PROJECT_DIR: repo, SYSTEMIX_REPORT_SERVICE: "https://reports.example.test", SYSTEMIX_REPORT_KEY: "ABCD-1234-EFGH" });
-      expect(r.isError).toBe(false);
-      expect(r.text).toContain("# Quick design-system report");
-      expect(r.text).not.toContain("ABCD-1234-EFGH");
-      expect(calls).toHaveLength(1);
-      expect(calls[0].url).toBe("https://reports.example.test/api/report");
-      expect(calls[0].body.licenseKey).toBe("ABCD-1234-EFGH");
-      expect(JSON.stringify(calls[0].body.counters)).not.toContain("src/components/Hero.tsx");
-    } finally {
-      global.fetch = saved;
-      process.exitCode = 0;
-    }
   });
 });

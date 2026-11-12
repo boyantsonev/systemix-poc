@@ -29,13 +29,13 @@ const NOTIFY_MAILTO =
 
 const STEPS = [
   { n: "1", t: "Install the plugin", b: "Two commands in Claude Code. No account, nothing to configure." },
-  { n: "2", t: "Run /systemix:score", b: "In your repo. The score is computed on your machine and nothing is sent. Free: a score out of 100 and per area." },
+  { n: "2", t: "Run /systemix:check --score", b: "In your repo. The score is computed on your machine and nothing is sent. Free: a score out of 100 and per area." },
   { n: "3", t: "Unlock the quick report", b: "Buy a key, add it to the plugin settings, run it again, and get what to fix first." },
 ];
 
-// What /systemix:score does, step by step (the first line is the summary, shown without motion).
+// What /systemix:check --score does, step by step (the first line is the summary, shown without motion).
 const SCORE_STEPS = [
-  "/systemix:score reads your repo and sends nothing",
+  "/systemix:check --score reads your repo and sends nothing",
   "Reading your repo",
   "Counting colours, sizes and components",
   "Scoring six areas",

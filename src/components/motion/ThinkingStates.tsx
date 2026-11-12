@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { ms, motionAllowed } from "@/lib/motion/tokens";
 
-// transitions.dev / Thinking states (28): what /systemix:score does, one step at a time. The
+// transitions.dev / Thinking states (28): what /systemix:check --score does, one step at a time. The
 // first state is a summary, so the line reads whole without JavaScript or with reduced motion.
 
 export function ThinkingStates({ states, className }: { states: string[]; className?: string }) {

@@ -1,8 +1,9 @@
 "use strict";
 
 /**
- * The paid quick report: the deterministic builder (quick-report.js), path redaction,
- * and `systemix audit report`, which sends only the counters JSON and only with --yes.
+ * The readiness report: the deterministic builder (quick-report.js), path redaction (kept for the
+ * report service until it is removed), and `systemix audit report`, which computes the whole report
+ * on this machine and sends nothing (DSC-23).
  */
 
 const fs = require("fs");
@@ -111,80 +112,37 @@ describe("systemix audit report", () => {
     process.exitCode = 0;
   });
 
-  const env = { SYSTEMIX_REPORT_SERVICE: "https://reports.example.test" };
-
-  test("with a key, sends nothing without --yes", async () => {
-    const fetch = jest.fn();
-    const r = await quiet(() => audit(["report", "--dirs", "src", "--key", "ABCD-1234"], { projectRoot: root, env, fetch }));
-    expect(r).toBeNull();
-    expect(fetch).not.toHaveBeenCalled();
-  });
-
-  test("--dry-run writes the exact payload and sends nothing", async () => {
-    const fetch = jest.fn();
-    const file = path.join(outDir, "payload.json");
-    await quiet(() => audit(["report", "--dirs", "src", "--dry-run", "--yes", "--payload-out", file], { projectRoot: root, env, fetch }));
-    expect(fetch).not.toHaveBeenCalled();
-    const payload = JSON.parse(fs.readFileSync(file, "utf8"));
-    expect(payload.schema).toBe("systemix.audit-counters/1");
-    expect(JSON.stringify(payload)).not.toContain("bg-[#ff0000]\">Hi"); // no source text
-  });
-
-  test("with --yes posts only the counters and the key, and writes the report", async () => {
-    const fetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => ({ scored: true, overall: 40, markdown: "# Quick design-system report\n" }) }));
-    const out = path.join(outDir, "report.md");
-    const r = await quiet(() => audit(["report", "--dirs", "src", "--yes", "--key", "ABCD-1234", "--out", out, "--redact-paths"], { projectRoot: root, env, fetch }));
-    expect(r.overall).toBe(40);
-    expect(fs.readFileSync(out, "utf8")).toBe("# Quick design-system report\n");
-    const [url, init] = fetch.mock.calls[0];
-    expect(url).toBe("https://reports.example.test/api/report");
-    const sent = JSON.parse(init.body);
-    expect(Object.keys(sent).sort()).toEqual(["counters", "licenseKey"]);
-    expect(sent.licenseKey).toBe("ABCD-1234");
-    expect(payloadSummary(sent.counters)).toMatchObject({ paths: 0, redacted: true });
-  });
-
-  test("a refused key is an error that names the buy link", async () => {
-    const fetch = jest.fn(async () => ({ ok: false, status: 402, json: async () => ({ error: "this license key has been used", buyUrl: "https://shop.example/buy/1" }) }));
-    const errors = [];
-    const spy = jest.spyOn(console, "error").mockImplementation((...a) => errors.push(a.join(" ")));
-    let r;
-    try {
-      r = await audit(["report", "--dirs", "src", "--yes", "--key", "ABCD-1234"], { projectRoot: root, env, fetch });
-    } finally {
-      spy.mockRestore();
-    }
-    expect(r).toBeNull();
-    expect(process.exitCode).toBe(1);
-    expect(errors.join("\n")).toContain("https://shop.example/buy/1");
-  });
-
-  test("without a key, the free score is computed here and nothing is sent, even with --yes (G-003 E9)", async () => {
-    const fetch = jest.fn(async () => {
+  test("computes the whole report here, caveats and recommendations included, and sends nothing (DSC-23)", async () => {
+    const fetch = jest.spyOn(globalThis, "fetch").mockImplementation(async () => {
       throw new Error("no network in this test");
     });
-    const errors = [];
     const written = [];
-    const spy = jest.spyOn(console, "error").mockImplementation((...a) => errors.push(a.join(" ")));
     const out = jest.spyOn(process.stdout, "write").mockImplementation((c) => written.push(String(c)) && true);
+    const spy = jest.spyOn(console, "error").mockImplementation(() => {});
     let r;
     try {
-      r = await audit(["report", "--dirs", "src", "--yes"], { projectRoot: root, env, fetch });
+      r = await audit(["report", "--dirs", "src"], { projectRoot: root });
     } finally {
-      spy.mockRestore();
       out.mockRestore();
+      spy.mockRestore();
+      fetch.mockRestore();
     }
     expect(fetch).not.toHaveBeenCalled();
-    expect(r).toMatchObject({ scored: true, preview: true, local: true, caveats: [] });
-    expect(written.join("")).toMatch(/## Score: \d+ \/ 100[\s\S]*Computed on this machine; nothing was sent\./);
-    expect(written.join("")).not.toContain("only counts and file names");
-    expect(errors.join("\n")).toMatch(/nothing was sent[\s\S]*getsystemix\.vercel\.app\/report/);
+    expect(r).toMatchObject({ scored: true, preview: false, local: true });
+    expect(r.caveats.length).toBeGreaterThan(0);
+    const md = written.join("");
+    expect(md).toMatch(/## Score: \d+ \/ 100[\s\S]*## Caveats[\s\S]*## Recommendations, in this order/);
+    expect(md).toContain("Computed on this machine; nothing was sent.");
   });
 
-  test("refuses a non-https service", async () => {
-    const fetch = jest.fn();
-    await quiet(() => audit(["report", "--yes"], { projectRoot: root, env: { SYSTEMIX_REPORT_SERVICE: "http://evil.example" }, fetch }));
-    expect(fetch).not.toHaveBeenCalled();
-    expect(process.exitCode).toBe(1);
+  test("--out writes the report; the old paid flags are refused", async () => {
+    const file = path.join(outDir, "report.md");
+    const r = await quiet(() => audit(["report", "--dirs", "src", "--out", file], { projectRoot: root }));
+    expect(fs.readFileSync(file, "utf8")).toBe(r.markdown);
+    for (const flag of [["--key", "ABCD"], ["--yes"], ["--redact-paths"], ["--dry-run"]]) {
+      process.exitCode = 0;
+      expect(await quiet(() => audit(["report", "--dirs", "src", ...flag], { projectRoot: root }))).toBeNull();
+      expect(process.exitCode).toBe(1);
+    }
   });
 });

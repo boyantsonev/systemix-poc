@@ -109,11 +109,11 @@ async function loops(args = [], opts = {}) {
   if (sub === "status") {
     const rows = kit.status(sys);
     if (json) console.log(JSON.stringify(rows, null, 2));
-    else if (!rows.length) console.log("  No goals yet. Open one with /systemix:goal <one sentence>.");
+    else if (!rows.length) console.log("  No goals yet. Open one with /systemix:loop open <one sentence>.");
     else {
       console.log("| goal | title | step | waits on | last ruling |\n|---|---|---|---|---|");
       for (const r of rows) {
-        const waits = r.waiting ? `${r.waiting} (${r.holders.join(", ") || "nobody holds it"})` : r.status === "open" || r.status === "building" ? `agent — /systemix:next ${r.id}` : "—";
+        const waits = r.waiting ? `${r.waiting} (${r.holders.join(", ") || "nobody holds it"})` : r.status === "open" || r.status === "building" ? `agent — /systemix:loop next ${r.id}` : "—";
         console.log(`| ${r.id} | ${r.title} | ${r.step} | ${waits} | ${r.lastRuling || "—"} |`);
       }
     }
