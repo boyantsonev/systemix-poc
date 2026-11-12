@@ -518,7 +518,7 @@ and, when there is a branch, checks out `branch.name` and commits the overlay.
   - Any ask naming loop or admin expects null.
 - `evals/cases/<skill>.json`: `[{id, skill, fixture, variant?, turns:[string], beta?, expect:{…}}]`.
   - In `turns`, `"{{yes}}"` is an approval turn.
-  - `expect` keys:
+  - `expect` keys (run_log_rows counts new run rows; run_log_rows_min sets a floor for conversations whose answer turns do not end a run):
     - `skill_invoked`, `must_include[]`, `must_not_include[]`;
     - `no_repo_writes` (bool), `no_write_before_turn` (n), `files_exist[]`, `files_absent[]`;
     - `run_log_rows` (n);

@@ -247,6 +247,7 @@ describe("loop and admin evals", () => {
     files_exist: "strings",
     files_absent: "strings",
     run_log_rows: "integer",
+    run_log_rows_min: "integer",
     cli_after: "cli",
     judge: "strings",
   };
@@ -279,7 +280,7 @@ describe("loop and admin evals", () => {
         expect({ id: c.id, key: k, ok }).toEqual({ id: c.id, key: k, ok: true });
       }
       expect(c.expect.skill_invoked).toBe(skill);
-      expect(Number.isInteger(c.expect.run_log_rows) && c.expect.run_log_rows >= 1).toBe(true);
+      expect((Number.isInteger(c.expect.run_log_rows) && c.expect.run_log_rows >= 1) || (Number.isInteger(c.expect.run_log_rows_min) && c.expect.run_log_rows_min >= 1)).toBe(true);
       if (c.expect.no_write_before_turn !== undefined) {
         expect(c.expect.no_write_before_turn).toBeLessThanOrEqual(c.turns.length);
         expect(c.turns[c.expect.no_write_before_turn - 1]).toBe("{{yes}}");
@@ -294,7 +295,7 @@ describe("loop and admin evals", () => {
     }
     const walk = cases.find((c) => c.id === "loop-walk-f4");
     const verbs = walk.turns.filter((t) => t.startsWith("/product-studio:loop")).map((t) => t.split(" ")[1]);
-    expect(verbs).toEqual(["open", "gate", "next", "gate", "decide"]);
+    expect(verbs).toEqual(["open", "gate", "next", "decide", "gate"]); // the brief is for the validate gate, while a person waits there
     expect(walk.expect.run_log_rows).toBe(walk.turns.length); // one row per turn that ends a run (SPEC)
     expect(cases.some((c) => c.id === "loop-gate-refuses-non-roster")).toBe(true);
     expect(cases.some((c) => (c.expect.judge || []).some((j) => /at most 3 variants/.test(j)))).toBe(true);

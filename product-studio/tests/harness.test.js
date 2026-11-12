@@ -94,3 +94,9 @@ describe("eval scoring, round two", () => {
     expect(s.cliOutputs(events, "product-studio")).toEqual(['$ node "/p/scan/product-studio.js" rules check . --json\n{"blocks":2}']);
   });
 });
+
+test("run_log_rows_min: at least N new rows", () => {
+  const run = (after) => ({ turns: [{ text: "", events: [], snapshotAfter: {} }], snapshotBefore: {}, runLogRows: after, runLogRowsBefore: 3, plugin: "p" });
+  expect(s.scoreCase({ run_log_rows_min: 1 }, run(5)).ok).toBe(true);
+  expect(s.scoreCase({ run_log_rows_min: 1 }, run(3)).ok).toBe(false);
+});

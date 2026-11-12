@@ -69,7 +69,6 @@
         "studio/loops/build-loop.md",
         "studio/loops/joins.md"
       ],
-      "run_log_rows": 7,
       "cli_after": [
         {
           "argv": [
@@ -85,7 +84,8 @@
         "The roster is solo: Ada Lovelace holds every role and there is no deputy (shown by an init that names her with --holder for every role, or by the roster holder lines it quotes)",
         "It says a reviewer flips the loops from draft to agreed and that the coding agent never does",
         "It suggests 'fix one small visible drift' as the first goal and does not open it"
-      ]
+      ],
+      "run_log_rows_min": 1
     }
   },
   {
@@ -133,9 +133,9 @@
       "{{yes}}",
       "/product-studio:loop next G-006",
       "{{yes}}",
-      "/product-studio:loop gate approve G-006 (I'm Ada Lovelace)",
-      "{{yes}}",
       "/product-studio:loop decide G-006",
+      "{{yes}}",
+      "/product-studio:loop gate approve G-006 (I'm Ada Lovelace)",
       "{{yes}}"
     ],
     "expect": {
@@ -171,7 +171,7 @@
         }
       ],
       "judge": [
-        "loops check passes at every stop (open, both gates, next, decide)",
+        "loops check passes at every stop (open, the evals gate, next, decide, the validate gate)",
         "Each decision line matches ^- \\d{4}-\\d{2}-\\d{2} · \\S+ · approve · by Ada Lovelace · brief: (B-\\d{3}|none)",
         "A ruling with no brief writes 'brief: none'",
         "next stops at the next gate and does not rule on it",
@@ -237,7 +237,6 @@
       "must_not_include": [
         "by Charles Babbage ·"
       ],
-      "run_log_rows": 2,
       "cli_after": [
         {
           "argv": [
@@ -251,7 +250,8 @@
       "judge": [
         "It refuses: Charles Babbage is neither the holder nor the deputy of the gate, and it names who is",
         "No decision line is written and G-001 stays at the Evals gate"
-      ]
+      ],
+      "run_log_rows_min": 1
     }
   },
   {

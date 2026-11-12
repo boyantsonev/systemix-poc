@@ -79,6 +79,11 @@ function scoreCase(expect, run) {
     const added = run.runLogRows - (run.runLogRowsBefore || 0);
     add("run_log_rows", added === expect.run_log_rows, `want ${expect.run_log_rows} new, got ${added}`);
   }
+  if (expect.run_log_rows_min !== undefined) {
+    // conversations whose answer turns don't end a run (an interview, a refusal then a reply)
+    const added = run.runLogRows - (run.runLogRowsBefore || 0);
+    add("run_log_rows_min", added >= expect.run_log_rows_min, `want at least ${expect.run_log_rows_min} new, got ${added}`);
+  }
   for (const [i, c] of (expect.cli_after || []).entries()) {
     const got = (run.cliAfter || [])[i];
     add(`cli_after ${c.argv.join(" ")}`, got && got.code === c.code, got ? `exit ${got.code}${got.code === c.code ? "" : `, want ${c.code}`}` : "not run");

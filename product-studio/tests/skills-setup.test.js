@@ -239,7 +239,7 @@ describe("the connectors guide", () => {
 });
 
 describe("setup eval cases", () => {
-  const EXPECT_KEYS = ["skill_invoked", "must_include", "must_not_include", "no_repo_writes", "no_write_before_turn", "files_exist", "files_absent", "run_log_rows", "cli_after", "judge"];
+  const EXPECT_KEYS = ["skill_invoked", "must_include", "must_not_include", "no_repo_writes", "no_write_before_turn", "files_exist", "files_absent", "run_log_rows", "run_log_rows_min", "cli_after", "judge"];
   const CASE_KEYS = ["id", "skill", "fixture", "variant", "turns", "beta", "expect"];
   const strList = (v) => Array.isArray(v) && v.every((x) => typeof x === "string");
 
@@ -259,6 +259,7 @@ describe("setup eval cases", () => {
     for (const k of ["must_include", "must_not_include", "files_exist", "files_absent", "judge"]) if (k in e && !strList(e[k])) p.push(k);
     if ("no_repo_writes" in e && typeof e.no_repo_writes !== "boolean") p.push("no_repo_writes");
     if ("run_log_rows" in e && !(Number.isInteger(e.run_log_rows) && e.run_log_rows >= 0)) p.push("run_log_rows");
+    if ("run_log_rows_min" in e && !(Number.isInteger(e.run_log_rows_min) && e.run_log_rows_min >= 1)) p.push("run_log_rows_min");
     if ("no_write_before_turn" in e) {
       const n = e.no_write_before_turn;
       if (!Number.isInteger(n) || n < 1 || n > c.turns.length || c.turns[n - 1] !== "{{yes}}") p.push("no_write_before_turn must point at a {{yes}} turn (1-based)");

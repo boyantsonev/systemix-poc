@@ -193,6 +193,7 @@ describe("check and brief evals", () => {
     files_exist: "strings",
     files_absent: "strings",
     run_log_rows: "integer",
+    run_log_rows_min: "integer",
     cli_after: "cli",
     judge: "strings",
   };
