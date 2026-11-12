@@ -36,20 +36,20 @@ const range = { date_from: "-30d" };
 
 export const INSIGHTS = [
   {
-    name: "Funnel (web): visit → copy plugin install → checkout",
-    description: "Person funnel over the web steps. The server steps have no person; see the weekly counts insight.",
+    name: "Funnel: visit → copy plugin install → setup request",
+    description: "Person funnel over the site's steps. What happens in Claude Code afterwards is not tracked (DSC-23).",
     query: {
       kind: "InsightVizNode",
       source: {
         kind: "FunnelsQuery",
-        series: ["$pageview", "install_command_copied", "checkout_clicked"].map((e) => node(step(e))),
+        series: ["$pageview", "install_command_copied", "setup_requested"].map((e) => node(step(e))),
         funnelsFilter: { funnelWindowInterval: 14, funnelWindowIntervalUnit: "day" },
         dateRange: range,
       },
     },
   },
   {
-    name: "AARRR steps, weekly counts (web + server)",
+    name: "AARRR steps, weekly counts",
     description: `Every main step side by side: ${MAIN_FUNNEL.join(" → ")}.`,
     query: {
       kind: "InsightVizNode",
@@ -57,29 +57,21 @@ export const INSIGHTS = [
     },
   },
   {
-    name: "Free scores by score band",
-    description: "score_served from the report service, by score band.",
-    query: {
-      kind: "InsightVizNode",
-      source: { kind: "TrendsQuery", interval: "week", series: [node(step("score_served"))], breakdownFilter: { breakdown: "score_band", breakdown_type: "event" }, dateRange: { date_from: "-90d" } },
-    },
-  },
-  {
     name: "Revenue signals",
-    description: "Demand before launch, checkouts, paid reports, refusals, audit and sprint requests.",
+    description: "Sponsor clicks and setup requests.",
     query: {
       kind: "InsightVizNode",
       source: {
         kind: "TrendsQuery",
         interval: "week",
-        series: ["report_notify_requested", "checkout_clicked", "report_delivered", "report_refused", "audit_requested", "book_a_call"].map((e) => node(step(e))),
+        series: ["sponsor_clicked", "setup_requested"].map((e) => node(step(e))),
         dateRange: { date_from: "-90d" },
       },
     },
   },
   {
     name: "Acquisition and referral: visits by utm_source",
-    description: "quick-report and plugin are the referral channels (links inside reports and the plugin README).",
+    description: "plugin is the referral channel (links in the plugin README).",
     query: {
       kind: "InsightVizNode",
       source: { kind: "TrendsQuery", interval: "week", series: [node({ event: "$pageview" })], breakdownFilter: { breakdown: "utm_source", breakdown_type: "event" }, dateRange: { date_from: "-90d" } },
@@ -87,7 +79,7 @@ export const INSIGHTS = [
   },
   {
     name: "Retention: returning visitors (weekly)",
-    description: "Visitors who come back. The plugin itself sends no id, so repeat scores are not tied to a person.",
+    description: "Visitors who come back. The plugin sends nothing, so use in Claude Code is not tied to a person.",
     query: {
       kind: "InsightVizNode",
       source: {

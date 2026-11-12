@@ -13,8 +13,8 @@ Systemix is the design system agent for AI-native products. It sets up your desi
    /plugin install systemix@systemix
    ```
 
-2. **Run `/systemix:check --score`** in your repo. It reads your code on your machine and prints a score out of 100, per area. Nothing is sent.
-3. **Fix what costs points.** Do it yourself, or buy the quick report, which lists each fix, biggest first.
+2. **Run `/systemix:setup`** in your repo. It proposes your design system and its rules (`design/rules.md`) from your code; you approve each file. Nothing is sent.
+3. **Run `/systemix:check`** on a folder of UI. It lists what breaks a rule, biggest first, with the fix for each.
 
 No Claude Code? Run `npx @getsystemix/cli audit report --dirs src` in your repo.
 

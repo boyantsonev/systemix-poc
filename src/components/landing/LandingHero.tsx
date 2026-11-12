@@ -11,7 +11,7 @@ export function LandingHero() {
         {hero.h1}
       </h1>
       <p data-reveal-line="1" className="mb-9 max-w-lg text-[16px] leading-relaxed text-muted-foreground">{hero.body}</p>
-      <div data-reveal-line="2" className="flex flex-col items-start gap-4">
+      <div data-reveal-line="2" id="install" className="flex scroll-mt-24 flex-col items-start gap-4">
         <PluginInstall location="hero" />
         <p className="font-mono text-[12px] text-muted-foreground/70">{hero.fineprint}</p>
       </div>

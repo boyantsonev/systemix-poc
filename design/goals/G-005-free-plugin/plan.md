@@ -15,5 +15,10 @@ The plan is the recommendation accepted on 2026-11-12 (decisions.md): PR 1 the p
 - PR 1: the plugin's README and the site's command names already say the new commands, so nothing tells a user to run a command that no longer exists; the rest of the site waits for PR 2.
 - PR 1: the sponsor link points at github.com/sponsors/boyantsonev, which the founder still has to switch on.
 
+- PR 2: the home page is rebuilt on DSC-23: the approved hero (G-002 E1, unchanged), the four commands under the three pillars, a "rules as data" section with a real starter row and the starter's real check result (10 findings, 4 blocks, 6 flags), our own score, three steps to a first check, pricing as two offers (the free plugin with the sponsor link; setup for a product), the FAQ and the install again.
+- PR 2: the setup offer reads "Priced per product" until `NEXT_PUBLIC_SETUP_FROM` is set on Vercel; then it reads "from <figure>" with no code change. E7 stays open for the figure.
+- PR 2: removed /report, /audit, /api/report and what only they used (the report access check, the server analytics, the audit form, the thinking-states component). /report redirects to /#install and /audit to /#pricing. The funnel's revenue steps are now sponsor_clicked and setup_requested.
+- PR 2: the docs no longer sell the quick report, the audit or the sprint; a test fails if €9.99, €499, €990, "quick report" or a "full audit" link comes back (E6).
+
 ## Tested · not verified
 - PR 1: the four commands run by Claude in a logged-in Claude Code on a real repo (E8, the founder's).

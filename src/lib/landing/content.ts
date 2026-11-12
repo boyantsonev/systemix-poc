@@ -1,10 +1,12 @@
 // Landing copy registry: the single place to edit the site's words.
-// Copy deck: docs/feature/ai-native-ds-kit-beta/copy-deck.md (G-002, shaped 2026-10-31).
-// Vocabulary (one term per thing, every page): design system agent · free score ·
-// quick report · full audit · design sprint · "you approve every step".
-// Not in marketing copy: the loop, the automation, ghost mode, Learning Kit, "the rot".
+// DSC-23 (G-005): the plugin is free and the whole product; we set it up for a product, priced
+// per product. Copy deck history: docs/feature/ai-native-ds-kit-beta/copy-deck.md.
+// Vocabulary (one term per thing, every page): design system agent · the plugin · the four
+// commands by name · rules (design/rules.md) · setup (the paid service) · "you approve every step".
+// Not in marketing copy: the loop as a noun on its own, the automation, ghost mode, quick report,
+// full audit, design sprint as a product, "the rot".
 
-import { FULL_AUDIT, SPRINT, quickReportPrice } from "@/lib/pricing";
+import { SETUP_MAILTO, SPONSOR_URL, setupPrice } from "@/lib/pricing";
 
 export const GITHUB_URL = "https://github.com/boyantsonev/systemix-poc";
 export const LINKEDIN_URL = "https://www.linkedin.com/in/boyantsonev/";
@@ -16,13 +18,8 @@ export const AUDIT_COMMAND = "npx @getsystemix/cli audit";
 export const PLUGIN_MARKETPLACE = "boyantsonev/systemix-poc";
 export const PLUGIN_ADD_COMMAND = `/plugin marketplace add ${PLUGIN_MARKETPLACE}`;
 export const PLUGIN_INSTALL_COMMAND = "/plugin install systemix@systemix";
-export const PLUGIN_SCORE_COMMAND = "/systemix:check --score";
+export const PLUGIN_FIRST_COMMAND = "/systemix:setup";
 export const INIT_COMMAND = "npx @getsystemix/cli init";
-export const CALL_MAILTO = "mailto:boyan.works@gmail.com?subject=Systemix%20design%20sprint";
-
-// The audit request falls back to email until a checkout exists for it. The quick
-// report's checkout link and price live in src/lib/pricing.ts.
-export const AUDIT_CHECKOUT_URL = "mailto:boyan.works@gmail.com?subject=Systemix%20full%20audit";
 
 /** The positioning line (G-002, approved). */
 export const POSITIONING = "The design system agent for AI-native products.";
@@ -32,51 +29,88 @@ export const POSITIONING = "The design system agent for AI-native products.";
 export const hero = {
   h1: POSITIONING,
   body: "Systemix sets up your design system, keeps it from rotting, and runs your design sprints, inside Claude Code.",
-  fineprint: "Open source · MIT · your files, your repo",
+  fineprint: "Free · open source (MIT) · nothing leaves your machine",
 };
 
 export type HeroFact = { label: string; value: string };
 
 export const heroFacts = {
-  label: "What you get",
+  label: "The plugin",
   items: [
-    { label: "Price", value: "€0" },
+    { label: "Price", value: "free" },
+    { label: "Commands", value: "4" },
     { label: "Runs in", value: "Claude Code" },
-    { label: "Your code leaves your machine", value: "never" },
+    { label: "Sent anywhere", value: "nothing" },
     { label: "A person approves", value: "every step" },
   ] satisfies HeroFact[],
 };
 
-// ── What Systemix does: three pillars, each tagged with what ships today (G-002 E2) ──
+// ── The four commands, grouped by the pitch's three pillars ──────────────────
 
-export type Pillar = { key: string; tag: string; title: string; body: string; command: string };
+export type Command = { key: string; pillar: string; command: string; when: string; body: string };
 
-export const pillars = {
-  label: "What Systemix does",
+export const commands = {
+  label: "Four commands",
   heading: "Deploy it. Keep it. Grow it in sprints.",
   items: [
     {
-      key: "deploy",
-      tag: "in the plugin · partial",
-      title: "Deploys your design system",
-      body: "A short interview drafts your design system, or the audit proposes one from the code you have. Every file waits for your yes.",
+      key: "setup",
+      pillar: "Deploy",
       command: "/systemix:setup",
+      when: "once, to start",
+      body: "Builds your design system and its rules from the code you ship, from a short interview, or from Claude Design. Every file waits for your yes.",
     },
     {
-      key: "keep",
-      tag: "in the plugin",
-      title: "Keeps it from rotting",
-      body: "A free, repeatable score and audits that find raw colours, one-off sizes and duplicate components. Same code, same numbers.",
-      command: "/systemix:check --score",
+      key: "brief",
+      pillar: "Keep",
+      command: "/systemix:brief",
+      when: "before you build",
+      body: "One screen for the agent: the rules that apply, the tokens and components to start from, and what was already decided.",
     },
     {
-      key: "sprint",
-      tag: "in the plugin · beta",
-      title: "Runs your design sprints",
-      body: "One sentence becomes a goal, then pictures, a prototype in your components and a release. You approve every step.",
-      command: "/systemix:loop open",
+      key: "check",
+      pillar: "Keep",
+      command: "/systemix:check",
+      when: "before review",
+      body: "Pass, pass with flags or fail, rule by rule, with where and how to fix. Add --score for your readiness score out of 100.",
     },
-  ] satisfies Pillar[],
+    {
+      key: "loop",
+      pillar: "Sprint · beta",
+      command: "/systemix:loop",
+      when: "to run a goal",
+      body: "One sentence becomes a goal with evals, then pictures, code and a release. It stops at every gate for you.",
+    },
+  ] satisfies Command[],
+};
+
+// ── Rules as data: what makes the check trustworthy ──────────────────────────
+
+export const rules = {
+  label: "Your rules, as data",
+  heading: "Every rule is a row an agent can check.",
+  body: "Setup writes design/rules.md: one row per design, brand, voice or legal rule, each with its source and a test. Change a rule there and every command reads the new one. No skill keeps its own copy.",
+  // a real starter row and a real check result (packages/cli/templates/rules)
+  sample: {
+    file: "design/rules.md",
+    header: ["ID", "Rule", "Severity", "Test"],
+    rows: [
+      ["T1", "Colours come from tokens", "block", "script: css /#[0-9a-fA-F]{3,8}\\b/"],
+      ["T4", "No arbitrary text sizes", "flag", "script: code /\\btext-\\[\\d+(\\.\\d+)?px\\]/"],
+      ["C1", "One primary action per view", "flag", "review: more than one primary button?"],
+    ],
+  },
+  // the starter's own run on its known-bad samples: `systemix rules check design/evals/rules/known-bad`
+  result: {
+    command: "systemix rules check design/evals/rules/known-bad",
+    lines: [
+      { mark: "✗", id: "T1", where: "T1-raw-hex.css:2", what: "#ff3366", severity: "block" },
+      { mark: "!", id: "T4", where: "T4-arbitrary-size.tsx:1", what: "text-[13px]", severity: "flag" },
+    ],
+    more: "and 8 more",
+    verdict: "FAIL · 4 blocks, 6 flags",
+  },
+  footnote: "Each scripted rule has a sample of bad work that the check must catch before anyone relies on it.",
 };
 
 // ── Proof: this repo's own score ──────────────────────────────────────────────
@@ -84,81 +118,46 @@ export const pillars = {
 export const proof = {
   label: "Proof",
   heading: (score: number) => `Our own repo scores ${score} out of 100.`,
-  body: "We run Systemix on this site. The score isn't flattering, and that's the point.",
-  link: { label: "See how it's scored →", href: "/report" },
+  body: "We run Systemix on this site. The score isn't flattering, and that's the point: it names what to fix first.",
+  link: { label: "How the score works →", href: "/docs" },
 };
 
 // ── How it works ──────────────────────────────────────────────────────────────
 
 export const howItWorks = {
   label: "How it works",
-  heading: "Three steps, two minutes.",
+  heading: "Three steps to your first check.",
   steps: [
-    { n: "1", title: "Install the plugin", body: "Two commands in Claude Code. No account." },
-    { n: "2", title: "Run /systemix:check --score", body: "It reads your repo on your machine. Nothing is sent." },
-    {
-      n: "3",
-      title: "Fix what costs points",
-      body: `Do it yourself, or get the ${quickReportPrice()} quick report that lists each fix, biggest first.`,
-    },
+    { n: "1", title: "Install the plugin", body: "Two commands in Claude Code. No account, nothing to configure." },
+    { n: "2", title: "Run /systemix:setup", body: "It proposes your design system and its rules from your code. You approve each file." },
+    { n: "3", title: "Run /systemix:check", body: "On any folder, before review. Fix what fails, then build the next screen with /systemix:brief." },
   ],
 };
 
-// ── Pricing (approved ladder, DSC-16 and DSC-20) ─────────────────────────────
+// ── The offer: free plugin, sponsor it, or have it set up ────────────────────
 
-export type PricingTier = {
-  key: string;
-  name: string;
-  price: string;
-  priceNote?: string;
-  body: string;
-  cta: { label: string; href: string; event: "audit_requested" | "book_a_call" | "quick_report_clicked" | "free_score_clicked" };
-  highlight: boolean;
-};
-
-export const pricing = {
+export const offer = {
   label: "Pricing",
-  heading: "Start free. Pay when it earns it.",
-  tiers: [
-    {
-      key: "free",
-      name: "Free score",
-      price: "€0",
-      body: "The plugin, every skill, and your score per area.",
-      cta: { label: "Get your free score →", href: "/report", event: "free_score_clicked" },
-      highlight: false,
-    },
-    {
-      key: "quick-report",
-      name: "Quick report",
-      price: quickReportPrice(),
-      priceNote: "instant",
-      body: "Everything that costs points, biggest first, with a fix for each.",
-      cta: { label: "See the quick report →", href: "/report", event: "quick_report_clicked" },
-      highlight: true,
-    },
-    {
-      key: "audit",
-      name: "Full audit",
-      price: FULL_AUDIT.price,
-      priceNote: FULL_AUDIT.turnaround,
-      body: "Drafted by AI, reviewed and rewritten by a person: what to fix, in what order, and why.",
-      cta: { label: "Request the audit →", href: "/audit", event: "audit_requested" },
-      highlight: false,
-    },
-    {
-      key: "sprint",
-      name: "Design sprint",
-      price: SPRINT.price,
-      priceNote: SPRINT.length,
-      body: "We plan, prototype in your components and update your system with you.",
-      cta: { label: "Book a sprint →", href: CALL_MAILTO, event: "book_a_call" },
-      highlight: false,
-    },
-  ] satisfies PricingTier[] as PricingTier[],
+  heading: "The plugin is free. Setup is what we sell.",
+  free: {
+    name: "The plugin",
+    price: "Free",
+    note: "MIT · every command",
+    body: "Everything on this page: the four commands, the rules check and the score. Yours to keep, change and share.",
+    cta: { label: "Install the plugin", href: "/#install", event: "install_cta_clicked" as const },
+    sponsor: { label: "Sponsor the work", href: SPONSOR_URL, event: "sponsor_clicked" as const },
+  },
+  setup: {
+    name: "Set up for your product",
+    price: setupPrice(),
+    note: "scoped with you",
+    body: "We do the discovery with you, build the design system and its rules from your product, and run the first loops together. Every product is different, so we scope it first.",
+    includes: ["Discovery of your product and its use cases", "The design system and rules.md from your code", "Known-bad samples, so the check can be trusted", "Your first loops, run together"],
+    cta: { label: "Talk about your product", href: SETUP_MAILTO, event: "setup_requested" as const },
+  },
 };
 
-// ── FAQ: four questions ───────────────────────────────────────────────────────
+// ── FAQ ───────────────────────────────────────────────────────────────────────
 
 export type FaqItem = { q: string; a: string };
 
@@ -167,20 +166,20 @@ export const faq = {
   heading: "Questions",
   items: [
     {
-      q: "Do I own the files?",
-      a: "Yes. Everything is plain files in your repo. Stop anytime and keep them.",
-    },
-    {
-      q: "Does it change my code without asking?",
-      a: "No. It proposes; you approve every file.",
+      q: "Is it really free?",
+      a: "Yes. The plugin is open source under MIT, with every command. You pay only if you want us to set it up for your product.",
     },
     {
       q: "What leaves my machine?",
-      a: `Nothing, for the free score. The ${quickReportPrice()} quick report sends only numbers and file names, never code, and only after you say yes. /systemix:check --score shows you what it would send first.`,
+      a: "Nothing. The plugin bundles its own scan, makes no network calls and sends nothing anywhere.",
+    },
+    {
+      q: "Does it change my code without asking?",
+      a: "No. It proposes; you approve every file. A gate in /systemix:loop is a ruling only you can make.",
     },
     {
       q: "I don't have a design system yet.",
-      a: "Run /systemix:setup and it drafts one with you, by interview or from the code you have.",
+      a: "Run /systemix:setup. It drafts one with you, from a short interview or from the code you already have.",
     },
   ] satisfies FaqItem[],
 };
@@ -188,7 +187,7 @@ export const faq = {
 // ── Bottom CTA ────────────────────────────────────────────────────────────────
 
 export const bottomCta = {
-  heading: "Get your free score.",
+  heading: "Install the plugin. It's free.",
   fineprint: "Open source · MIT · your files, your repo",
 };
 
@@ -196,18 +195,19 @@ export const bottomCta = {
 
 export const nav = {
   links: [
+    { label: "Commands", href: "/#commands" },
     { label: "How it works", href: "/#how-it-works" },
-    { label: "Free score", href: "/report" },
     { label: "Pricing", href: "/#pricing" },
     { label: "Docs", href: "/docs" },
   ],
-  cta: { label: "Get your free score", href: "/report" },
+  cta: { label: "Install the plugin", href: "/#install" },
 };
 
 export const footer = {
   credit: "Made by Boyan Tsonev.",
   links: [
     { label: "GitHub", href: GITHUB_URL },
+    { label: "Sponsor", href: SPONSOR_URL },
     { label: "LinkedIn", href: LINKEDIN_URL },
     { label: "Docs", href: "/docs" },
   ],

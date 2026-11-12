@@ -7,8 +7,6 @@ const SITE_URL = "https://getsystemix.vercel.app";
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "/",
-    "/audit",
-    "/report",
     ...source.getPages().map((page) => page.url),
     ...experimentsSource.getPages().map((page) => page.url),
   ];

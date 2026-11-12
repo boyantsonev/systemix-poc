@@ -46,7 +46,7 @@ describe("the transitions.dev license is kept (E8)", () => {
   it("motion.css names the license, and each snippet keeps its transitions.dev comment", () => {
     const css = read("src/styles/motion.css");
     expect(css).toContain("Transitions.dev License");
-    for (const name of ["Texts reveal", "Skeleton loader and reveal", "UI generation", "Number pop-in", "Donut chart", "Text morph", "Accordion expand", "Thinking states"]) {
+    for (const name of ["Texts reveal", "Skeleton loader and reveal", "UI generation", "Number pop-in", "Donut chart", "Text morph", "Accordion expand"]) {
       expect(css).toContain(`transitions.dev / ${name}`);
     }
   });

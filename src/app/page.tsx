@@ -9,18 +9,19 @@ import {
   HowItWorks,
   LandingFooter,
   LandingNav,
-  Pillars,
+  Commands,
   Pricing,
   Proof,
+  Rules,
 } from "@/components/landing/sections";
 import { faq } from "@/lib/landing/content";
 
-// Six sections (G-002, copy deck docs/feature/ai-native-ds-kit-beta/copy-deck.md):
-// hero · what it does · proof · how it works · pricing · FAQ, then the install again.
+// DSC-23 (G-005): hero · the four commands · rules as data · proof · how it works · pricing
+// (free plugin, sponsor, setup) · FAQ, then the install again.
 export const metadata: Metadata = {
   title: "Systemix: the design system agent for Claude Code",
   description:
-    "Sets up your design system, keeps it from rotting and runs design sprints. Free AI-readiness score, computed on your machine.",
+    "A free Claude Code plugin: it sets up your design system and its rules, checks your agents' work against them, and runs design sprints. Nothing leaves your machine.",
   alternates: { canonical: "/" },
 };
 
@@ -34,8 +35,11 @@ export default function LandingPage() {
           <SectionTrack name="hero">
             <HeroRow />
           </SectionTrack>
-          <SectionTrack name="what-it-does">
-            <Pillars />
+          <SectionTrack name="commands">
+            <Commands />
+          </SectionTrack>
+          <SectionTrack name="rules">
+            <Rules />
           </SectionTrack>
           <SectionTrack name="proof">
             <Proof />

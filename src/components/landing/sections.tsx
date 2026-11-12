@@ -18,9 +18,10 @@ import {
   heroFacts,
   howItWorks,
   nav,
-  pillars,
-  pricing,
+  commands,
+  offer,
   proof,
+  rules,
 } from "@/lib/landing/content";
 
 // ── The soft grid (dense soft-grid pattern) ──────────────────────────────────
@@ -104,7 +105,7 @@ export function LandingNav() {
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
             <Button variant="secondary" size="sm" asChild className="hidden md:inline-flex">
-              <TrackedLink href={nav.cta.href} event="free_score_clicked" location="nav">
+              <TrackedLink href={nav.cta.href} event="install_cta_clicked" location="nav">
                 {nav.cta.label}
               </TrackedLink>
             </Button>
@@ -146,28 +147,85 @@ export function HeroRow() {
   );
 }
 
-// ── What Systemix does: the three pillars ────────────────────────────────────
+// ── The four commands ────────────────────────────────────────────────────────────────────────────────────────────
 
-export function Pillars() {
+export function Commands() {
   return (
-    <Section id="what-it-does">
+    <Section id="commands">
       <div className="max-w-3xl">
-        <Eyebrow>{pillars.label}</Eyebrow>
-        <SectionHeading>{pillars.heading}</SectionHeading>
+        <Eyebrow>{commands.label}</Eyebrow>
+        <SectionHeading>{commands.heading}</SectionHeading>
       </div>
-      <div className="mt-12 grid gap-4 sm:gap-5 lg:grid-cols-3">
-        {pillars.items.map((p, i) => (
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+        {commands.items.map((c, i) => (
           <div
-            key={p.key}
+            key={c.key}
             data-reveal-card={i}
             className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-6 shadow-[var(--shadow-panel)]"
           >
-            <p className="tva-label text-[10px] text-highlight">{p.tag}</p>
-            <h3 className="mt-3 text-[1.15rem] font-bold leading-snug">{p.title}</h3>
-            <p className="mt-3 flex-1 text-[14px] leading-relaxed text-muted-foreground">{p.body}</p>
-            <code className="mt-5 font-mono text-[12px] text-foreground/80">{p.command}</code>
+            <p className="tva-label text-[10px] text-highlight">{c.pillar}</p>
+            <code className="mt-3 font-mono text-[15px] font-semibold text-foreground">{c.command}</code>
+            <p className="mt-1 font-mono text-[11px] text-muted-foreground">{c.when}</p>
+            <p className="mt-4 flex-1 text-[14px] leading-relaxed text-muted-foreground">{c.body}</p>
           </div>
         ))}
+      </div>
+    </Section>
+  );
+}
+
+// ── Rules as data: a real starter row and a real check result ────────────────
+
+export function Rules() {
+  const { sample, result } = rules;
+  return (
+    <Section id="rules">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start">
+        <div>
+          <Eyebrow>{rules.label}</Eyebrow>
+          <SectionHeading>{rules.heading}</SectionHeading>
+          <Lead>{rules.body}</Lead>
+          <p className="mt-4 max-w-xl text-[13px] leading-relaxed text-muted-foreground">{rules.footnote}</p>
+        </div>
+        <div data-reveal-card="1" className="flex min-w-0 flex-col gap-4">
+          <div className="min-w-0 rounded-[var(--radius-screen)] border border-border bg-card p-5 shadow-[var(--shadow-panel)]">
+            <p className="font-mono text-[11px] text-muted-foreground">{sample.file}</p>
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full min-w-[520px] border-collapse font-mono text-[12px]">
+                <thead>
+                  <tr>
+                    {sample.header.map((h) => (
+                      <th key={h} className="border-b border-border px-2 py-1.5 text-left font-semibold text-muted-foreground">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sample.rows.map((r) => (
+                    <tr key={r[0]}>
+                      {r.map((cell, i) => (
+                        <td key={i} className={cn("border-b border-border/60 px-2 py-1.5 align-top", i === 3 ? "text-muted-foreground" : "text-foreground")}>
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="terminal min-w-0 overflow-x-auto rounded-[var(--radius-screen)] p-5 font-mono text-[12px] leading-relaxed">
+            <p className="opacity-60">$ {result.command}</p>
+            {result.lines.map((l) => (
+              <p key={l.id} className="mt-1 whitespace-nowrap">
+                {l.mark} {l.id} {l.where} <span className="opacity-70">{l.what}</span>
+              </p>
+            ))}
+            <p className="mt-1 opacity-60">{result.more}</p>
+            <p className="mt-3 font-semibold">{result.verdict}</p>
+          </div>
+        </div>
       </div>
     </Section>
   );
@@ -248,34 +306,58 @@ export function HowItWorks() {
 // ── Pricing ladder ────────────────────────────────────────────────────────────
 
 export function Pricing() {
+  const { free, setup } = offer;
   return (
     <Section id="pricing">
       <div className="max-w-3xl">
-        <Eyebrow>{pricing.label}</Eyebrow>
-        <SectionHeading>{pricing.heading}</SectionHeading>
+        <Eyebrow>{offer.label}</Eyebrow>
+        <SectionHeading>{offer.heading}</SectionHeading>
       </div>
-
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-5">
-        {pricing.tiers.map((t, i) => (
-          <div
-            key={t.key}
-            data-reveal-card={i}
-            className={cn(
-              "flex flex-col rounded-[var(--radius-screen)] border bg-card p-6 shadow-[var(--shadow-panel)]",
-              t.highlight ? "border-primary" : "border-border",
-            )}
-          >
-            <p className="tva-label mb-3 text-[10px] text-muted-foreground">{t.name}</p>
-            <p className="text-[1.5rem] font-bold leading-none">{t.price}</p>
-            {t.priceNote && <p className="mt-1 font-mono text-[11px] text-muted-foreground">{t.priceNote}</p>}
-            <p className="mt-4 flex-1 text-[13px] leading-relaxed text-muted-foreground">{t.body}</p>
-            <Button variant={t.highlight ? "secondary" : "outline"} size="sm" className="mt-5" asChild>
-              <TrackedLink href={t.cta.href} event={t.cta.event} location={`pricing-${t.key}`}>
-                {t.cta.label}
+      <div className="mt-12 grid gap-4 sm:gap-5 md:grid-cols-2">
+        <div data-reveal-card="0" className="flex flex-col rounded-[var(--radius-screen)] border border-primary bg-card p-7 shadow-[var(--shadow-panel)]">
+          <p className="tva-label text-[10px] text-muted-foreground">{free.name}</p>
+          <p className="mt-3 text-[1.75rem] font-bold leading-none">{free.price}</p>
+          <p className="mt-1 font-mono text-[11px] text-muted-foreground">{free.note}</p>
+          <p className="mt-4 flex-1 text-[14px] leading-relaxed text-muted-foreground">{free.body}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Button variant="secondary" size="sm" asChild>
+              <TrackedLink href={free.cta.href} event={free.cta.event} location="pricing-free">
+                {free.cta.label}
+              </TrackedLink>
+            </Button>
+            <TrackedLink
+              href={free.sponsor.href}
+              event={free.sponsor.event}
+              location="pricing-free"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[13px] text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              {free.sponsor.label} →
+            </TrackedLink>
+          </div>
+        </div>
+        <div data-reveal-card="1" id="setup" className="flex flex-col rounded-[var(--radius-screen)] border border-border bg-card p-7 shadow-[var(--shadow-panel)]">
+          <p className="tva-label text-[10px] text-muted-foreground">{setup.name}</p>
+          <p className="mt-3 text-[1.75rem] font-bold leading-none">{setup.price}</p>
+          <p className="mt-1 font-mono text-[11px] text-muted-foreground">{setup.note}</p>
+          <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">{setup.body}</p>
+          <ul className="mt-4 flex flex-1 flex-col gap-1.5 text-[13px] text-foreground">
+            {setup.includes.map((x) => (
+              <li key={x} className="flex gap-2">
+                <span aria-hidden className="text-highlight">·</span>
+                {x}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6">
+            <Button variant="outline" size="sm" asChild>
+              <TrackedLink href={setup.cta.href} event={setup.cta.event} location="pricing-setup">
+                {setup.cta.label}
               </TrackedLink>
             </Button>
           </div>
-        ))}
+        </div>
       </div>
     </Section>
   );

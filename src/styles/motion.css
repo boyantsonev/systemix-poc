@@ -172,61 +172,9 @@ html.js .t-acc[data-open="true"] .t-acc-panel-inner { opacity: 1; filter: blur(0
 .t-acc-chevron path { vector-effect: non-scaling-stroke; }
 .t-acc[data-open="true"] .t-acc-chevron { transform: scaleY(-1); }
 
-/* ── transitions.dev / Thinking states (28): what /systemix:check --score does ───────── */
-.t-think { position: relative; display: inline-block; text-align: left; }
-.t-think-sizer { display: block; visibility: hidden; white-space: nowrap; }
-.t-think-text {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: block;
-  color: var(--muted-foreground);
-  white-space: nowrap;
-  transform: translateY(0);
-  filter: blur(0);
-  opacity: 1;
-  transition:
-    transform var(--motion-quick) var(--motion-ease-in-out),
-    filter var(--motion-quick) var(--motion-ease-in-out),
-    opacity var(--motion-quick) var(--motion-ease-in-out);
-}
-.t-think-text::before {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: linear-gradient(90deg,
-    transparent 0%, transparent 40%,
-    var(--foreground) 50%,
-    transparent 60%, transparent 100%);
-  background-size: 400% 100%;
-  background-repeat: no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: t-think-shimmer var(--motion-shimmer) var(--motion-ease-linear) infinite;
-}
-@keyframes t-think-shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: 0% 0; }
-}
-.t-think-text.is-exit {
-  transform: translateY(calc(var(--motion-distance-micro) * -1));
-  filter: blur(var(--motion-blur-small));
-  opacity: 0;
-}
-.t-think-text.is-enter-start {
-  transition: none;
-  transform: translateY(var(--motion-distance-micro));
-  filter: blur(var(--motion-blur-small));
-  opacity: 0;
-}
-
 /* ── Reduced motion: every transition and animation above is off (E4) ────────── */
 /* motion-ready is never set for these readers, so nothing starts hidden; this also
-   stops the transitions that run without it (accordion, copy morph, thinking states). */
+   stops the transitions that run without it (accordion, copy morph). */
 @media (prefers-reduced-motion: reduce) {
   [data-reveal-line],
   [data-reveal-card],
@@ -236,10 +184,8 @@ html.js .t-acc[data-open="true"] .t-acc-panel-inner { opacity: 1; filter: blur(0
   .t-morph-swap > span,
   .t-acc-panel,
   .t-acc-panel-inner,
-  .t-acc-chevron,
-  .t-think-text {
+  .t-acc-chevron {
     transition: none !important;
     animation: none !important;
   }
-  .t-think-text::before { display: none !important; }
 }

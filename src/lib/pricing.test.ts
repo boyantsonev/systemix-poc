@@ -1,16 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_QUICK_REPORT_PRICE, quickReportCheckoutUrl, quickReportPrice } from "./pricing";
+import { SPONSOR_URL, setupPrice } from "./pricing";
 
-describe("pricing settings", () => {
-  it("uses the default price until one is set", () => {
-    expect(quickReportPrice({})).toBe(DEFAULT_QUICK_REPORT_PRICE);
-    expect(quickReportPrice({ NEXT_PUBLIC_QUICK_REPORT_PRICE: " €4.99 " })).toBe("€4.99");
+describe("the offer (DSC-23)", () => {
+  it("says the setup is priced per product until a starting price is set", () => {
+    expect(setupPrice({})).toBe("Priced per product");
+    expect(setupPrice({ NEXT_PUBLIC_SETUP_FROM: "  " })).toBe("Priced per product");
+    expect(setupPrice({ NEXT_PUBLIC_SETUP_FROM: " €N " })).toBe("from €N");
   });
 
-  it("has no checkout link until an https one is set", () => {
-    expect(quickReportCheckoutUrl({})).toBeNull();
-    expect(quickReportCheckoutUrl({ NEXT_PUBLIC_QUICK_REPORT_CHECKOUT_URL: "http://shop.example/buy" })).toBeNull();
-    expect(quickReportCheckoutUrl({ NEXT_PUBLIC_QUICK_REPORT_CHECKOUT_URL: "not a url" })).toBeNull();
-    expect(quickReportCheckoutUrl({ NEXT_PUBLIC_QUICK_REPORT_CHECKOUT_URL: "https://shop.example/buy/1" })).toBe("https://shop.example/buy/1");
+  it("links the sponsor page over https", () => {
+    expect(new URL(SPONSOR_URL).protocol).toBe("https:");
   });
 });
