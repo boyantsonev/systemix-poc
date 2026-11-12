@@ -53,10 +53,13 @@ Nothing unsourced. A brief never says a ruling was made.
 
 ## 6 · Show, then write
 
-Show the brief in full in this reply, every heading as written, never a summary; and the
-context-pack diff from step 4 if any. Ask: **"Write B-NNN? (yes / change something)"**. After the
-yes, write the brief (and the pack diff only if that was also approved). Run
-`{{CLI}} loops check --json`.
+Show the brief in full in this reply's final message, as the file will read: the frontmatter,
+the `#` title and the five `##` headings literally (`## Question`, `## Options`,
+`## What we already know`, `## Sources`, `## Who rules`), never a summary; and the context-pack
+diff from step 4 if any. Ask: **"Write B-NNN? (yes / change something)"**. After the yes, write
+the brief exactly as shown (and the pack diff only if that was also approved). Run
+`{{CLI}} loops check --json`; if it names a problem in the brief, fix it and show the fixed file
+in full.
 
 ## 7 · Reply
 

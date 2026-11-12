@@ -45,7 +45,7 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json` bef
 
 | Step | The coding agent's part |
 |---|---|
-| product.design | Explore **2 to 3 variants in real code** on a draft branch, each built from the rules and tokens. One run per variant, its own files only: `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" rules check <its files> --json`; quote each run's `result`, `blocks` and `flags`. Render the tokens with `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" preview --json` (see `${CLAUDE_PLUGIN_ROOT}/skills/shared/preview.md`): the page shows the tokens, not the variants, so point to each variant by its files. **At most 3 rounds.** Then stop at the gate: **a person picks** a variant, or none. |
+| product.design | Explore **2 to 3 variants in real code** on a draft branch, each built from the rules and tokens. See below. **At most 3 rounds.** Then stop at the gate: **a person picks** a variant, or none. |
 | product.validate | The brief for the decide gate (`decide`). |
 | build.plan | `plan.md` in the goal's folder: steps that each end working, which eval each closes, what the system must change, "Decisions for you". Then its gate. |
 | build.code | With its holder: a draft branch from the latest default branch, one concern per commit, built against the rules. Never merge. |
@@ -54,6 +54,19 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json` bef
 | build.ship | Release notes and the evals scorecard, and the brief. A person ships and tags. |
 | build.measure | See below. |
 | product.learn | See below. |
+
+**product.design.** One round, one yes:
+
+1. Show the plan: each variant in a line, its **full file list** (shared files included: a file
+   two variants use is in both lists), the draft branch name, and the `step:` move. A missing
+   fact (a price, a label) or a missing component: one question, with your **recommended** answer
+   that the yes approves (for a fact, a visible `TODO` placeholder in the draft).
+2. After the yes, write it all on the draft branch, then check each variant over every file it
+   touches: `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" rules check <its files> --json`. Quote each run's `result`, `blocks` and
+   `flags`; never skip a file.
+3. Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" preview --json` (`${CLAUDE_PLUGIN_ROOT}/skills/shared/preview.md`) and give the **preview**
+   path it printed for the tokens; the page doesn't show the variants, so name each by its files.
+4. Stop at the gate in this same reply, with the gate lines. Never pick a variant.
 
 **build.measure.** Same definitions every time.
 
@@ -64,7 +77,10 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json` bef
    tagged `variant`**. The capture code comes from the analytics vendor's own skill. Read numbers
    only from the connected source, each with its date range.
 3. Draft one entry for `design/evaluations.md`: date, goal, each eval with its result or "not
-   measured", the source of each number. Mark `evals.md`. Show both, wait for a yes, then write.
+   measured", the source of each number. Mark `evals.md`. Show both as a diff, wait for a yes,
+   then write. Not connected: this dated "not measured" entry is the **recommended** write, even
+   when an older entry says the same; the goal stays at build.measure (moving on unmeasured is the
+   person's call, a separate yes). Quote bars and kill-if lines with their file (`goal.md`).
 
 **product.learn.** One learning. The step has no gate and no person's role, so no decision line
 is written: the person's yes is a yes to a write, not a gate ruling.

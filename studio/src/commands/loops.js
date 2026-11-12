@@ -30,7 +30,8 @@ const USAGE = `
     init        copy the loop kit into design/: the product and build loops, joins, the roster,
                 the goal and brief grammar, context packs, LEARNINGS.md and evaluations.md.
                 Solo by default (one person holds every role, no deputy); --preset team is opt-in.
-                The holder is git config user.name unless --holder role=name says otherwise.
+                The holder is git config user.name unless --holder role=name says otherwise;
+                in the solo preset one --holder value (any role) fills every role.
                 Never overwrites. --dry-run lists what it would write.
     check       refuse anything malformed (exit 1), including any {{ under design/loops, goals or
                 context. --goals or --loops checks one half.
@@ -249,7 +250,7 @@ async function run(argv, ctx) {
     const r = init(ctx, root, parsed);
     if (r.usage) return ctx.usage(r.usage, USAGE);
     if (r.error) return refuse({ error: r.error, roles: r.roles, message: `no holder for ${r.roles.join(", ")}: git config user.name is empty; pass --holder role=name` });
-    if (json) ctx.json(r.result);
+    if (json) ctx.json({ ...r.result, preset: r.preset, holders: r.holders });
     else {
       ctx.out(`  ${r.dryRun ? "Would write" : "Wrote"} ${r.result.written.length} files (${r.preset} roster)${r.result.kept.length ? `, kept ${r.result.kept.length} that already exist` : ""}.`);
       r.result.written.forEach((f) => ctx.out(`    + ${f}`));

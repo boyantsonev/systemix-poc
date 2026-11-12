@@ -295,7 +295,8 @@ async function run(argv, ctx) {
       return ctx.fail(`no token file at ${tokensName}`);
     }
     const a = analyse(fs.readFileSync(tokensFile, "utf8"));
-    const out = { ok: a.ok, file: tokensName, themes: a.themes, missing: a.missing, raw: a.raw, pairs: a.pairs, problems: a.problems };
+    const lowest = a.pairs.length ? a.pairs.reduce((m, p) => (p.ratio < m.ratio ? p : m)) : null;
+    const out = { ok: a.ok, file: tokensName, themes: a.themes, missing: a.missing, raw: a.raw, pairs: a.pairs, lowest: lowest ? { fg: lowest.fg, bg: lowest.bg, theme: lowest.theme, ratio: lowest.ratio } : null, problems: a.problems };
     if (json) ctx.json(out);
     else if (a.ok) {
       const low = a.pairs.reduce((m, p) => Math.min(m, p.ratio), Infinity);

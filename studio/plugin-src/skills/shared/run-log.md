@@ -71,6 +71,11 @@ after the result and above the reply's closing commands, and do not wait for the
 One line, after the result: **Logged this run.** In the reply it sits above the closing commands
 (the stop report, or "Next"), so the reply still ends with what the person answers with.
 
+**The whole reply comes after this step.** The person reads only your last message, so text
+written before the log and rating commands is lost. Run them first, then write the full reply in
+one final message: the draft, file list, diff or brief the person is asked to say yes to goes in
+that message in full, never "the files above".
+
 ## Privacy
 
 - `note` holds only what the person said about this run, in their words. Never a summary of the

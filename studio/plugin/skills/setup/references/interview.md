@@ -58,6 +58,11 @@ Worked example. "Deep water, calm, trustworthy" and "calm":
 Say why in DESIGN.md: "Primary is a calm, deep blue because the product should feel like deep
 water: steady and trustworthy."
 
+In the proposal, name the primary's oklch value as written in the draft (for example
+`oklch(0.48 0.10 245)`) and give one line each for its hue, chroma and lightness, tied to the
+person's words: "hue 245 for deep water, chroma 0.10 because they said calm, lightness 0.48 so
+white text reads on it". These are values you chose, not computed ones; contrast is the CLI's.
+
 ## Draft (into the stage)
 
 - `<stage>/design/DESIGN.md` from `${CLAUDE_PLUGIN_ROOT}/templates/design/DESIGN.md`: the product, the
@@ -75,7 +80,7 @@ water: steady and trustworthy."
   `example: true` in their Source cell.
 
 If `tokens lint` on the stage reports a failing pair, move the lightness of one side and run it
-again. Quote the `ratio` the CLI printed; never estimate one.
+again. Quote the `ratio` the CLI printed, at least the `lowest` (setup step 4); never estimate one.
 
 ## Hand back
 

@@ -65,10 +65,10 @@
       ],
       "judge": [
         "It asks at most 8 questions and never two questions in one turn",
-        "It reflects answers back and explains how the colour association became an oklch value",
+        "It reflects answers back, names the oklch value it chose for the primary, and explains its hue, chroma and lightness from the person's colour association and feeling",
         "Every required role name appears in both the light and the dark theme of design/tokens.css",
         "design/rules.md has a voice or claims row built from the answers about 'cheap', 'hack' and 'guaranteed'",
-        "It quotes contrast ratios from the CLI and never estimates one"
+        "It quotes at least the lowest contrast ratio printed by tokens lint and never estimates one; counts, scores, totals, ratios and contrast values in the replies are quoted from the CLI output it ran (tokens lint, rules lint, rules eval, preview), never computed by the agent: counting items or summing counts into a total is a violation. Restating a standard (WCAG's 4.5:1), a file:line, or a value the agent itself proposes (a token value, a 4px spacing step) is not"
       ]
     }
   },
@@ -133,9 +133,9 @@
         }
       ],
       "judge": [
-        "Every number in the replies appears verbatim in the JSON of a CLI command it ran on this fixture (audit, rules lint, rules eval, tokens lint, rules check, preview)",
+        "Counts, scores, totals, ratios and contrast values in the replies are quoted from the CLI output it ran (audit, rules lint, rules eval, tokens lint, rules check, preview), never computed by the agent: counting items or summing counts into a total is a violation. Restating a standard (WCAG's 4.5:1), a file:line, or a value the agent itself proposes (a token value, a 4px spacing step) is not",
         "The palette clusters are sensible: near-identical values share a reference token and roles point at references",
-        "The proposed tokens.css covers at least 90% of the distinct literal colours, or names the token each merged colour went to",
+        "The proposed tokens.css covers at least 90% of the distinct literal colours, or names the exact token (for example --ref-violet-700) each merged colour went to",
         "The rules keep T1 to T4 and add at least one row for drift they don't cover, each scripted row with a known-bad file",
         "Open questions ask which of the two Button components stays, and quote the audit's openQuestions",
         ".gitignore contains design/.studio/ after the write"
@@ -254,7 +254,7 @@
         "It states the setup class and the token source as the audit computed them",
         "Before asking for a yes, it asks which token file is canonical (tokens.json, styles/theme.css or design/tokens.css), and it writes nothing until that is answered",
         "After the answer, the proposal and the write leave one file holding the token values: styles/theme.css points at design/tokens.css with var(--…) (or is removed), shown as a diff before the yes",
-        "It finds the components in src/widgets/ and names them with their paths, without assuming components/ui"
+        "It finds the components in src/widgets/ and names each with its path (for example src/widgets/Button.tsx), without assuming components/ui"
       ]
     }
   },
@@ -309,7 +309,7 @@
       ],
       "judge": [
         "The order is diff, then proposal, then approval, then write",
-        "Status words and counts are quoted from `tokens diff`, not computed by hand",
+        "The diff table keeps the CLI's status words (new, changed, same, conflicts-rule), and every count is quoted from `tokens diff` output (its JSON counts or its text summary line), never computed: a total the CLI didn't print is a violation",
         "Any conflicts-rule row names its rule ID and is not proposed as is"
       ]
     }
@@ -546,7 +546,7 @@
     "skill": "setup",
     "fixture": "F2-css-vars",
     "turns": [
-      "document our Button component from its source",
+      "/product-studio:setup --docs",
       "{{yes}}"
     ],
     "expect": {
@@ -571,9 +571,11 @@
         }
       ],
       "judge": [
+        "Before the yes it runs `docs props` on src/widgets/Button.tsx and quotes its rows in the reply",
         "The props table in docs/components/button.md has exactly the props `docs props` prints for the Button source",
         "The frontmatter is unchanged except the status moving off skeleton",
-        "Nothing is invented: every usage and state traces to the source"
+        "Nothing is invented: every usage and state traces to the source",
+        "The yes writes only the doc and docs/manifest.json: src/widgets/Button.tsx and the styles are unchanged"
       ]
     }
   }

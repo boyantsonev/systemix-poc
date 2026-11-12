@@ -1,9 +1,10 @@
 # Rules check
 
 The rules check of `/product-studio:check`: scripted findings from the CLI, the agent's answers to the
-questions a script can't test, and one verdict. Every number you print is a field of `rules check`
-or `audit` JSON, quoted: never count array items, add, subtract or work out a contrast ratio
-yourself (contrast belongs to `tokens lint` and its `pairs[].ratio`).
+questions a script can't test, and one verdict. Every count, total, share or ratio you print is a
+field of `rules check` or `audit` JSON, quoted: never count array items, add, subtract or work out
+a contrast ratio yourself (contrast belongs to `tokens lint` and its `pairs[].ratio`). Values in a
+rule's own text or a file's code (a 12px minimum, `#6d28d9`) are quotes, not counts.
 
 ## 1 · What to check
 
@@ -37,9 +38,11 @@ The repo has no rules yet. Give findings in this same reply, write nothing, then
 2. `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" rules check '<dir>' … --starter --json` over the folders the person named, else over the
    audit's `dirs`. If `dirs` is empty and nothing was named, ask which folders hold the UI.
 3. Report the findings as in section 3, headed "Starter rules (this repo has no rules yet)".
-4. Then a short audit summary, quoting the JSON: `setupClass`, `files.ui`, `tokenSource.kind` and
-   `file`, `tokenCoverage.share`, the `duplicates` by name, and the `openQuestions`. Do not list the
-   audit's drift lines as findings: every scripted finding is reported once, under one rule ID.
+4. Then a short audit summary, quoting the JSON with its field names: `setupClass`, `files.ui`,
+   `tokenSource.kind` and `file`, `tokenCoverage.share`, `driftCounts`, the `duplicates` by name,
+   and the `openQuestions` word for word. Never count `palette`, `typeScale` or any other list
+   yourself: a count no field prints is not stated. Do not list the audit's drift lines as
+   findings: every scripted finding is reported once, under one rule ID.
 5. Offer: "`/product-studio:setup` can propose a design system from this. Nothing is written until you
    say yes." Do not create `design/` from here.
 
@@ -80,7 +83,8 @@ For each item in `reviews[{id, severity, question}]`, look at the checked work a
 - **pass**: nothing found.
 
 Fixes happen only when the person asks. Show the diff first and wait for an explicit yes; once
-they said yes, make the edit without asking again.
+they said yes, make the edit without asking again. Offering more than one fix: mark one
+**recommended**; a bare yes approves that one.
 
 ## 6 · Unruled drift: propose a rule
 

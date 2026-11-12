@@ -2,6 +2,7 @@
 
 - Acme Notes is a shared notebook for teams of 2 to 20 people. (source: design/DESIGN.md)
 - Paid plans: Team at $8 per person per month, billed yearly. (source: src/features/pricing/PricingPage.tsx)
+- Team billed monthly is $10 per person per month. (source: said by Ada Lovelace in setup, 2026-01-05)
 - Most new teams invite their second person within the first day. (source: design/evaluations.md)
 
 ## Questions this pack's holder would ask

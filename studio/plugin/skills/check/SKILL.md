@@ -29,7 +29,8 @@ appended: it creates only `design/.studio/`, the automatic write, not a design s
 ## 3 · Reply
 
 Lead with one line: the verdict (or the score), what was checked, and where the rules came from.
-Then the details the reference asks for. End with the one thing to fix or decide first.
+Then the details the reference asks for. End with the one thing to fix or decide first. When you
+offer options and ask for a yes, mark one **recommended**: a bare yes approves that one.
 
 Words a person may not know get a gloss the first time: a **block** must be fixed before review or
 publishing; a **flag** is fixed or explained; an **agent reading** is the coding agent's answer to a

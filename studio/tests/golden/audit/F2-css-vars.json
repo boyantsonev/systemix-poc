@@ -139,6 +139,20 @@
   },
   "duplicates": [],
   "primitives": [],
+  "components": [
+    {
+      "name": "Button",
+      "file": "src/widgets/Button.tsx"
+    },
+    {
+      "name": "SettingsPanel",
+      "file": "src/widgets/SettingsPanel.tsx"
+    },
+    {
+      "name": "TextField",
+      "file": "src/widgets/TextField.tsx"
+    }
+  ],
   "images": {
     "total": 0,
     "withoutAlt": 0

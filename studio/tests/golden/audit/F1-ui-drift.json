@@ -235,6 +235,28 @@
       "file": "components/ui/Button.tsx"
     }
   ],
+  "components": [
+    {
+      "name": "Button",
+      "file": "components/ui/Button.tsx"
+    },
+    {
+      "name": "Button",
+      "file": "src/features/checkout/Button.tsx"
+    },
+    {
+      "name": "CheckoutPage",
+      "file": "src/features/checkout/CheckoutPage.tsx"
+    },
+    {
+      "name": "Home",
+      "file": "src/app/page.tsx"
+    },
+    {
+      "name": "PricingHero",
+      "file": "src/features/pricing/PricingHero.tsx"
+    }
+  ],
   "images": {
     "total": 2,
     "withoutAlt": 2

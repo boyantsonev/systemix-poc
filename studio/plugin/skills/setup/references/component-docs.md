@@ -31,8 +31,9 @@ component.
 node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" docs props <component-source-file> --json
 ```
 
-It prints `{component, props[{name, type, required}]}`. The doc's props table has exactly those
-rows: the same names, types and required flags. Add a default or a note only when you can point
+It prints `{component, file, props[{name, type, required}]}`. Run it before you draft and show
+its rows in the reply, saying they come from `docs props`. The doc's props table has exactly
+those rows: the same names, types and required flags. Add a default or a note only when you can point
 to the line of source that shows it. A prop you can't find in this output does not go in the
 table.
 
@@ -50,9 +51,13 @@ table.
   applies.
 
 Frontmatter stays as it is. The one allowed change is the status flip away from `skeleton`, to
-the value the manifest already uses for a filled doc (ask if the manifest has none yet).
+the value the manifest already uses for a filled doc; if it has none, offer `draft` as
+"(recommended)".
 
-Show the diff for this one component and wait for the yes. Then the next component.
+Show the diff for this one component, with the manifest change `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" docs sync` would make,
+and wait for the yes; the yes writes both. Gaps you find in the component itself (a missing
+state, an unused prop) are open questions: `--docs` documents the source and never edits it.
+Then the next component.
 
 ## 5. Verify
 

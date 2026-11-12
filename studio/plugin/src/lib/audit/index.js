@@ -309,6 +309,7 @@ function audit(root, { dirs = null, primitives = DEFAULT_PRIMITIVES } = {}) {
     driftCounts: { critical: drift.critical.length, warning: drift.warning.length, info: drift.info.length },
     duplicates,
     primitives: primitivesList,
+    components: [...componentsByName.entries()].flatMap(([name, dirs]) => [...dirs.values()].flat().map((file) => ({ name, file }))).sort((a, b) => cmp(a.name, b.name) || cmp(a.file, b.file)),
     images,
     setupClass,
     tokenCoverage: { colourRefs, literalColours, share },

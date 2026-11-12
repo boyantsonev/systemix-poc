@@ -227,6 +227,36 @@
       "file": "src/components/ui/TextField.tsx"
     }
   ],
+  "components": [
+    {
+      "name": "Button",
+      "file": "src/components/ui/Button.tsx"
+    },
+    {
+      "name": "Card",
+      "file": "src/components/ui/Card.tsx"
+    },
+    {
+      "name": "CheckoutSummary",
+      "file": "src/features/checkout/CheckoutSummary.tsx"
+    },
+    {
+      "name": "PricingCard",
+      "file": "src/features/pricing/PricingCard.tsx"
+    },
+    {
+      "name": "PricingPage",
+      "file": "src/features/pricing/PricingPage.tsx"
+    },
+    {
+      "name": "SettingsScreen",
+      "file": "src/features/settings/SettingsScreen.tsx"
+    },
+    {
+      "name": "TextField",
+      "file": "src/components/ui/TextField.tsx"
+    }
+  ],
   "images": {
     "total": 0,
     "withoutAlt": 0

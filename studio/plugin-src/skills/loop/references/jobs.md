@@ -11,7 +11,9 @@ hand, without the check:
 - There is no opportunity score. Don't compute one, and don't print a rank as if code made it.
 - Every importance and satisfaction value is tagged `estimated: true`, unless a cited source backs
   it (a survey, an interview note, a support count with its date range).
-- Say "beta, by hand" in the first line of the reply.
+- The first reply of the job step says, in these words: "This is beta, by hand: the `jobs check`
+  command is not built yet, so nothing scores or ranks these outcomes." The reply with the outcome
+  table says it again.
 
 ## 1 · The job
 

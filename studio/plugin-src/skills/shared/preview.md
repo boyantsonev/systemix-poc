@@ -31,7 +31,9 @@ same ones `tokens lint` prints.
 
 ## Show it
 
-- Give the person the `file` path and say "open it in a browser".
+- Give the person the JSON's `file` value verbatim, as the path, and say "open it in a
+  browser". Never rebuild, shorten or swap it for another folder; if you gave `--out`, `file`
+  is still what you quote.
 - Quote the pairs that are not `ok`, with their `fg`, `bg`, `theme` and `ratio` exactly as the
   JSON has them. Never compute or round a ratio yourself, and never call a pair fine that the
   JSON marks as failing. When every pair is `ok`, say "every pair passes"; don't count them.

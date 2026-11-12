@@ -48,7 +48,9 @@ step is held by engineering-lead unless the person names another role.
 
 ### 2 · Four questions, one per turn
 
-Ask, then wait. Skip one the person already answered.
+Ask one question, then wait: one question mark per reply, no follow-ups in the same turn. Note
+what you see in the repo as your guess inside that question. Skip one the person already
+answered. Never add a fifth.
 
 1. **Surface.** Where does the work show up: the product UI, marketing pages, email, docs? Which
    folders?
@@ -59,14 +61,18 @@ Ask, then wait. Skip one the person already answered.
 
 ### 3 · Show what will be written
 
-Run the init as a dry run, with the flags the answers gave:
+Run the init as a dry run, with the flags the answers gave. Never rely on `git config user.name`
+when it is the coding agent's name or empty: name the person with `--holder`. Solo names the same
+person for every role, so the roster can't fall back to anyone else:
 
 ```bash
 {{CLI}} loops init --dry-run --json
+{{CLI}} loops init --holder design-lead="<name>" --holder engineering-lead="<name>" --holder reviewer="<name>" --dry-run --json
 {{CLI}} loops init --preset team --holder design-lead="<name>" --holder engineering-lead="<name>" --dry-run --json
 ```
 
-Show its `written[]` and `kept[]`, then the context facts you will add to
+In the reply that asks for the yes, list every path of `written[]` and `kept[]` one per line
+(quoted from the dry run, never "the files above"), then the context facts you will add to
 `design/context/{product,design,tech,business,marketing}.md`. Each fact is one line with its
 source: a file path, or "said by <name> in setup, <date>". The never-touch answer goes into the
 coding agent's `never:` line in the roster. Ask: **"Write these? (yes / change something)"**.
@@ -75,7 +81,8 @@ coding agent's `never:` line in the roster. Ask: **"Write these? (yes / change s
 
 Run the same command without `--dry-run`. If it exits with `{error:"need-holder"}`, ask for the
 name and stop. Then add the context facts, exactly as shown. Run `{{CLI}} loops check --json`
-until `ok` is true. Fix only lines this run wrote; never fill a gap with a made-up person or fact.
+until `ok` is true. Quote the roster's `- holder:` lines in the reply, so the person sees who
+holds each role (solo: the same name on every role, and no deputy). Fix only lines this run wrote; never fill a gap with a made-up person or fact.
 
 ### 5 · From draft to agreed
 

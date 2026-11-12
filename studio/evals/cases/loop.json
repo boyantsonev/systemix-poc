@@ -82,7 +82,7 @@
       ],
       "judge": [
         "It asks at most one question per turn and shows the file list from the dry run before writing",
-        "The roster is solo: Ada Lovelace holds every role and there is no deputy",
+        "The roster is solo: Ada Lovelace holds every role and there is no deputy (shown by an init that names her with --holder for every role, or by the roster holder lines it quotes)",
         "It says a reviewer flips the loops from draft to agreed and that the coding agent never does",
         "It suggests 'fix one small visible drift' as the first goal and does not open it"
       ]
@@ -319,7 +319,7 @@
       ],
       "judge": [
         "It explores at most 3 variants in real code in a round, and at most 3 rounds",
-        "Each variant has its own rules check run over its own files, and each run's result is quoted from the CLI",
+        "Each variant has its own rules check run over every file that variant touches (a file shared by variants is in each of their runs), and each run's result is quoted from the CLI",
         "It points to the preview page for the tokens and to each variant by its files, and stops at the gate so a person picks a variant; it does not pick one"
       ]
     }
@@ -400,7 +400,7 @@
       "judge": [
         "It runs evidence check and, with no analytics connected, records 'not measured' instead of any number",
         "It writes the design/evaluations.md entry only after the yes",
-        "No number appears without a source"
+        "Every number or eval status it states names where it came from (the CLI JSON, or the file it read, such as goal.md, evals.md or design/evaluations.md); it computes no count or ratio itself"
       ]
     }
   },

@@ -20,6 +20,9 @@ Show the person, in plain words:
 - the top of `palette`, `typeScale` and `spacing`, with their counts;
 - `drift`: the critical entries with `file:line`, then `driftCounts` for each severity;
 - `duplicates` and `primitives`, by name and file;
+- the components the UI files define, each by name and path (for example
+  `Button` in `src/widgets/Button.tsx`), from the audit's `components` list; never assume
+  `components/ui`. Name them; don't count them;
 - `images.withoutAlt` of `images.total`.
 
 ## 2. Cluster the palette (the one judgement step)
@@ -34,9 +37,10 @@ grey are two families. For each family:
   `var(--ref-…)`. A role never holds a raw value.
 
 Every distinct `palette` value either becomes a reference token or is listed under "merged
-into", with the token that replaces it and why (for example "`#1a1a1b` merged into
-`--ref-grey-900`: one step apart, same use"). Aim to keep at least nine in ten values reachable
-this way. Don't convert values by hand: keep the format the code uses; `tokens lint` reads hex,
+into", with the exact token name that replaces it and why (for example "`#1a1a1b` merged into
+`--ref-grey-900`: one step apart, same use"). Never "dropped" and never a loose name like "the
+brand violet": a value you replace (an unreadable grey) is merged into the named token that
+takes its job. Aim to keep at least nine in ten values reachable this way. Don't convert values by hand: keep the format the code uses; `tokens lint` reads hex,
 rgb, hsl, oklch and oklab.
 
 Draft the dark theme: the same role names, pointing at other reference steps. The proposal
@@ -63,8 +67,8 @@ Never leave two files that both claim to hold the tokens.
 ## 4. Draft DESIGN.md
 
 Start from `${CLAUDE_PLUGIN_ROOT}/templates/design/DESIGN.md`. Fill what the code shows: what the product is
-(from the README and screens), the components that exist, each named with its path (search the
-UI files; don't assume `components/ui`), the palette's families and their use.
+(from the README and screens), the components that exist, each named with its path (from `components`;
+don't assume `components/ui`), the palette's families and their use.
 Leave people, principles, voice and claims as short questions for the person when the code
 doesn't say. Never invent a persona, a value or a claim.
 

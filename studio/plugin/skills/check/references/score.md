@@ -27,13 +27,16 @@ Readiness score (beta): <score>/100 · coverage <coverage>
   round a partial result or offer a number of your own. Name the dimensions whose `score` is null:
   those inputs could not be computed.
 - A table of the six `dimensions`: name, weight, score, and its `why`.
-- `nearThreshold`: each dimension, its score, the band and the distance, as printed.
+- `nearThreshold`: each entry with its JSON field names, as printed:
+  `<dimension>: score <score>, band <band>, next <next>, distance <distance>`. No other gap to a
+  band edge: if an entry isn't there, don't work one out.
 - The `validity` sentence and every line of `limits`, word for word.
 
 ## 3 · Top three opportunities
 
-Take the first three of `opportunities` in the order printed (it is already ranked). If the JSON
-states a `tie`, say so. For each, one plain sentence on what to do next and which command helps:
+Take the first three of `opportunities` in the order printed (it is already ranked), numbered 1
+to 3, each headed `<dimension> · gap <gap> · priority <priority>` as printed. If its `tie` lists
+dimensions, say so. For each, one plain sentence on what to do next and which command helps:
 
 - tokens: `/product-studio:setup` (a token source, role tokens);
 - rules: add rows, samples and review cases, then `rules lint` and `rules eval`;
