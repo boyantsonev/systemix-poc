@@ -52,6 +52,13 @@ jobs:
       - name: Product studio plugin is up to date with its sources
         run: node product-studio/scripts/build-plugin.js --check
 
+      - name: This site's own studio (studio/) - rules tested, loops well formed, landing checked
+        run: |
+          node product-studio/bin/product-studio.js rules lint
+          node product-studio/bin/product-studio.js rules eval
+          node product-studio/bin/product-studio.js loops check
+          node product-studio/bin/product-studio.js rules check src/components/landing src/lib/landing src/app/page.tsx --surface marketing
+
       - name: Loops and goals are well-formed
         run: node packages/cli/bin/cli.js loops check
 
