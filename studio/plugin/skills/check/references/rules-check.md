@@ -1,7 +1,9 @@
 # Rules check
 
 The rules check of `/product-studio:check`: scripted findings from the CLI, the agent's answers to the
-questions a script can't test, and one verdict. Every count comes from `rules check --json`.
+questions a script can't test, and one verdict. Every number you print is a field of `rules check`
+or `audit` JSON, quoted: never count array items, add, subtract or work out a contrast ratio
+yourself (contrast belongs to `tokens lint` and its `pairs[].ratio`).
 
 ## 1 · What to check
 
@@ -13,9 +15,9 @@ itself contains a quote: ask the person to rename or name the folder instead.
   exists): `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" rules check --changed [--base <ref>] [--surface <s>] --json`.
   - The CLI compares with the merge base of origin/HEAD, else the default branch. Always state the
     base it used, from the JSON `base`: "Changed since `<base>`".
-  - If it prints `{ok:false, error}` saying there is no base, ask the person which branch to
-    compare with, then rerun with `--base <ref>`. Never pick a base yourself and never fall back to
-    `HEAD~1`.
+  - If it prints `{ok:false, error}` saying there is no base, ask, naming the flag: "Which branch
+    should I compare with? I'll rerun with `--base <branch>`." Then rerun with `--base <ref>`.
+    Never pick a base yourself and never fall back to `HEAD~1`.
   - If `files` is empty, say nothing checkable changed since the base and ask what to check.
 - **Pasted copy or markup**: save it to a temporary file outside the repo (`.txt` for copy, `.html`
   for markup) and check that path. A screenshot can't be scripted: answer the review questions and
@@ -72,11 +74,13 @@ For each item in `reviews[{id, severity, question}]`, look at the checked work a
 - **fail**: the CLI's `result` is `fail` (a scripted block), or a person confirmed a review block.
 - **pass with fixes**: there were blocks or flags, the person asked for fixes, you showed the diff,
   they said yes, you made the edits, and the same `rules check` command, rerun, has no block.
-  Remaining flags are listed.
+  Remaining flags are listed. The reply after the fix reprints the report, its first line reading
+  `pass with fixes` in exactly those words.
 - **pass with flags**: the CLI's `result` is `pass with flags`, plus any flag readings.
 - **pass**: nothing found.
 
-Fixes happen only when the person asks. Show the diff first and wait for an explicit yes.
+Fixes happen only when the person asks. Show the diff first and wait for an explicit yes; once
+they said yes, make the edit without asking again.
 
 ## 6 · Unruled drift: propose a rule
 
@@ -98,7 +102,7 @@ pattern that keeps repeating): propose a new row in the grammar of the `design/r
 ## 7 · Report
 
 ```
-Check · <what> · <fail | pass with flags | pass with fixes | pass> · <files> files · rules from <rules>
+Check · <what> · <fail | pass with flags | pass with fixes | pass> · rules from <rules>
 Changed since <base>                      (branch checks only)
 
 Blocks

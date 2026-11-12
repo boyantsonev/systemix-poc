@@ -12,23 +12,24 @@ code that already decides things.
 
 ## The interview
 
-At most 8 questions. One question per turn, never two. Reflect each answer back in one line
-before the next question. If an answer already covers a later question, skip that question.
-If the person says "you choose", choose, say what you chose, and list it under open questions.
+At most 8 questions. **One question per turn, never two**: each turn ends with exactly one
+question, one sentence with one question mark. Never add "And …?" or a second ask, even a
+short one; a choice between options ("soft or sharp?") is one question. Reflect each answer back
+in one line before the next question. Ask them in this order. Ask question 1 even when the
+README suggests an answer: quote the README's line and ask whether it is right. If an answer
+already covers a later question, skip that question and say so. If the person says "you
+choose", choose, say what you chose, and list it under open questions.
 
-1. **The product.** What is it, in one sentence, and who is it for?
-2. **The people.** Who uses it most, and what are they doing when they open it (in a hurry,
-   at a desk, worried, curious)?
-3. **The product's colour.** If the product were a colour, which one, and what do you associate
-   with it?
-4. **The feeling.** One word for how using it should feel.
-5. **Shape and density.** Sharp or soft corners? Airy or compact?
-6. **Type.** A typeface you already use or like (system fonts are fine), and a tight or
-   generous scale?
-7. **Voice.** Words or phrases the product never uses, and how it talks when something goes
-   wrong.
-8. **Claims.** Anything you must always say (disclosures) or must never claim (guarantees,
-   "best", numbers you can't back)?
+1. **The product.** What is it, in one sentence?
+2. **The people.** Who uses it most, in what moment (in a hurry, at a desk, worried)?
+3. **The product's colour.** If the product were a colour, which one would it be, and why?
+4. **The feeling.** What one word should using it feel like?
+5. **Shape and density.** Should it feel soft and airy, or sharp and compact?
+6. **Type.** Which typeface and scale do you want (the system font and a generous scale are
+   fine)?
+7. **Voice.** What does the product never say, in words or in tone when something goes wrong?
+8. **Claims.** What must it never claim, or always disclose (guarantees, "best", numbers you
+   can't back)?
 
 ## From associations to tokens
 

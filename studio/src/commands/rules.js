@@ -207,6 +207,7 @@ async function run(argv, ctx) {
       surface,
       base,
       files: files.map((f) => relTo(root, f)),
+      fileCount: files.length,
       blocks: r.findings.filter((f) => f.severity === "block").length,
       flags: r.findings.filter((f) => f.severity === "flag").length,
       findings: r.findings.map((f) => ({ ...f, file: relTo(root, f.file) })),

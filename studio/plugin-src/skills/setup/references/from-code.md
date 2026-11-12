@@ -25,7 +25,8 @@ Show the person, in plain words:
 ## 2. Cluster the palette (the one judgement step)
 
 Group the `palette` values into a few hues by eye: near-identical greys are one family, a brand
-blue and its hover shade are one family. For each family:
+blue and its hover shade are one family. Merge only inside a family: a neutral grey and a warm
+grey are two families. For each family:
 
 - name reference tokens `--ref-<hue>-<step>` (for example `--ref-blue-600`), holding the literal
   values as the audit printed them;
@@ -38,16 +39,20 @@ into", with the token that replaces it and why (for example "`#1a1a1b` merged in
 this way. Don't convert values by hand: keep the format the code uses; `tokens lint` reads hex,
 rgb, hsl, oklch and oklab.
 
-Draft the dark theme: the same role names, pointing at other reference steps. Then the scale
+Draft the dark theme: the same role names, pointing at other reference steps. The proposal
+shows a role table (role · light `var(--ref-…)` · dark `var(--ref-…)`) for at least background,
+foreground, primary, muted-foreground and border. Then the scale
 tokens: `--font-size-*` from `typeScale`, `--space-*` from `spacing`, `--radius*` from what the
 code uses. Scale tokens may hold raw values.
 
 ## 3. One token file, never two
 
 - `tokenSource.kind` is `none`: `design/tokens.css` is the token file.
-- `css-vars`: draft `design/tokens.css` from that file's values. Propose that the old file
-  imports it or is removed. Which file stays canonical is a person's call: put it under open
-  questions, with your recommendation.
+- More than one source (the audit's `openQuestions` names them), or `css-vars`: which file is
+  canonical is a person's call and a blocking question. Ask it, naming every file and your
+  recommendation, in the same message as step 6, and wait. Once answered, the proposal holds
+  the values in that one file and shows, as a diff, each other file pointing at it with
+  `var(--…)` or removed; a design-tool export stays an import source only.
 - `tokens-json`: run `{{CLI}} tokens diff --from <that file> --tokens <stage>/design/tokens.css --json`
   and show its rows. Each row's `status` is computed by the CLI.
 - `tailwind-config`: draft `design/tokens.css` and propose that the config's colours point at
@@ -58,7 +63,8 @@ Never leave two files that both claim to hold the tokens.
 ## 4. Draft DESIGN.md
 
 Start from `{{ROOT}}/templates/design/DESIGN.md`. Fill what the code shows: what the product is
-(from the README and screens), the components that exist, the palette's families and their use.
+(from the README and screens), the components that exist, each named with its path (search the
+UI files; don't assume `components/ui`), the palette's families and their use.
 Leave people, principles, voice and claims as short questions for the person when the code
 doesn't say. Never invent a persona, a value or a claim.
 
@@ -99,6 +105,6 @@ Return to the setup guide's common finish: the three checks on `<stage>`, the pr
 proposal with open questions, and the stop before any write. Fold in, as open questions:
 
 - every `openQuestions` entry from the audit, quoted;
-- which token file is canonical, when there were two;
+- which token file is canonical, when there were two, until the person answers;
 - which copy of each duplicated component stays;
 - the drift you saw but did not turn into a rule, and why.

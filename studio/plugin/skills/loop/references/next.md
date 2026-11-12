@@ -12,6 +12,9 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops status --json` an
 
 - `waitsOn` is set: **stop**. Say who it waits on (role, holder, deputy), at which gate, and the
   `/product-studio:loop gate` lines. Never clear a gate yourself.
+  - Except when the step is the coding agent's (`runs: agent`) and its output is missing, so the
+    gate has nothing to rule on (build.plan with no `plan.md`): do that work first, as in section 2
+    (show it, and after the yes write it), then stop at the gate.
 - The goal is shipped or dropped: say so and stop.
 
 Read the goal's `goal.md`, `evals.md` and `decisions.md`, then the step in
@@ -42,7 +45,7 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json` bef
 
 | Step | The coding agent's part |
 |---|---|
-| product.design | Explore **2 to 3 variants in real code** on a draft branch, each built from the rules and tokens. Check each with `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" rules check <its files> --json` and quote the verdict. Render the tokens with `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" preview --json` (see `${CLAUDE_PLUGIN_ROOT}/skills/shared/preview.md`) and point to each variant. **At most 3 rounds.** Then stop at the gate: **a person picks** a variant, or none. |
+| product.design | Explore **2 to 3 variants in real code** on a draft branch, each built from the rules and tokens. One run per variant, its own files only: `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" rules check <its files> --json`; quote each run's `result`, `blocks` and `flags`. Render the tokens with `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" preview --json` (see `${CLAUDE_PLUGIN_ROOT}/skills/shared/preview.md`): the page shows the tokens, not the variants, so point to each variant by its files. **At most 3 rounds.** Then stop at the gate: **a person picks** a variant, or none. |
 | product.validate | The brief for the decide gate (`decide`). |
 | build.plan | `plan.md` in the goal's folder: steps that each end working, which eval each closes, what the system must change, "Decisions for you". Then its gate. |
 | build.code | With its holder: a draft branch from the latest default branch, one concern per commit, built against the rules. Never merge. |
@@ -63,14 +66,16 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json` bef
 3. Draft one entry for `design/evaluations.md`: date, goal, each eval with its result or "not
    measured", the source of each number. Mark `evals.md`. Show both, wait for a yes, then write.
 
-**product.learn.** One learning, written only after a ruling.
+**product.learn.** One learning. The step has no gate and no person's role, so no decision line
+is written: the person's yes is a yes to a write, not a gate ruling.
 
 1. Draft one learning: one sentence (300 characters or fewer), confidence (high, medium or low),
    a review-by date, and its source (the goal id and the `design/evaluations.md` entry).
 2. Draft at most **one** next-goal sentence. Propose it; **never open it**.
-3. Show both. The step's holder rules: their "it holds" is recorded with `loops gate` (step 2
-   above). Nothing goes into the ledger before that line exists.
-4. After the line, and with a yes, strip `"`, `$` and backticks from the text and write it:
+3. Show both and ask: "Add this learning? (yes / change something)". When the person answers
+   with a change or a detail (a confidence, "it holds"), show the final bullet with it and ask once
+   more; write on an explicit yes.
+4. After the yes, strip `"`, `$` and backticks from the text and write it:
    `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" learnings add --text "<sentence>" --confidence high --review-by YYYY-MM-DD --source "G-NNN, design/evaluations.md" --json`
    (the person's confidence in place of `high`). It prints `{id, line}`.
 5. For each learning this goal built on (the `L-NNN` ids in its `goal.md`):

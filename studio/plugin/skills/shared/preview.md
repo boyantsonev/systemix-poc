@@ -34,7 +34,7 @@ same ones `tokens lint` prints.
 - Give the person the `file` path and say "open it in a browser".
 - Quote the pairs that are not `ok`, with their `fg`, `bg`, `theme` and `ratio` exactly as the
   JSON has them. Never compute or round a ratio yourself, and never call a pair fine that the
-  JSON marks as failing.
+  JSON marks as failing. When every pair is `ok`, say "every pair passes"; don't count them.
 - If the page can't be rendered, say so and quote the error. Don't describe colours from memory
   instead.
 

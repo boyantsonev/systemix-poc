@@ -41,9 +41,11 @@ Show the line the CLI will write:
     - <today> · <gate> · <approve|rework|drop> · by <name> · brief: <B-NNN|none>[ · note: <note>]
 
 **Approve with changes.** When the note asks for a change ("approve, but raise E4 to 60 s"),
-show the diff of exactly those changes. They may touch only files inside the goal's own folder
-(`design/goals/G-NNN-<slug>/`). A change anywhere else is not an approve-with-note: say it needs a
-rework or a new goal, and record nothing until the person picks.
+show the diff of exactly those changes: a unified diff with the exact lines added and removed,
+never a paraphrase (the CLI's own move of `step:` in `goal.md` is named, not diffed). They may
+touch only files inside the goal's own folder (`design/goals/G-NNN-<slug>/`). A change anywhere
+else is not an approve-with-note: say it needs a rework or a new goal, and record nothing until
+the person picks.
 
 Ask: **"Record this as <name>? (yes / no)"**. Wait for an explicit yes.
 

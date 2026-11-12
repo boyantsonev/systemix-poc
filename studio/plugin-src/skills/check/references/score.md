@@ -16,7 +16,8 @@ for its `openQuestions` only.
 
 ## 2 · Present it
 
-Quote, never compute. Every number you print appears verbatim in the score JSON.
+Quote, never compute. Every number you print appears verbatim in the score JSON: no "X of Y",
+difference or total that the JSON doesn't print itself, and no findings (file and line) of your own.
 
 ```
 Readiness score (beta): <score>/100 · coverage <coverage>

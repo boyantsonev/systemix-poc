@@ -36,12 +36,14 @@ Read `design/rules.md` in the stage (the setup guide ran `rules init` there). Fo
   Add a known-bad sample in `<stage>/design/rules/known-bad/<ID>-<what>.<ext>`.
 - **A review row**, when only looking can tell: `review: <question>`, plus a bad and a good
   case in `<stage>/design/rules/review-cases.json`.
-- **The same as a starter row**: name that row's ID; no new row.
+- **The same as starter rows**: name the ID, or the IDs that together cover it (for example
+  T3 and T4 for colour and size classes); no new row.
 - **An open question**, when the bullet is unclear, contradicts another, or is not a rule
   (a wish, a note). Quote it.
 
 Show a table: `line · bullet (quoted) · mapped to (ID, new or existing) · test`. Every bullet
-appears exactly once. Use the grammar in the header of `design/rules.md`.
+appears exactly once, in one row of the table. Learnings bullets are not mapped here: the CLI
+rewrites them; show its `unmapped` list only. Use the grammar in the header of `design/rules.md`.
 
 ## 3. The pointer
 

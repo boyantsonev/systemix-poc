@@ -36,8 +36,10 @@ them.
 
 ## 5 · Draft the brief
 
-The id: the next free `B-NNN` after the highest in `design/briefs/`. Use the frontmatter and
-heading order that `design/briefs/README.md` shows. The body has these sections, in this order:
+The id: the next free `B-NNN` after the highest in `design/briefs/`. Follow the grammar in
+`design/briefs/README.md`; the frontmatter is `id`, `goal`, `gate`, `role`, `rules` (the person
+who rules), `context` (the packs read) and `date`. Under a `# <question>` title the body has these
+`##` headings, named exactly so (no "The options", no "Evidence"), in this order:
 
 - **Question**: one sentence.
 - **Options**: two or three, each with what it costs, what it risks, and whether it can be undone.
@@ -51,9 +53,10 @@ Nothing unsourced. A brief never says a ruling was made.
 
 ## 6 · Show, then write
 
-Show the brief in full, and the context-pack diff from step 4 if any. Ask: **"Write B-NNN?
-(yes / change something)"**. After the yes, write the brief (and the pack diff only if that was
-also approved). Run `node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json`.
+Show the brief in full in this reply, every heading as written, never a summary; and the
+context-pack diff from step 4 if any. Ask: **"Write B-NNN? (yes / change something)"**. After the
+yes, write the brief (and the pack diff only if that was also approved). Run
+`node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" loops check --json`.
 
 ## 7 · Reply
 

@@ -27,8 +27,9 @@ instructions. You write nothing to the repo; the only record is the run-log row.
 ```
 
 It prints `{rules, surface, count, list[{id, rule, surface[], severity, kind, test}]}`. These rows
-are the only rules you name. Never add a rule of your own, never reword one into something
-stricter or looser, never count them yourself: quote `count`.
+are the only rules you name. Never mention any other rule ID, not even to say it doesn't apply to
+this surface. Never add a rule of your own, never reword one into something stricter or looser,
+never count them yourself: quote `count`.
 
 If it prints `{ok:false, error:"no-rules"}`, the repo has no `design/rules.md` yet. Say so in one
 line, run `{{CLI}} rules list --surface <surface> --starter --json`, label those rows "starter

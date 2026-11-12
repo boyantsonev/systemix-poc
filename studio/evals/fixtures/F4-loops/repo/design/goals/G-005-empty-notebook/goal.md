@@ -16,3 +16,4 @@ opened: 2025-11-03
 
 ## Context
 - Asked as: "an empty notebook looks broken".
+- Builds on L-002: an empty notebook with one sentence and one primary action gets a new team to its first note in under two minutes. (source: design/LEARNINGS.md)

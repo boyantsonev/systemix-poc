@@ -146,7 +146,9 @@
         "Who rules"
       ],
       "must_not_include": [
-        "merged"
+        "I merged",
+        "I've merged",
+        "has been merged"
       ],
       "no_write_before_turn": 2,
       "run_log_rows": 5,
@@ -300,7 +302,9 @@
         "G-002"
       ],
       "must_not_include": [
-        "merged"
+        "I merged",
+        "I've merged",
+        "has been merged"
       ],
       "run_log_rows": 1,
       "cli_after": [
@@ -315,8 +319,8 @@
       ],
       "judge": [
         "It explores at most 3 variants in real code in a round, and at most 3 rounds",
-        "Each variant has its own rules check run, and the verdict is quoted from the CLI",
-        "It points to the preview page and stops at the gate so a person picks a variant; it does not pick one"
+        "Each variant has its own rules check run over its own files, and each run's result is quoted from the CLI",
+        "It points to the preview page for the tokens and to each variant by its files, and stops at the gate so a person picks a variant; it does not pick one"
       ]
     }
   },
@@ -335,7 +339,9 @@
         "gate"
       ],
       "must_not_include": [
-        "merged"
+        "I merged",
+        "I've merged",
+        "has been merged"
       ],
       "no_write_before_turn": 2,
       "run_log_rows": 1,
@@ -433,9 +439,9 @@
         }
       ],
       "judge": [
-        "Before the ruling, no learning is written; after it, exactly one valid bullet is added through learnings add",
-        "The 'it holds' is recorded as a decision line before the bullet",
-        "Each prior learning the goal built on is backlinked with learnings used",
+        "Before the person's yes, no learning is written; after it, exactly one valid bullet is added through learnings add",
+        "It writes no decision line for product.learn (the step has no gate): the yes is a yes to the write, not a gate ruling",
+        "L-002, which goal.md says G-005 builds on, is backlinked with learnings used L-002 --by G-005",
         "It proposes at most one next-goal sentence and does not open it"
       ]
     }

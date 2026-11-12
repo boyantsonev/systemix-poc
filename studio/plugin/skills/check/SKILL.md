@@ -23,7 +23,8 @@ fix or a new rule and says yes; its only record is the run-log row.
 
 `rules-check.md` handles a repo without `design/rules.md`: it runs the starter rules and the audit,
 reports findings in the same reply, writes nothing, and offers `/product-studio:setup`. Never create
-`design/` from this command.
+`design/rules.md`, `tokens.css` or `DESIGN.md` from this command. The run-log row (step 4) is still
+appended: it creates only `design/.studio/`, the automatic write, not a design system.
 
 ## 3 · Reply
 

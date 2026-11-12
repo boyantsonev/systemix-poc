@@ -133,7 +133,7 @@
         }
       ],
       "judge": [
-        "Every number in the replies appears verbatim in the output of `audit --json` on this fixture",
+        "Every number in the replies appears verbatim in the JSON of a CLI command it ran on this fixture (audit, rules lint, rules eval, tokens lint, rules check, preview)",
         "The palette clusters are sensible: near-identical values share a reference token and roles point at references",
         "The proposed tokens.css covers at least 90% of the distinct literal colours, or names the token each merged colour went to",
         "The rules keep T1 to T4 and add at least one row for drift they don't cover, each scripted row with a known-bad file",
@@ -203,7 +203,7 @@
     "fixture": "F2-css-vars",
     "turns": [
       "make our design system from the code",
-      "No banned words, no disclosures, no claims to avoid.",
+      "No banned words, no disclosures, no claims to avoid. Make design/tokens.css the one token file; tokens.json is only the export from the design tool.",
       "{{yes}}"
     ],
     "expect": {
@@ -252,8 +252,9 @@
       ],
       "judge": [
         "It states the setup class and the token source as the audit computed them",
-        "It asks which token file is canonical (tokens.json, styles/theme.css or design/tokens.css) instead of leaving two token files side by side",
-        "It finds the components in src/widgets/ without assuming components/ui"
+        "Before asking for a yes, it asks which token file is canonical (tokens.json, styles/theme.css or design/tokens.css), and it writes nothing until that is answered",
+        "After the answer, the proposal and the write leave one file holding the token values: styles/theme.css points at design/tokens.css with var(--…) (or is removed), shown as a diff before the yes",
+        "It finds the components in src/widgets/ and names them with their paths, without assuming components/ui"
       ]
     }
   },
@@ -383,7 +384,7 @@
     "skill": "setup",
     "fixture": "F5-sources",
     "turns": [
-      "bring in the design from sources/login.html"
+      "/product-studio:setup --from import sources/login.html"
     ],
     "expect": {
       "skill_invoked": "setup",
@@ -442,13 +443,14 @@
             "check",
             "--json"
           ],
-          "code": 0
+          "code": 1
         }
       ],
       "judge": [
-        "Each of the 10 guardrail bullets maps to exactly one proposed rule row or appears under open questions",
+        "Each of the 10 guardrail bullets appears exactly once in the mapping, mapped to a new rule row, to the starter row or rows that cover it (named by ID), or listed under open questions",
         "design/guardrails.mdx is kept and holds a one-line pointer to design/rules.md",
-        "The moves table is quoted from `migrate --json`"
+        "The moves table is quoted from `migrate --json`",
+        "It runs loops check after the write and lists each migrated goal it names (no evals yet) under open questions, with /product-studio:loop open as a person's next step"
       ]
     }
   },
@@ -468,7 +470,7 @@
       ],
       "run_log_rows": 1,
       "judge": [
-        "It shows the dry-run moves and the bullet mapping and asks for a yes before applying anything"
+        "It shows the dry-run moves table and the guardrail bullet to rule row mapping (one row per bullet of design/guardrails.mdx), and asks for a yes before applying anything"
       ]
     }
   },
@@ -477,9 +479,9 @@
     "skill": "setup",
     "fixture": "F3-installed",
     "turns": [
-      "add a pointer to our design rules in CLAUDE.md so the coding agent reads them",
+      "/product-studio:setup --agents",
       "{{yes}}",
-      "do that again, make sure the agent pointer is there"
+      "/product-studio:setup --agents"
     ],
     "expect": {
       "skill_invoked": "setup",
@@ -488,10 +490,11 @@
         "CLAUDE.md"
       ],
       "judge": [
-        "After both runs CLAUDE.md holds exactly one managed block between the start and end markers",
+        "After both runs CLAUDE.md holds exactly one managed block between the start and end markers, copied from the template",
         "The block says to read design/rules.md before UI work and to run the check before review",
         "The second run reports the block is already up to date and writes nothing",
-        "Text outside the markers is unchanged"
+        "Text outside the markers is unchanged",
+        "Nothing is committed: the agent never runs git commit"
       ]
     }
   },

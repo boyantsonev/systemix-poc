@@ -101,7 +101,7 @@ function list(parsed, ctx, json) {
   const { rows: all, problems: bad } = runlog.read(ctx.root);
   const base = kind === "rating" ? all.filter((r) => r.kind === "rating").sort(runlog.byTime).map((r) => ({ ...r })) : runlog.merged(all);
   const rows = base.filter((r) => (!since || r.at.slice(0, 10) >= since) && (!command || r.command === command) && (!kind || r.kind === kind));
-  if (json) ctx.json({ rows, ...(bad.length ? { skipped: bad.length } : {}) });
+  if (json) ctx.json({ total: rows.length, rows, ...(bad.length ? { skipped: bad.length } : {}) });
   else {
     if (!rows.length) ctx.out(`  No rows${since ? ` since ${since}` : ""} in ${L.runs}.`);
     for (const r of rows) ctx.out(`  ${r.run}  ${r.at.slice(0, 10)}  ${r.command.padEnd(5)}  ${r.result.padEnd(15)}  blocks ${r.blocks}  flags ${r.flags}  ${r.rating}`);

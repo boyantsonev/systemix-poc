@@ -55,7 +55,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scan/product-studio.js" runs should-ask --json
 ```
 
 It prints `{ask, why}`. When `ask` is false, ask nothing. When it is true, ask once, in one line,
-after the result, and do not wait for the answer:
+after the result and above the reply's closing commands, and do not wait for the answer:
 
 > Was this useful? Up or down, and a few words if something was off.
 
@@ -68,7 +68,8 @@ after the result, and do not wait for the answer:
 
 ## 4 · Say so
 
-One line, after the result: **Logged this run.**
+One line, after the result: **Logged this run.** In the reply it sits above the closing commands
+(the stop report, or "Next"), so the reply still ends with what the person answers with.
 
 ## Privacy
 

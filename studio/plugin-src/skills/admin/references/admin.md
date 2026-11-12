@@ -16,8 +16,9 @@ lint refuses the note, say so and ask for other words. Never write the note your
 
 `{{CLI}} runs list --since YYYY-MM-DD --json`
 
-(no `--since` when not given). Show `rows[]` newest first: run id, date, command, result, blocks,
-flags, rating (already merged on). Over 20 rows: the newest 20, and how many the JSON has.
+(no `--since` when not given). Show every row of `rows[]` newest first: run id, date, command,
+result, blocks, flags, rating (already merged on). The JSON prints no total: state none, and no
+"N more" or date range of rows you didn't show.
 
 ## run
 

@@ -20,9 +20,10 @@ Status is read-only. Setup writes files only after a yes.
    | Goal | Title | Step | Waits on |
    |---|---|---|---|
 
-   `Waits on` is `waitsOn.role`, then the holder, then the deputy if there is one. When `waitsOn`
-   is null the row reads "the coding agent: run `/{{PLUGIN}}:loop next G-NNN`". Add the
-   `lastRuling` when there is one. Never work out a step yourself; quote the JSON.
+   `Waits on` reads "<waitsOn.role> · holder <holder>[ · deputy <deputy>]"; gloss gate and holder
+   above the table. When `waitsOn` is null the row reads "the coding agent: run
+   `/{{PLUGIN}}:loop next G-NNN`". Add the `lastRuling` when there is one. Never work out a step
+   yourself; quote the JSON.
 3. Under the table, one line per person with what they owe ("Ada Lovelace: the Evals gate on
    G-001").
 4. The commands, once:
