@@ -493,7 +493,7 @@ async function init(opts = {}) {
   if (doHypo) {
     console.log(`    hypothesis-validation /init-experiment <experiment-id>`);
   }
-  console.log(`    product + build loops /systemix:goal <one sentence>   (the Claude Code plugin; check with systemix loops check)`);
+  console.log(`    product + build loops /systemix:loop open <one sentence>   (the Claude Code plugin; check with systemix loops check)`);
   console.log(`    config                systemix.config.yaml (your topology)`);
   console.log(`    local app             npx @getsystemix/cli app   (docs · tokens · experiments · HITL queue)`);
   console.log(`    the loop              experiments/ — LEARNINGS.md is the synthesized memory`);

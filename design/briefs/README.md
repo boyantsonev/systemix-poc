@@ -1,6 +1,6 @@
 # Decision briefs
 
-`/systemix:decide` writes one before every `approve` and `decide` gate:
+`/systemix:loop decide` writes one before every `approve` and `decide` gate:
 `design/briefs/B-NNN-<slug>.md`, so whoever holds the role this week — or the
 deputy — rules from the same facts and the questions the absent expert would ask.
 

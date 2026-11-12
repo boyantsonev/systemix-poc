@@ -71,6 +71,7 @@ const PASS_THROUGH = [
   ["docs", "commands/docs", "docs"],
   ["loop", "commands/loop", "loop"],
   ["loops", "commands/loops", "loops"],
+  ["rules", "commands/rules", "rules"],
   ["propose", "commands/propose", "propose"],
   ["skills", "commands/skills", "skills"],
   ["mcp", "commands/mcp", "mcp"],

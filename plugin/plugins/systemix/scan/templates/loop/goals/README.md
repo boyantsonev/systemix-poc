@@ -23,7 +23,7 @@ updated: YYYY-MM-DD
 ```
 
 `step` and `waiting` are the goal's whole state. `waiting` set means a person must
-rule before the agent may go on; only `/systemix:gate` clears it.
+rule before the agent may go on; only `/systemix:loop gate` clears it.
 
 Body, in this order: **The goal, as asked** (quoted) · **How I read it** (every
 reading A, B…, what each builds and costs, the one recommended and why) · **For

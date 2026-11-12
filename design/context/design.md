@@ -25,10 +25,10 @@ both themes and at phone width).
 - Mapping the type scale into the theme lifts token discipline more than any other single change
 ## Sources
 - `design/DESIGN.md`, `design/guardrails.mdx`, `src/app/globals.css`
-- `/systemix:score` and `/systemix:drift-report` on this repo
+- `/systemix:check --score` and `/systemix:check --drift` on this repo
 ## Questions the expert would ask
 - Which tokens and components does it use, and does it add a token before using a new value?
 - Does it reuse the shared primitives instead of rebuilding one inline?
 - Does it hold in light and dark, and at phone width (about 390 px)?
-- Does `/systemix:drift-report` come back clean on the changed files?
+- Does `/systemix:check --drift` come back clean on the changed files?
 - Is it readable with reduced motion and at AA contrast?

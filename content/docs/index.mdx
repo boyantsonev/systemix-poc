@@ -13,16 +13,16 @@ Systemix is the design system agent for AI-native products. It sets up your desi
    /plugin install systemix@systemix
    ```
 
-2. **Run `/systemix:score`** in your repo. It reads your code on your machine and prints a score out of 100, per area. Nothing is sent.
+2. **Run `/systemix:check --score`** in your repo. It reads your code on your machine and prints a score out of 100, per area. Nothing is sent.
 3. **Fix what costs points.** Do it yourself, or buy the quick report, which lists each fix, biggest first.
 
 No Claude Code? Run `npx @getsystemix/cli audit report --dirs src` in your repo.
 
 ## What it does
 
-- **Deploy:** `/systemix:design-interview` drafts your design system with you; `/systemix:design-audit` proposes one from the code you have.
-- **Keep:** `/systemix:score`, `/systemix:drift-report` and `/systemix:readiness-audit` find raw colours, one-off sizes and duplicate components.
-- **Sprint (beta):** `/systemix:goal` turns one sentence into a goal, then pictures, a prototype and a release, with a gate at every step.
+- **Deploy:** `/systemix:setup` builds your design system and its rules (`design/rules.md`) from the code you have, from a short interview, or from a Claude Design output.
+- **Keep:** `/systemix:brief` gives the rules before you build; `/systemix:check` checks the work against them, with `--score`, `--drift` and `--deep` for the score, the drift from your tokens and the long audit.
+- **Sprint (beta):** `/systemix:loop open` turns one sentence into a goal, then pictures, a prototype and a release, with a gate at every step.
 
 ## Next
 

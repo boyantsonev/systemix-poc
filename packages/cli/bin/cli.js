@@ -42,6 +42,7 @@ const HELP = `
     npx @getsystemix/cli drift <sub>             Sacred timeline: scan [dir…] [--dry-run] [--json] | history [--last 10]
     npx @getsystemix/cli loop [<id>]             Ralph runner — advance running experiments to decision-ready (HITL close)
     npx @getsystemix/cli loops <sub>             Product + build loops: init | check | status | decisions
+    npx @getsystemix/cli rules <sub>             The rules as data: init | lint | check <files…> | eval
     npx @getsystemix/cli propose <sub>           Engine generate stage: context|queue — propose the next bet (HITL approve)
     npx @getsystemix/cli skills sync [--global]  Refresh installed loop skills from the CLI's bundled source
 
@@ -207,6 +208,11 @@ async function main() {
     case "loops": {
       const { loops } = require("../src/commands/loops");
       await loops(args);
+      break;
+    }
+    case "rules": {
+      const { rules } = require("../src/commands/rules");
+      await rules(args);
       break;
     }
     case "propose": {

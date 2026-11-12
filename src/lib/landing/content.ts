@@ -16,7 +16,7 @@ export const AUDIT_COMMAND = "npx @getsystemix/cli audit";
 export const PLUGIN_MARKETPLACE = "boyantsonev/systemix-poc";
 export const PLUGIN_ADD_COMMAND = `/plugin marketplace add ${PLUGIN_MARKETPLACE}`;
 export const PLUGIN_INSTALL_COMMAND = "/plugin install systemix@systemix";
-export const PLUGIN_SCORE_COMMAND = "/systemix:score";
+export const PLUGIN_SCORE_COMMAND = "/systemix:check --score";
 export const INIT_COMMAND = "npx @getsystemix/cli init";
 export const CALL_MAILTO = "mailto:boyan.works@gmail.com?subject=Systemix%20design%20sprint";
 
@@ -60,21 +60,21 @@ export const pillars = {
       tag: "in the plugin · partial",
       title: "Deploys your design system",
       body: "A short interview drafts your design system, or the audit proposes one from the code you have. Every file waits for your yes.",
-      command: "/systemix:design-interview",
+      command: "/systemix:setup",
     },
     {
       key: "keep",
       tag: "in the plugin",
       title: "Keeps it from rotting",
       body: "A free, repeatable score and audits that find raw colours, one-off sizes and duplicate components. Same code, same numbers.",
-      command: "/systemix:score",
+      command: "/systemix:check --score",
     },
     {
       key: "sprint",
       tag: "in the plugin · beta",
       title: "Runs your design sprints",
       body: "One sentence becomes a goal, then pictures, a prototype in your components and a release. You approve every step.",
-      command: "/systemix:goal",
+      command: "/systemix:loop open",
     },
   ] satisfies Pillar[],
 };
@@ -95,7 +95,7 @@ export const howItWorks = {
   heading: "Three steps, two minutes.",
   steps: [
     { n: "1", title: "Install the plugin", body: "Two commands in Claude Code. No account." },
-    { n: "2", title: "Run /systemix:score", body: "It reads your repo on your machine. Nothing is sent." },
+    { n: "2", title: "Run /systemix:check --score", body: "It reads your repo on your machine. Nothing is sent." },
     {
       n: "3",
       title: "Fix what costs points",
@@ -176,11 +176,11 @@ export const faq = {
     },
     {
       q: "What leaves my machine?",
-      a: `Nothing, for the free score. The ${quickReportPrice()} quick report sends only numbers and file names, never code, and only after you say yes. /systemix:score shows you what it would send first.`,
+      a: `Nothing, for the free score. The ${quickReportPrice()} quick report sends only numbers and file names, never code, and only after you say yes. /systemix:check --score shows you what it would send first.`,
     },
     {
       q: "I don't have a design system yet.",
-      a: "Run /systemix:design-interview and it drafts one with you.",
+      a: "Run /systemix:setup and it drafts one with you, by interview or from the code you have.",
     },
   ] satisfies FaqItem[],
 };

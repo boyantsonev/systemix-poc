@@ -92,7 +92,7 @@ Tag it and send it to its testers — or hold it.
 - runs: agent
 - gate: decide · reviewer · with design-lead, engineering-lead · context product, tech, business
 - note: The agent prepares release notes and the evals scorecard; a person
-  rules with /systemix:gate and a person tags. Internal testers first.
+  rules with /systemix:loop gate and a person tags. Internal testers first.
 
 ### Measure
 The shipped build measured the same way every time — screenshots, the Systemix

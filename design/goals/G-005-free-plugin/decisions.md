@@ -1,0 +1,3 @@
+# G-005 · decisions
+- **2026-11-12 · Goal opened and plan approved.** "go with your recommendations, sponsor link yes", accepting the recommendation: a free plugin with four commands, no paid tier inside it, the quick report dropped, built in two PRs (plugin, then site). The evals were written after this ruling; they can be changed on the PR. (founder: Boyan · context product, business, tech)
+- **2026-11-12 · Setup is priced per client.** "3 days would not be enough for the discovery … so no price, just starting from is probably a good orientation for clients": the fixed 3-day €990 sprint is withdrawn; the site shows setup from a starting price. (founder: Boyan · context business, product)
