@@ -1,0 +1,31 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   The ONLY place the atlas names colours. It maps the atlas onto YOUR design
+   system's tokens — edit the right-hand side to your token names and the whole
+   board re-themes. The defaults below assume shadcn/ui-style CSS variables that
+   already hold colour values (Tailwind v4 / shadcn v4).
+
+   If your tokens are HSL *channel triplets* (older shadcn: `--foreground:
+   0 0% 9%`, used as `hsl(var(--foreground))`), wrap them here, e.g.
+       --atlas-fg: hsl(var(--foreground));
+   If your DS uses different names, point at them, e.g.
+       --atlas-node-bg: var(--surface-raised);
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --atlas-node-bg:   var(--card);              /* default node fill            */
+  --atlas-node-fill: var(--muted);             /* filled nodes (output)        */
+  --atlas-fg:        var(--foreground);        /* labels                       */
+  --atlas-muted:     var(--muted-foreground);  /* glyphs, notes, owner tags    */
+  --atlas-border:    var(--border);            /* node borders, edges, dots    */
+  --atlas-accent:    var(--primary);           /* prototypes + selected state  */
+  --atlas-handle-bg: var(--background);        /* edge handle centres          */
+}
+
+/* Route React Flow's own theme variables at the same tokens, so edges,
+   controls, and the minimap match the design system too. */
+.react-flow.atlas {
+  --xy-edge-stroke-default: var(--atlas-border);
+  --xy-edge-stroke-selected-default: var(--atlas-accent);
+  --xy-attribution-background-color-default: transparent;
+}
+.react-flow.atlas .react-flow__edge-text { fill: var(--atlas-muted); font-size: 10px; }
+.react-flow.atlas .react-flow__edge-textbg { fill: var(--atlas-node-bg); }
