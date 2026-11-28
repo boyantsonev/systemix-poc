@@ -198,6 +198,139 @@
       "summary": "Closed by the founder on 2026-10-31 before any evidence was pulled: the positioning changed to the elevator pitch (DSC-19) and the hero moves to the plugin-first, three-pillar version (goal G-002).",
       "status": "pending",
       "requestedAt": "2026-10-31T13:16:35.434Z"
+    },
+    {
+      "id": "engagement-landing-1795881345603",
+      "type": "engagement-snapshot",
+      "recordPath": "contract/engagement/landing.mdx",
+      "surface": "landing",
+      "hypothesis": "Landing engagement — 174 visitors, 0 installs",
+      "metric": "install conversion",
+      "baselineRate": 0,
+      "variantRate": null,
+      "sessions": 174,
+      "confidenceLevel": 0.5,
+      "context": "Over 30d: 174 unique visitors, 206 pageviews, 0 ran the install command (0% conversion). CTAs — hero 0, nav 0. Top sections: hero, roles, pricing.",
+      "proposal": "low conversion — flag for an experiment",
+      "_posthogData": {
+        "surface": "landing",
+        "period_days": 30,
+        "fetched_at": "2026-11-28",
+        "unique_visitors": 174,
+        "pageviews": 206,
+        "install_copies": 0,
+        "install_persons": 0,
+        "install_conversion": 0,
+        "cta_clicks": {
+          "hero": 0,
+          "nav": 0
+        },
+        "sections": [
+          {
+            "section": "hero",
+            "views": 17
+          },
+          {
+            "section": "roles",
+            "views": 8
+          },
+          {
+            "section": "pricing",
+            "views": 8
+          },
+          {
+            "section": "faq",
+            "views": 7
+          },
+          {
+            "section": "how-it-works",
+            "views": 7
+          },
+          {
+            "section": "commands",
+            "views": 6
+          },
+          {
+            "section": "what-it-does",
+            "views": 6
+          },
+          {
+            "section": "proof",
+            "views": 5
+          },
+          {
+            "section": "rules",
+            "views": 5
+          },
+          {
+            "section": "loop",
+            "views": 4
+          },
+          {
+            "section": "report-steps",
+            "views": 4
+          },
+          {
+            "section": "bottom-cta",
+            "views": 4
+          },
+          {
+            "section": "report-hero",
+            "views": 4
+          },
+          {
+            "section": "improves",
+            "views": 3
+          },
+          {
+            "section": "audit-hero",
+            "views": 3
+          },
+          {
+            "section": "stack",
+            "views": 2
+          },
+          {
+            "section": "statement",
+            "views": 2
+          },
+          {
+            "section": "audit-form",
+            "views": 2
+          },
+          {
+            "section": "report-sample",
+            "views": 2
+          },
+          {
+            "section": "report-tiers",
+            "views": 2
+          },
+          {
+            "section": "audit-paths",
+            "views": 2
+          },
+          {
+            "section": "audiences",
+            "views": 1
+          },
+          {
+            "section": "report-faq",
+            "views": 1
+          },
+          {
+            "section": "report-next",
+            "views": 1
+          },
+          {
+            "section": "deep-dives",
+            "views": 1
+          }
+        ],
+        "source": "live"
+      },
+      "requestedAt": "2026-11-28T15:55:45.603Z",
+      "status": "pending"
     }
   ]
 }
